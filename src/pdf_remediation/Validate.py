@@ -1,5 +1,6 @@
-from .utilities.Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, getFilePaths
-from .utilities.Vera import validatePdf
+from .utilities.Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, REPORTS_DIR
+from .utilities.Resources import getFilePaths
+from .utilities.VeraPDF import validatePdf
 from pathlib import Path
 import multiprocessing
 import time
