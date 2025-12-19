@@ -102,7 +102,7 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
     # runJavaValidation(pdfPath, reportPath, "html")
 
     rules = []
-    filename = Path(pdfPath).stem
+    filename = Path(pdfPath).stem.split('.')[0] + ".pdf"
     if exitCode == 0: 
         #print("Validation successfull.")
         return [filename, True]
