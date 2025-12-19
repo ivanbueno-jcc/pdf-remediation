@@ -8,7 +8,6 @@ import csv
 if __name__ == '__main__':
     multiprocessing.freeze_support()
     file_paths = getFilePaths("pdf", "courts")
-    print(file_paths)
 
     print()
     print("VeraPDF VALIDATION")

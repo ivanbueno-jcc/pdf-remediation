@@ -37,7 +37,6 @@ def runJavaValidation(pdfPath: str, reportPath: str, format: str = "xml"):
             filename = Path(pdfPath).stem.split('.')[0] + f".{format}"
             reportPath = Path(reportPath) / filename
             
-            print("Saving report to", reportPath)
             with open(reportPath, "w", encoding="utf-8") as file:
                 file.write(result.stdout)
 
