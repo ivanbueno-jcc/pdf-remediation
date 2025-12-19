@@ -1,0 +1,554 @@
+{
+    "actions": [
+        {
+            "name": "delete_annot",
+            "params": [
+                {
+                    "name": "annot_types",
+                    "value": "^TrapNet|PrinterMark$"
+                }
+            ],
+            "title": "Delete Annotations"
+        },
+        {
+            "name": "add_tags",
+            "params": [
+                {
+                    "name": "template",
+                    "value": ""
+                },
+                {
+                    "name": "preflight",
+                    "value": true
+                },
+                {
+                    "name": "standard_attrs",
+                    "value": "false"
+                },
+                {
+                    "name": "sequential_headings",
+                    "value": "false"
+                }
+            ],
+            "title": "AutoTag"
+        },
+        {
+            "name": "delete_tags",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": {
+                        "template": {
+                            "tag_update": [
+                                {
+                                    "query": {
+                                        "$and": [
+                                            {
+                                                "$0_tag_type": {
+                                                    "$regex": "^(?!H$|H\\d$|TH$|TD$|TR$|LBody$).*"
+                                                }
+                                            },
+                                            {
+                                                "$0_has_content": "false"
+                                            }
+                                        ],
+                                        "param": [
+                                            "pds_struct_elem"
+                                        ]
+                                    },
+                                    "statement": "$if"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "tag_content",
+                    "value": "none"
+                }
+            ],
+            "title": "Delete Tags"
+        },
+        {
+            "name": "delete_tags",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": {
+                        "template": {
+                            "tag_update": [
+                                {
+                                    "query": {
+                                        "$and": [
+                                            {
+                                                "$0_text": {
+                                                    "$regex": "^ *$"
+                                                }
+                                            }
+                                        ],
+                                        "param": [
+                                            "pds_struct_elem"
+                                        ]
+                                    },
+                                    "statement": "$if"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "tag_content",
+                    "value": "artifact"
+                }
+            ],
+            "title": "Delete Tags"
+        },
+        {
+            "name": "remove_content_marks",
+            "params": [
+                {
+                    "name": "object_types",
+                    "value": ".*"
+                },
+                {
+                    "name": "flags",
+                    "value": 8
+                }
+            ],
+            "title": "Remove Content Marks"
+        },        
+        {
+            "name": "artifact_content",
+            "params": [
+                {
+                    "name": "object_types",
+                    "value": {
+                        "template": {
+                            "object_update": [
+                                {
+                                    "query": {
+                                        "$and": [
+                                            {
+                                                "$0_artifact": "false"
+                                            },
+                                            {
+                                                "$0_mcid": "-1"
+                                            }
+                                        ],
+                                        "param": [
+                                            "pds_object"
+                                        ]
+                                    },
+                                    "statement": "$if"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "artifact_type",
+                    "value": "0"
+                }
+            ],
+            "title": "Artifact Content"
+        },
+        {
+            "name": "add_missing_unicode",
+            "title": "Add Missing Unicodes"
+        },
+        {
+            "name": "set_display_doc_title",
+            "title": "Fix Display Document Title"
+        },
+        {
+            "name": "embed_font",
+            "title": "Embed Fonts"
+        },
+        {
+            "name": "fix_headings",
+            "params": [
+                {
+                    "name": "renumber_headings",
+                    "value": "2"
+                },
+                {
+                    "name": "change_headings_to",
+                    "value": "H"
+                }
+            ],
+            "title": "Fix Headings"
+        },
+        {
+            "name": "fix_parent_tree",
+            "title": "Fix Parent Tree"
+        },
+        {
+            "name": "fix_oc_name",
+            "title": "Fix Optional Content"
+        },
+        {
+            "name": "set_suspect_value",
+            "title": "Set Suspect Value"
+        },
+        {
+            "name": "fix_structure_spaces",
+            "params": [
+                {
+                    "name": "add_missing_spaces",
+                    "value": "true"
+                },
+                {
+                    "name": "remove_unnecessary_spaces",
+                    "value": "false"
+                },
+                {
+                    "name": "artifact_unnecessary_spaces",
+                    "value": "true"
+                }
+            ],
+            "title": "Fix Spaces"
+        },
+        {
+            "name": "set_annot_contents",
+            "params": [
+                {
+                    "name": "annot_types",
+                    "value": ".*"
+                },
+                {
+                    "name": "alt_type",
+                    "value": "1"
+                },
+                {
+                    "name": "custom_text",
+                    "value": "Decorative"
+                },
+                {
+                    "name": "bbox_padding_x",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_x_right",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_y_top",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_y",
+                    "value": "4"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Annotation Contents"
+        },
+        {
+            "name": "set_annot_contents",
+            "params": [
+                {
+                    "name": "annot_types",
+                    "value": ".*"
+                },
+                {
+                    "name": "alt_type",
+                    "value": "2"
+                },
+                {
+                    "name": "custom_text",
+                    "value": "Decorative"
+                },
+                {
+                    "name": "bbox_padding_x",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_x_right",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_y_top",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_y",
+                    "value": "4"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Annotation Contents"
+        },
+        {
+            "name": "set_annot_contents",
+            "params": [
+                {
+                    "name": "annot_types",
+                    "value": ".*"
+                },
+                {
+                    "name": "alt_type",
+                    "value": "3"
+                },
+                {
+                    "name": "custom_text",
+                    "value": "Decorative"
+                },
+                {
+                    "name": "bbox_padding_x",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_x_right",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_y_top",
+                    "value": "4"
+                },
+                {
+                    "name": "bbox_padding_y",
+                    "value": "4"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Annotation Contents"
+        },
+        {
+            "name": "set_alt",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": "^Figure$|^Formula$"
+                },
+                {
+                    "name": "alt_type",
+                    "value": "4"
+                },
+                {
+                    "name": "custom_text",
+                    "value": "Decorative"
+                },
+                {
+                    "name": "description_tag",
+                    "value": "Caption"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Alternate Description"
+        },
+        {
+            "name": "set_alt",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": "^Figure$|^Formula$"
+                },
+                {
+                    "name": "alt_type",
+                    "value": "1"
+                },
+                {
+                    "name": "custom_text",
+                    "value": "Decorative"
+                },
+                {
+                    "name": "description_tag",
+                    "value": ""
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Alternate Description"
+        },
+        {
+            "name": "set_alt",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": "^Figure$|^Formula$"
+                },
+                {
+                    "name": "alt_type",
+                    "value": "2"
+                },
+                {
+                    "name": "custom_text",
+                    "value": "Decorative"
+                },
+                {
+                    "name": "description_tag",
+                    "value": ""
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Alternate Description"
+        },
+        {
+            "name": "set_alt",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": "^Figure$|^Formula$"
+                },
+                {
+                    "name": "alt_type",
+                    "value": "0"
+                },
+                {
+                    "name": "custom_text",
+                    "value": "Decorative"
+                },
+                {
+                    "name": "description_tag",
+                    "value": "Caption"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Alternate Description"
+        },
+        {
+            "name": "set_pdf_ua_standard",
+            "params": [
+                {
+                    "name": "part_number",
+                    "value": "1"
+                },
+                {
+                    "name": "rev_number",
+                    "value": "2023"
+                }
+            ],
+            "title": "Set PDF/UA Standard"
+        },
+        {
+            "name": "set_alt",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": "^Form$"
+                },
+                {
+                    "name": "alt_type",
+                    "value": "4"
+                },
+                {
+                    "name": "custom_text",
+                    "value": "Decorative"
+                },
+                {
+                    "name": "description_tag",
+                    "value": "Caption"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Alternate Description"
+        },
+        {
+            "name": "set_tag_id",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": "^Note$|^TH$"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Tag ID"
+        },
+        {
+            "name": "set_tabs_key",
+            "params": [
+                {
+                    "name": "tabs_key",
+                    "value": "S"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "true"
+                }
+            ],
+            "title": "Set Tab Order"
+        },        
+        {
+            "name": "fix_media_clip_keys",
+            "params": [
+                {
+                    "name": "ct_key",
+                    "value": "text/plain"
+                }
+            ],
+            "title": "Fix Media Clip"
+        },
+        {
+            "name": "set_title",
+            "params": [
+                {
+                    "name": "title_type",
+                    "value": "2"
+                },
+                {
+                    "name": "custom_text",
+                    "value": ""
+                },
+                {
+                    "name": "description_tag",
+                    "value": "Caption"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Title"
+        },
+        {
+            "name": "set_language",
+            "params": [
+                {
+                    "name": "lang",
+                    "value": "en-US"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Document Language"
+        }
+    ],
+    "desc": "",
+    "icon": "commandgroup",
+    "keywords": "",
+    "name": "custom_action_imported",
+    "title": "custom_action_imported",
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    }
+}

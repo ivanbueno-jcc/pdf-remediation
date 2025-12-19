@@ -11,6 +11,11 @@ INPUT_DIR.mkdir(parents=True, exist_ok=True)
 REPORTS_DIR = ROOT_DIR / "resources/reports"
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
+CONFIG_DIR = ROOT_DIR / "resources/configuration"
+CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+
+CONFIG_FILE = CONFIG_DIR / "make-accessible.json"
+
 def getFilePaths(file_type: str, directory: str) -> list:
     file_paths = []
     input_directory_path = Path(INPUT_DIR / directory)
