@@ -1,7 +1,7 @@
 from .utilities.Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, REPORTS_DIR
 from .utilities.Resources import getFilePaths
 from .utilities.VeraPDF import validatePdf
-from .utilities.PDFix import Fix
+from .utilities.PDFix import Fix, GetPageCount
 from pathlib import Path
 import multiprocessing
 import time
@@ -21,8 +21,25 @@ if __name__ == '__main__':
     multiprocessing.freeze_support()
     file_paths = getFilePaths("pdf", folder)
     process_count = 4
-    print(f"Found {len(file_paths)} PDF files.")
     print(f"Using {process_count} out of {multiprocessing.cpu_count()} CPU cores.")
+    print(f"Found {len(file_paths)} PDF files.")
+
+    # Extract the input file out of the file_paths list
+    input_files = []
+    for input, output, report in file_paths:
+        input_files.append(input)
+
+    # Get the total number of pages
+    results = []
+    with multiprocessing.Pool(processes=4) as pool:
+        results.append(pool.map(GetPageCount, input_files))
+    
+    total_pages = 0
+    for result in results:
+        for r in result:
+            total_pages += r[1]
+    print(f"Total pages: {total_pages}")
+
 
     print()
     print("Starting VeraPDF Validation...")
