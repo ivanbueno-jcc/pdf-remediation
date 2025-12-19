@@ -102,17 +102,15 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
     # runJavaValidation(pdfPath, reportPath, "html")
 
     rules = []
+    filename = Path(pdfPath).stem
     if exitCode == 0: 
         #print("Validation successfull.")
-        return [pdfPath.split('/')[-1], True]
+        return [filename, True]
     elif exitCode == 1:
         # print("Non-valid PDF/UA document")
         # rules = parseValidationReport(output)
-        return [pdfPath.split('/')[-1], False]
+        return [filename, False]
     else:
-        return [pdfPath.split('/')[-1], 'Error']
-            
-    # return rules
+        return [filename, 'Error']
 
-def hello(number: int) -> None:
-    print(f"Hello, world! {number}")
+    # return rules
