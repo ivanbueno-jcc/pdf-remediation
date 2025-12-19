@@ -14,7 +14,7 @@ if __name__ == '__main__':
         folder = sys.argv[1]
         print(f"Processing {folder} files.")
     else:
-        print("Please provide a folder under Resources containing PDF files.")
+        print("Missing argument. Please provide specify an existing folder under Resources containing PDF files.")
         exit()
 
     multiprocessing.freeze_support()
