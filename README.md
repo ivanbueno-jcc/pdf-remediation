@@ -17,13 +17,12 @@
 4. Run: 
     
     ```uv run -m pdf_remediation.Validate benchmark```
+5. OPTIONAL
     
-    a. benchmark is a folder under resources/input.
+    benchmark is a folder under resources/input, containing the PDF files.
 
-    b. It contains the PDF files.
+    If you want to validate against another set of files, add a new folder under resources/input.
 
-    c. Add a new folder under resources/input for different sets of PDFs.
-
-    d. Then run:
+    Then run:
 
         uv run -m pdf_remediation.Validate YOUR-NEW-FOLDER
