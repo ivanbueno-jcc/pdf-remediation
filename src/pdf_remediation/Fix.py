@@ -20,6 +20,10 @@ if __name__ == '__main__':
 
     multiprocessing.freeze_support()
     file_paths = getFilePaths("pdf", folder)
+
+    # Cut list to 25000 files for testing purposes
+    file_paths = file_paths[:25000]
+
     process_count = 4
     print(f"Using {process_count} out of {multiprocessing.cpu_count()} CPU cores.")
     print(f"Found {len(file_paths)} PDF files.")
@@ -41,40 +45,48 @@ if __name__ == '__main__':
     for result in results:
         for r in result:
             total_pages += r[1]
-    print(f"Total pages: {total_pages}")
 
+    print(f"With {total_pages} total pages.")
 
-    print()
-    print("Starting VeraPDF Validation...")
-    start_wall = time.perf_counter()
-    start_cpu = time.process_time()
-    with multiprocessing.Pool(processes=process_count) as pool:
-        results = pool.starmap(validatePdf, file_paths)
-    end_wall = time.perf_counter()
-    end_cpu = time.process_time()
+    # print()
+    # print("Starting VeraPDF Validation...")
+    # start_wall = time.perf_counter()
+    # start_cpu = time.process_time()
+    # with multiprocessing.Pool(processes=process_count) as pool:
+    #     results = pool.starmap(validatePdf, file_paths)
+    # end_wall = time.perf_counter()
+    # end_cpu = time.process_time()
 
-    passed = failed = error = 0
-    for filename, result in results:
-        if result == False:
-            failed += 1
-        elif result == True:
-            passed += 1
-        elif result == 'Error':
-            error += 1
+    # failed_rules = []
+    # passed = failed = error = 0
+    # for row in results:
+    #     filename, result, rules = row
+    #     if result == False:
+    #         failed += 1
+    #     elif result == True:
+    #         passed += 1
+    #     elif result == 'Error':
+    #         error += 1
+        
+    #     if len(rules) > 0:
+    #         for rule in rules:
+    #             failed_rules.append([filename, rule["specification"], rule["clause"], rule["tags"], rule["description"]])
 
-    print(f"Passed: {passed}, Failed: {failed}, Errors: {error}")
-    print()
-    print("Time taken:")
-    print(f"{end_wall - start_wall:.2f} seconds (wall time)")
-    print(f"{end_cpu - start_cpu:.2f} seconds (CPU time)")
+    #     del row[2]
 
-    # Write results to CSV
-    timestamp_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    with open(REPORTS_DIR / folder / f"vera_validation_results_{timestamp_string}.csv", mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Filename', 'Validation Result'])
-        writer.writerows(results)
-    print(f"Detailed results saved to {REPORTS_DIR / folder / f'vera_validation_results_{timestamp_string}.csv'}")
+    # print(f"Passed: {passed}, Failed: {failed}, Errors: {error}")
+    # print()
+    # print("Time taken:")
+    # print(f"{end_wall - start_wall:.2f} seconds (wall time)")
+    # print(f"{end_cpu - start_cpu:.2f} seconds (CPU time)")
+
+    # # Write results to CSV
+    # timestamp_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # with open(REPORTS_DIR / folder / f"vera_validation_results_{timestamp_string}.csv", mode='w', newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerow(['Filename', 'Validation Result'])
+    #     writer.writerows(results)
+    # print(f"Detailed results saved to {REPORTS_DIR / folder / f'vera_validation_results_{timestamp_string}.csv'}")
 
     print()
     print("Starting PDFix remediation...")
@@ -105,14 +117,22 @@ if __name__ == '__main__':
     end_wall = time.perf_counter()
     end_cpu = time.process_time()
 
+    failed_rules = []
     passed = failed = error = 0
-    for filename, result in results:
+    for row in results:
+        filename, result, rules = row
         if result == False:
             failed += 1
         elif result == True:
             passed += 1
         elif result == 'Error':
             error += 1
+        
+        if len(rules) > 0:
+            for rule in rules:
+                failed_rules.append([filename, rule["specification"], rule["clause"], rule["tags"], rule["description"]])
+
+        del row[2]
 
     print(f"Passed: {passed}, Failed: {failed}, Errors: {error}")
     print()
@@ -127,3 +147,10 @@ if __name__ == '__main__':
         writer.writerow(['Filename', 'Validation Result'])
         writer.writerows(results)
     print(f"Detailed results saved to {REPORTS_DIR / folder / f'vera_validation_results_{timestamp_string}.csv'}")
+
+    if len(failed_rules) > 0:
+        with open(REPORTS_DIR / folder / f"failed_rules_{timestamp_string}.csv", mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Filename', 'Specification', 'Clause', 'Tags', 'Description'])
+            writer.writerows(failed_rules)
+        print(f"Failed rules saved to {REPORTS_DIR / folder / f'failed_rules_{timestamp_string}.csv'}")

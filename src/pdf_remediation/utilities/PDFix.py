@@ -51,6 +51,10 @@ def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
     if not command.Run():
         print(pdfix.GetError())
 
+    # print(f"Remediation completed: {outputPdfPath}")
+
+    # create the directory if it does not exist
+    Path(outputPdfPath).parent.mkdir(parents=True, exist_ok=True)
     if not doc.Save(outputPdfPath, kSaveFull):
         print(pdfix.GetError())
 

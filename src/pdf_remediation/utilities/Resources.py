@@ -28,9 +28,13 @@ def getFilePaths(file_type: str, directory: str) -> list:
     reports_directory_path = Path(REPORTS_DIR / directory)
     reports_directory_path.mkdir(parents=True, exist_ok=True)
 
-    for file_path in input_directory_path.glob(f"*.{file_type}"):
-        file_paths.append((str(file_path), str(Path(output_directory_path / file_path.name)), str(Path(reports_directory_path))))
-
+    for file_path in input_directory_path.rglob(f"*.{file_type}"):
+        output_file = str(file_path.parent).replace(str(INPUT_DIR), str(OUTPUT_DIR)) + "/" + file_path.name
+        file_paths.append(
+           (str(file_path), 
+            output_file, 
+            str(Path(reports_directory_path))
+            ))
     return file_paths
 
 # return raw data from stream object

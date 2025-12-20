@@ -1,4 +1,4 @@
-from .Resources import ROOT_DIR
+from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR
 import subprocess, sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -68,12 +68,17 @@ def parseValidationReport(xmlReport: str):
     # Extract data from the <rule>
     rules = []
     for rule in root.findall(".//rule"):
-        rule_data = rule.attrib  # read attributes as a dictionary
-        rules.append(rule_data)
-
+        rules_data = {}
+        rules_data['specification'] = rule.get("specification")  # add specification text to the dictionary
+        rules_data['clause'] = rule.get("clause")  # add clause text to the dictionary
+        rules_data['tags'] = rule.get("tags")  # add tags text to the dictionary
+        description = rule.find("description")
+        if description is not None:
+            rules_data['description'] = description.text  # add description text to the dictionary
+        rules.append(rules_data)
     # print the result
-    for i, rule in enumerate(rules, 1):
-        print(f"Rule {i}: {rule}")
+    # for i, rule in enumerate(rules, 1):
+    #     print(f"Rule {i}: {rule}")
         
     return rules
 
@@ -96,21 +101,21 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
     if exitCode > 1:
         # print(error)
         # raise Exception((f"Validation failed with error {exitCode}"))
-        return [pdfPath.split('/')[-1], 'Error']
+        return [pdfPath.split('/')[-1], 'Error', []]
 
     # optional - generate HTML validation report
     # runJavaValidation(pdfPath, reportPath, "html")
 
     rules = []
-    filename = Path(pdfPath).stem.split('.')[0] + ".pdf"
+    filename = pdfPath.replace(str(INPUT_DIR), "").replace(str(OUTPUT_DIR), "")
     if exitCode == 0: 
         #print("Validation successfull.")
-        return [filename, True]
+        return [filename, True, []]
     elif exitCode == 1:
         # print("Non-valid PDF/UA document")
-        # rules = parseValidationReport(output)
-        return [filename, False]
+        rules = parseValidationReport(output)
+        return [filename, False, rules]
     else:
-        return [filename, 'Error']
+        return [filename, 'Error', []]
 
     # return rules
