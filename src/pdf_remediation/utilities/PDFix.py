@@ -88,8 +88,6 @@ def LicenseDeactivate() -> bool:
         print('Pdfix Initialization fail')
     else:
         if not pdfix.GetStandardAuthorization().Deactivate():
-            print("Deactivation failed.")
             return False
         else:
-            print("License deactivated.")
             return True

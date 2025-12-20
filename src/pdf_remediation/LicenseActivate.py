@@ -11,4 +11,8 @@ if __name__ == "__main__":
         exit()
 
     if licenseKey:
-        license = LicenseActivate(licenseKey)
+        is_license_activated = LicenseActivate(licenseKey)
+        if is_license_activated:            
+            print("License activated successfully.")
+        else:
+            print("License activation failed.")
