@@ -17,12 +17,27 @@
 4. Run: 
     
     ```uv run -m pdf_remediation.Validate benchmark```
-5. OPTIONAL
-    
-    benchmark is a folder under resources/input, containing the PDF files.
 
-    If you want to validate against another set of files, add a new folder under resources/input.
+## Commands
 
-    Then run:
+### Validate files
 
-        uv run -m pdf_remediation.Validate YOUR-NEW-FOLDER
+```uv run -m pdf_remediation.Validate [folder]```
+
+### Remediate files
+
+```uv run -m pdf_remediation.Fix [folder]```
+
+* __[folder]__ must be located in resources/input.
+
+### Get License Info and Status
+
+```uv run -m pdf_remediation.License```
+
+### Activate license
+
+```uv run -m pdf_remediation.LicenseActivate [license-key]```
+
+### Deactivate License
+
+```uv run -m pdf_remediation.LicenseDeactivate```
