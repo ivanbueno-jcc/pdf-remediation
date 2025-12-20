@@ -24,6 +24,9 @@ if __name__ == '__main__':
     print(f"Using {process_count} out of {multiprocessing.cpu_count()} CPU cores.")
     print(f"Found {len(file_paths)} PDF files.")
 
+    if len(file_paths) == 0:
+        exit()
+
     # Extract the input file out of the file_paths list
     input_files = []
     for input, output, report in file_paths:
