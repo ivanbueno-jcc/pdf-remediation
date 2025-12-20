@@ -1,7 +1,8 @@
 from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, REPORTS_DIR, CONFIG_FILE
-from .Resources import getFilePaths
+from .Resources import getFilePaths, stream_to_data
 from pdfixsdk import *
 from pathlib import Path
+import json
 
 def GetPageCount(inputPdfPath: str) -> list:
     # Open the PDF document
@@ -55,3 +56,40 @@ def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
 
     doc.Close()
     # print(f"Remediation completed: {outputPdfPath}")
+
+def License() -> json:
+    pdfix = GetPdfix()
+    if pdfix is None:
+        print('Pdfix Initialization fail')
+    else:
+        mem_stm = pdfix.CreateMemStream()
+        pdfix.GetStandardAuthorization().SaveToStream(mem_stm, kDataFormatJson)
+        bytes = bytearray(stream_to_data(mem_stm))
+        json_data = json.loads(bytes.decode("utf-8"))
+        mem_stm.Destroy()
+
+        return json_data
+    
+def LicenseActivate(licenseKey: str) -> bool:
+    pdfix = GetPdfix()
+    if pdfix is None:
+        print('Pdfix Initialization fail')
+    else:
+        if not pdfix.GetStandardAuthorization().Activate(licenseKey):
+            print("Activation failed.")
+            return False
+        else:
+            print("License activated.")
+            return True
+
+def LicenseDeactivate() -> bool:
+    pdfix = GetPdfix()
+    if pdfix is None:
+        print('Pdfix Initialization fail')
+    else:
+        if not pdfix.GetStandardAuthorization().Deactivate():
+            print("Deactivation failed.")
+            return False
+        else:
+            print("License deactivated.")
+            return True
