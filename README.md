@@ -41,3 +41,11 @@
 ### Deactivate License
 
 ```uv run -m pdf_remediation.LicenseDeactivate```
+
+## Set the license
+
+Create a .env in the root directory with the following content:
+```
+PDFIX_LICENSE_NAME = "xxx"
+PDFIX_LICENSE_KEY = "xxx"
+```

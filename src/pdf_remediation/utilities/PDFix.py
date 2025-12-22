@@ -3,6 +3,7 @@ from .Resources import getFilePaths, stream_to_data
 from pdfixsdk import *
 from pathlib import Path
 import json
+from dotenv import load_dotenv
 
 def GetPageCount(inputPdfPath: str) -> list:
     # Open the PDF document
@@ -29,6 +30,13 @@ def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
     pdfix  = GetPdfix()
     if pdfix is None:
         print('Pdfix Initialization fail')
+
+    # Load the license and authorize the account.
+    load_dotenv()
+    pdfix_license_name = os.getenv('PDFIX_LICENSE_NAME')
+    pdfix_license_key = os.getenv('PDFIX_LICENSE_KEY')
+    if pdfix_license_name and pdfix_license_key:
+        pdfix.GetAccountAuthorization().Authorize(pdfix_license_name, pdfix_license_key)
 
     doc = pdfix.OpenDoc(inputPdfPath, "")
     if doc is None:
