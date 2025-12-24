@@ -8,6 +8,7 @@ import time
 import csv
 import sys
 from datetime import datetime
+from parallelbar import progress_starmap
 
 if __name__ == '__main__':
     folder = ''
@@ -34,7 +35,6 @@ if __name__ == '__main__':
     results = []
     with multiprocessing.Pool(processes=4) as pool:
         results.append(pool.map(GetPageCount, input_files))
-    
     total_pages = 0
     for result in results:
         for r in result:
@@ -44,11 +44,12 @@ if __name__ == '__main__':
 
     print(f"Using {process_count} out of {multiprocessing.cpu_count()} CPU cores.")
     print()
-    print("Starting VeraPDF Validation...")
-    start_wall = time.perf_counter()
-    with multiprocessing.Pool(processes=process_count) as pool:
-        results = pool.starmap(validatePdf, file_paths)
-    end_wall = time.perf_counter()
-    print(f"VeraPDF Validation completed in {end_wall - start_wall:.2f} seconds.")
+    print("VeraPDF Validation")
+    # start_wall = time.perf_counter()
+    # with multiprocessing.Pool(processes=process_count) as pool:
+    #     results = pool.starmap(validatePdf, file_paths)
+    results = progress_starmap(validatePdf, file_paths, total=len(file_paths))
+    # end_wall = time.perf_counter()
+    # print(f"VeraPDF Validation completed in {end_wall - start_wall:.2f} seconds.")
 
     writeValidationReport(folder, results)

@@ -143,7 +143,7 @@ def writeValidationReport(folder: str, results: list):
 
         del row[2]
 
-    print(f"Passed: {passed}, Failed: {failed}, Failed to Open: {error}")
+    print(f"PASSED: {passed}, FAILED: {failed}, UNABLE TO PROCESS: {error}")
     print()
 
     # Write results to CSV

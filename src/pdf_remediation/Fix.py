@@ -8,6 +8,7 @@ import time
 import csv
 import sys
 from datetime import datetime
+from parallelbar import progress_starmap
 
 if __name__ == '__main__':
     folder = ''
@@ -89,33 +90,34 @@ if __name__ == '__main__':
     # print(f"Detailed results saved to {REPORTS_DIR / folder / f'vera_validation_results_{timestamp_string}.csv'}")
 
     print()
-    print("Starting PDFix remediation...")
-    start_wall = time.perf_counter()
-    start_cpu = time.process_time()
-    with multiprocessing.Pool(processes=process_count) as pool:
-        results = pool.starmap(Fix, file_paths)
-    end_wall = time.perf_counter()
-    end_cpu = time.process_time()
+    print("PDFix Remediation")
+    # start_wall = time.perf_counter()
+    # start_cpu = time.process_time()
+    # with multiprocessing.Pool(processes=process_count) as pool:
+    #     results = pool.starmap(Fix, file_paths)
+    results = progress_starmap(Fix, file_paths, total=len(file_paths), n_cpu=process_count)
+    # end_wall = time.perf_counter()
+    # end_cpu = time.process_time()
 
     print()
-    print("PDFix remediation completed.")
-    print("Time taken:")
-    print(f"{end_wall - start_wall:.2f} seconds (wall time)")
-    print(f"{end_cpu - start_cpu:.2f} seconds (CPU time)")
+    # print("PDFix remediation completed.")
+    # print("Time taken:")
+    # print(f"{end_wall - start_wall:.2f} seconds (wall time)")
+    # print(f"{end_cpu - start_cpu:.2f} seconds (CPU time)")
 
     # Switch the input and output directories for the second round of validation
     output_file_paths = []
     for input, output, report in file_paths:
         output_file_paths.append((output, output, report))
 
-    print()
-    print("Starting VeraPDF Validation...")
-    start_wall = time.perf_counter()
-    start_cpu = time.process_time()
-    with multiprocessing.Pool(processes=process_count) as pool:
-        results = pool.starmap(validatePdf, output_file_paths)
-    end_wall = time.perf_counter()
-    end_cpu = time.process_time()
-    print(f"VeraPDF Validation completed in {end_wall - start_wall:.2f} seconds.")
+    print("VeraPDF Validation")
+    # start_wall = time.perf_counter()
+    # start_cpu = time.process_time()
+    # with multiprocessing.Pool(processes=process_count) as pool:
+    #     results = pool.starmap(validatePdf, output_file_paths)
+    results = progress_starmap(validatePdf, output_file_paths, total=len(output_file_paths), n_cpu=process_count)
+    # end_wall = time.perf_counter()
+    # end_cpu = time.process_time()
+    # print(f"VeraPDF Validation completed in {end_wall - start_wall:.2f} seconds.")
 
     writeValidationReport(folder, results)
