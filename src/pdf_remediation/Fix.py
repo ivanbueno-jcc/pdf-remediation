@@ -5,8 +5,7 @@ from .utilities.PDFix import Fix, GetPageCount
 import multiprocessing
 import sys
 from datetime import datetime
-from parallelbar import progress_starmap
-from collections import ChainMap
+from parallelbar import progress_starmap, progress_map
 
 if __name__ == '__main__':
     folder = ''
@@ -35,12 +34,11 @@ if __name__ == '__main__':
     print()
     print("Counting pages...")
     results = []
-    with multiprocessing.Pool(processes=4) as pool:
-        results.append(pool.map(GetPageCount, input_files))
-    
-    result_list = results.pop()
+    # with multiprocessing.Pool(processes=4) as pool:
+    #     results.append(pool.map(GetPageCount, input_files))
+    results = progress_map(GetPageCount, input_files, total=len(input_files), n_cpu=process_count)
     page_counts = {}
-    for d in result_list:
+    for d in results:
         page_counts.update(d)
 
     total_pages = 0
@@ -50,7 +48,9 @@ if __name__ == '__main__':
 
     # split the file_paths into batches based on the page count.
     chunks = {
-        '10 or less': [],
+        '1': [],
+        '2-5': [],
+        '6-10': [],
         '11-50': [],
         '51-100': [],
         '101-200': [],
@@ -61,8 +61,12 @@ if __name__ == '__main__':
     }
     for input, output, report in file_paths:
         match page_counts[input]:
-            case x if 0 < x <= 10:
-                chunks['10 or less'].append((input, output, report))
+            case 1:
+                chunks['1'].append((input, output, report))
+            case x if 1 < x <= 5:
+                chunks['2-5'].append((input, output, report))
+            case x if 5 < x <= 10:
+                chunks['6-10'].append((input, output, report))
             case x if 10 < x <= 50:
                 chunks['11-50'].append((input, output, report))
             case x if 50 < x <= 100:

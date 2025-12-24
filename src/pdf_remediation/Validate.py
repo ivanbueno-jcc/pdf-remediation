@@ -8,7 +8,7 @@ import time
 import csv
 import sys
 from datetime import datetime
-from parallelbar import progress_starmap
+from parallelbar import progress_starmap, progress_map
 
 if __name__ == '__main__':
     folder = ''
@@ -35,12 +35,9 @@ if __name__ == '__main__':
     for input, output, report in file_paths:
         input_files.append(input)
     results = []
-    with multiprocessing.Pool(processes=4) as pool:
-        results.append(pool.map(GetPageCount, input_files))
-    
-    result_list = results.pop()
+    results = progress_map(GetPageCount, input_files, total=len(input_files), n_cpu=process_count)
     page_counts = {}
-    for d in result_list:
+    for d in results:
         page_counts.update(d)
 
     total_pages = 0
