@@ -30,6 +30,18 @@
 
 * __[folder]__ must be located in resources/input.
 
+### Generate a Summary Report
+
+```uv run -m pdf_remediation.Report [folder]```
+
+## Set the license
+
+Create a .env in the root directory with the following content:
+```
+PDFIX_LICENSE_NAME = "xxx"
+PDFIX_LICENSE_KEY = "xxx"
+```
+
 ### Get License Info and Status
 
 ```uv run -m pdf_remediation.License```
@@ -41,11 +53,3 @@
 ### Deactivate License
 
 ```uv run -m pdf_remediation.LicenseDeactivate```
-
-## Set the license
-
-Create a .env in the root directory with the following content:
-```
-PDFIX_LICENSE_NAME = "xxx"
-PDFIX_LICENSE_KEY = "xxx"
-```

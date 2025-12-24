@@ -1,4 +1,4 @@
-from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR
+from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, CONFIG_DIR
 import subprocess, sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -26,6 +26,7 @@ def runJavaValidation(pdfPath: str, reportPath: str, format: str = "xml"):
     try:
         result = subprocess.run(
             ["java", "-jar", jarPath, "--flavour", "ua1", "--format", format, pdfPath],  # JAR execution cmd
+            # ["java", "-jar", jarPath, "--profile", str(CONFIG_DIR / "WCAG-2-2-Complete.xml"), "--format", format, pdfPath], 
             capture_output=True,  # capture output
             text=True  # read output as text
         )
