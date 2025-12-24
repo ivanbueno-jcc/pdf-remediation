@@ -13,7 +13,7 @@ def GetPageCount(inputPdfPath: str) -> list:
 
     doc = pdfix.OpenDoc(inputPdfPath, "")
     if doc is None:
-        return [inputPdfPath, -1]
+        return {inputPdfPath: 0}
 
     size = doc.GetNumPages()
 
@@ -37,7 +37,7 @@ def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
 
     doc = pdfix.OpenDoc(inputPdfPath, "")
     if doc is None:
-        print('Unable to open pdf : ' + pdfix.GetError())
+        print('Unable to open pdf: ' + pdfix.GetError())
 
     command = doc.GetCommand()
     cmdStm = None
@@ -54,6 +54,7 @@ def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
 
     # run the command
     if not command.Run():
+        print(inputPdfPath)
         print(pdfix.GetError())
 
     # print(f"Remediation completed: {outputPdfPath}")

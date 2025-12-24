@@ -14,7 +14,7 @@ if __name__ == '__main__':
     folder = ''
     if len(sys.argv) > 1:
         folder = sys.argv[1]
-        print(f"Processing {folder} files.")
+        print(f"Processing {folder}.")
     else:
         print("Missing argument. Please provide specify an existing folder under Resources containing PDF files.")
         exit()
@@ -22,11 +22,13 @@ if __name__ == '__main__':
     multiprocessing.freeze_support()
     file_paths = getFilePaths("pdf", folder)
     process_count = 4
-    print(f"Found {len(file_paths)} PDF files.")
+    print(f"Found {len(file_paths):,} PDF files.")
 
     if len(file_paths) == 0:
         exit()
     
+    print()
+    print('Counting pages...')
     # Get the total number of pages
     # Extract the input file out of the file_paths list
     input_files = []
@@ -35,21 +37,20 @@ if __name__ == '__main__':
     results = []
     with multiprocessing.Pool(processes=4) as pool:
         results.append(pool.map(GetPageCount, input_files))
-    total_pages = 0
-    for result in results:
-        for r in result:
-            total_pages += r[1]
+    
+    result_list = results.pop()
+    page_counts = {}
+    for d in result_list:
+        page_counts.update(d)
 
-    print(f"With {total_pages} total pages.")
+    total_pages = 0
+    for file, count in page_counts.items():
+        total_pages += count
+    print(f"{total_pages:,} total pages.")
 
     print(f"Using {process_count} out of {multiprocessing.cpu_count()} CPU cores.")
     print()
-    print("VeraPDF Validation")
-    # start_wall = time.perf_counter()
-    # with multiprocessing.Pool(processes=process_count) as pool:
-    #     results = pool.starmap(validatePdf, file_paths)
+    print("Validating PDFs...")
     results = progress_starmap(validatePdf, file_paths, total=len(file_paths))
-    # end_wall = time.perf_counter()
-    # print(f"VeraPDF Validation completed in {end_wall - start_wall:.2f} seconds.")
 
     writeValidationReport(folder, results)

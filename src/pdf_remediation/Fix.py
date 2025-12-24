@@ -12,7 +12,7 @@ if __name__ == '__main__':
     folder = ''
     if len(sys.argv) > 1:
         folder = sys.argv[1]
-        print(f"Processing {folder} files.")
+        print(f"Fixing {folder}.")
     else:
         print("Missing argument. Please provide specify an existing folder under Resources containing PDF files.")
         exit()
@@ -20,12 +20,9 @@ if __name__ == '__main__':
     multiprocessing.freeze_support()
     file_paths = getFilePaths("pdf", folder)
 
-    # Cut list to 25000 files for testing purposes
-    # file_paths = file_paths[:25000]
-
     process_count = 4
     print(f"Using {process_count} out of {multiprocessing.cpu_count()} CPU cores.")
-    print(f"Found {len(file_paths)} PDF files.")
+    print(f"Found {len(file_paths):,} PDF files.")
     if len(file_paths) == 0:
         exit()
 
@@ -35,17 +32,21 @@ if __name__ == '__main__':
         input_files.append(input)
 
     # Get the total number of pages
+    print()
+    print("Counting pages...")
     results = []
     with multiprocessing.Pool(processes=4) as pool:
         results.append(pool.map(GetPageCount, input_files))
     
     result_list = results.pop()
-    page_counts = dict(ChainMap(*result_list))
+    page_counts = {}
+    for d in result_list:
+        page_counts.update(d)
 
     total_pages = 0
     for file, count in page_counts.items():
         total_pages += count
-    print(f"With {total_pages} total pages.")
+    print(f"{total_pages:,} total pages.")
 
     # split the file_paths into batches based on the page count.
     chunks = {
@@ -60,7 +61,7 @@ if __name__ == '__main__':
     }
     for input, output, report in file_paths:
         match page_counts[input]:
-            case x if x <= 10:
+            case x if 0 < x <= 10:
                 chunks['10 or less'].append((input, output, report))
             case x if 10 < x <= 50:
                 chunks['11-50'].append((input, output, report))
@@ -82,18 +83,18 @@ if __name__ == '__main__':
         if len(value) == 0:
             continue    
 
-        print(f"Processing files with {key} pages.")
-        print("Remediating files...")
+        print(f"FILES WITH {key} PAGES")
+        print("Remediating...")
         results = progress_starmap(Fix, value, total=len(value), n_cpu=process_count)
 
-        print("Validating files...")
+        print("Validating...")
         # Switch the input and output directories for the second round of validation
         output_file_paths = []
         for input, output, report in value:
             output_file_paths.append((output, output, report))
         results = progress_starmap(validatePdf, output_file_paths, total=len(output_file_paths), n_cpu=process_count)
 
-        print("Writing validation report...")
+        print("Writing report...")
         writeValidationReport(folder, results)
 
         print()
