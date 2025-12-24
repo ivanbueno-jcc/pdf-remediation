@@ -13,16 +13,13 @@ def GetPageCount(inputPdfPath: str) -> list:
 
     doc = pdfix.OpenDoc(inputPdfPath, "")
     if doc is None:
-        return [inputPdfPath.split("/")[-1], -1]
+        return [inputPdfPath, -1]
 
     size = doc.GetNumPages()
 
     doc.Close()
 
-    # Get filename from inputPdfPath
-    filename = inputPdfPath.split("/")[-1]
-
-    return [filename, size]
+    return {inputPdfPath: size}
 
 def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
     # print(f"Remediating: {inputPdfPath}")
