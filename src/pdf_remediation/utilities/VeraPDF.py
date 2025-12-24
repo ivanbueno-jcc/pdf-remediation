@@ -1,4 +1,6 @@
-from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, CONFIG_DIR
+from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, CONFIG_DIR, REPORTS_DIR
+from datetime import datetime
+import csv
 import subprocess, sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -73,6 +75,7 @@ def parseValidationReport(xmlReport: str):
         rules_data['specification'] = rule.get("specification")  # add specification text to the dictionary
         rules_data['clause'] = rule.get("clause")  # add clause text to the dictionary
         rules_data['tags'] = rule.get("tags")  # add tags text to the dictionary
+        rules_data['test'] = rule.get("testNumber")  # add test text to the dictionary
         description = rule.find("description")
         if description is not None:
             rules_data['description'] = description.text  # add description text to the dictionary
@@ -120,3 +123,39 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
         return [filename, 'Error', []]
 
     # return rules
+
+def writeValidationReport(folder: str, results: list):
+
+    failed_rules = []
+    passed = failed = error = 0
+    for row in results:
+        filename, result, rules = row
+        if result == False:
+            failed += 1
+        elif result == True:
+            passed += 1
+        elif result == 'Error':
+            error += 1
+        
+        if len(rules) > 0:
+            for rule in rules:
+                failed_rules.append([filename, rule["specification"], rule["clause"], rule["tags"], rule["test"], rule["description"]])
+
+        del row[2]
+
+    print(f"Passed: {passed}, Failed: {failed}, Failed to Open: {error}")
+    print()
+
+    # Write results to CSV
+    timestamp_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    with open(REPORTS_DIR / folder / f"__{folder}_vera_validation_results_{timestamp_string}.csv", mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Filename', 'Validation Result'])
+        writer.writerows(results)
+    print(f"Detailed results saved to {REPORTS_DIR / folder / f'__{folder}_vera_validation_results_{timestamp_string}.csv'}")
+    if len(failed_rules) > 0:
+        with open(REPORTS_DIR / folder / f"__{folder}_failed_rules_{timestamp_string}.csv", mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Filename', 'Specification', 'Clause', 'Tags', 'TestNumber', 'Description'])
+            writer.writerows(failed_rules)
+        print(f"Failed rules saved to {REPORTS_DIR / folder / f'__{folder}_failed_rules_{timestamp_string}.csv'}")

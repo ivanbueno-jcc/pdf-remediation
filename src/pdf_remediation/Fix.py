@@ -1,6 +1,6 @@
 from .utilities.Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, REPORTS_DIR
 from .utilities.Resources import getFilePaths
-from .utilities.VeraPDF import validatePdf
+from .utilities.VeraPDF import validatePdf, writeValidationReport
 from .utilities.PDFix import Fix, GetPageCount
 from pathlib import Path
 import multiprocessing
@@ -116,40 +116,6 @@ if __name__ == '__main__':
         results = pool.starmap(validatePdf, output_file_paths)
     end_wall = time.perf_counter()
     end_cpu = time.process_time()
+    print(f"VeraPDF Validation completed in {end_wall - start_wall:.2f} seconds.")
 
-    failed_rules = []
-    passed = failed = error = 0
-    for row in results:
-        filename, result, rules = row
-        if result == False:
-            failed += 1
-        elif result == True:
-            passed += 1
-        elif result == 'Error':
-            error += 1
-        
-        if len(rules) > 0:
-            for rule in rules:
-                failed_rules.append([filename, rule["specification"], rule["clause"], rule["tags"], rule["description"]])
-
-        del row[2]
-
-    print(f"Passed: {passed}, Failed: {failed}, Errors: {error}")
-    print()
-    print("Time taken:")
-    print(f"{end_wall - start_wall:.2f} seconds (wall time)")
-    print(f"{end_cpu - start_cpu:.2f} seconds (CPU time)")
-
-    # Write results to CSV
-    timestamp_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    with open(REPORTS_DIR / folder / f"__{folder}_vera_validation_results_{timestamp_string}.csv", mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Filename', 'Validation Result'])
-        writer.writerows(results)
-    print(f"Detailed results saved to {REPORTS_DIR / folder / f'__{folder}_vera_validation_results_{timestamp_string}.csv'}")
-    if len(failed_rules) > 0:
-        with open(REPORTS_DIR / folder / f"__{folder}_failed_rules_{timestamp_string}.csv", mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Filename', 'Specification', 'Clause', 'Tags', 'Description'])
-            writer.writerows(failed_rules)
-        print(f"Failed rules saved to {REPORTS_DIR / folder / f'__{folder}_failed_rules_{timestamp_string}.csv'}")
+    writeValidationReport(folder, results)
