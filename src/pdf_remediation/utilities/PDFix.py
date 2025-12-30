@@ -26,7 +26,7 @@ def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
 
     pdfix  = GetPdfix()
     if pdfix is None:
-        print('Pdfix Initialization fail')
+        raise Exception('Pdfix Initialization fail')
 
     # Load the license and authorize the account.
     load_dotenv()
@@ -37,7 +37,7 @@ def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
 
     doc = pdfix.OpenDoc(inputPdfPath, "")
     if doc is None:
-        print('Unable to open pdf: ' + pdfix.GetError())
+        raise Exception('Unable to open pdf : ' + pdfix.GetError())
 
     command = doc.GetCommand()
     cmdStm = None
@@ -45,25 +45,22 @@ def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
 
     cmdStm = pdfix.CreateFileStream(commandPath, kPsReadOnly)
     if not cmdStm:
-        print(pdfix.GetError())
-
+        raise Exception(pdfix.GetError())
     if not command.LoadParamsFromStream(cmdStm, kDataFormatJson):
-        print(pdfix.GetError())
-
+        raise Exception(pdfix.GetError())
     cmdStm.Destroy()
 
     # run the command
     if not command.Run():
-        print(inputPdfPath)
-        print(pdfix.GetError())
+        # print(inputPdfPath)
+        raise Exception(pdfix.GetError())
 
     # print(f"Remediation completed: {outputPdfPath}")
 
     # create the directory if it does not exist
     Path(outputPdfPath).parent.mkdir(parents=True, exist_ok=True)
     if not doc.Save(outputPdfPath, kSaveFull):
-        print(pdfix.GetError())
-
+        raise Exception(pdfix.GetError())
     doc.Close()
     # print(f"Remediation completed: {outputPdfPath}")
 

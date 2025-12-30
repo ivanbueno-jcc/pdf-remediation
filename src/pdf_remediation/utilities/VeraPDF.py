@@ -144,6 +144,11 @@ def writeValidationReport(folder: str, results: list):
         del row[2]
 
     print(f"PASSED: {passed}, FAILED: {failed}, UNABLE TO PROCESS: {error}")
+    # success rate
+    total = passed + failed + error
+    if total > 0:
+        success_rate = (passed / total) * 100
+        print(f"SUCCESS RATE: {success_rate:.2f}%")
     print()
 
     # Write results to CSV
