@@ -105,7 +105,8 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
     if exitCode > 1:
         # print(error)
         # raise Exception((f"Validation failed with error {exitCode}"))
-        return [pdfPath.split('/')[-1], 'Error', []]
+        filename = pdfPath.replace(str(INPUT_DIR), "").replace(str(OUTPUT_DIR), "")
+        return [filename, 'Error', []]
 
     # optional - generate HTML validation report
     # runJavaValidation(pdfPath, reportPath, "html")
@@ -153,14 +154,14 @@ def writeValidationReport(folder: str, results: list):
 
     # Write results to CSV
     timestamp_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    with open(REPORTS_DIR / folder / f"__{folder}_vera_validation_results_{timestamp_string}.csv", mode='w', newline='') as file:
+    with open(REPORTS_DIR / folder / f"__{folder}_{timestamp_string}_vera_validation_results.csv", mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Filename', 'Validation Result'])
+        writer.writerow(['path', 'validation_result'])
         writer.writerows(results)
-    print(f"Detailed results saved to {REPORTS_DIR / folder / f'__{folder}_vera_validation_results_{timestamp_string}.csv'}")
+    print(f"Detailed results saved to {REPORTS_DIR / folder / f'__{folder}_{timestamp_string}_vera_validation_results.csv'}")
     if len(failed_rules) > 0:
-        with open(REPORTS_DIR / folder / f"__{folder}_failed_rules_{timestamp_string}.csv", mode='w', newline='') as file:
+        with open(REPORTS_DIR / folder / f"__{folder}_{timestamp_string}_failed_rules.csv", mode='w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['Filename', 'Specification', 'Clause', 'Tags', 'TestNumber', 'Description'])
+            writer.writerow(['path', 'specification', 'clause', 'tags', 'testnumber', 'description'])
             writer.writerows(failed_rules)
-        print(f"Failed rules saved to {REPORTS_DIR / folder / f'__{folder}_failed_rules_{timestamp_string}.csv'}")
+        print(f"Failed rules saved to {REPORTS_DIR / folder / f'__{folder}_{timestamp_string}_failed_rules.csv'}")

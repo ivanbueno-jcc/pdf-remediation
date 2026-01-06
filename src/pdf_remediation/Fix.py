@@ -86,7 +86,7 @@ if __name__ == '__main__':
                 chunks['3001 or more'].append((input, output, report))
 
     print()
-    print("File distribution by page count:")
+    print("FILE DISTRIBUTION BY PAGE COUNT:")
     for key, value in chunks.items():
         print(f"{key}: {len(value)} files")
     # if value is large, split into sub-chunks.
@@ -132,7 +132,8 @@ if __name__ == '__main__':
             value, 
             total=len(value), 
             error_behavior="coerce", 
-            process_timeout=600
+            process_timeout=600,
+            n_cpu=process_count
         )
 
         print("Validating...")
