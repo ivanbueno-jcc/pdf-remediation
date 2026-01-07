@@ -106,7 +106,7 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
         # print(error)
         # raise Exception((f"Validation failed with error {exitCode}"))
         filename = pdfPath.replace(str(INPUT_DIR), "").replace(str(OUTPUT_DIR), "")
-        return [filename, 'Error', []]
+        return [filename, 'Error', [], 0]
 
     # optional - generate HTML validation report
     # runJavaValidation(pdfPath, reportPath, "html")
@@ -115,13 +115,13 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
     filename = pdfPath.replace(str(INPUT_DIR), "").replace(str(OUTPUT_DIR), "")
     if exitCode == 0: 
         #print("Validation successfull.")
-        return [filename, True, []]
+        return [filename, True, [], 0]
     elif exitCode == 1:
         # print("Non-valid PDF/UA document")
         rules = parseValidationReport(output)
-        return [filename, False, rules]
+        return [filename, False, rules, len(rules)]
     else:
-        return [filename, 'Error', []]
+        return [filename, 'Error', [], 0]
 
     # return rules
 
@@ -130,7 +130,7 @@ def writeValidationReport(folder: str, results: list):
     failed_rules = []
     passed = failed = error = 0
     for row in results:
-        filename, result, rules = row
+        filename, result, rules, count = row
         if result == False:
             failed += 1
         elif result == True:
@@ -156,7 +156,7 @@ def writeValidationReport(folder: str, results: list):
     timestamp_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     with open(REPORTS_DIR / folder / f"__{folder}_{timestamp_string}_vera_validation_results.csv", mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['path', 'validation_result'])
+        writer.writerow(['path', 'validation_result', 'failed_rule_count'])
         writer.writerows(results)
     print(f"Detailed results saved to {REPORTS_DIR / folder / f'__{folder}_{timestamp_string}_vera_validation_results.csv'}")
     if len(failed_rules) > 0:
