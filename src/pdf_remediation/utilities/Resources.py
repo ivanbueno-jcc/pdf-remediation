@@ -51,7 +51,9 @@ def get_project_workspace_file_paths(project_name: str, workspace_name: str, sub
                 destination_path.write_bytes(file_path.read_bytes())
         else:
             print(f"No PDF files found.")
-            print("Please add PDF files to the source folder and re-run the script.")
+            print()
+            print("Please add PDF files to the source folder and re-run the script:")
+            print(f"{source_path.resolve()}")
             exit()
 
     return file_paths
