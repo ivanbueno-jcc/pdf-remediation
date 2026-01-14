@@ -56,7 +56,7 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 import xml.etree.ElementTree as ET
-from .utilities.Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, REPORTS_DIR
+from pathlib import Path
 
 # Inline logo (optimized WEBP 56x56)
 INLINE_LOGO_DATA_URI = "data:image/webp;base64,UklGRpgFAABXRUJQVlA4WAoAAAAQAAAANwAANwAAQUxQSN4CAAABkGzbtmk769m2bdRi27Zt23wqxbb5GNu2k2fbZnJ34a69zzr35gMiwoHbSIqU7DEtVXffF+C/08jeKzDQy95ItTgPCrv2La+ipqYi79u1sEHOKsJiZHQhk7AweqSFfKyW/2Ykfy+3kofmZHSPeGeypgy84pgs47zI9E9jMk3rT2R2DZNtzWwSS5uZCmxeSrmPLj/njx1PdVxkrXKRvtuvGu2ANiDHSOWaVfeTwDODoVtdWXT8p1y1DE8h2vEMkWosi34KtG7x2iImKTB/52jIwPQaQygmCbBMZJwNj+ITqMZ/ZZyJljzLmIpdxmGWqGoSzTAjmcodidCIFpKZrxKi0VFzLhKg2GXtHFZDo+RBoogiZyWDmIACOwDo+Y3CrWCwucsEDlISJiIZlT/bo3+lqFqjCwB9FQLClFwTrpg/ICfkinnfnju/BVwDAMNv4lrCFT7f66LM7uTWZSsT8M0QwD6PCX3XAZD6K6swKUOA2/ZKEXn2AF7lTGzFGj1Adnin5KI7IGwOtDAR5V4AgdLH+0YAV4oPsYZlXOi6f5AqVIEkWM5kDVyNw5ZwvWZjNZMEPSB43BGEhuIzRuIBegvFH71FPWBGIZMmzx59EcmGMBOut51jvFJfBNcY0aehAKAxIIWRuIbPb6qrAEArmtEIQ3kiUjBdD/3UjmYSg3B+SdwJBs7BiRzS+dWIJlC9wQAEup6h1gsYKc2HboB0ssVfOj1Xsj4R62HzfhtABLy7wZXawFu0egjLxKSPAey4TMZetgak7poKSv0FS+FNjCcXvEN/USyXcrFs/05U7wn9hVUv4oLXVdAW4r24DXjH9xdKP/vHtVWDTbXCkjyG21/c+mtT+meeNSL4PhPbcthGSVuuf0r2a0Ed1ZhJSOaXHgCwGPdr2nxQ2wrA+YyCNIlEdZ5bhOYD6jzyY/Eq8sTVgucRtc0/apu31DbfqW2eVNf8qq55WU3zuZr+D/xvAlZQOCCUAgAAsA8AnQEqOAA4AD5tLpRGpCKiISgb/ACADYlsDbAE8mlb8A55SafDfx5/Gb5VKX/V/vh+Q3OnV//lft291v9u9mfmAfoB0nfMB+x3+A/sHvL/x3+AewD0AP3Q6wn0AP1m9Kr/qf8r4Dv2G/az2jP/t1gBWkZU0Lx4hQfAOsNGHJ9wwlJxOMAA/v6HwZ6lPUxaOlC2DmHebi7/IJbbENAasWeeHpLnuP2c+eyJeyC3ArDomVTuPWTOQdfnP+AOxO6aLhqdGdMFdfVrLODye5AJL9/errL7CYfTnt3Pq+6p1wOmYz2pS4Nl6toPGmsn+/oSTQOR8k8VAyEL4/++Af//2rTWkUmS0os0LgYgKomhgiOMw05rsbY1NeNWv8+WvLT1NR5//tK3DCLhLKXwHeL1lJXNzGTqqd3D/jNaLnK9Fviduujl1ZUyolWj/PTWyq2/+cXn/5n6oXQcBoy6MJGBDbR1dM8XRv+RaLuGiAyhf1Jt80KMUgB35gBfmOOVzDWBH9pvE7MNKh5ShQWPMDUf3jQFJE/WZH94uNrCmOAGgdIPmvA9y+vB7rA47Z/4ejD0cYsuPmeMXI/ZM7J+hdfMQIabKRndquyrfURC8Rnfg/zEmrVBypJlZpPQQ2IVrixSJ1vC/C+IMQnTY+c3O2MEY2vkeRfm+rEmXiXBnoppa+4E8pOgeeuJ8qARNEndhg/gzfztg43PYIdb9OzReDDbGGk/7ahP2ac+cQJNQ5LrRWK8GN57R9zd//2/cELA304Q1n3ebpbbxpnGjTchzUq7IAmwv0Nvi4cXp9U+a22AtgeXtAtcf0nMKP1The98AEFB591NsUSXp+vc5Rw0Ep3F629AZEpqUlecRc4i/+RnMwAAAAAA"
@@ -705,49 +705,33 @@ def main() -> int:
 
     return 0
 
-if __name__ == "__main__":
-    #raise SystemExit(main())
-    parser = argparse.ArgumentParser(
-        description="Generate 'report' report artifacts (CSV/TXT/HTML) from veraPDF XML reports."
-    )
-    parser.add_argument("folder", help="Directory containing veraPDF XML reports (*.xml).")
-    args = parser.parse_args()
+def run_report_generation(folder: Path) -> None:
+    xml_dir = folder / "xml"
+    # check if xml_dir exists
+    if not xml_dir.exists():
+        raise SystemExit(f"{args.folder} does not exist. Run Validate first.")
+    # check if xml_dir contains xml files
+    if not any(xml_dir.glob("*.xml")):
+        raise SystemExit(f"No XML files found in {args.folder}. Run Validate first.")
+    
+    out_dir = folder / "summary"
+    out_dir.mkdir(exist_ok=True)
 
-    if args.folder:
-        xml_dir = REPORTS_DIR / args.folder
-        # check if xml_dir exists
-        if not xml_dir.exists():
-            raise SystemExit(f"{args.folder} does not exist. Run Validate first.")
-        # check if xml_dir contains xml files
-        if not any(xml_dir.glob("*.xml")):
-            raise SystemExit(f"No XML files found in {args.folder}. Run Validate first.")
-        
-        out_dir = REPORTS_DIR / args.folder / "summary"
-        out_dir.mkdir(exist_ok=True)
+    t0 = time.perf_counter()
+    summary = load_xml_reports(xml_dir, max_threads=max(1, 4))
+    duration = time.perf_counter() - t0
 
-        t0 = time.perf_counter()
-        summary = load_xml_reports(xml_dir, max_threads=max(1, 4))
-        duration = time.perf_counter() - t0
+    num_files = len(summary)
 
-        num_files = len(summary)
+    # Write "report" artifacts (same naming as your pipeline)
+    compliance_txt = os.path.join(out_dir, "verapdf-compliance-report.txt")
+    clause_csv = os.path.join(out_dir, "verapdf-clause-summary.csv")
+    file_csv = os.path.join(out_dir, "verapdf-file-summary.csv")
+    out_txt = os.path.join(out_dir, "output.txt")
 
-        # Write "report" artifacts (same naming as your pipeline)
-        compliance_txt = os.path.join(out_dir, "verapdf-compliance-report.txt")
-        clause_csv = os.path.join(out_dir, "verapdf-clause-summary.csv")
-        file_csv = os.path.join(out_dir, "verapdf-file-summary.csv")
-        out_txt = os.path.join(out_dir, "output.txt")
+    write_file_summary_csv(summary, file_csv)
+    write_clause_summary_csv(summary, clause_csv)
+    write_compliance_report(summary, compliance_txt)
+    write_synthetic_before_output_txt(out_txt, num_files=num_files, duration_sec=duration)
 
-        write_file_summary_csv(summary, file_csv)
-        write_clause_summary_csv(summary, clause_csv)
-        write_compliance_report(summary, compliance_txt)
-        write_synthetic_before_output_txt(out_txt, num_files=num_files, duration_sec=duration)
-
-        html_path = build_report(out_dir, state="California", company="PDFix")
-
-        print(f"[OK] Parsed XML reports: {num_files}")
-        print(f"[OK] Wrote: {file_csv}")
-        print(f"[OK] Wrote: {clause_csv}")
-        print(f"[OK] Wrote: {compliance_txt}")
-        print(f"[OK] Wrote: {out_txt}")
-        print(f"[OK] Generated HTML: {html_path}")
-
+    html_path = build_report(out_dir, state="California", company="PDFix")

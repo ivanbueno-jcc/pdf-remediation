@@ -1,9 +1,12 @@
 from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, CONFIG_DIR, REPORTS_DIR
+from ..Report import run_report_generation
 from datetime import datetime
 import csv
 import subprocess, sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+import multiprocessing
+from parallelbar import progress_starmap
 
 def runJavaValidation(pdfPath: str, reportPath: str, format: str = "xml"):
     """
@@ -86,7 +89,7 @@ def parseValidationReport(xmlReport: str):
         
     return rules
 
-def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str = "xml") -> list:
+def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str = "xml") -> list:
     """
     Validates a PDF document against PDF/UA standards using a Java validation tool.
 
@@ -101,18 +104,17 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
         Exception: If the document cannot be saved or if validation fails unexpectedly.
     """    
     exitCode, output, error = runJavaValidation(pdfPath, reportPath, "xml")
+    filename = pdfPath.replace(subfolderPath, "")
 
     if exitCode > 1:
         # print(error)
         # raise Exception((f"Validation failed with error {exitCode}"))
-        filename = pdfPath.replace(str(INPUT_DIR), "").replace(str(OUTPUT_DIR), "")
         return [filename, 'Error', [], 0]
 
     # optional - generate HTML validation report
     # runJavaValidation(pdfPath, reportPath, "html")
 
     rules = []
-    filename = pdfPath.replace(str(INPUT_DIR), "").replace(str(OUTPUT_DIR), "")
     if exitCode == 0: 
         #print("Validation successfull.")
         return [filename, True, [], 0]
@@ -125,7 +127,7 @@ def validatePdf(pdfPath: str, outputPdfPath: str, reportPath: str, format: str =
 
     # return rules
 
-def writeValidationReport(folder: str, results: list):
+def write_validation_report(folder: str, results: list):
 
     failed_rules = []
     passed = failed = error = 0
@@ -153,15 +155,36 @@ def writeValidationReport(folder: str, results: list):
     print()
 
     # Write results to CSV
-    timestamp_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    with open(REPORTS_DIR / folder / f"__{folder}_{timestamp_string}_vera_validation_results.csv", mode='w', newline='') as file:
+    with open(folder / f"vera_validation_results.csv", mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['path', 'validation_result', 'failed_rule_count'])
         writer.writerows(results)
-    print(f"Detailed results saved to {REPORTS_DIR / folder / f'__{folder}_{timestamp_string}_vera_validation_results.csv'}")
+
     if len(failed_rules) > 0:
-        with open(REPORTS_DIR / folder / f"__{folder}_{timestamp_string}_failed_rules.csv", mode='w', newline='') as file:
+        with open(folder / f"failed_rules.csv", mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['path', 'specification', 'clause', 'tags', 'testnumber', 'description'])
             writer.writerows(failed_rules)
-        print(f"Failed rules saved to {REPORTS_DIR / folder / f'__{folder}_{timestamp_string}_failed_rules.csv'}")
+
+    print(f"Reports: {folder}")
+
+def validate_pdf_multiprocess(workspace_folder_path: Path, file_paths: list, timestamp: str = None) -> None:
+    # Prepare the validation file paths, which are tupples of (inputPdfPath, reportPath).
+    validation_file_paths = []
+    
+    # Create a timestamped report folder inside the reports folder.
+    if timestamp is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    report_path = workspace_folder_path.parent / "reports" / timestamp
+    report_path_xml = report_path / "xml"
+    report_path_xml.mkdir(parents=True, exist_ok=True)
+
+    for file_path in file_paths:
+        validation_file_paths.append((str(file_path), str(report_path_xml), str(workspace_folder_path)))
+    
+    print()
+    print("Validating PDFs...")
+    results = progress_starmap(validatePdf, validation_file_paths, total=len(file_paths))
+
+    write_validation_report(report_path, results)
+    run_report_generation(report_path)

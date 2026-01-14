@@ -1,9 +1,12 @@
+import csv
 from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, REPORTS_DIR, CONFIG_FILE
 from .Resources import getFilePaths, stream_to_data
 from pdfixsdk import *
 from pathlib import Path
 import json
 from dotenv import load_dotenv
+import multiprocessing
+from parallelbar import progress_map
 
 def GetPageCount(inputPdfPath: str) -> list:
     # Open the PDF document
@@ -20,6 +23,32 @@ def GetPageCount(inputPdfPath: str) -> list:
     doc.Close()
 
     return {inputPdfPath: size}
+
+def get_page_count_total(workspace_folder_path: Path, file_paths: list, timestamp: str = None) -> int:
+    print('Counting files and pages...')
+    input_files = [str(file_path) for file_path in file_paths]
+
+    results = []
+    results = progress_map(GetPageCount, input_files, total=len(input_files), n_cpu=multiprocessing.cpu_count())
+    page_counts = []
+    total_pages = 0
+    for d in results:
+        for file, count in d.items():
+            total_pages += count
+            page_counts.append([file.replace(str(workspace_folder_path), ""), count])
+    
+    print(f"Total PDF files: {len(input_files):}")
+    print(f"Total Pages: {total_pages}")
+
+    report_path = workspace_folder_path.parent / "reports" / timestamp
+    report_path.mkdir(parents=True, exist_ok=True)
+
+    with open(report_path / f"page_count.csv", mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['path', 'page_count'])
+        writer.writerows(page_counts)
+
+    return total_pages
 
 def Fix(inputPdfPath: str, outputPdfPath: str, reportPath: str) -> None:
     # print(f"Remediating: {inputPdfPath}")

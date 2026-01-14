@@ -1,53 +1,45 @@
-from .utilities.Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, REPORTS_DIR
-from .utilities.Resources import getFilePaths
-from .utilities.VeraPDF import validatePdf, writeValidationReport
-from .utilities.PDFix import GetPageCount
-from pathlib import Path
-import multiprocessing
-import time
-import csv
-import sys
+from .utilities.PDFix import get_page_count_total
+from .utilities.VeraPDF import validate_pdf_multiprocess
+from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_path, get_project_workspace_file_paths
+import argparse
 from datetime import datetime
-from parallelbar import progress_starmap, progress_map
 
 if __name__ == '__main__':
-    folder = ''
-    if len(sys.argv) > 1:
-        folder = sys.argv[1]
-        print(f"Processing {folder}.")
-    else:
-        print("Missing argument. Please provide specify an existing folder under Resources containing PDF files.")
-        exit()
 
-    multiprocessing.freeze_support()
-    file_paths = getFilePaths("pdf", folder)
-    process_count = 4
-    print(f"Found {len(file_paths):,} PDF files.")
+    parser = argparse.ArgumentParser(
+        description="Initialize project structure."
+    )
+    parser.add_argument("project_name", help="Project directory name.")
+    parser.add_argument(
+        "workspace_name",
+        type=str,
+        nargs='?',
+        default='default',
+        help="Workspace name (default: %(default)s)"
+    )
+    parser.add_argument(
+        "workspace_folder",
+        type=str,
+        nargs='?',
+        default='active',
+        help="Workspace subfolder (default: %(default)s)"
+    )
+    args = parser.parse_args()
 
-    if len(file_paths) == 0:
-        exit()
-    
-    print()
-    print('Counting pages...')
-    # Get the total number of pages
-    # Extract the input file out of the file_paths list
-    input_files = []
-    for input, output, report in file_paths:
-        input_files.append(input)
-    results = []
-    results = progress_map(GetPageCount, input_files, total=len(input_files), n_cpu=process_count)
-    page_counts = {}
-    for d in results:
-        page_counts.update(d)
+    if args.project_name:
+        print(f"PROJECT: {args.project_name}")
+        print(f"WORKSPACE: {args.workspace_name}")
+        print(f"FOLDER: {args.workspace_folder}")
+        print()
 
-    total_pages = 0
-    for file, count in page_counts.items():
-        total_pages += count
-    print(f"{total_pages:,} total pages.")
+        source_path = get_project_source_path(args.project_name)
+        workspace_folder_path = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder)
+        file_paths = get_project_workspace_file_paths(args.project_name, args.workspace_name, args.workspace_folder)
 
-    print(f"Using {process_count} out of {multiprocessing.cpu_count()} CPU cores.")
-    print()
-    print("Validating PDFs...")
-    results = progress_starmap(validatePdf, file_paths, total=len(file_paths))
-
-    writeValidationReport(folder, results)
+        if len(file_paths):
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            total_pages = get_page_count_total(workspace_folder_path, file_paths, timestamp)
+            validate_pdf_multiprocess(workspace_folder_path, file_paths, timestamp)
+        else:
+            print(f"No PDF files found.")
+            exit()
