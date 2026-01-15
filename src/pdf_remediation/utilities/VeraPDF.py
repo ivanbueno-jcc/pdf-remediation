@@ -104,7 +104,7 @@ def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str =
         Exception: If the document cannot be saved or if validation fails unexpectedly.
     """    
     exitCode, output, error = runJavaValidation(pdfPath, reportPath, "xml")
-    filename = pdfPath.replace(subfolderPath, "")
+    filename = pdfPath#.replace(subfolderPath, "")
 
     if exitCode > 1:
         # print(error)
@@ -171,7 +171,7 @@ def write_validation_report(folder: str, results: list):
 def validate_pdf_multiprocess(workspace_folder_path: Path, file_paths: list, timestamp: str = None) -> None:
     # Prepare the validation file paths, which are tupples of (inputPdfPath, reportPath).
     validation_file_paths = []
-    
+
     # Create a timestamped report folder inside the reports folder.
     if timestamp is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -186,5 +186,13 @@ def validate_pdf_multiprocess(workspace_folder_path: Path, file_paths: list, tim
     print("Validating PDFs...")
     results = progress_starmap(validatePdf, validation_file_paths, total=len(file_paths))
 
-    write_validation_report(report_path, results)
+    csv_results = []
+    for result in results:
+        csv_result = result[:]
+        csv_result[0] = csv_result[0].replace(str(workspace_folder_path), "")
+        csv_results.append(csv_result)
+
+    write_validation_report(report_path, csv_results)
     run_report_generation(report_path)
+
+    return results

@@ -43,12 +43,19 @@ def get_project_workspace_file_paths(project_name: str, workspace_name: str, sub
     if len(file_paths) == 0 and workspace_name == "default" and subfolder_name == "active":
         # check if workspace folder contains pdf files
         source_path = get_project_source_path(project_name)
-        if len(list(source_path.rglob("*.pdf"))):
+        semaphore = subfolder_path / ".remediation.lock"
+        if not semaphore.exists() and len(list(source_path.rglob("*.pdf"))):
             for file_path in source_path.rglob("*.pdf"):
                 relative_path = file_path.relative_to(source_path)
                 destination_path = subfolder_path / relative_path
                 destination_path.parent.mkdir(parents=True, exist_ok=True)
                 destination_path.write_bytes(file_path.read_bytes())
+
+            # Add a semaphore to only copy over the source once, until reset.
+            semaphore.touch(exist_ok=True)
+
+            # Re-run to get the file paths again.
+            file_paths = get_project_workspace_file_paths(project_name, workspace_name, subfolder_name)
         else:
             print(f"No PDF files found.")
             print()
