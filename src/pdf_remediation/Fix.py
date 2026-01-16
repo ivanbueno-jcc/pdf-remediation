@@ -1,11 +1,12 @@
 from .utilities.PDFix import fix, get_page_count_multiprocess
 from .utilities.VeraPDF import validate_pdf_multiprocess
-from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_path, get_project_workspace_file_paths
+from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_path, get_project_workspace_file_paths, move_file_and_delete_source
 import multiprocessing
 from datetime import datetime
 from parallelbar import progress_starmap
 import argparse
 from datetime import datetime
+from pathlib import Path
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
@@ -47,7 +48,7 @@ if __name__ == '__main__':
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         page_count_lookup = get_page_count_multiprocess(workspace_folder_path, file_paths, timestamp)
-        output_pdf_folder = workspace_folder_path.parent / "fixed"
+        output_pdf_folder = workspace_folder_path.parent / "processed"
         output_pdf_folder.mkdir(parents=True, exist_ok=True)
 
         file_paths_for_remediation = []
@@ -114,7 +115,6 @@ if __name__ == '__main__':
         sub_chunks.update(chunks)
         chunks = sub_chunks
 
-        print()
         for key, chunk_file_paths in chunks.items():
             if len(chunk_file_paths) == 0:
                 continue    
@@ -131,6 +131,7 @@ if __name__ == '__main__':
             #     continue
             # print(numbers_as_integers)
 
+            print()
             print(f"FILES WITH PAGE COUNT OF {key}")
             print("Remediating...")
 
@@ -148,16 +149,12 @@ if __name__ == '__main__':
             file_paths_for_validation.append(output)
         validation_results = validate_pdf_multiprocess(output_pdf_folder, file_paths_for_validation, timestamp)
 
-        # print(validation_results)
-
-        #     # print("Validating...")
-        #     # # Switch the input and output directories for the second round of validation
-        #     # output_file_paths = []
-        #     # for input, output, report in value:
-        #     #     output_file_paths.append((output, output, report))
-        #     # results = progress_starmap(validatePdf, output_file_paths, total=len(output_file_paths))
-
-        #     # print("Writing report...")
-        #     # writeValidationReport(folder, results)
-
-        #     # print()
+        # Loop through the validation results.  Move files that passed to a "remediated" folder in the same workspace.
+        print()
+        print("Moving valid files to remediated folder...")
+        for file_path, is_compliant, violations, violation_count in validation_results:
+            if is_compliant:
+                print(f"File is compliant: {file_path}")
+                move_file_and_delete_source(Path(file_path), output_pdf_folder, args.project_name, args.workspace_name, "remediated")
+                continue
+            

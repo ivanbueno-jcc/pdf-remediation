@@ -30,10 +30,6 @@
 
 * __[folder]__ must be located in resources/input.
 
-### Generate a Summary Report
-
-```uv run -m pdf_remediation.Report [folder]```
-
 ## Set the license
 
 Create a .env in the root directory with the following content:

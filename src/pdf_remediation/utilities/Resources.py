@@ -65,10 +65,18 @@ def get_project_workspace_file_paths(project_name: str, workspace_name: str, sub
 
     return file_paths
 
-def get_project_workspace_subfolder_path(project_name: str, workspace_name: str, subfolder_name: str) -> Path:
-    subfolder_path = get_project_workspace_path(project_name, workspace_name) / subfolder_name / "files"
+def get_project_workspace_subfolder_path(project_name: str, workspace_name: str, subfolder_name: str, directory: str = "files") -> Path:
+    subfolder_path = get_project_workspace_path(project_name, workspace_name) / subfolder_name / directory
     subfolder_path.mkdir(parents=True, exist_ok=True)
     return subfolder_path
+
+def move_file_and_delete_source(source_path: Path, source_folder: Path, project_name: str, workspace_name: str, subfolder_name: str) -> None:
+    destination_subfolder_path = get_project_workspace_subfolder_path(project_name, workspace_name, subfolder_name)
+    relative_path = source_path.relative_to(source_folder)
+    destination_path = destination_subfolder_path / relative_path
+    destination_path.parent.mkdir(parents=True, exist_ok=True)
+    destination_path.write_bytes(source_path.read_bytes())
+    source_path.unlink()
 
 OUTPUT_DIR = ROOT_DIR / "resources/output"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
