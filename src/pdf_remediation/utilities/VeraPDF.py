@@ -1,4 +1,4 @@
-from .Resources import ROOT_DIR, OUTPUT_DIR, INPUT_DIR, CONFIG_DIR, REPORTS_DIR
+from .Resources import ROOT_DIR, CONFIG_DIR
 from ..Report import run_report_generation
 from datetime import datetime
 import csv

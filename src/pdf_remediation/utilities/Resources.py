@@ -3,17 +3,23 @@ import ctypes
 import json
 from dotenv import load_dotenv
 import os
+import shutil
 
 load_dotenv()
 
 ROOT_DIR = Path(__file__).parent.parent.parent.parent
-
 CONFIG_DIR = ROOT_DIR / "resources/configuration"
 CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-CONFIG_FILE = CONFIG_DIR / "make-accessible.json"
+CONFIG_FILE = CONFIG_DIR / "default.json"
 
 PROJECT_BASE_PATH = Path(os.getenv('PROJECT_BASE_PATH', './resources/projects'))
 PROJECT_BASE_PATH.mkdir(parents=True, exist_ok=True)
+
+def get_configuration_file(config_file: str = "default.json") -> Path:
+    config_path = CONFIG_DIR / config_file
+    if not config_path.exists():
+        config_path = CONFIG_FILE
+    return config_path
 
 def get_project_path(project_name: str) -> Path:
     project_path = PROJECT_BASE_PATH / project_name
@@ -44,23 +50,27 @@ def get_project_workspace_file_paths(project_name: str, workspace_name: str, sub
         # check if workspace folder contains pdf files
         source_path = get_project_source_path(project_name)
         semaphore = subfolder_path / ".remediation.lock"
-        if not semaphore.exists() and len(list(source_path.rglob("*.pdf"))):
-            for file_path in source_path.rglob("*.pdf"):
-                relative_path = file_path.relative_to(source_path)
-                destination_path = subfolder_path / relative_path
-                destination_path.parent.mkdir(parents=True, exist_ok=True)
-                destination_path.write_bytes(file_path.read_bytes())
+        if not semaphore.exists():
+            if len(list(source_path.rglob("*.pdf"))):
+                for file_path in source_path.rglob("*.pdf"):
+                    relative_path = file_path.relative_to(source_path)
+                    destination_path = subfolder_path / relative_path
+                    destination_path.parent.mkdir(parents=True, exist_ok=True)
+                    destination_path.write_bytes(file_path.read_bytes())
 
-            # Add a semaphore to only copy over the source once, until reset.
-            semaphore.touch(exist_ok=True)
+                # Add a semaphore to only copy over the source once, until reset.
+                semaphore.touch(exist_ok=True)
 
-            # Re-run to get the file paths again.
-            file_paths = get_project_workspace_file_paths(project_name, workspace_name, subfolder_name)
+                # Re-run to get the file paths again.
+                file_paths = get_project_workspace_file_paths(project_name, workspace_name, subfolder_name)
+            else:
+                print(f"No PDF files found.")
+                print()
+                print("Please add PDF files to the source folder and re-run the script:")
+                print(f"{source_path.resolve()}")
+                exit()
         else:
-            print(f"No PDF files found.")
-            print()
-            print("Please add PDF files to the source folder and re-run the script:")
-            print(f"{source_path.resolve()}")
+            print(f"All the PDF files have been processed.")
             exit()
 
     return file_paths
@@ -78,33 +88,17 @@ def move_file_and_delete_source(source_path: Path, source_folder: Path, project_
     destination_path.write_bytes(source_path.read_bytes())
     source_path.unlink()
 
-OUTPUT_DIR = ROOT_DIR / "resources/output"
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-INPUT_DIR = ROOT_DIR / "resources/input"
-INPUT_DIR.mkdir(parents=True, exist_ok=True)
+def clear_workspace_folder(workspace_folder_path):
+    if not workspace_folder_path.exists():
+        workspace_folder_path.mkdir(parents=True, exist_ok=True)
+        return
 
-REPORTS_DIR = ROOT_DIR / "resources/reports"
-REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-
-def getFilePaths(file_type: str, directory: str) -> list:
-    file_paths = []
-    input_directory_path = Path(INPUT_DIR / directory)
-
-    output_directory_path = Path(OUTPUT_DIR / directory)
-    output_directory_path.mkdir(parents=True, exist_ok=True)
-
-    reports_directory_path = Path(REPORTS_DIR / directory)
-    reports_directory_path.mkdir(parents=True, exist_ok=True)
-
-    for file_path in input_directory_path.rglob(f"*.{file_type}"):
-        output_file = str(file_path.parent).replace(str(INPUT_DIR), str(OUTPUT_DIR)) + "/" + file_path.name
-        file_paths.append(
-           (str(file_path), 
-            output_file, 
-            str(Path(reports_directory_path))
-            ))
-    return file_paths
+    for entry in workspace_folder_path.iterdir():
+        if entry.is_dir():
+            shutil.rmtree(entry)
+        else:
+            entry.unlink()
 
 # return raw data from stream object
 def stream_to_data(stm):

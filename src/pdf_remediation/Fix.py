@@ -30,12 +30,20 @@ if __name__ == '__main__':
         default='active',
         help="Workspace subfolder (default: %(default)s)"
     )
+    parser.add_argument(
+        "--config_file",
+        "--c",
+        type=str,
+        default='default.json',
+        help="Configuration file name (default: %(default)s)"
+    )
     args = parser.parse_args()
 
     if args.project_name:
         print(f"PROJECT: {args.project_name}")
         print(f"WORKSPACE: {args.workspace_name}")
         print(f"FOLDER: {args.workspace_folder}")
+        print(f"CONFIG FILE: {args.config_file}")
         print()
 
         source_path = get_project_source_path(args.project_name)
@@ -74,26 +82,25 @@ if __name__ == '__main__':
         for input, workspace_path in file_paths_for_remediation:
             match page_count_lookup[input]:
                 case 1:
-                    chunks['1'].append((input, workspace_path))
+                    chunks['1'].append((input, workspace_path, args.config_file))
                 case x if 1 < x <= 5:
-                    chunks['2-5'].append((input, workspace_path))
+                    chunks['2-5'].append((input, workspace_path, args.config_file))
                 case x if 5 < x <= 10:
-                    chunks['6-10'].append((input, workspace_path))
+                    chunks['6-10'].append((input, workspace_path, args.config_file))
                 case x if 10 < x <= 50:
-                    chunks['11-50'].append((input, workspace_path))
+                    chunks['11-50'].append((input, workspace_path, args.config_file))
                 case x if 50 < x <= 100:
-                    chunks['51-100'].append((input, workspace_path)) 
+                    chunks['51-100'].append((input, workspace_path, args.config_file)) 
                 case x if 100 < x <= 200:
-                    chunks['101-200'].append((input, workspace_path))
+                    chunks['101-200'].append((input, workspace_path, args.config_file))
                 case x if 200 < x <= 500:
-                    chunks['201-500'].append((input, workspace_path))
+                    chunks['201-500'].append((input, workspace_path, args.config_file))
                 case x if 500 < x <= 1000:
-                    chunks['501-1000'].append((input, workspace_path))
+                    chunks['501-1000'].append((input, workspace_path, args.config_file))
                 case x if 1000 < x <= 3000:
-                    chunks['1001-3000'].append((input, workspace_path))
+                    chunks['1001-3000'].append((input, workspace_path, args.config_file))
                 case x if x > 3000:
-                    chunks['3001 or more'].append((input, workspace_path))
-
+                    chunks['3001 or more'].append((input, workspace_path, args.config_file))
         print()
         print("FILE DISTRIBUTION BY PAGE COUNT:")
         for key, value in chunks.items():
@@ -150,11 +157,14 @@ if __name__ == '__main__':
         validation_results = validate_pdf_multiprocess(output_pdf_folder, file_paths_for_validation, timestamp)
 
         # Loop through the validation results.  Move files that passed to a "remediated" folder in the same workspace.
-        print()
-        print("Moving valid files to remediated folder...")
+        validation_iteration_counter = 0
         for file_path, is_compliant, violations, violation_count in validation_results:
             if is_compliant:
-                print(f"File is compliant: {file_path}")
+                if validation_iteration_counter == 0:
+                    print()
+                    print("MOVING VALID FILES TO REMEDIATED FOLDER...")
+                validation_iteration_counter += 1
+                
+                print(f"{file_path}")
                 move_file_and_delete_source(Path(file_path), output_pdf_folder, args.project_name, args.workspace_name, "remediated")
                 continue
-            

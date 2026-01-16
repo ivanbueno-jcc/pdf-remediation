@@ -1,10 +1,11 @@
-from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_path, clear_workspace_folder
+from .utilities.Resources import clear_workspace_folder, get_project_workspace_subfolder_path, move_file_and_delete_source
 import argparse
+from pathlib import Path
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description="Reset the files in the working directory with the source files."
+        description="Move the processed files back to the active workspace folder."
     )
     parser.add_argument("project_name", help="Project directory name.")
     parser.add_argument(
@@ -29,25 +30,17 @@ if __name__ == '__main__':
         print(f"FOLDER: {args.workspace_folder}")
         print()
 
-        source_path = get_project_source_path(args.project_name)
         workspace_folder_path = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder)
         clear_workspace_folder(workspace_folder_path)
+        semaphore = workspace_folder_path / ".remediation.lock"
+        semaphore.touch(exist_ok=True)
 
         workspace_folder_path_processed = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder, "processed")
-        clear_workspace_folder(workspace_folder_path_processed)
-
-        semaphore = workspace_folder_path / ".remediation.lock"       
-        if len(list(source_path.rglob("*.pdf"))):
-            for file_path in source_path.rglob("*.pdf"):
-                relative_path = file_path.relative_to(source_path)
-                destination_path = workspace_folder_path / relative_path
-                destination_path.parent.mkdir(parents=True, exist_ok=True)
-                destination_path.write_bytes(file_path.read_bytes())
-
-            # Add a semaphore to only copy over the source once, until reset.
-            semaphore.touch(exist_ok=True)
-
-            print("Files are overwritten with originals.")
+   
+        if len(list(workspace_folder_path_processed.rglob("*.pdf"))):
+            for file_path in workspace_folder_path_processed.rglob("*.pdf"):
+                move_file_and_delete_source(Path(file_path), workspace_folder_path_processed, args.project_name, args.workspace_name, args.workspace_folder)
+            print("Processed files have been moved back to the active folder.")
         else:
-            print(f"No PDF files found in the source.")
+            print(f"No PDF files found in the processed folder.")
             exit()

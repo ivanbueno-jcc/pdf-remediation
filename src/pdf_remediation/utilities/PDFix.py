@@ -1,6 +1,5 @@
 import csv
-from .Resources import CONFIG_FILE
-from .Resources import stream_to_data
+from .Resources import stream_to_data, get_configuration_file
 from pdfixsdk import *
 from pathlib import Path
 import json
@@ -52,7 +51,7 @@ def get_page_count_multiprocess(workspace_folder_path: Path, file_paths: list, t
 
     return page_count_lookup
 
-def fix(inputPdfPath: str, outputPdfPath: str) -> None:
+def fix(inputPdfPath: str, outputPdfPath: str, config_file: str = "default.json") -> None:
     # print(f"Remediating: {inputPdfPath}")
 
     pdfix  = GetPdfix()
@@ -73,7 +72,7 @@ def fix(inputPdfPath: str, outputPdfPath: str) -> None:
 
     command = doc.GetCommand()
     cmdStm = None
-    commandPath = str(CONFIG_FILE)
+    commandPath = str(get_configuration_file(config_file))
 
     cmdStm = pdfix.CreateFileStream(commandPath, kPsReadOnly)
     if not cmdStm:
