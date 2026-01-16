@@ -2,6 +2,10 @@
 
 This tool orchestrates PDFix to manage and process thousands of PDF files in a folder.  It delivers a remediated folder with all the existing directory structure preserved.
 
+## Demo
+
+[Watch a demo of the PDF Remediation Tool in action.](https://youtu.be/XbfzNzm6KsI)
+
 ## Quickstart
 
 1) Install uv
