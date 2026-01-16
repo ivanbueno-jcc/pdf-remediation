@@ -161,7 +161,7 @@ argument so you can run separate workflows in different subfolders (for example,
 - All processed PDFs are validated. Compliant PDFs are moved to
   `workspace/.../remediated/files`.
 
-### Reporting
+### Reporting (internal function, part of Validate)
 - `Report.py` parses veraPDF XML results and produces:
   - `verapdf-compliance-report.txt`
   - `verapdf-clause-summary.csv`
@@ -173,6 +173,12 @@ argument so you can run separate workflows in different subfolders (for example,
 - `ReProcess.py` moves PDFs from `active/processed` back into `active/files`.
 - Use this to re-run remediation after updating the configuration file
   (`resources/configuration/default.json` or a replacement).
+
+### Reset
+- `Reset.py` clears `active/files` and `active/processed`, then re-copies files
+  from `source/` into the workspace and resets `.remediation.lock`.
+- Use a new workspace name with Reset to create a fresh workspace seeded from
+  `source/` without affecting existing workspaces.
 
 ### Licensing
 - `License.py` reads license state from PDFix.
