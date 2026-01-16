@@ -1,9 +1,6 @@
 # PDF Remediation Tool
 
-This document describes the infrastructure, features, and process flow for the
-`pdf-remediation` project.
-
-This tool orchestrates PDFix to manage and process thousands of PDF files in a folder.  It delivers a remediated folder with all the existing directory structures preserved.
+This tool orchestrates PDFix to manage and process thousands of PDF files in a folder.  It delivers a remediated folder with all the existing directory structure preserved.
 
 ## Quickstart
 
