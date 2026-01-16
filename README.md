@@ -71,6 +71,7 @@ Steps executed:
 3. Remediate with PDFix, write to `active/processed/`.
 4. Validate all processed files with veraPDF.
 5. Move compliant files into `remediated/files`.
+6. Move font-violation failures into `font-issues/files`.
 
 #### 2) Reprocess with a new configuration
 ```
@@ -79,6 +80,8 @@ uv run -m pdf_remediation.ReProcess <project_name> [workspace] [folder]
 This moves processed PDFs back to `active/files`. Update
 `resources/configuration/default.json` (or swap in a new config),
 then re-run `Fix`.
+For font-issue retries, run ReProcess with `font-issues` as the folder,
+update the config, then re-run `Fix` on that subfolder.
 
 ### Workspace Control
 
@@ -160,6 +163,8 @@ argument so you can run separate workflows in different subfolders (for example,
 - Outputs are written to `workspace/.../processed`.
 - All processed PDFs are validated. Compliant PDFs are moved to
   `workspace/.../remediated/files`.
+- PDFs that fail validation with font-related violations are moved to
+  `workspace/.../font-issues/files` for follow-up remediation.
 
 ### Reporting (internal function, part of Validate)
 - `Report.py` parses veraPDF XML results and produces:
