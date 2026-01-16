@@ -1,14 +1,15 @@
-from .utilities.PDFix import fix, get_page_count_multiprocess
-from .utilities.VeraPDF import validate_pdf_multiprocess
-from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_file_paths, get_project_workspace_subfolder_path, get_project_workspace_file_paths, move_file_and_delete_source
+import argparse
 import multiprocessing
 from datetime import datetime
-from parallelbar import progress_starmap
-import argparse
-from datetime import datetime
 from pathlib import Path
+from parallelbar import progress_starmap
+from .utilities.PDFix import fix, get_page_count_multiprocess
+from .utilities.VeraPDF import validate_pdf_multiprocess
+from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_file_paths 
+from .utilities.Resources import get_project_workspace_subfolder_path
+from .utilities.Resources import get_project_workspace_file_paths, move_file_and_delete_source
 
-if __name__ == '__main__':
+def main():
     multiprocessing.freeze_support()
     multiprocessing.set_start_method("spawn", force=True)
 
@@ -120,6 +121,8 @@ if __name__ == '__main__':
             sub_chunks.update(chunks)
             chunks = sub_chunks
 
+            print()
+            print("REMEDIATING FILES...")
             for key, chunk_file_paths in chunks.items():
                 if len(chunk_file_paths) == 0:
                     continue    
@@ -137,32 +140,32 @@ if __name__ == '__main__':
                 # print(numbers_as_integers)
 
                 print()
-                print(f"FILES WITH PAGE COUNT OF {key}")
-                print("Remediating...")
+                print(f"Page count of {key}")
 
                 results = progress_starmap(
-                    fix, 
-                    chunk_file_paths, 
-                    total=len(chunk_file_paths), 
-                    error_behavior="coerce", 
+                    fix,
+                    chunk_file_paths,
+                    total=len(chunk_file_paths),
+                    error_behavior="coerce",
                     process_timeout=600,
                     n_cpu=4
                 )
         else:
-            print(f"No PDF files to process in the active folder.")
+            print("No PDF files to process in the active folder.")
    
+        print()
         file_paths_for_validation = []
         target_folder = "files"
-        if len(file_paths_for_remediation):
-            print("Validating remediated files...")
+        if len(file_paths_for_remediation) > 0:
+            print("VALIDATING REMEDIATED FILES...")
             for input, output in file_paths_for_remediation:
                 file_paths_for_validation.append(output)
         else:
-            print("Validating files in the processed folder...")
+            print("VALIDATING PROCESSED FILES...")
             target_folder = "processed"
             file_paths_for_validation = get_project_workspace_subfolder_file_paths(args.project_name, args.workspace_name, args.workspace_folder, "processed")
 
-        if len(file_paths_for_validation):
+        if len(file_paths_for_validation) > 0:
             validation_results = validate_pdf_multiprocess(output_pdf_folder, file_paths_for_validation, timestamp, target_folder)
 
             # Loop through the validation results.  Move files that passed to a "remediated" folder in the same workspace.
@@ -177,5 +180,27 @@ if __name__ == '__main__':
                     print(f"{file_path}")
                     move_file_and_delete_source(Path(file_path), output_pdf_folder, args.project_name, args.workspace_name, "remediated")
                     continue
+            
+            print()
+            print("CHECKING FOR FONT-RELATED VIOLATIONS IN INVALID FILES...")
+            files_with_font_issues_total = 0
+            for file_path, is_compliant, violations, violation_count in validation_results:
+                if not is_compliant:
+                    has_font_violation = False
+                    for violation in violations:
+                        if violation['clause'] in ['7.21.7', '7.21.4.1', '7.21.3.2', '7.21.4.2', '7.21.5', '7.21.8']:
+                            has_font_violation = True
+                            break
+
+                    if has_font_violation:
+                        files_with_font_issues_total += 1
+                        print(f"{file_path}")
+                        move_file_and_delete_source(Path(file_path), output_pdf_folder, args.project_name, args.workspace_name, "font-issues")
+
+            print(f"Total files with font issues: {files_with_font_issues_total}")
+                    
         else:
-            print(f"No PDF files found for validation.")
+            print("No PDF files found for validation.")
+
+if __name__ == '__main__':
+    main()
