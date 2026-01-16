@@ -127,7 +127,7 @@ def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str =
 
     # return rules
 
-def write_validation_report(folder: str, results: list):
+def write_validation_report(folder: str, results: list) -> None:
 
     failed_rules = []
     passed = failed = error = 0
@@ -168,14 +168,14 @@ def write_validation_report(folder: str, results: list):
 
     print(f"Reports: {folder}")
 
-def validate_pdf_multiprocess(workspace_folder_path: Path, file_paths: list, timestamp: str = None) -> None:
+def validate_pdf_multiprocess(workspace_folder_path: Path, file_paths: list, timestamp: str = None, subfolder: str = None) -> None:
     # Prepare the validation file paths, which are tupples of (inputPdfPath, reportPath).
     validation_file_paths = []
 
     # Create a timestamped report folder inside the reports folder.
     if timestamp is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    report_path = workspace_folder_path.parent / "reports" / timestamp
+    report_path = workspace_folder_path.parent / "reports" / f"{timestamp}-{subfolder if subfolder else 'files'}"
     report_path_xml = report_path / "xml"
     report_path_xml.mkdir(parents=True, exist_ok=True)
 

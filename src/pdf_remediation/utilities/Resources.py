@@ -68,10 +68,8 @@ def get_project_workspace_file_paths(project_name: str, workspace_name: str, sub
                 print()
                 print("Please add PDF files to the source folder and re-run the script:")
                 print(f"{source_path.resolve()}")
-                exit()
         else:
             print(f"All the PDF files have been processed.")
-            exit()
 
     return file_paths
 
@@ -79,6 +77,11 @@ def get_project_workspace_subfolder_path(project_name: str, workspace_name: str,
     subfolder_path = get_project_workspace_path(project_name, workspace_name) / subfolder_name / directory
     subfolder_path.mkdir(parents=True, exist_ok=True)
     return subfolder_path
+
+def get_project_workspace_subfolder_file_paths(project_name: str, workspace_name: str, subfolder_name: str, directory: str = "files") -> list:
+    subfolder_path = get_project_workspace_subfolder_path(project_name, workspace_name, subfolder_name, directory)
+    file_paths = list(subfolder_path.rglob("*.pdf"))
+    return file_paths
 
 def move_file_and_delete_source(source_path: Path, source_folder: Path, project_name: str, workspace_name: str, subfolder_name: str) -> None:
     destination_subfolder_path = get_project_workspace_subfolder_path(project_name, workspace_name, subfolder_name)

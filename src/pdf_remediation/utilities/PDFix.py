@@ -23,7 +23,7 @@ def get_page_count(inputPdfPath: str) -> list:
 
     return {inputPdfPath: size}
 
-def get_page_count_multiprocess(workspace_folder_path: Path, file_paths: list, timestamp: str = None) -> dict:
+def get_page_count_multiprocess(workspace_folder_path: Path, file_paths: list, timestamp: str = None, subfolder: str = None) -> dict:
     print('Counting files and pages...')
     input_files = [str(file_path) for file_path in file_paths]
 
@@ -41,7 +41,7 @@ def get_page_count_multiprocess(workspace_folder_path: Path, file_paths: list, t
     print(f"Total PDF files: {len(input_files):}")
     print(f"Total Pages: {total_pages}")
 
-    report_path = workspace_folder_path.parent / "reports" / timestamp
+    report_path = workspace_folder_path.parent / "reports" / f"{timestamp}-{subfolder if subfolder else 'files'}"
     report_path.mkdir(parents=True, exist_ok=True)
 
     with open(report_path / f"page_count.csv", mode='w', newline='') as file:

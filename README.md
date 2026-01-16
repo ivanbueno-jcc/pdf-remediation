@@ -36,7 +36,6 @@ This tool orchestrates PDFix to manage and process thousands of PDF files in a f
 - Java runtime is required for veraPDF validation (used by the JAR in `lib/`).
 - PDFix SDK (`pdfix-sdk`) provides remediation and license operations.
 - `parallelbar` is used for multiprocessing progress and job dispatch.
-- `python-dotenv` loads license credentials from `.env`.
 
 ### External tools and assets
 - `lib/greenfield-apps-1.27.0-SNAPSHOT.jar`: veraPDF validation tool invoked by
@@ -52,6 +51,11 @@ This tool orchestrates PDFix to manage and process thousands of PDF files in a f
   project paths, and report generation.
 - `resources/projects/`: per-project workspace root (default, can be overridden
   with `PROJECT_BASE_PATH`).
+
+To store projects on a different disk, set `PROJECT_BASE_PATH` in `.env`:
+```
+PROJECT_BASE_PATH="/Volumes/ExternalDrive/pdf-remediation-projects"
+```
 
 ### Project workspace structure
 The workspace structure is created on demand by `Resources.py`:
