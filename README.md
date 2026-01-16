@@ -41,7 +41,7 @@ This tool orchestrates PDFix to manage and process thousands of PDF files in a f
 ### External tools and assets
 - `lib/greenfield-apps-1.27.0-SNAPSHOT.jar`: veraPDF validation tool invoked by
   `src/pdf_remediation/utilities/VeraPDF.py`.
-- `resources/configuration/make-accessible.json`: PDFix command profile applied
+- `resources/configuration/default.json`: PDFix command profile applied
   during remediation.
 - `resources/configuration/WCAG-2-2-Complete.xml`: optional veraPDF profile
   (currently commented in code).
@@ -87,7 +87,7 @@ argument so you can run separate workflows in different subfolders (for example,
   - `reports/<timestamp>/summary/*.csv` and HTML (via `Report.py`)
 
 ### Remediation
-- `Fix.py` performs remediation with PDFix using `make-accessible.json`.
+- `Fix.py` performs remediation with PDFix using `default.json`.
 - PDFs are grouped by page count, then remediated in parallel.
 - Outputs are written to `workspace/.../processed`.
 - All processed PDFs are validated. Compliant PDFs are moved to
@@ -104,7 +104,7 @@ argument so you can run separate workflows in different subfolders (for example,
 ### Reprocess
 - `ReProcess.py` moves PDFs from `active/processed` back into `active/files`.
 - Use this to re-run remediation after updating the configuration file
-  (`resources/configuration/make-accessible.json` or a replacement).
+  (`resources/configuration/default.json` or a replacement).
 
 ### Licensing
 - `License.py` reads license state from PDFix.
