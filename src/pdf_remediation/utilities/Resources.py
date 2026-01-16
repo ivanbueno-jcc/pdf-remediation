@@ -79,8 +79,14 @@ def get_project_workspace_subfolder_path(project_name: str, workspace_name: str,
     return subfolder_path
 
 def get_project_workspace_subfolder_file_paths(project_name: str, workspace_name: str, subfolder_name: str, directory: str = "files") -> list:
-    subfolder_path = get_project_workspace_subfolder_path(project_name, workspace_name, subfolder_name, directory)
-    file_paths = list(subfolder_path.rglob("*.pdf"))
+    file_paths = None
+
+    if directory == "files":
+        file_paths = get_project_workspace_file_paths(project_name, workspace_name, subfolder_name)
+    else:
+        subfolder_path = get_project_workspace_subfolder_path(project_name, workspace_name, subfolder_name, directory)
+        file_paths = list(subfolder_path.rglob("*.pdf"))
+
     return file_paths
 
 def move_file_and_delete_source(source_path: Path, source_folder: Path, project_name: str, workspace_name: str, subfolder_name: str) -> None:

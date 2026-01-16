@@ -44,10 +44,10 @@ if __name__ == '__main__':
         workspace_folder_path = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder, args.directory)
         file_paths = get_project_workspace_subfolder_file_paths(args.project_name, args.workspace_name, args.workspace_folder, args.directory)
 
-        if len(file_paths):
+        if len(file_paths) > 0:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             total_pages = get_page_count_multiprocess(workspace_folder_path, file_paths, timestamp, args.directory)
             validate_pdf_multiprocess(workspace_folder_path, file_paths, timestamp, args.directory)
         else:
-            print(f"No PDF files found.")
+            print("No PDF files found.")
             exit()
