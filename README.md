@@ -30,6 +30,69 @@ This tool orchestrates PDFix to manage and process thousands of PDF files in a f
    ```
 7) Review reports in `resources/projects/<project>/workspace/<workspace>/active/reports/<timestamp>`.
 
+## Process Flow
+
+![Process Flow Diagram of PDF Remediation Process](resources/images/pdf_remediation_process_flow_presentation.png)
+
+### Initialize and Validate
+
+![Initialize and Validate Diagram of PDF Remediation Process](resources/images/slide_1_init_validate.png)
+
+#### 1) Initialize a project
+```
+uv run -m pdf_remediation.Init <project_name>
+```
+Copy PDFs into the printed `resources/projects/<project>/source` directory.
+
+#### 2) Validate PDFs
+```
+uv run -m pdf_remediation.Validate <project_name> [workspace] [folder]
+```
+Defaults:
+- `workspace` = `default`
+- `folder` = `active`
+You can target any workspace and subfolder by passing these arguments.
+
+If the `active/files` folder is empty, the system copies PDFs from `source/`
+into `active/files` once and creates `.remediation.lock`.
+
+### Fix and ReProcess
+
+![Fix and ReProcess Diagram of PDF Remediation Process](resources/images/slide_2_fix_reprocess.png)
+
+#### 1) Remediate PDFs
+```
+uv run -m pdf_remediation.Fix <project_name> [workspace] [folder]
+```
+Use `workspace` and `folder` to remediate a specific subfolder in the project.
+Steps executed:
+1. Count pages for each PDF (PDFix).
+2. Split files into size buckets for parallel remediation.
+3. Remediate with PDFix, write to `active/processed/`.
+4. Validate all processed files with veraPDF.
+5. Move compliant files into `remediated/files`.
+
+#### 2) Reprocess with a new configuration
+```
+uv run -m pdf_remediation.ReProcess <project_name> [workspace] [folder]
+```
+This moves processed PDFs back to `active/files`. Update
+`resources/configuration/default.json` (or swap in a new config),
+then re-run `Fix`.
+
+### Workspace Control
+
+![Workspace Control Diagram of PDF Remediation Process](resources/images/slide_3_workspace_control.png)
+
+#### 1) Reset workspace
+```
+uv run -m pdf_remediation.Reset <project_name> [workspace] [folder]
+```
+Clears `active/files` and `active/processed`, then re-copies files from `source/`
+and resets `.remediation.lock`.
+Use a new `workspace` name here to create a fresh workspace seeded from
+`source/` without affecting existing workspaces.
+
 ## Infrastructure
 
 ### Runtime and dependencies
@@ -116,55 +179,6 @@ argument so you can run separate workflows in different subfolders (for example,
 - `LicenseActivate.py` activates a license key.
 - `LicenseDeactivate.py` deactivates an active license.
 - `.env` supports `PDFIX_LICENSE_NAME` and `PDFIX_LICENSE_KEY` for remediation.
-
-## Process Flow
-
-### 1) Initialize a project
-```
-uv run -m pdf_remediation.Init <project_name>
-```
-Copy PDFs into the printed `resources/projects/<project>/source` directory.
-
-### 2) Validate PDFs
-```
-uv run -m pdf_remediation.Validate <project_name> [workspace] [folder]
-```
-Defaults:
-- `workspace` = `default`
-- `folder` = `active`
-You can target any workspace and subfolder by passing these arguments.
-
-If the `active/files` folder is empty, the system copies PDFs from `source/`
-into `active/files` once and creates `.remediation.lock`.
-
-### 3) Remediate PDFs
-```
-uv run -m pdf_remediation.Fix <project_name> [workspace] [folder]
-```
-Use `workspace` and `folder` to remediate a specific subfolder in the project.
-Steps executed:
-1. Count pages for each PDF (PDFix).
-2. Split files into size buckets for parallel remediation.
-3. Remediate with PDFix, write to `active/processed/`.
-4. Validate all processed files with veraPDF.
-5. Move compliant files into `remediated/files`.
-
-### 3a) Reprocess with a new configuration
-```
-uv run -m pdf_remediation.ReProcess <project_name> [workspace] [folder]
-```
-This moves processed PDFs back to `active/files`. Update
-`resources/configuration/default.json` (or swap in a new config),
-then re-run `Fix`.
-
-### 4) Reset workspace
-```
-uv run -m pdf_remediation.Reset <project_name> [workspace] [folder]
-```
-Clears `active/files` and `active/processed`, then re-copies files from `source/`
-and resets `.remediation.lock`.
-Use a new `workspace` name here to create a fresh workspace seeded from
-`source/` without affecting existing workspaces.
 
 ## Notes and Considerations
 - Remediation deletes the original file in `active/files` after successful save
