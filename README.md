@@ -32,7 +32,11 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
 
 ![Process Flow Diagram of PDF Remediation Process](resources/images/pdf_remediation_process_flow_presentation.png)
 
+High-level view of the end-to-end pipeline: initialize, validate, remediate, re-validate, and route results into the right workspace folders.
+
 ### Initialize and Validate
+
+Bootstrap a project and get a clean baseline before remediation begins.
 
 ![Initialize and Validate Diagram of PDF Remediation Process](resources/images/slide_1_init_validate.png)
 
@@ -55,6 +59,8 @@ If the `active/files` folder is empty, the system copies PDFs from `source/`
 into `active/files` once and creates `.remediation.lock`.
 
 ### Fix and ReProcess
+
+Run remediation, then loop back for another pass when you have a better config.
 
 ![Fix and ReProcess Diagram of PDF Remediation Process](resources/images/slide_2_fix_reprocess.png)
 
@@ -82,6 +88,8 @@ For font-issue retries, run ReProcess with `font-issues` as the folder,
 update the config, then re-run `Fix` on that subfolder.
 
 ### Workspace Control
+
+Use these controls to reset or fork clean workspaces without touching your originals.
 
 ![Workspace Control Diagram of PDF Remediation Process](resources/images/slide_3_workspace_control.png)
 
