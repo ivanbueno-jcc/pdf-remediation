@@ -175,12 +175,16 @@ argument so you can run separate workflows in different subfolders (for example,
   `workspace/.../font-issues/files` for follow-up remediation.
 
 ### Reporting (internal function, part of Validate)
-- `Report.py` parses veraPDF XML results and produces:
-  - `verapdf-compliance-report.txt`
-  - `verapdf-clause-summary.csv`
-  - `verapdf-file-summary.csv`
-  - `output.txt` (synthetic log data)
-  - HTML summary report
+- Every Validate and Fix run generates a suite of reports under `reports/<timestamp>`.
+- Report outputs include:
+  - `vera_validation_results.csv`: per-file pass/fail status and rule counts.
+  - `failed_rules.csv`: detailed list of failed rules with clauses and descriptions.
+  - `xml/`: raw veraPDF XML reports per file.
+  - `summary/verapdf-compliance-report.txt`: compliant vs non-compliant file list.
+  - `summary/verapdf-clause-summary.csv`: clause-level rollup across the run.
+  - `summary/verapdf-file-summary.csv`: per-file summary of violations.
+  - `summary/output.txt`: synthetic log used by HTML report generation.
+  - `summary/*.html`: human-readable compliance report.
 
 ### Reprocess
 - `ReProcess.py` moves PDFs from `active/processed` back into `active/files`.
