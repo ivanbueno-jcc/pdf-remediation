@@ -212,6 +212,11 @@ argument so you can run separate workflows in different subfolders (for example,
   during processing.
 - Syntax: `uv run -m pdf_remediation.Skip <project_name> <relative_file_path>`
 
+### Status
+- `Status.py` prints a summary of the source PDF count and per-workspace file
+  counts (including a remediated percentage).
+- Syntax: `uv run -m pdf_remediation.Status <project_name>`
+
 ### Reset
 - `Reset.py` refreshes a workspace from `source/` and resets the copy semaphore.
 
