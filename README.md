@@ -2,9 +2,7 @@
 
 Think of this as a production line for accessibility: you feed it a sprawling PDF archive, and it spits back a compliant set without wrecking your folder structure. Under the hood it wires veraPDF and PDFix together to validate and remediate thousands of files fast, with the original layout intact.
 
-## Demo
-
-[Watch a demo of the PDF Remediation Tool in action.](https://youtu.be/XbfzNzm6KsI)
+![Demo of PDF Remediation](resources/images/pdf_remediation_process_flow_presentation.gif)
 
 ## Quickstart
 
