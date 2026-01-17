@@ -69,6 +69,7 @@ Run remediation, then loop back for another pass when you have a better config.
 uv run -m pdf_remediation.Fix <project_name> [workspace] [folder]
 ```
 Use `workspace` and `folder` to remediate a specific subfolder in the project.
+
 Steps executed:
 1. Count pages for each PDF (PDFix).
 2. Split files into size buckets for parallel remediation.
@@ -76,6 +77,8 @@ Steps executed:
 4. Validate all processed files with veraPDF.
 5. Move compliant files into `remediated/files`.
 6. Move font-violation failures into `font-issues/files`.
+
+If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
 
 #### 2) Reprocess with a new configuration
 ```
