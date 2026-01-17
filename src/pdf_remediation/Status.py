@@ -1,6 +1,5 @@
 import argparse
-import sys
-from .utilities.Resources import get_project_source_path, get_project_workspace_path
+from .utilities.Resources import get_project_source_path
 
 def main():
     parser = argparse.ArgumentParser(
