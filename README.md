@@ -70,16 +70,17 @@ uv run -m pdf_remediation.Fix <project_name> [workspace] [folder]
 ```
 Use `workspace` and `folder` to remediate a specific subfolder in the project.
 
-For verbose progress and file-level visibility, run:
+For verbose progress and file-level visibility (useful for spotting blocking files), run:
 `uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --verbose`
 
 Steps executed:
 1. Count pages for each PDF (PDFix).
-2. Split files into size buckets for parallel remediation.
-3. Remediate with PDFix, write to `active/processed/`.
-4. Validate all processed files with veraPDF.
-5. Move compliant files into `remediated/files`.
-6. Move font-violation failures into `font-issues/files`.
+2. Apply the `skipped_files.txt` list to exclude problematic files.
+3. Split files into size buckets for parallel remediation.
+4. Remediate with PDFix, write to `active/processed/`.
+5. Validate all processed files with veraPDF.
+6. Move compliant files into `remediated/files`.
+7. Move font-violation failures into `font-issues/files`.
 
 If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
 
@@ -92,6 +93,8 @@ This moves processed PDFs back to `active/files`. Update
 then re-run `Fix`.
 For font-issue retries, run ReProcess with `font-issues` as the folder,
 update the config, then re-run `Fix` on that subfolder.
+To skip a blocking file before reprocessing, run:
+`uv run -m pdf_remediation.Skip <project_name> <relative_file_path>`
 
 ### Workspace Control
 
