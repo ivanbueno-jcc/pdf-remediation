@@ -1,6 +1,6 @@
 # PDF Remediation Tool
 
-This tool orchestrates PDFix to manage and process thousands of PDF files in a folder.  It delivers a remediated folder with all the existing directory structure preserved.
+Think of this as a production line for accessibility: you feed it a sprawling PDF archive, and it spits back a compliant set without wrecking your folder structure. Under the hood it wires veraPDF and PDFix together to validate and remediate thousands of files fast, with the original layout intact.
 
 ## Demo
 
