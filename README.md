@@ -138,6 +138,8 @@ resources/projects/<project>/
       .remediation.lock  # semaphore to avoid repeated copy
     remediated/
       files/             # validated, compliant PDFs
+    font-issues/
+      files/             # font-related validation failures
 ```
 Subfolder names are not fixed. `Fix` and `Validate` accept a `workspace_folder`
 argument so you can run separate workflows in different subfolders (for example,
@@ -178,6 +180,8 @@ argument so you can run separate workflows in different subfolders (for example,
 - `ReProcess.py` moves PDFs from `active/processed` back into `active/files`.
 - Use this to re-run remediation after updating the configuration file
   (`resources/configuration/default.json` or a replacement).
+- Then re-run Fix with the new config:
+  `uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --config_file <config_file>`
 
 ### Reset
 - `Reset.py` clears `active/files` and `active/processed`, then re-copies files
