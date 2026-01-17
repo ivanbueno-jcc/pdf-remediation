@@ -1,12 +1,13 @@
 import argparse
 import multiprocessing
+import plotext as plot
 from datetime import datetime
 from pathlib import Path
 from parallelbar import progress_starmap
 from .utilities.PDFix import fix, get_page_count_multiprocess
 from .utilities.VeraPDF import validate_pdf_multiprocess
 from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_file_paths 
-from .utilities.Resources import get_project_workspace_subfolder_path
+from .utilities.Resources import get_project_path, get_project_workspace_subfolder_path
 from .utilities.Resources import get_project_workspace_file_paths, move_file_and_delete_source
 
 def main():
@@ -38,6 +39,12 @@ def main():
         default='default.json',
         help="Configuration file name (default: %(default)s)"
     )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action='store_true',
+        help="Enable verbose output."
+    )
     args = parser.parse_args()
 
     if args.project_name:
@@ -47,20 +54,40 @@ def main():
         print(f"CONFIG FILE: {args.config_file}")
         print()
 
-        source_path = get_project_source_path(args.project_name)
         workspace_folder_path = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder)
         file_paths = get_project_workspace_file_paths(args.project_name, args.workspace_name, args.workspace_folder)
         file_paths_for_remediation = []
         output_pdf_folder = workspace_folder_path.parent / "processed"
         output_pdf_folder.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # open the skipped files list from a text file
+        skipped_files = []
+        skipped_files_path = get_project_path(args.project_name) / "skipped_files.txt"
+
+        if skipped_files_path.exists():
+            with open(skipped_files_path, 'r') as f:
+                for line in f:
+                    skipped_file = line.strip()
+                    if skipped_file and skipped_file not in skipped_files:
+                        skipped_files.append(skipped_file)
         
         if len(file_paths):
 
             page_count_lookup = get_page_count_multiprocess(workspace_folder_path, file_paths, timestamp)
 
+            if args.verbose:
+                if len(skipped_files) > 0:
+                    print()
+
             for file_path in file_paths:
                 relative_path = file_path.relative_to(workspace_folder_path)
+
+                if str(relative_path) in skipped_files:
+                    if args.verbose:
+                        print(f" Skipping: {relative_path}")
+                    continue
+
                 destination_path = output_pdf_folder / relative_path
                 destination_path.parent.mkdir(parents=True, exist_ok=True)
                 file_paths_for_remediation.append([str(file_path), str(destination_path)])
@@ -100,10 +127,21 @@ def main():
                         chunks['1001-3000'].append((input, workspace_path, args.config_file))
                     case x if x > 3000:
                         chunks['3001 or more'].append((input, workspace_path, args.config_file))
+                        
             print()
-            print("FILE DISTRIBUTION BY PAGE COUNT:")
+            page_count_file_num = []
+            page_count_bucket = []
             for key, value in chunks.items():
-                print(f"{key}: {len(value)} files")
+                page_count_bucket.append(key)
+                page_count_file_num.append(len(value))
+
+            plot.bar(page_count_bucket, page_count_file_num)
+            plot.title("File Distribution by Page Count")
+            plot.xlabel("Range")
+            plot.ylabel("# of Files")
+            plot.plotsize(50, 15)
+            plot.show()
+
             # if value is large, split into sub-chunks.
             sub_chunks = {}
             del_chunks = []
@@ -141,6 +179,14 @@ def main():
 
                 print()
                 print(f"Page count of {key}")
+
+                if args.verbose:
+                    print()
+                    print("   Files to process in this chunk:")
+                    for input, workspace_path, config_file in chunk_file_paths:
+                        relative_chunk_path = Path(input).relative_to(workspace_folder_path)
+                        print(f"    * {relative_chunk_path}")
+                    print()
 
                 results = progress_starmap(
                     fix,

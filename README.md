@@ -70,6 +70,9 @@ uv run -m pdf_remediation.Fix <project_name> [workspace] [folder]
 ```
 Use `workspace` and `folder` to remediate a specific subfolder in the project.
 
+For verbose progress and file-level visibility, run:
+`uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --verbose`
+
 Steps executed:
 1. Count pages for each PDF (PDFix).
 2. Split files into size buckets for parallel remediation.
@@ -183,6 +186,11 @@ argument so you can run separate workflows in different subfolders (for example,
 ### Reprocess
 - `ReProcess.py` returns processed PDFs to `active/files` so you can iterate with
   a revised configuration file.
+
+### Skip
+- `Skip.py` appends a problematic file to `skipped_files.txt` so it is ignored
+  during processing.
+- Syntax: `uv run -m pdf_remediation.Skip <project_name> <relative_file_path>`
 
 ### Reset
 - `Reset.py` refreshes a workspace from `source/` and resets the copy semaphore.
