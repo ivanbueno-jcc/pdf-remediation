@@ -97,6 +97,12 @@ This moves processed PDFs back to `active/files`. Update
 `resources/configuration/default.json` (or swap in a new config),
 then re-run `Fix`.
 
+```
+uv run -m pdf_remediation.ReProcess <project_name> [workspace] [folder] --config_file [new-config.json]
+```
+
+`new-config.json` is located in `resources/configuration`
+
 For font-issue retries, run ReProcess with `font-issues` as the folder,
 update the config, then re-run `Fix` on that subfolder.
 
