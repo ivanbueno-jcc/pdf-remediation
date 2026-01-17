@@ -151,28 +151,19 @@ Subfolder names are not fixed. `Fix` and `Validate` accept a `workspace_folder`
 argument so you can run separate workflows in different subfolders (for example,
 `active`, `remediated`, or a custom name).
 
-## Features
+## Commands
 
 ### Initialization
-- `Init.py` creates the project structure and prints the source path for users
-  to drop PDFs.
+- `Init.py` bootstraps a project workspace and prints the source path for ingest.
 
 ### Validation
-- `Validate.py` counts pages (PDFix) and validates PDFs with veraPDF (Java).
-- Validation reports are generated as:
-  - `reports/<timestamp>/vera_validation_results.csv`
-  - `reports/<timestamp>/failed_rules.csv`
-  - `reports/<timestamp>/xml/*.xml`
-  - `reports/<timestamp>/summary/*.csv` and HTML (via `Report.py`)
+- `Validate.py` runs page counting (PDFix) and PDF/UA validation via veraPDF (Java).
+- Results feed the reporting pipeline in `reports/<timestamp>`.
 
 ### Remediation
-- `Fix.py` performs remediation with PDFix using `default.json`.
-- PDFs are grouped by page count, then remediated in parallel.
-- Outputs are written to `workspace/.../processed`.
-- All processed PDFs are validated. Compliant PDFs are moved to
-  `workspace/.../remediated/files`.
-- PDFs that fail validation with font-related violations are moved to
-  `workspace/.../font-issues/files` for follow-up remediation.
+- `Fix.py` applies the PDFix remediation profile (e.g., `default.json`) with
+  multiprocessing and keeps folder structure intact.
+- Validation post-checks route outputs into `remediated/` and `font-issues/`.
 
 ### Reporting (internal function, part of Validate)
 - Every Validate and Fix run generates a suite of reports under `reports/<timestamp>`.
@@ -187,17 +178,11 @@ argument so you can run separate workflows in different subfolders (for example,
   - `summary/*.html`: human-readable compliance report.
 
 ### Reprocess
-- `ReProcess.py` moves PDFs from `active/processed` back into `active/files`.
-- Use this to re-run remediation after updating the configuration file
-  (`resources/configuration/default.json` or a replacement).
-- Then re-run Fix with the new config:
-  `uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --config_file <config_file>`
+- `ReProcess.py` returns processed PDFs to `active/files` so you can iterate with
+  a revised configuration file.
 
 ### Reset
-- `Reset.py` clears `active/files` and `active/processed`, then re-copies files
-  from `source/` into the workspace and resets `.remediation.lock`.
-- Use a new workspace name with Reset to create a fresh workspace seeded from
-  `source/` without affecting existing workspaces.
+- `Reset.py` refreshes a workspace from `source/` and resets the copy semaphore.
 
 ### Licensing
 - `License.py` reads license state from PDFix.
