@@ -135,6 +135,11 @@ def main():
                 page_count_bucket.append(key)
                 page_count_file_num.append(len(value))
 
+            min_y = min(page_count_file_num)
+            max_y = max(page_count_file_num)
+            y_ticks = list(range(min_y, max_y + 1, 5)) # ticks every 5 units
+            plot.yticks(y_ticks)
+
             plot.bar(page_count_bucket, page_count_file_num)
             plot.title("File Distribution by Page Count")
             plot.xlabel("Range")
