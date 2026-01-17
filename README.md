@@ -30,9 +30,9 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
 
 ## Process Flow
 
-![Process Flow Diagram of PDF Remediation Process](resources/images/pdf_remediation_process_flow_presentation.png)
-
 High-level view of the end-to-end pipeline: initialize, validate, remediate, re-validate, and route results into the right workspace folders.
+
+![Process Flow Diagram of PDF Remediation Process](resources/images/pdf_remediation_process_flow_presentation.png)
 
 ### Initialize and Validate
 
