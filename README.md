@@ -44,12 +44,14 @@ Bootstrap a project and get a clean baseline before remediation begins.
 ```
 uv run -m pdf_remediation.Init <project_name>
 ```
+
 Copy PDFs into the printed `resources/projects/<project>/source` directory.
 
 #### 2) Validate PDFs
 ```
 uv run -m pdf_remediation.Validate <project_name> [workspace] [folder]
 ```
+
 Defaults:
 - `workspace` = `default`
 - `folder` = `active`
@@ -68,6 +70,7 @@ Run remediation, then loop back for another pass when you have a better config.
 ```
 uv run -m pdf_remediation.Fix <project_name> [workspace] [folder]
 ```
+
 Use `workspace` and `folder` to remediate a specific subfolder in the project.
 
 For verbose progress and file-level visibility (useful for spotting blocking files), run:
@@ -80,7 +83,8 @@ Steps executed:
 4. Remediate with PDFix, write to `active/processed/`.
 5. Validate all processed files with veraPDF.
 6. Move compliant files into `remediated/files`.
-7. Move font-violation failures into `font-issues/files`.
+7. Move error files into `unable-to-process/files`.
+8. Move font-violation failures into `font-issues/files`.
 
 If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
 
@@ -88,11 +92,14 @@ If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
 ```
 uv run -m pdf_remediation.ReProcess <project_name> [workspace] [folder]
 ```
+
 This moves processed PDFs back to `active/files`. Update
 `resources/configuration/default.json` (or swap in a new config),
 then re-run `Fix`.
+
 For font-issue retries, run ReProcess with `font-issues` as the folder,
 update the config, then re-run `Fix` on that subfolder.
+
 To skip a blocking file before reprocessing, run:
 `uv run -m pdf_remediation.Skip <project_name> <relative_file_path>`
 
@@ -106,8 +113,10 @@ Use these controls to reset or fork clean workspaces without touching your origi
 ```
 uv run -m pdf_remediation.Reset <project_name> [workspace] [folder]
 ```
+
 Clears `active/files` and `active/processed`, then re-copies files from `source/`
 and resets `.remediation.lock`.
+
 Use a new `workspace` name here to create a fresh workspace seeded from
 `source/` without affecting existing workspaces.
 
@@ -155,6 +164,8 @@ resources/projects/<project>/
       files/             # validated, compliant PDFs
     font-issues/
       files/             # font-related validation failures
+    unable-to-process/
+      files/             # validation errors or unreadable PDFs
 ```
 Subfolder names are not fixed. `Fix` and `Validate` accept a `workspace_folder`
 argument so you can run separate workflows in different subfolders (for example,

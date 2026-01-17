@@ -127,25 +127,26 @@ def main():
                         chunks['1001-3000'].append((input, workspace_path, args.config_file))
                     case x if x > 3000:
                         chunks['3001 or more'].append((input, workspace_path, args.config_file))
-                        
-            print()
-            page_count_file_num = []
-            page_count_bucket = []
-            for key, value in chunks.items():
-                page_count_bucket.append(key)
-                page_count_file_num.append(len(value))
+                     
+            if len(file_paths_for_remediation) > 0:
+                print()
+                page_count_file_num = []
+                page_count_bucket = []
+                for key, value in chunks.items():
+                    page_count_bucket.append(key)
+                    page_count_file_num.append(len(value))
 
-            min_y = min(page_count_file_num)
-            max_y = max(page_count_file_num)
-            y_ticks = list(range(min_y, max_y + 1, 5)) # ticks every 5 units
-            plot.yticks(y_ticks)
+                min_y = min(page_count_file_num)
+                max_y = max(page_count_file_num)
+                y_ticks = list(range(min_y, max_y + 1, 5)) # ticks every 5 units
+                plot.yticks(y_ticks)
 
-            plot.bar(page_count_bucket, page_count_file_num)
-            plot.title("File Distribution by Page Count")
-            plot.xlabel("Range")
-            plot.ylabel("# of Files")
-            plot.plotsize(50, 15)
-            plot.show()
+                plot.bar(page_count_bucket, page_count_file_num)
+                plot.title("File Distribution by Page Count")
+                plot.xlabel("Range")
+                plot.ylabel("# of Files")
+                plot.plotsize(50, 15)
+                plot.show()
 
             # if value is large, split into sub-chunks.
             sub_chunks = {}
@@ -222,33 +223,51 @@ def main():
             # Loop through the validation results.  Move files that passed to a "remediated" folder in the same workspace.
             validation_iteration_counter = 0
             for file_path, is_compliant, violations, violation_count in validation_results:
-                if is_compliant:
+                if is_compliant == True:
                     if validation_iteration_counter == 0:
                         print()
                         print("MOVING VALID FILES TO REMEDIATED FOLDER...")
                     validation_iteration_counter += 1
                     
-                    print(f"{file_path}")
+                    if args.verbose:
+                        print(f"{file_path}")
                     move_file_and_delete_source(Path(file_path), output_pdf_folder, args.project_name, args.workspace_name, "remediated")
                     continue
-            
-            print()
-            print("CHECKING FOR FONT-RELATED VIOLATIONS IN INVALID FILES...")
-            files_with_font_issues_total = 0
+            print(f"Total valid files moved to remediated folder: {validation_iteration_counter}")
+
+            validation_iteration_counter = 0
             for file_path, is_compliant, violations, violation_count in validation_results:
-                if not is_compliant:
-                    has_font_violation = False
-                    for violation in violations:
-                        if violation['clause'] in ['7.21.7', '7.21.4.1', '7.21.3.2', '7.21.4.2', '7.21.5', '7.21.8']:
-                            has_font_violation = True
-                            break
-
-                    if has_font_violation:
-                        files_with_font_issues_total += 1
+                if is_compliant == 'Error':
+                    if validation_iteration_counter == 0:
+                        print()
+                        print("MOVING ERROR FILES TO ERROR FOLDER...")
+                    validation_iteration_counter += 1
+                    
+                    if args.verbose:
                         print(f"{file_path}")
-                        move_file_and_delete_source(Path(file_path), output_pdf_folder, args.project_name, args.workspace_name, "font-issues")
+                    move_file_and_delete_source(Path(file_path), output_pdf_folder, args.project_name, args.workspace_name, "unable-to-process")
+                    continue
+            print(f"Total error files moved to error folder: {validation_iteration_counter}")
 
-            print(f"Total files with font issues: {files_with_font_issues_total}")
+            if args.workspace_folder != "font-issues":
+                print()
+                print("CHECKING FOR FONT-RELATED VIOLATIONS IN INVALID FILES...")
+                files_with_font_issues_total = 0
+                for file_path, is_compliant, violations, violation_count in validation_results:
+                    if is_compliant == False:
+                        has_font_violation = False
+                        for violation in violations:
+                            if violation['clause'] in ['7.21.7', '7.21.4.1', '7.21.3.2', '7.21.4.2', '7.21.5', '7.21.8']:
+                                has_font_violation = True
+                                break
+
+                        if has_font_violation:
+                            files_with_font_issues_total += 1
+                            if args.verbose:
+                                print(f"{file_path}")
+                            move_file_and_delete_source(Path(file_path), output_pdf_folder, args.project_name, args.workspace_name, "font-issues")
+
+                print(f"Total files with font issues: {files_with_font_issues_total}")
                     
         else:
             print("No PDF files found for validation.")
