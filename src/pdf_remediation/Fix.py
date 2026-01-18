@@ -220,13 +220,12 @@ def main():
         if len(file_paths_for_validation) > 0:
             validation_results = validate_pdf_multiprocess(output_pdf_folder, file_paths_for_validation, timestamp, target_folder)
 
+            print()
+            print("MOVING FILES BASED ON VALIDATION RESULTS...")
             # Loop through the validation results.  Move files that passed to a "remediated" folder in the same workspace.
             validation_iteration_counter = 0
             for file_path, is_compliant, violations, violation_count in validation_results:
-                if is_compliant == True:
-                    if validation_iteration_counter == 0:
-                        print()
-                        print("MOVING VALID FILES TO REMEDIATED FOLDER...")
+                if is_compliant is True:
                     validation_iteration_counter += 1
                     
                     if args.verbose:
@@ -238,9 +237,6 @@ def main():
             validation_iteration_counter = 0
             for file_path, is_compliant, violations, violation_count in validation_results:
                 if is_compliant == 'Error':
-                    if validation_iteration_counter == 0:
-                        print()
-                        print("MOVING ERROR FILES TO ERROR FOLDER...")
                     validation_iteration_counter += 1
                     
                     if args.verbose:
@@ -250,8 +246,6 @@ def main():
             print(f"Total error files moved to error folder: {validation_iteration_counter}")
 
             if args.workspace_folder != "font-issues":
-                print()
-                print("CHECKING FOR FONT-RELATED VIOLATIONS IN INVALID FILES...")
                 files_with_font_issues_total = 0
                 for file_path, is_compliant, violations, violation_count in validation_results:
                     if is_compliant == False:
