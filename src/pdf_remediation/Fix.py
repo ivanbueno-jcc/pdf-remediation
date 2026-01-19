@@ -1,4 +1,5 @@
 import argparse
+import csv
 import multiprocessing
 import plotext as plot
 from datetime import datetime
@@ -45,6 +46,18 @@ def main():
         action='store_true',
         help="Enable verbose output."
     )
+    parser.add_argument(
+        "--chunk-size",
+        type=int,
+        default=500,
+        help="Chunk Size (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--n-cpu",
+        type=int,
+        default=4,
+        help="Number of CPUs (default: %(default)s)"
+    )
     args = parser.parse_args()
 
     if args.project_name:
@@ -64,13 +77,26 @@ def main():
         # open the skipped files list from a text file
         skipped_files = []
         skipped_files_path = get_project_path(args.project_name) / "skipped_files.txt"
-
         if skipped_files_path.exists():
             with open(skipped_files_path, 'r') as f:
                 for line in f:
                     skipped_file = line.strip()
                     if skipped_file and skipped_file not in skipped_files:
                         skipped_files.append(skipped_file)
+
+        # Open the pdfix-cannot-process list from a csv file.
+        # Use the first column as the relative file path to skip.
+        pdfix_cannot_process_files = []
+        pdfix_cannot_process_files_path = get_project_path(args.project_name) / "pdfix_cannot_process_files.csv"
+        if pdfix_cannot_process_files_path.exists():
+            with open(pdfix_cannot_process_files_path, 'r', newline='') as csvfile:
+                reader = csv.reader(csvfile)
+                for row in reader:
+                    if len(row) > 0:
+                        relative_file_path = row[0].strip()
+                        if relative_file_path and relative_file_path not in pdfix_cannot_process_files:
+                            pdfix_cannot_process_files.append(relative_file_path)
+        skipped_files.extend(pdfix_cannot_process_files)
         
         if len(file_paths):
 
@@ -106,27 +132,28 @@ def main():
                 '3001 or more': []
             }
             for input, workspace_path in file_paths_for_remediation:
+                payload = (input, workspace_path, args.config_file, workspace_folder_path)
                 match page_count_lookup[input]:
                     case 1:
-                        chunks['1'].append((input, workspace_path, args.config_file))
+                        chunks['1'].append(payload)
                     case x if 1 < x <= 5:
-                        chunks['2-5'].append((input, workspace_path, args.config_file))
+                        chunks['2-5'].append(payload)
                     case x if 5 < x <= 10:
-                        chunks['6-10'].append((input, workspace_path, args.config_file))
+                        chunks['6-10'].append(payload)
                     case x if 10 < x <= 50:
-                        chunks['11-50'].append((input, workspace_path, args.config_file))
+                        chunks['11-50'].append(payload)
                     case x if 50 < x <= 100:
-                        chunks['51-100'].append((input, workspace_path, args.config_file)) 
+                        chunks['51-100'].append(payload) 
                     case x if 100 < x <= 200:
-                        chunks['101-200'].append((input, workspace_path, args.config_file))
+                        chunks['101-200'].append(payload)
                     case x if 200 < x <= 500:
-                        chunks['201-500'].append((input, workspace_path, args.config_file))
+                        chunks['201-500'].append(payload)
                     case x if 500 < x <= 1000:
-                        chunks['501-1000'].append((input, workspace_path, args.config_file))
+                        chunks['501-1000'].append(payload)
                     case x if 1000 < x <= 3000:
-                        chunks['1001-3000'].append((input, workspace_path, args.config_file))
+                        chunks['1001-3000'].append(payload)
                     case x if x > 3000:
-                        chunks['3001 or more'].append((input, workspace_path, args.config_file))
+                        chunks['3001 or more'].append(payload)
                      
             if len(file_paths_for_remediation) > 0:
                 print()
@@ -151,7 +178,7 @@ def main():
             # if value is large, split into sub-chunks.
             sub_chunks = {}
             del_chunks = []
-            chunk_size = 500
+            chunk_size = args.chunk_size
             for key, value in chunks.items():
                 if len(value) > chunk_size:
                     del_chunks.append(key)
@@ -189,7 +216,7 @@ def main():
                 if args.verbose:
                     print()
                     print("   Files to process in this chunk:")
-                    for input, workspace_path, config_file in chunk_file_paths:
+                    for input, workspace_path, config_file, workspace_fp in chunk_file_paths:
                         relative_chunk_path = Path(input).relative_to(workspace_folder_path)
                         print(f"    * {relative_chunk_path}")
                     print()

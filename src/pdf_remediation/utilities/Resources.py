@@ -4,6 +4,7 @@ import json
 from dotenv import load_dotenv
 import os
 import shutil
+import csv
 
 load_dotenv()
 
@@ -108,6 +109,12 @@ def clear_workspace_folder(workspace_folder_path):
             shutil.rmtree(entry)
         else:
             entry.unlink()
+
+def append_to_csv(file_path: Path, row: list) -> None:
+    # Add row to csv.  Make sure there are no duplicates.
+    with open(file_path, mode='a', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(row)
 
 # return raw data from stream object
 def stream_to_data(stm):

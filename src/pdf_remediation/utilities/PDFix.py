@@ -1,5 +1,5 @@
 import csv
-from .Resources import stream_to_data, get_configuration_file
+from .Resources import stream_to_data, get_configuration_file, append_to_csv
 from pdfixsdk import *
 from pathlib import Path
 import json
@@ -51,12 +51,14 @@ def get_page_count_multiprocess(workspace_folder_path: Path, file_paths: list, t
 
     return page_count_lookup
 
-def fix(inputPdfPath: str, outputPdfPath: str, config_file: str = "default.json") -> None:
+def fix(inputPdfPath: str, outputPdfPath: str, config_file: str = "default.json", workspace_folder_path: Path = None) -> None:
     # print(f"Remediating: {inputPdfPath}")
 
     pdfix  = GetPdfix()
     if pdfix is None:
         raise Exception('Pdfix Initialization fail')
+    
+    error_file_path = workspace_folder_path.parent.parent.parent.parent / "pdfix_cannot_process_files.csv"
 
     # Load the license and authorize the account.
     load_dotenv()
@@ -68,6 +70,7 @@ def fix(inputPdfPath: str, outputPdfPath: str, config_file: str = "default.json"
     doc = pdfix.OpenDoc(inputPdfPath, "")
     if doc is None:
         print('Unable to open pdf', pdfix.GetError())
+        append_to_csv(error_file_path, [Path(inputPdfPath).relative_to(workspace_folder_path), pdfix.GetError()])
         raise Exception('Unable to open pdf : ' + pdfix.GetError())
 
     command = doc.GetCommand()
@@ -77,9 +80,11 @@ def fix(inputPdfPath: str, outputPdfPath: str, config_file: str = "default.json"
     cmdStm = pdfix.CreateFileStream(commandPath, kPsReadOnly)
     if not cmdStm:
         print('Error', pdfix.GetError())
+        append_to_csv(error_file_path, [Path(inputPdfPath).relative_to(workspace_folder_path), pdfix.GetError()])
         raise Exception(pdfix.GetError())
     if not command.LoadParamsFromStream(cmdStm, kDataFormatJson):
         print('Error', pdfix.GetError())
+        append_to_csv(error_file_path, [Path(inputPdfPath).relative_to(workspace_folder_path), pdfix.GetError()])
         raise Exception(pdfix.GetError())
     cmdStm.Destroy()
 
@@ -87,12 +92,14 @@ def fix(inputPdfPath: str, outputPdfPath: str, config_file: str = "default.json"
     if not command.Run():
         # print(inputPdfPath)
         print('Error', pdfix.GetError())
+        append_to_csv(error_file_path, [Path(inputPdfPath).relative_to(workspace_folder_path), pdfix.GetError()])
         raise Exception(pdfix.GetError())
 
     # print(f"Remediation completed: {outputPdfPath}")
 
     if not doc.Save(outputPdfPath, kSaveFull):
         print('Unable to save', pdfix.GetError())
+        append_to_csv(error_file_path, [Path(inputPdfPath).relative_to(workspace_folder_path), pdfix.GetError()])
         raise Exception(pdfix.GetError())
     doc.Close()
 
