@@ -75,10 +75,13 @@ Use `workspace` and `folder` to remediate a specific subfolder in the project.
 
 For verbose progress and file-level visibility (useful for spotting blocking files), run:
 `uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --verbose`
+Tune processing with:
+- `--chunk-size <n>` to control batch size (default: 500)
+- `--n-cpu <n>` to control parallel workers (default: 4)
 
 Steps executed:
-1. Count pages for each PDF (PDFix).
-2. Apply the `skipped_files.txt` list to exclude problematic files.
+1. Apply the skip lists (`skipped_files.txt` and `pdfix_cannot_process_files.csv`) to exclude problematic files.
+2. Count pages for each PDF (PDFix).
 3. Split files into size buckets for parallel remediation.
 4. Remediate with PDFix, write to `active/processed/`.
 5. Validate all processed files with veraPDF.
@@ -211,6 +214,11 @@ argument so you can run separate workflows in different subfolders (for example,
 - `Skip.py` appends a problematic file to `skipped_files.txt` so it is ignored
   during processing.
 - Syntax: `uv run -m pdf_remediation.Skip <project_name> <relative_file_path>`
+  
+### Auto-skip (PDFix failures)
+- Files that PDFix cannot open/process are recorded in
+  `pdfix_cannot_process_files.csv` at the project root and are skipped on
+  subsequent runs.
 
 ### Status
 - `Status.py` prints a summary of the source PDF count and per-workspace file
