@@ -1,13 +1,14 @@
 import argparse
 import csv
 import multiprocessing
-import plotext as plot
+import random
 from datetime import datetime
 from pathlib import Path
+import plotext as plot
 from parallelbar import progress_starmap
 from .utilities.PDFix import fix, get_page_count_multiprocess
 from .utilities.VeraPDF import validate_pdf_multiprocess
-from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_file_paths 
+from .utilities.Resources import get_project_workspace_subfolder_file_paths 
 from .utilities.Resources import get_project_path, get_project_workspace_subfolder_path
 from .utilities.Resources import get_project_workspace_file_paths, move_file_and_delete_source
 
