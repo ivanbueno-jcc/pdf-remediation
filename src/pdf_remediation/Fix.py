@@ -1,7 +1,6 @@
 import argparse
 import csv
 import multiprocessing
-import random
 from datetime import datetime
 from pathlib import Path
 import plotext as plot
@@ -11,6 +10,34 @@ from .utilities.VeraPDF import validate_pdf_multiprocess
 from .utilities.Resources import get_project_workspace_subfolder_file_paths 
 from .utilities.Resources import get_project_path, get_project_workspace_subfolder_path
 from .utilities.Resources import get_project_workspace_file_paths, move_file_and_delete_source
+
+def get_skipped_files_list(project_name: str) -> list[str]:
+
+    # open the skipped files list from a text file
+    skipped_files = []
+    skipped_files_path = get_project_path(project_name) / "skipped_files.txt"
+    if skipped_files_path.exists():
+        with open(skipped_files_path, 'r') as f:
+            for line in f:
+                skipped_file = line.strip()
+                if skipped_file and skipped_file not in skipped_files:
+                    skipped_files.append(skipped_file)
+
+    # Open the pdfix-cannot-process list from a csv file.
+    # Use the first column as the relative file path to skip.
+    pdfix_cannot_process_files = []
+    pdfix_cannot_process_files_path = get_project_path(project_name) / "pdfix_cannot_process_files.csv"
+    if pdfix_cannot_process_files_path.exists():
+        with open(pdfix_cannot_process_files_path, 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if len(row) > 0:
+                    relative_file_path = row[0].strip()
+                    if relative_file_path and relative_file_path not in pdfix_cannot_process_files:
+                        pdfix_cannot_process_files.append(relative_file_path)
+    skipped_files.extend(pdfix_cannot_process_files)
+
+    return skipped_files
 
 def main():
     multiprocessing.freeze_support()
@@ -71,41 +98,13 @@ def main():
         workspace_folder_path = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder)
         file_paths = get_project_workspace_file_paths(args.project_name, args.workspace_name, args.workspace_folder)
         file_paths_for_remediation = []
+        file_paths_for_counting = []
         output_pdf_folder = workspace_folder_path.parent / "processed"
         output_pdf_folder.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-        # open the skipped files list from a text file
-        skipped_files = []
-        skipped_files_path = get_project_path(args.project_name) / "skipped_files.txt"
-        if skipped_files_path.exists():
-            with open(skipped_files_path, 'r') as f:
-                for line in f:
-                    skipped_file = line.strip()
-                    if skipped_file and skipped_file not in skipped_files:
-                        skipped_files.append(skipped_file)
-
-        # Open the pdfix-cannot-process list from a csv file.
-        # Use the first column as the relative file path to skip.
-        pdfix_cannot_process_files = []
-        pdfix_cannot_process_files_path = get_project_path(args.project_name) / "pdfix_cannot_process_files.csv"
-        if pdfix_cannot_process_files_path.exists():
-            with open(pdfix_cannot_process_files_path, 'r', newline='') as csvfile:
-                reader = csv.reader(csvfile)
-                for row in reader:
-                    if len(row) > 0:
-                        relative_file_path = row[0].strip()
-                        if relative_file_path and relative_file_path not in pdfix_cannot_process_files:
-                            pdfix_cannot_process_files.append(relative_file_path)
-        skipped_files.extend(pdfix_cannot_process_files)
+        skipped_files = get_skipped_files_list(args.project_name)
         
-        if len(file_paths):
-
-            page_count_lookup = get_page_count_multiprocess(workspace_folder_path, file_paths, timestamp)
-
-            if args.verbose:
-                if len(skipped_files) > 0:
-                    print()
+        if len(file_paths) > 0:
 
             for file_path in file_paths:
                 relative_path = file_path.relative_to(workspace_folder_path)
@@ -118,6 +117,13 @@ def main():
                 destination_path = output_pdf_folder / relative_path
                 destination_path.parent.mkdir(parents=True, exist_ok=True)
                 file_paths_for_remediation.append([str(file_path), str(destination_path)])
+                file_paths_for_counting.append(file_path)
+
+            if len(skipped_files) > 0:
+                print(f"Total skipped files: {len(skipped_files)}")
+                print()
+
+            page_count_lookup = get_page_count_multiprocess(workspace_folder_path, file_paths_for_counting, timestamp)
 
             # split the file_paths into batches based on the page count.
             chunks = {
