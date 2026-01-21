@@ -71,7 +71,7 @@ def main():
         help="Workspace subfolder (default: %(default)s)"
     )
     parser.add_argument(
-        "--config_file",
+        "--config-file",
         "--c",
         type=str,
         default='default.json',
