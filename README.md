@@ -101,7 +101,7 @@ This moves processed PDFs back to `active/files`. Update
 then re-run `Fix`.
 
 ```
-uv run -m pdf_remediation.ReProcess <project_name> [workspace] [folder] --config_file [new-config.json]
+uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --config-file [new-config.json]
 ```
 
 `new-config.json` is located in `resources/configuration`
