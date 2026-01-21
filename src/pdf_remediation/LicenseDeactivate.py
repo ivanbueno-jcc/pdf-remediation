@@ -1,12 +1,12 @@
+'''
+Deactivate PDFix license.
+'''
 from .utilities.PDFix import License, LicenseDeactivate
-import json
-import sys
 
 if __name__ == "__main__":
-    license = License()
-    if license["status"]["authorized"] == "false":
+    LICENSE = License()
+    if LICENSE["status"]["authorized"] == "false":
         print("License is not active.  Deactivation not required.")
     else:
-        is_deactivated = LicenseDeactivate()
-        if is_deactivated:
+        if LicenseDeactivate():
             print("License has been successfully deactivated.")

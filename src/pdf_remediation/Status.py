@@ -1,7 +1,12 @@
+'''
+List the status of the project.
+'''
 import argparse
 from .utilities.Resources import get_project_source_path
 
 def main():
+    '''Main function to list project status.'''
+
     parser = argparse.ArgumentParser(
         description="List the status of the project."
     )
@@ -37,7 +42,9 @@ def main():
 
         for workspace_name, folders in workspaces.items():
             print()
-            print(f"  {workspace_name} ({round(100 * (folders['remediated'] / sum(folders.values())))}%):")
+            total_percentage = round(100 * (folders['remediated'] / sum(folders.values()))) \
+                if sum(folders.values()) > 0 else 0
+            print(f"  {workspace_name} ({total_percentage}%):")
             for folder_name, count in folders.items():
                 print(f"    {folder_name}: {count}")
 

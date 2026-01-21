@@ -1,5 +1,11 @@
-from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_path, clear_workspace_folder
+'''
+Reset the files in the working directory with the source files.
+'''
+
 import argparse
+import sys
+from .utilities.Resources import get_project_source_path
+from .utilities.Resources import get_project_workspace_subfolder_path, clear_workspace_folder
 
 if __name__ == '__main__':
 
@@ -30,14 +36,23 @@ if __name__ == '__main__':
         print()
 
         source_path = get_project_source_path(args.project_name)
-        workspace_folder_path = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder)
+        workspace_folder_path = get_project_workspace_subfolder_path(
+            args.project_name,
+            args.workspace_name,
+            args.workspace_folder
+        )
         clear_workspace_folder(workspace_folder_path)
 
-        workspace_folder_path_processed = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder, "processed")
+        workspace_folder_path_processed = get_project_workspace_subfolder_path(
+            args.project_name,
+            args.workspace_name,
+            args.workspace_folder,
+            "processed"
+        )
         clear_workspace_folder(workspace_folder_path_processed)
 
-        semaphore = workspace_folder_path / ".remediation.lock"       
-        if len(list(source_path.rglob("*.pdf"))):
+        semaphore = workspace_folder_path / ".remediation.lock"
+        if len(list(source_path.rglob("*.pdf"))) > 0:
             for file_path in source_path.rglob("*.pdf"):
                 relative_path = file_path.relative_to(source_path)
                 destination_path = workspace_folder_path / relative_path
@@ -49,5 +64,5 @@ if __name__ == '__main__':
 
             print("Files are overwritten with originals.")
         else:
-            print(f"No PDF files found in the source.")
-            exit()
+            print("No PDF files found in the source.")
+            sys.exit()

@@ -1,6 +1,12 @@
-from .utilities.Resources import clear_workspace_folder, get_project_workspace_subfolder_path, move_file_and_delete_source
+'''
+Move processed PDF files back to the active workspace folder.
+'''
+
 import argparse
 from pathlib import Path
+import sys
+from .utilities.Resources import clear_workspace_folder, get_project_workspace_subfolder_path
+from .utilities.Resources import move_file_and_delete_source
 
 if __name__ == '__main__':
 
@@ -30,17 +36,32 @@ if __name__ == '__main__':
         print(f"FOLDER: {args.workspace_folder}")
         print()
 
-        workspace_folder_path = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder)
+        workspace_folder_path = get_project_workspace_subfolder_path(
+            args.project_name,
+            args.workspace_name,
+            args.workspace_folder
+        )
         clear_workspace_folder(workspace_folder_path)
         semaphore = workspace_folder_path / ".remediation.lock"
         semaphore.touch(exist_ok=True)
 
-        workspace_folder_path_processed = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder, "processed")
-   
-        if len(list(workspace_folder_path_processed.rglob("*.pdf"))):
+        workspace_folder_path_processed = get_project_workspace_subfolder_path(
+            args.project_name,
+            args.workspace_name,
+            args.workspace_folder,
+            "processed"
+        )
+
+        if len(list(workspace_folder_path_processed.rglob("*.pdf"))) > 0:
             for file_path in workspace_folder_path_processed.rglob("*.pdf"):
-                move_file_and_delete_source(Path(file_path), workspace_folder_path_processed, args.project_name, args.workspace_name, args.workspace_folder)
+                move_file_and_delete_source(
+                    Path(file_path),
+                    workspace_folder_path_processed,
+                    args.project_name,
+                    args.workspace_name,
+                    args.workspace_folder
+                )
             print("Processed files have been moved back to the active folder.")
         else:
-            print(f"No PDF files found in the processed folder.")
-            exit()
+            print("No PDF files found in the processed folder.")
+            sys.exit()

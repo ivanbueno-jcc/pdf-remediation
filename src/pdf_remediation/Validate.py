@@ -1,8 +1,14 @@
-from .utilities.PDFix import get_page_count_multiprocess
-from .utilities.VeraPDF import validate_pdf_multiprocess
-from .utilities.Resources import get_project_source_path, get_project_workspace_subfolder_file_paths, get_project_workspace_subfolder_path, get_project_workspace_file_paths
+'''
+Validate PDF files in a project workspace.
+'''
 import argparse
 from datetime import datetime
+import sys
+from .utilities.PDFix import get_page_count_multiprocess
+from .utilities.VeraPDF import validate_pdf_multiprocess
+from .utilities.Resources import get_project_source_path
+from .utilities.Resources import get_project_workspace_subfolder_file_paths
+from .utilities.Resources import get_project_workspace_subfolder_path
 
 if __name__ == '__main__':
 
@@ -41,13 +47,26 @@ if __name__ == '__main__':
         print()
 
         source_path = get_project_source_path(args.project_name)
-        workspace_folder_path = get_project_workspace_subfolder_path(args.project_name, args.workspace_name, args.workspace_folder, args.directory)
-        file_paths = get_project_workspace_subfolder_file_paths(args.project_name, args.workspace_name, args.workspace_folder, args.directory)
+        workspace_folder_path = get_project_workspace_subfolder_path(
+            args.project_name,
+            args.workspace_name,
+            args.workspace_folder,
+            args.directory)
+        file_paths = get_project_workspace_subfolder_file_paths(
+            args.project_name,
+            args.workspace_name,
+            args.workspace_folder,
+            args.directory
+        )
 
         if len(file_paths) > 0:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            total_pages = get_page_count_multiprocess(workspace_folder_path, file_paths, timestamp, args.directory)
+            total_pages = get_page_count_multiprocess(
+                workspace_folder_path,
+                file_paths, timestamp,
+                args.directory
+            )
             validate_pdf_multiprocess(workspace_folder_path, file_paths, timestamp, args.directory)
         else:
             print("No PDF files found.")
-            exit()
+            sys.exit()

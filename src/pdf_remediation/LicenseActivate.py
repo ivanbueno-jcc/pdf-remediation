@@ -1,18 +1,20 @@
-from .utilities.PDFix import License, LicenseActivate
-import json
+'''
+Activate PDFix license using provided license key.
+'''
+
 import sys
+from .utilities.PDFix import LicenseActivate
 
 if __name__ == "__main__":
-    licenseKey = ''
+    LICENSE_KEY = ""
     if len(sys.argv) > 1:
-        licenseKey = sys.argv[1]
+        LICENSE_KEY = sys.argv[1]
     else:
         print("Missing argument. Please provide a license key.")
-        exit()
+        sys.exit()
 
-    if licenseKey:
-        is_license_activated = LicenseActivate(licenseKey)
-        if is_license_activated:            
+    if LICENSE_KEY:
+        if LicenseActivate(LICENSE_KEY):
             print("License activated successfully.")
         else:
             print("License activation failed.")

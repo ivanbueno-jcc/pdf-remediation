@@ -1,5 +1,8 @@
-from .utilities.Resources import get_project_path
+'''
+Add a file to the skipped files list.
+'''
 import argparse
+from .utilities.Resources import get_project_path
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -16,14 +19,14 @@ if __name__ == '__main__':
     if args.project_name:
         print(f"PROJECT: {args.project_name}")
         print()
-        
+
         source_path = get_project_path(args.project_name)
         # Open the skipped files list from a text file
         skipped_files_path = source_path / "skipped_files.txt"
         skipped_files_path.parent.mkdir(parents=True, exist_ok=True)
         skipped_files = []
         if skipped_files_path.exists():
-            with open(skipped_files_path, 'r') as f:
+            with open(skipped_files_path, 'r', encoding='utf-8') as f:
                 for line in f:
                     skipped_file = line.strip()
                     if skipped_file and skipped_file not in skipped_files:
@@ -31,7 +34,7 @@ if __name__ == '__main__':
 
         if args.file_to_skip not in skipped_files:
             skipped_files.append(args.file_to_skip)
-            with open(skipped_files_path, 'w') as f:
+            with open(skipped_files_path, 'w', encoding='utf-8') as f:
                 for skipped_file in skipped_files:
                     f.write(f"{skipped_file}\n")
             print(f"Added to skipped files: {args.file_to_skip}")

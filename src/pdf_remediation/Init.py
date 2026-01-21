@@ -1,5 +1,9 @@
-from .utilities.Resources import get_project_source_path, get_project_workspace_path
+'''
+Initialize project structure.
+'''
+
 import argparse
+from .utilities.Resources import get_project_source_path, get_project_workspace_path
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
