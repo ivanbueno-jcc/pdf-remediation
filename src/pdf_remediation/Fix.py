@@ -9,7 +9,8 @@ import plotext as plot
 from parallelbar import progress_starmap
 from .utilities.PDFix import fix, get_page_count_multiprocess
 from .utilities.VeraPDF import validate_pdf_multiprocess
-from .utilities.Resources import get_project_workspace_subfolder_file_paths 
+from .utilities.Resources import get_project_workspace_subfolder_file_paths
+from .utilities.Resources import get_project_workspace_path
 from .utilities.Resources import get_project_path, get_project_workspace_subfolder_path
 from .utilities.Resources import get_project_workspace_file_paths, move_file_and_delete_source
 
@@ -103,6 +104,10 @@ def main():
         print(f"CONFIG FILE: {args.config_file}")
         print()
 
+        workspace_path = get_project_workspace_path(
+            args.project_name,
+            args.workspace_name
+        )
         workspace_folder_path = get_project_workspace_subfolder_path(
             args.project_name,
             args.workspace_name,
@@ -139,11 +144,15 @@ def main():
                 print(f"Total skipped files: {len(skipped_files)}")
                 print()
 
-            page_count_lookup = get_page_count_multiprocess(
-                workspace_folder_path,
-                file_paths_for_counting,
-                timestamp
-            )
+            page_count_lookup = {}
+            if len(file_paths_for_counting) > 0:
+                page_count_lookup = get_page_count_multiprocess(
+                    workspace_folder_path,
+                    file_paths_for_counting,
+                    timestamp
+                )
+            else:
+                print("No files found for remediation.")
 
             # split the file_paths into batches based on the page count.
             chunks = {
@@ -158,8 +167,8 @@ def main():
                 '1001-3000': [],
                 '3001 or more': []
             }
-            for input_path, workspace_path in file_paths_for_remediation:
-                payload = (input_path, workspace_path, args.config_file, workspace_folder_path)
+            for input_path, input_workspace_path in file_paths_for_remediation:
+                payload = (input_path, input_workspace_path, args.config_file, workspace_folder_path)
                 match page_count_lookup[input_path]:
                     case 1:
                         chunks['1'].append(payload)
@@ -219,50 +228,46 @@ def main():
             sub_chunks.update(chunks)
             chunks = sub_chunks
 
-            print()
-            print("REMEDIATING FILES...")
-            for key, chunk_file_paths in chunks.items():
-                if len(chunk_file_paths) == 0:
-                    continue
-
+            if len(file_paths_for_remediation) > 0:
                 print()
-                print(f"Page count of {key}")
+                print("REMEDIATING FILES...")
+                for key, chunk_file_paths in chunks.items():
+                    if len(chunk_file_paths) == 0:
+                        continue
 
-                if args.verbose:
                     print()
-                    print("   Files to process in this chunk:")
-                    for input_path, workspace_path, _, _ in chunk_file_paths:
-                        relative_chunk_path = Path(input_path).relative_to(workspace_folder_path)
-                        print(f"    * {relative_chunk_path}")
-                    print()
+                    print(f"Page count of {key}")
 
-                progress_starmap(
-                    fix,
-                    chunk_file_paths,
-                    total=len(chunk_file_paths),
-                    error_behavior="coerce",
-                    process_timeout=600,
-                    n_cpu=4
-                )
+                    if args.verbose:
+                        print()
+                        print("   Files to process in this chunk:")
+                        for input_path, input_workspace_path, _, _ in chunk_file_paths:
+                            relative_chunk_path = Path(input_path).relative_to(workspace_folder_path)
+                            print(f"    * {relative_chunk_path}")
+                        print()
+
+                    progress_starmap(
+                        fix,
+                        chunk_file_paths,
+                        total=len(chunk_file_paths),
+                        error_behavior="coerce",
+                        process_timeout=600,
+                        n_cpu=4
+                    )
         else:
             print("No PDF files to process in the active folder.")
 
         print()
+        print("VALIDATING PROCESSED FILES...")
         file_paths_for_validation = []
         target_folder = "files"
-        if len(file_paths_for_remediation) > 0:
-            print("VALIDATING REMEDIATED FILES...")
-            for _, output in file_paths_for_remediation:
-                file_paths_for_validation.append(output)
-        else:
-            print("VALIDATING PROCESSED FILES...")
-            target_folder = "processed"
-            file_paths_for_validation = get_project_workspace_subfolder_file_paths(
-                args.project_name,
-                args.workspace_name,
-                args.workspace_folder,
-                "processed"
-            )
+        target_folder = "processed"
+        file_paths_for_validation = get_project_workspace_subfolder_file_paths(
+            args.project_name,
+            args.workspace_name,
+            args.workspace_folder,
+            "processed"
+        )
 
         if len(file_paths_for_validation) > 0:
             validation_results = validate_pdf_multiprocess(
@@ -311,7 +316,14 @@ def main():
             print(f"Total error files moved to error folder: {validation_iteration_counter}")
 
             if args.workspace_folder != "font-issues":
-                font_issue_clauses = ['7.21.7', '7.21.4.1', '7.21.3.2', '7.21.4.2', '7.21.5', '7.21.8']
+                font_issue_clauses = [
+                    '7.21.7',
+                    '7.21.4.1',
+                    '7.21.3.2',
+                    '7.21.4.2',
+                    '7.21.5',
+                    '7.21.8'
+                ]
                 files_with_font_issues_total = 0
                 for file_path, is_compliant, violations, _ in validation_results:
                     if is_compliant is False:
@@ -337,6 +349,19 @@ def main():
 
         else:
             print("No PDF files found for validation.")
+
+        print()
+        print("SUMMARY")
+        summary_file_total = 0
+        workspaces = {}
+        for subfolder_path in workspace_path.iterdir():
+            if subfolder_path.is_dir():
+                num_of_pdf_files = len(list(subfolder_path.rglob("*.pdf")))
+                summary_file_total += num_of_pdf_files
+                workspaces[subfolder_path.name] = num_of_pdf_files
+
+        for folder_name, count in workspaces.items():
+            print(f"* {folder_name}: {count} files ({round(100 * (count/summary_file_total))}%)")
 
 if __name__ == '__main__':
     main()
