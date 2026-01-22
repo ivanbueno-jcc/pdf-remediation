@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="184958">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/phoenix-rfp-appendf.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="97" failedRules="7" passedChecks="36599" failedChecks="46">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="29" status="failed" failedChecks="1" tags="lang">
+            <description>If the Lang entry is present in the document's Catalog dictionary or in a structure element dictionary or property list, its value shall be a language identifier as described in ISO 32000-1:2008, 14.9.2. A language identifier shall be a Language-Tag as defined in RFC 3066, Tags for the Identification of Languages</description>
+            <object>CosLang</object>
+            <test>/^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$/.test(unicodeValue)</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[0](563 0 obj SESect Sect)/Lang[0]</context>
+              <errorMessage>Value EN-US of the Lang entry is not a Language-Tag</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="1" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[0](72 0 obj SETR TR)/K[0](530 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](829 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.8" testNumber="1" status="failed" failedChecks="14" tags="font">
+            <description>A PDF/UA compliant document shall not contain a reference to the .notdef glyph from any of the text showing operators, regardless of text rendering mode, in any content stream</description>
+            <object>Glyph</object>
+            <test>name != ".notdef"</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](6 0 obj PDPage)/contentStream[0](816 0 obj PDSemanticContentStream)/operators[1003]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 594858858 3 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](8 0 obj PDPage)/contentStream[0](678 0 obj PDSemanticContentStream)/operators[374]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1302725372 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](8 0 obj PDPage)/contentStream[0](678 0 obj PDSemanticContentStream)/operators[483]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1618984457 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](8 0 obj PDPage)/contentStream[0](678 0 obj PDSemanticContentStream)/operators[591]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1860886124 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](8 0 obj PDPage)/contentStream[0](678 0 obj PDSemanticContentStream)/operators[727]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1828508781 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[241]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 373097727 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1122233828 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[544]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1739267143 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[1114]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1926180325 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[1177]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1170788511 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[1250]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1110195322 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[1320]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1976602906 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](822 0 obj PDSemanticContentStream)/operators[314]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1073741635 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](822 0 obj PDSemanticContentStream)/operators[393]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 2066892165 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="14" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](6 0 obj PDPage)/contentStream[0](816 0 obj PDSemanticContentStream)/operators[1003]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 594858858 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](8 0 obj PDPage)/contentStream[0](678 0 obj PDSemanticContentStream)/operators[374]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1302725372 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](8 0 obj PDPage)/contentStream[0](678 0 obj PDSemanticContentStream)/operators[483]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1618984457 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](8 0 obj PDPage)/contentStream[0](678 0 obj PDSemanticContentStream)/operators[591]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1860886124 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](8 0 obj PDPage)/contentStream[0](678 0 obj PDSemanticContentStream)/operators[727]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1828508781 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[241]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 373097727 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1122233828 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[544]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1739267143 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[1114]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1926180325 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[1177]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1170788511 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[1250]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1110195322 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](818 0 obj PDSemanticContentStream)/operators[1320]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1976602906 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](822 0 obj PDSemanticContentStream)/operators[314]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 1073741635 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](822 0 obj PDSemanticContentStream)/operators[393]/usedGlyphs[0](POKOHH+SymbolMT POKOHH+SymbolMT 0 0 2066892165 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="14" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[15](87 0 obj SETR TR)/K[0](394 0 obj SETD TD)/K[0](416 0 obj SEL L)/K[0](417 0 obj SELI LI)/K[1](419 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[16](88 0 obj SETR TR)/K[0](380 0 obj SETD TD)/K[0](389 0 obj SEL L)/K[0](390 0 obj SELI LI)/K[1](392 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[17](89 0 obj SETR TR)/K[0](366 0 obj SETD TD)/K[0](375 0 obj SEL L)/K[0](376 0 obj SELI LI)/K[1](378 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[18](90 0 obj SETR TR)/K[0](350 0 obj SETD TD)/K[0](361 0 obj SEL L)/K[0](362 0 obj SELI LI)/K[1](364 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[19](91 0 obj SETR TR)/K[0](331 0 obj SETD TD)/K[0](344 0 obj SEL L)/K[0](346 0 obj SELI LI)/K[1](348 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[20](92 0 obj SETR TR)/K[0](311 0 obj SETD TD)/K[0](326 0 obj SEL L)/K[0](327 0 obj SELI LI)/K[1](329 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[21](93 0 obj SETR TR)/K[0](299 0 obj SETD TD)/K[0](306 0 obj SEL L)/K[0](307 0 obj SELI LI)/K[1](309 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[22](94 0 obj SETR TR)/K[0](287 0 obj SETD TD)/K[0](294 0 obj SEL L)/K[0](295 0 obj SELI LI)/K[1](297 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[25](97 0 obj SETR TR)/K[0](265 0 obj SETD TD)/K[0](270 0 obj SEL L)/K[0](271 0 obj SELI LI)/K[1](273 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[26](98 0 obj SETR TR)/K[0](255 0 obj SETD TD)/K[0](260 0 obj SEL L)/K[0](261 0 obj SELI LI)/K[1](263 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[27](99 0 obj SETR TR)/K[0](245 0 obj SETD TD)/K[0](250 0 obj SEL L)/K[0](251 0 obj SELI LI)/K[1](253 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[28](100 0 obj SETR TR)/K[0](235 0 obj SETD TD)/K[0](240 0 obj SEL L)/K[0](241 0 obj SELI LI)/K[1](243 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[29](101 0 obj SETR TR)/K[0](224 0 obj SETD TD)/K[0](230 0 obj SEL L)/K[0](231 0 obj SELI LI)/K[1](233 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](67 0 obj SESect Sect)/K[0](69 0 obj SETable Table)/K[1](71 0 obj SETBody TBody)/K[30](102 0 obj SETR TR)/K[0](214 0 obj SETD TD)/K[0](219 0 obj SEL L)/K[0](220 0 obj SELI LI)/K[1](222 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](829 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769051196128" finish="1769051197796">00:00:01.668</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769051195947" finish="1769051197836">00:00:01.889</duration>
+  </batchSummary>
+</report>

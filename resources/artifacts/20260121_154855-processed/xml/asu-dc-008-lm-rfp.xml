@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="312029">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/asu-dc-008-lm-rfp.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="103" failedRules="1" passedChecks="40827" failedChecks="1">
+          <rule specification="ISO 14289-1:2014" clause="7.16" testNumber="1" status="failed" failedChecks="1" tags="syntax">
+            <description>An encrypted conforming file shall contain a P key in its encryption dictionary (ISO 32000-1:2008, 7.6.3.2, Table 21). The 10th bit position of the P key shall be true</description>
+            <object>PDEncryption</object>
+            <test>P != null &amp;&amp; (P &amp; 512) == 512</test>
+            <check status="failed">
+              <context>root/trailer[0]/Encrypt[0](54 0 obj PDEncryption)</context>
+              <errorMessage>The file is encrypted but does not contain a P entry in its encryption dictionary or the file is encrypted and does contain a P entry, but the 10th bit position of the P entry is false (P = -1852, 10th bit = 0)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769051267563" finish="1769051269595">00:00:02.032</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769051267471" finish="1769051269666">00:00:02.195</duration>
+  </batchSummary>
+</report>

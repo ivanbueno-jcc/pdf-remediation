@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1778170">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/jv218.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="13262" failedChecks="89">
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](796 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[5](725 0 obj PDWidgetAnnot)/appearance[0]/contentStream[0](643 0 obj PDContentStream)/operators[8]/usedGlyphs[0](ZapfDingbats ZapfDingbats 54 0  0 false)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](796 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.1" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>The font programs for all fonts used for rendering within a conforming file shall be embedded within that file, as defined in ISO 32000-1:2008, 9.9</description>
+            <object>PDFont</object>
+            <test>Subtype == "Type3" || Subtype == "Type0" || renderingMode == 3 || containsFontFile == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[5](725 0 obj PDWidgetAnnot)/appearance[0]/contentStream[0](643 0 obj PDContentStream)/operators[8]/font[0](ZapfDingbats)</context>
+              <errorMessage>The font program is not embedded</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="85" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[0](720 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[1](721 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[2](722 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[3](723 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[4](724 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[5](725 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[6](727 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[7](728 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[8](729 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[9](730 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[10](731 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[11](732 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[12](733 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[13](734 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[14](735 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[15](736 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[16](737 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[17](738 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[18](739 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[19](740 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[20](741 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[21](742 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[22](743 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[23](744 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[24](745 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](642 0 obj PDPage)/annots[25](746 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[0](158 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[1](165 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[2](166 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[3](171 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[4](156 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[5](170 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[6](160 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[7](164 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[8](162 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[9](163 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[10](159 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[11](157 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[12](168 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[13](155 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[14](161 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[15](169 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[16](179 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[17](180 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[18](167 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[19](176 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[20](172 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[21](173 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[22](174 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[23](175 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[0](181 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[1](186 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[2](187 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[3](188 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[4](190 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[5](182 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[6](189 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[7](191 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[8](194 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[9](192 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[10](193 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[11](196 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[12](198 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[13](197 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[14](195 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[15](183 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[16](201 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[17](202 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[18](199 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[19](200 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[20](205 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[21](203 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[22](204 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[23](207 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[24](206 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[25](208 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[26](209 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[27](212 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[28](215 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[29](216 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[30](184 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[31](185 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[32](213 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[33](214 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[34](217 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040424389" finish="1769040426094">00:00:01.705</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040424211" finish="1769040426112">00:00:01.901</duration>
+  </batchSummary>
+</report>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1882649">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/itac-20160819-rps-materials-public.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="313674" failedChecks="38">
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="2" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[4](2718 0 obj SEPart Part)/K[0](2717 0 obj SESect Sect)/K[0](2720 0 obj SETable Table)/K[1](2723 0 obj SETR TR)/K[0](3123 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[7](1030 0 obj SEPart Part)/K[0](1029 0 obj SESect Sect)/K[0](1032 0 obj SETable Table)/K[1](1035 0 obj SETR TR)/K[0](1551 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="2" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[2](5505 0 obj SEPart Part)/K[0](5504 0 obj SESect Sect)/K[0](5507 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (3 and 1 respectively)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[5](2517 0 obj SEPart Part)/K[0](2516 0 obj SESect Sect)/K[0](2519 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (3 and 1 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="22" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[52](263 0 obj PDPage)/annots[0](691 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[52](263 0 obj PDPage)/annots[1](692 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[53](268 0 obj PDPage)/annots[0](698 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[53](268 0 obj PDPage)/annots[1](699 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[54](273 0 obj PDPage)/annots[0](705 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[54](273 0 obj PDPage)/annots[1](706 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[55](278 0 obj PDPage)/annots[0](712 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[55](278 0 obj PDPage)/annots[1](713 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[56](283 0 obj PDPage)/annots[0](719 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[56](283 0 obj PDPage)/annots[1](720 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[57](288 0 obj PDPage)/annots[0](726 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[57](288 0 obj PDPage)/annots[1](727 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[58](293 0 obj PDPage)/annots[0](733 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[58](293 0 obj PDPage)/annots[1](734 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[59](298 0 obj PDPage)/annots[0](740 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[59](298 0 obj PDPage)/annots[1](741 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[60](303 0 obj PDPage)/annots[0](747 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[60](303 0 obj PDPage)/annots[1](748 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[61](308 0 obj PDPage)/annots[0](754 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[61](308 0 obj PDPage)/annots[1](755 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[62](313 0 obj PDPage)/annots[0](761 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[62](313 0 obj PDPage)/annots[1](762 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="17" status="failed" failedChecks="12" tags="structure,list">
+            <description>LI element should be contained in L element</description>
+            <object>SELI</object>
+            <test>parentStandardType == 'L'</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[4](2718 0 obj SEPart Part)/K[0](2717 0 obj SESect Sect)/K[0](2720 0 obj SETable Table)/K[1](2723 0 obj SETR TR)/K[0](3123 0 obj SETD TD)/K[0](3218 0 obj SEP Normal)/K[0](3220 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[4](2718 0 obj SEPart Part)/K[0](2717 0 obj SESect Sect)/K[0](2720 0 obj SETable Table)/K[5](2727 0 obj SETR TR)/K[0](3070 0 obj SETD TD)/K[0](3089 0 obj SEP Normal)/K[0](3091 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[4](2718 0 obj SEPart Part)/K[0](2717 0 obj SESect Sect)/K[0](2720 0 obj SETable Table)/K[6](2728 0 obj SETR TR)/K[0](2914 0 obj SETD TD)/K[0](3066 0 obj SEP Normal)/K[0](3068 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[4](2718 0 obj SEPart Part)/K[0](2717 0 obj SESect Sect)/K[0](2720 0 obj SETable Table)/K[11](2733 0 obj SETR TR)/K[0](2851 0 obj SETD TD)/K[0](2870 0 obj SEP Normal)/K[0](2872 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[4](2718 0 obj SEPart Part)/K[0](2717 0 obj SESect Sect)/K[0](2720 0 obj SETable Table)/K[12](2734 0 obj SETR TR)/K[0](2809 0 obj SETD TD)/K[0](2847 0 obj SEP Normal)/K[0](2849 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[4](2718 0 obj SEPart Part)/K[0](2717 0 obj SESect Sect)/K[0](2720 0 obj SETable Table)/K[12](2734 0 obj SETR TR)/K[3](2812 0 obj SETD TD)/K[1](2834 0 obj SEP Normal)/K[0](2840 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[4](2718 0 obj SEPart Part)/K[0](2717 0 obj SESect Sect)/K[0](2720 0 obj SETable Table)/K[15](2737 0 obj SETR TR)/K[0](2744 0 obj SETD TD)/K[0](2785 0 obj SEP Normal)/K[0](2787 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[7](1030 0 obj SEPart Part)/K[0](1029 0 obj SESect Sect)/K[0](1032 0 obj SETable Table)/K[1](1035 0 obj SETR TR)/K[0](1551 0 obj SETD TD)/K[0](1570 0 obj SEP Normal)/K[0](1572 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[7](1030 0 obj SEPart Part)/K[0](1029 0 obj SESect Sect)/K[0](1032 0 obj SETable Table)/K[2](1036 0 obj SETR TR)/K[0](1532 0 obj SETD TD)/K[0](1547 0 obj SEP Normal)/K[0](1549 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[7](1030 0 obj SEPart Part)/K[0](1029 0 obj SESect Sect)/K[0](1032 0 obj SETable Table)/K[4](1038 0 obj SETR TR)/K[0](1485 0 obj SETD TD)/K[0](1518 0 obj SEP Normal)/K[0](1520 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[7](1030 0 obj SEPart Part)/K[0](1029 0 obj SESect Sect)/K[0](1032 0 obj SETable Table)/K[5](1039 0 obj SETR TR)/K[0](1441 0 obj SETD TD)/K[0](1481 0 obj SEP Normal)/K[0](1483 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](992 0 obj PDStructTreeRoot)/K[0](993 0 obj SEDocument Document)/K[7](1030 0 obj SEPart Part)/K[0](1029 0 obj SESect Sect)/K[0](1032 0 obj SETable Table)/K[8](1042 0 obj SETR TR)/K[0](1104 0 obj SETD TD)/K[0](1417 0 obj SEP Normal)/K[0](1419 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769047754614" finish="1769047759153">00:00:04.539</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769047754458" finish="1769047759207">00:00:04.749</duration>
+  </batchSummary>
+</report>

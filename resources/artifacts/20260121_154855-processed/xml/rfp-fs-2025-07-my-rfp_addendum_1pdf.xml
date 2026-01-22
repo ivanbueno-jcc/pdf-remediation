@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="523014">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/rfp-fs-2025-07-my-rfp_addendum_1pdf.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="47910" failedChecks="9">
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="2" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](260 0 obj PDStructTreeRoot)/K[0](261 0 obj SEDocument Document)/K[0](298 0 obj SESect Sect)/K[4](305 0 obj SETable Table)/K[1](535 0 obj SETR TR)/K[1](567 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](260 0 obj PDStructTreeRoot)/K[0](261 0 obj SEDocument Document)/K[0](298 0 obj SESect Sect)/K[82](387 0 obj SETable Table)/K[1](408 0 obj SETR TR)/K[1](521 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="6" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](10 0 obj PDPage)/annots[0](798 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](10 0 obj PDPage)/annots[1](796 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](10 0 obj PDPage)/annots[2](794 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](10 0 obj PDPage)/annots[3](792 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](10 0 obj PDPage)/annots[4](790 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](10 0 obj PDPage)/annots[5](788 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](260 0 obj PDStructTreeRoot)/K[0](261 0 obj SEDocument Document)/K[0](298 0 obj SESect Sect)/K[1](300 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769051227473" finish="1769051229624">00:00:02.151</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769051227361" finish="1769051229707">00:00:02.346</duration>
+  </batchSummary>
+</report>

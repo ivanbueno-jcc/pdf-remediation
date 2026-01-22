@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="433183">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/fl313infoc.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="11457" failedChecks="1571">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="4" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[119]/font[0](RMEGWE+MHei-Light)/DescendantFonts[0](RMEGWE+MHei-Light)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[165]/font[0](AGQISM+MHei-Bold)/DescendantFonts[0](AGQISM+MHei-Bold)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/font[0](TXYSYA+MSung-Light)/DescendantFonts[0](TXYSYA+MSung-Light)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[367]/font[0](XDMQCS+MSung-Medium)/DescendantFonts[0](XDMQCS+MSung-Medium)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1567" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[0](TXYSYA+MSung-Light TXYSYA+MSung-Light 3095 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[3](TXYSYA+MSung-Light TXYSYA+MSung-Light 4127 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[4](TXYSYA+MSung-Light TXYSYA+MSung-Light 5750 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[5](TXYSYA+MSung-Light TXYSYA+MSung-Light 1367 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[6](TXYSYA+MSung-Light TXYSYA+MSung-Light 613 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[7](TXYSYA+MSung-Light TXYSYA+MSung-Light 612 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[8](TXYSYA+MSung-Light TXYSYA+MSung-Light 3665 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[9](TXYSYA+MSung-Light TXYSYA+MSung-Light 1948 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[10](TXYSYA+MSung-Light TXYSYA+MSung-Light 2242 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[11](TXYSYA+MSung-Light TXYSYA+MSung-Light 3458 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[12](TXYSYA+MSung-Light TXYSYA+MSung-Light 127 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[13](TXYSYA+MSung-Light TXYSYA+MSung-Light 2692 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[14](TXYSYA+MSung-Light TXYSYA+MSung-Light 2948 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[15](TXYSYA+MSung-Light TXYSYA+MSung-Light 128 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[16](TXYSYA+MSung-Light TXYSYA+MSung-Light 1705 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[17](TXYSYA+MSung-Light TXYSYA+MSung-Light 1310 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[18](TXYSYA+MSung-Light TXYSYA+MSung-Light 1554 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[19](TXYSYA+MSung-Light TXYSYA+MSung-Light 2513 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[20](TXYSYA+MSung-Light TXYSYA+MSung-Light 1599 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[21](TXYSYA+MSung-Light TXYSYA+MSung-Light 2172 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[239]/usedGlyphs[22](TXYSYA+MSung-Light TXYSYA+MSung-Light 1661 0 1325866488 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[0](TXYSYA+MSung-Light TXYSYA+MSung-Light 4303 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[1](TXYSYA+MSung-Light TXYSYA+MSung-Light 2028 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[2](TXYSYA+MSung-Light TXYSYA+MSung-Light 1040 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[3](TXYSYA+MSung-Light TXYSYA+MSung-Light 750 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[5](TXYSYA+MSung-Light TXYSYA+MSung-Light 5584 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[6](TXYSYA+MSung-Light TXYSYA+MSung-Light 613 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[7](TXYSYA+MSung-Light TXYSYA+MSung-Light 612 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[8](TXYSYA+MSung-Light TXYSYA+MSung-Light 4692 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[9](TXYSYA+MSung-Light TXYSYA+MSung-Light 1257 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[10](TXYSYA+MSung-Light TXYSYA+MSung-Light 2030 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[11](TXYSYA+MSung-Light TXYSYA+MSung-Light 3954 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[12](TXYSYA+MSung-Light TXYSYA+MSung-Light 1599 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[13](TXYSYA+MSung-Light TXYSYA+MSung-Light 1210 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[14](TXYSYA+MSung-Light TXYSYA+MSung-Light 1409 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[15](TXYSYA+MSung-Light TXYSYA+MSung-Light 101 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[16](TXYSYA+MSung-Light TXYSYA+MSung-Light 815 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[17](TXYSYA+MSung-Light TXYSYA+MSung-Light 3845 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[18](TXYSYA+MSung-Light TXYSYA+MSung-Light 2473 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[19](TXYSYA+MSung-Light TXYSYA+MSung-Light 3056 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[20](TXYSYA+MSung-Light TXYSYA+MSung-Light 3146 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[21](TXYSYA+MSung-Light TXYSYA+MSung-Light 1308 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[248]/usedGlyphs[22](TXYSYA+MSung-Light TXYSYA+MSung-Light 964 0 1560379655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[0](TXYSYA+MSung-Light TXYSYA+MSung-Light 5584 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[5](TXYSYA+MSung-Light TXYSYA+MSung-Light 1367 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[6](TXYSYA+MSung-Light TXYSYA+MSung-Light 613 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[7](TXYSYA+MSung-Light TXYSYA+MSung-Light 612 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[8](TXYSYA+MSung-Light TXYSYA+MSung-Light 3665 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[9](TXYSYA+MSung-Light TXYSYA+MSung-Light 1948 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[10](TXYSYA+MSung-Light TXYSYA+MSung-Light 2242 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[11](TXYSYA+MSung-Light TXYSYA+MSung-Light 3458 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[12](TXYSYA+MSung-Light TXYSYA+MSung-Light 2576 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[13](TXYSYA+MSung-Light TXYSYA+MSung-Light 5440 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[14](TXYSYA+MSung-Light TXYSYA+MSung-Light 100 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[15](TXYSYA+MSung-Light TXYSYA+MSung-Light 931 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[16](TXYSYA+MSung-Light TXYSYA+MSung-Light 1028 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[17](TXYSYA+MSung-Light TXYSYA+MSung-Light 5109 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[18](TXYSYA+MSung-Light TXYSYA+MSung-Light 1349 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[19](TXYSYA+MSung-Light TXYSYA+MSung-Light 3820 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[20](TXYSYA+MSung-Light TXYSYA+MSung-Light 1210 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[21](TXYSYA+MSung-Light TXYSYA+MSung-Light 4127 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[22](TXYSYA+MSung-Light TXYSYA+MSung-Light 5750 0 951988316 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[0](TXYSYA+MSung-Light TXYSYA+MSung-Light 1580 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[1](TXYSYA+MSung-Light TXYSYA+MSung-Light 5674 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[2](TXYSYA+MSung-Light TXYSYA+MSung-Light 1462 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[3](TXYSYA+MSung-Light TXYSYA+MSung-Light 1337 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[4](TXYSYA+MSung-Light TXYSYA+MSung-Light 1409 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[5](TXYSYA+MSung-Light TXYSYA+MSung-Light 613 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[6](TXYSYA+MSung-Light TXYSYA+MSung-Light 612 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[7](TXYSYA+MSung-Light TXYSYA+MSung-Light 4692 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[8](TXYSYA+MSung-Light TXYSYA+MSung-Light 1257 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[9](TXYSYA+MSung-Light TXYSYA+MSung-Light 2030 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[10](TXYSYA+MSung-Light TXYSYA+MSung-Light 3954 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[11](TXYSYA+MSung-Light TXYSYA+MSung-Light 1599 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[12](TXYSYA+MSung-Light TXYSYA+MSung-Light 5043 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[13](TXYSYA+MSung-Light TXYSYA+MSung-Light 1061 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[14](TXYSYA+MSung-Light TXYSYA+MSung-Light 100 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[15](TXYSYA+MSung-Light TXYSYA+MSung-Light 917 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[16](TXYSYA+MSung-Light TXYSYA+MSung-Light 1028 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[17](TXYSYA+MSung-Light TXYSYA+MSung-Light 2926 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[18](TXYSYA+MSung-Light TXYSYA+MSung-Light 3762 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[19](TXYSYA+MSung-Light TXYSYA+MSung-Light 4604 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[20](TXYSYA+MSung-Light TXYSYA+MSung-Light 1793 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[21](TXYSYA+MSung-Light TXYSYA+MSung-Light 2193 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[266]/usedGlyphs[22](TXYSYA+MSung-Light TXYSYA+MSung-Light 734 0 647973805 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[0](TXYSYA+MSung-Light TXYSYA+MSung-Light 677 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[1](TXYSYA+MSung-Light TXYSYA+MSung-Light 917 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[2](TXYSYA+MSung-Light TXYSYA+MSung-Light 1028 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[3](TXYSYA+MSung-Light TXYSYA+MSung-Light 2926 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[4](TXYSYA+MSung-Light TXYSYA+MSung-Light 1861 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[5](TXYSYA+MSung-Light TXYSYA+MSung-Light 1170 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[6](TXYSYA+MSung-Light TXYSYA+MSung-Light 1327 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[7](TXYSYA+MSung-Light TXYSYA+MSung-Light 738 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[9](TXYSYA+MSung-Light TXYSYA+MSung-Light 3643 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[10](TXYSYA+MSung-Light TXYSYA+MSung-Light 1599 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[11](TXYSYA+MSung-Light TXYSYA+MSung-Light 569 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[12](TXYSYA+MSung-Light TXYSYA+MSung-Light 2433 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[13](TXYSYA+MSung-Light TXYSYA+MSung-Light 3845 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[14](TXYSYA+MSung-Light TXYSYA+MSung-Light 2473 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](266 0 obj PDPage)/contentStream[0](496 0 obj PDSemanticContentStream)/operators[275]/usedGlyphs[15](TXYSYA+MSung-Light TXYSYA+MSung-Light 101 0 1591161296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041209175" finish="1769041211044">00:00:01.869</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041208849" finish="1769041211095">00:00:02.246</duration>
+  </batchSummary>
+</report>

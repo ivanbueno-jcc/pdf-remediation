@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="6677680">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/cfac-20230601-materials.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="106414" failedChecks="70">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[4](17 0 obj PDPage)/contentStream[0](2877 0 obj PDSemanticContentStream)/operators[1751]/font[0](XZWMUT+Gotham-Book)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](17 0 obj PDPage)/contentStream[0](2877 0 obj PDSemanticContentStream)/operators[1819]/font[0](WVHGGV+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.3.2" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>ISO 32000-1:2008, 9.7.4, Table 117 requires that all embedded Type 2 CIDFonts in the CIDFont dictionary shall contain a CIDToGIDMap entry that shall be a stream mapping from CIDs to glyph indices or the name Identity, as described in ISO 32000-1:2008, 9.7.4, Table 117</description>
+            <object>PDCIDFont</object>
+            <test>Subtype != "CIDFontType2" || CIDToGIDMap != null || containsFontFile == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](1870 0 obj PDPage)/contentStream[0](2151 0 obj PDSemanticContentStream)/operators[1114]/font[0](ABCDEE+Times New Roman)/DescendantFonts[0](ABCDEE+Times New Roman)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="64" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[2664]/usedGlyphs[0](1255109302 *Calibri-Bold-13818 *Calibri-Bold-13818 81 0 2110068611 5 true)</context>
+              <errorMessage>Glyph width -11 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[2838]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 211199210 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[3023]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 223975178 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[3032]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 507583873 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[3126]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1787987889 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[3596]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 2034975583 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[3605]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 955443582 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[4239]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1596009860 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[4453]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1713546896 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[4616]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 233519968 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[4741]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 892231982 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[4750]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1710228600 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[4822]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 91220956 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[4849]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 8197402 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[5207]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1776486598 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[5801]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 594916129 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[6880]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 2037202079 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[6965]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1105282397 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[7346]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1161382705 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[7597]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1687087217 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[7950]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1775120226 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[8234]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 106113013 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[8243]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 719182854 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[8259]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 807239968 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[8694]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 689448569 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[8978]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 291847739 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[9063]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 463215441 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[9707]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1592712032 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[9791]/usedGlyphs[0](1638249646 *Times New Roman-13783 *Times New Roman-13783 2 0 1272753974 5 true)</context>
+              <errorMessage>Glyph width -66 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[10442]/usedGlyphs[0](1298557761 *Times New Roman-13792 *Times New Roman-13792 4 0 1752365512 5 true)</context>
+              <errorMessage>Glyph width -97 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[10493]/usedGlyphs[0](558404860 *Times New Roman-13757 *Times New Roman-13757 19 0 1580874189 5 true)</context>
+              <errorMessage>Glyph width -117 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[10581]/usedGlyphs[1](1406004470 *Courier New-13832 *Courier New-13832 10 0 973692608 5 true)</context>
+              <errorMessage>Glyph width -156 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[10655]/usedGlyphs[0](1406004470 *Courier New-13832 *Courier New-13832 4 0 1423586012 5 true)</context>
+              <errorMessage>Glyph width -69 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[10728]/usedGlyphs[0](1406004470 *Courier New-13832 *Courier New-13832 4 0 1844942991 5 true)</context>
+              <errorMessage>Glyph width -69 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/contentStream[0](6364 0 obj PDSemanticContentStream)/operators[11099]/usedGlyphs[1](1121891386 *Calibri-Bold-13817 *Calibri-Bold-13817 65 0 731368479 5 true)</context>
+              <errorMessage>Glyph width -808 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](249 0 obj PDPage)/contentStream[0](6365 0 obj PDSemanticContentStream)/operators[1771]/usedGlyphs[7](1582277082 *Calibri-8665 *Calibri-8665 3 0 1067936865 6 true)</context>
+              <errorMessage>Glyph width -435 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[3077]/usedGlyphs[5](1757933443 *Times New Roman-17546 *Times New Roman-17546 88 0 1415937490 7 true)</context>
+              <errorMessage>Glyph width -85 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[8491]/usedGlyphs[1](1253396693 *Times New Roman-17530 *Times New Roman-17530 26 0 38647502 7 true)</context>
+              <errorMessage>Glyph width -109 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[9687]/usedGlyphs[0](31366484 *Times New Roman-17529 *Times New Roman-17529 38 0 503879157 7 true)</context>
+              <errorMessage>Glyph width -1076 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[9727]/usedGlyphs[0](1653153736 *Times New Roman-17620 *Times New Roman-17620 1 0 1323676377 7 true)</context>
+              <errorMessage>Glyph width -139 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[9746]/usedGlyphs[1](987805552 *Times New Roman-17619 *Times New Roman-17619 2 0 843005078 7 true)</context>
+              <errorMessage>Glyph width -82 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[10215]/usedGlyphs[2](1885562991 *Times New Roman-17538 *Times New Roman-17538 13 0 1266224518 7 true)</context>
+              <errorMessage>Glyph width -222 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[10291]/usedGlyphs[0](854640632 *Times New Roman-17545 *Times New Roman-17545 5 0 1766122814 7 true)</context>
+              <errorMessage>Glyph width 63034 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[10368]/usedGlyphs[1](2083106248 *Times New Roman-17615 *Times New Roman-17615 7 0 1416520149 7 true)</context>
+              <errorMessage>Glyph width -167 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[10431]/usedGlyphs[0](2083106248 *Times New Roman-17615 *Times New Roman-17615 17 0 903195729 7 true)</context>
+              <errorMessage>Glyph width -466 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[12764]/usedGlyphs[0](1778028150 *Times New Roman-17533 *Times New Roman-17533 37 0 1242969461 7 true)</context>
+              <errorMessage>Glyph width -801 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[16252]/usedGlyphs[0](187649742 *Times New Roman-17547 *Times New Roman-17547 52 0 1272257854 7 true)</context>
+              <errorMessage>Glyph width -235 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[17744]/usedGlyphs[0](1169894049 *Times New Roman-17550 *Times New Roman-17550 11 0 2132736278 7 true)</context>
+              <errorMessage>Glyph width -137 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[17902]/usedGlyphs[0](187649742 *Times New Roman-17547 *Times New Roman-17547 40 0 157783888 7 true)</context>
+              <errorMessage>Glyph width -45 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[18378]/usedGlyphs[0](216644009 *Times New Roman-17585 *Times New Roman-17585 12 0 553056396 7 true)</context>
+              <errorMessage>Glyph width -143 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[18612]/usedGlyphs[0](872592585 *Times New Roman-17594 *Times New Roman-17594 5 0 2137552114 7 true)</context>
+              <errorMessage>Glyph width -185 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[19049]/usedGlyphs[0](1751753651 *Times New Roman-17584 *Times New Roman-17584 11 0 1852655488 7 true)</context>
+              <errorMessage>Glyph width -242 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[19115]/usedGlyphs[0](1751753651 *Times New Roman-17584 *Times New Roman-17584 13 0 2042971662 7 true)</context>
+              <errorMessage>Glyph width -4 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[19466]/usedGlyphs[0](1969969319 *Times New Roman-Italic-17583 *Times New Roman-Italic-17583 6 0 716117291 7 true)</context>
+              <errorMessage>Glyph width 1000 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[19756]/usedGlyphs[0](2052452680 *Times New Roman-17581 *Times New Roman-17581 11 0 1579140143 7 true)</context>
+              <errorMessage>Glyph width -213 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[20044]/usedGlyphs[0](198250778 *Times New Roman-17569 *Times New Roman-17569 3 0 464606033 7 true)</context>
+              <errorMessage>Glyph width -91 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[20074]/usedGlyphs[0](198250778 *Times New Roman-17569 *Times New Roman-17569 3 0 1336418989 7 true)</context>
+              <errorMessage>Glyph width -91 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[20257]/usedGlyphs[0](187649742 *Times New Roman-17547 *Times New Roman-17547 40 0 1054035701 7 true)</context>
+              <errorMessage>Glyph width -45 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[20519]/usedGlyphs[25](566698125 *Times New Roman-17579 *Times New Roman-17579 12 0 1134599394 7 true)</context>
+              <errorMessage>Glyph width -134 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[20821]/usedGlyphs[0](187649742 *Times New Roman-17547 *Times New Roman-17547 68 0 367725289 7 true)</context>
+              <errorMessage>Glyph width -65 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[21474]/usedGlyphs[1](1757933443 *Times New Roman-17546 *Times New Roman-17546 37 0 1701388960 7 true)</context>
+              <errorMessage>Glyph width -89 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[21715]/usedGlyphs[0](1073427864 *Times New Roman-Italic-17570 *Times New Roman-Italic-17570 6 0 1496999718 7 true)</context>
+              <errorMessage>Glyph width -43 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[21797]/usedGlyphs[0](198250778 *Times New Roman-17569 *Times New Roman-17569 6 0 141154428 7 true)</context>
+              <errorMessage>Glyph width -17 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](382 0 obj PDPage)/contentStream[0](6366 0 obj PDSemanticContentStream)/operators[21873]/usedGlyphs[0](2102724832 *Times New Roman-Italic-17568 *Times New Roman-Italic-17568 10 0 1997270773 7 true)</context>
+              <errorMessage>Glyph width -25 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.1" testNumber="1" status="failed" failedChecks="3" tags="annotation">
+            <description>An annotation, excluding annotations of subtype Widget, PrinterMark or Link, shall be nested within an Annot tag</description>
+            <object>PDAnnot</object>
+            <test>Subtype == 'Widget' || Subtype == 'PrinterMark' || Subtype == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2 || structParentStandardType == 'Annot'</test>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/annots[0](734 0 obj PDMarkupAnnot)</context>
+              <errorMessage>FreeText annotation is an Artifact or is nested within null tag (standard type = null) instead of Annot</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/annots[1](735 0 obj PDMarkupAnnot)</context>
+              <errorMessage>FreeText annotation is an Artifact or is nested within null tag (standard type = null) instead of Annot</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](29 0 obj PDPage)/annots[2](736 0 obj PDMarkupAnnot)</context>
+              <errorMessage>FreeText annotation is an Artifact or is nested within null tag (standard type = null) instead of Annot</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769047105004" finish="1769047109063">00:00:04.059</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769047104903" finish="1769047109177">00:00:04.274</duration>
+  </batchSummary>
+</report>

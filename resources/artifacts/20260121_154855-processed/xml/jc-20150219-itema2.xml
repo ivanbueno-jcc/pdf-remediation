@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="5102061">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/jc-20150219-itema2.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="438416" failedChecks="8">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="4" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[68](265 0 obj PDPage)/contentStream[0](9012 0 obj PDSemanticContentStream)/operators[81]/font[0](HDLGGL+Melior)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[68](265 0 obj PDPage)/contentStream[0](9012 0 obj PDSemanticContentStream)/operators[1529]/font[0](HDLGGM+Melior-Italic)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[68](265 0 obj PDPage)/contentStream[0](9012 0 obj PDSemanticContentStream)/operators[1681]/font[0](HDLGHN+Helvetica-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[68](265 0 obj PDPage)/contentStream[0](9012 0 obj PDSemanticContentStream)/operators[15345]/font[0](HDLGJN+Helvetica)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.1" testNumber="1" status="failed" failedChecks="4" tags="annotation">
+            <description>An annotation, excluding annotations of subtype Widget, PrinterMark or Link, shall be nested within an Annot tag</description>
+            <object>PDAnnot</object>
+            <test>Subtype == 'Widget' || Subtype == 'PrinterMark' || Subtype == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2 || structParentStandardType == 'Annot'</test>
+            <check status="failed">
+              <context>root/document[0]/pages[14](33 0 obj PDPage)/annots[0](371 0 obj PDMarkupAnnot)</context>
+              <errorMessage>FreeText annotation is an Artifact or is nested within null tag (standard type = null) instead of Annot</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](86 0 obj PDPage)/annots[0](379 0 obj PDMarkupAnnot)</context>
+              <errorMessage>FreeText annotation is an Artifact or is nested within null tag (standard type = null) instead of Annot</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](86 0 obj PDPage)/annots[1](380 0 obj PDMarkupAnnot)</context>
+              <errorMessage>FreeText annotation is an Artifact or is nested within null tag (standard type = null) instead of Annot</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](90 0 obj PDPage)/annots[0](385 0 obj PDMarkupAnnot)</context>
+              <errorMessage>FreeText annotation is an Artifact or is nested within null tag (standard type = null) instead of Annot</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769043536495" finish="1769043543259">00:00:06.764</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769043536318" finish="1769043543305">00:00:06.987</duration>
+  </batchSummary>
+</report>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="146478">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/cfcc-2021-107rb-attach-9-darfur.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="4352" failedChecks="18">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="10" status="failed" failedChecks="6" tags="structure,table">
+            <description>TR element may contain only TH and TD elements</description>
+            <object>SETR</object>
+            <test>/^(TH|TD)(&amp;(TH|TD))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](12 0 obj PDStructTreeRoot)/K[0](13 0 obj SESect Sect)/K[5](68 0 obj SETable Table)/K[0](70 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](12 0 obj PDStructTreeRoot)/K[0](13 0 obj SESect Sect)/K[5](68 0 obj SETable Table)/K[1](67 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](12 0 obj PDStructTreeRoot)/K[0](13 0 obj SESect Sect)/K[13](56 0 obj SETable Table)/K[0](58 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](12 0 obj PDStructTreeRoot)/K[0](13 0 obj SESect Sect)/K[13](56 0 obj SETable Table)/K[1](59 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](12 0 obj PDStructTreeRoot)/K[0](13 0 obj SESect Sect)/K[13](56 0 obj SETable Table)/K[2](60 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](12 0 obj PDStructTreeRoot)/K[0](13 0 obj SESect Sect)/K[13](56 0 obj SETable Table)/K[3](55 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="2" status="failed" failedChecks="6" tags="artifact">
+            <description>Tagged content should not present inside content marked as Artifact</description>
+            <object>SEMarkedContent</object>
+            <test>isTaggedContent == false || parentsTags.contains('Artifact') == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[16]{mcid:10}</context>
+              <errorMessage>Tagged content (parent struct element 27 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[18]{mcid:12}</context>
+              <errorMessage>Tagged content (parent struct element 29 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[35]{mcid:29}</context>
+              <errorMessage>Tagged content (parent struct element 46 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[37]{mcid:31}</context>
+              <errorMessage>Tagged content (parent struct element 48 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[39]{mcid:33}</context>
+              <errorMessage>Tagged content (parent struct element 50 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[44]{mcid:36}</context>
+              <errorMessage>Tagged content (parent struct element 53 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="1" status="failed" failedChecks="6" tags="artifact">
+            <description>Content marked as Artifact should not present inside tagged content</description>
+            <object>SEMarkedContent</object>
+            <test>tag != 'Artifact' || isTaggedContent == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[16]{mcid:10}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 27 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[18]{mcid:12}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 29 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[35]{mcid:29}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 46 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[37]{mcid:31}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 48 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[39]{mcid:33}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 50 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](78 0 obj PDPage)/contentStream[0](140 0 obj PDSemanticContentStream)/content[44]{mcid:36}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 53 0 obj)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769051866288" finish="1769051867563">00:00:01.275</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769051866233" finish="1769051867659">00:00:01.426</duration>
+  </batchSummary>
+</report>

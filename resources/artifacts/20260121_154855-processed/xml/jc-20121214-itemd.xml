@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1391488">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/jc-20121214-itemd.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="97" failedRules="7" passedChecks="254312" failedChecks="150">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[225](1059 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns (7 and 5 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="2" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 6 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="1" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[0](352 0 obj SEPart Part)/K[0](354 0 obj SESect Sect)/K[95](489 0 obj SEL L)/K[0](490 0 obj SELI LI)/K[1](493 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](6157 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="10" status="failed" failedChecks="129" tags="structure,table">
+            <description>TR element may contain only TH and TD elements</description>
+            <object>SETR</object>
+            <test>/^(TH|TD)(&amp;(TH|TD))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[210](1040 0 obj SETable Table)/K[0](3961 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[210](1040 0 obj SETable Table)/K[1](3962 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[210](1040 0 obj SETable Table)/K[2](3963 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[211](1041 0 obj SETable Table)/K[0](3883 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[211](1041 0 obj SETable Table)/K[1](3884 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[211](1041 0 obj SETable Table)/K[2](3885 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[212](1042 0 obj SETable Table)/K[0](3781 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[212](1042 0 obj SETable Table)/K[1](3782 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[212](1042 0 obj SETable Table)/K[2](3783 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[212](1042 0 obj SETable Table)/K[3](3784 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[213](1043 0 obj SETable Table)/K[0](3705 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[213](1043 0 obj SETable Table)/K[1](3706 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[213](1043 0 obj SETable Table)/K[2](3707 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[214](1047 0 obj SETable Table)/K[0](3587 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[214](1047 0 obj SETable Table)/K[1](3588 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[214](1047 0 obj SETable Table)/K[2](3589 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[214](1047 0 obj SETable Table)/K[3](3590 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[215](1048 0 obj SETable Table)/K[0](3486 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[215](1048 0 obj SETable Table)/K[1](3487 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[215](1048 0 obj SETable Table)/K[2](3488 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[215](1048 0 obj SETable Table)/K[3](3489 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[216](1049 0 obj SETable Table)/K[0](3385 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[216](1049 0 obj SETable Table)/K[1](3386 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[216](1049 0 obj SETable Table)/K[2](3387 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[216](1049 0 obj SETable Table)/K[3](3388 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[217](1051 0 obj SETable Table)/K[0](3309 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[217](1051 0 obj SETable Table)/K[1](3310 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[217](1051 0 obj SETable Table)/K[2](3311 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[218](1052 0 obj SETable Table)/K[0](3232 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[218](1052 0 obj SETable Table)/K[1](3233 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[218](1052 0 obj SETable Table)/K[2](3234 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[219](1053 0 obj SETable Table)/K[0](3156 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[219](1053 0 obj SETable Table)/K[1](3157 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[219](1053 0 obj SETable Table)/K[2](3158 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[220](1054 0 obj SETable Table)/K[0](3080 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[220](1054 0 obj SETable Table)/K[1](3081 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[220](1054 0 obj SETable Table)/K[2](3082 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[221](1055 0 obj SETable Table)/K[0](2993 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[221](1055 0 obj SETable Table)/K[1](2994 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[221](1055 0 obj SETable Table)/K[2](2995 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[222](1056 0 obj SETable Table)/K[0](2917 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[222](1056 0 obj SETable Table)/K[1](2918 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[222](1056 0 obj SETable Table)/K[2](2919 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[223](1057 0 obj SETable Table)/K[0](2841 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[223](1057 0 obj SETable Table)/K[1](2842 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[223](1057 0 obj SETable Table)/K[2](2843 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[224](1058 0 obj SETable Table)/K[0](2740 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[224](1058 0 obj SETable Table)/K[1](2741 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[224](1058 0 obj SETable Table)/K[2](2742 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[224](1058 0 obj SETable Table)/K[3](2743 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[225](1059 0 obj SETable Table)/K[0](2670 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[225](1059 0 obj SETable Table)/K[1](2671 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[225](1059 0 obj SETable Table)/K[2](2672 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[1](2499 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[2](2500 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[3](2501 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[4](2502 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[5](2503 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[6](2504 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[7](2505 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[8](2506 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[9](2507 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[10](2508 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[11](2509 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[12](2510 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[13](2511 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[14](2512 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[17](2515 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[18](2516 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[19](2517 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[20](2518 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[232](1070 0 obj SETable Table)/K[21](2519 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[2](1659 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[3](1660 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[4](1661 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[5](1662 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[6](1663 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[7](1664 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[8](1665 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[9](1666 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[10](1667 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[11](1668 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[12](1669 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[13](1670 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[14](1671 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[15](1672 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[16](1673 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[17](1674 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[18](1675 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[19](1676 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[20](1677 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[21](1678 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[22](1679 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[23](1680 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[24](1681 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[25](1682 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[26](1683 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[27](1684 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[28](1685 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[274](1151 0 obj SETable Table)/K[29](1686 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="15" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[210](1040 0 obj SETable Table)/K[1](3962 0 obj SETR TR)/K[0](3988 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[211](1041 0 obj SETable Table)/K[1](3884 0 obj SETR TR)/K[0](3912 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[212](1042 0 obj SETable Table)/K[1](3782 0 obj SETR TR)/K[0](3834 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[213](1043 0 obj SETable Table)/K[1](3706 0 obj SETR TR)/K[0](3732 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[214](1047 0 obj SETable Table)/K[1](3588 0 obj SETR TR)/K[0](3656 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[215](1048 0 obj SETable Table)/K[1](3487 0 obj SETR TR)/K[0](3538 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[216](1049 0 obj SETable Table)/K[1](3386 0 obj SETR TR)/K[0](3437 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[217](1051 0 obj SETable Table)/K[1](3310 0 obj SETR TR)/K[0](3336 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[218](1052 0 obj SETable Table)/K[1](3233 0 obj SETR TR)/K[0](3260 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[219](1053 0 obj SETable Table)/K[1](3157 0 obj SETR TR)/K[0](3183 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[220](1054 0 obj SETable Table)/K[1](3081 0 obj SETR TR)/K[0](3107 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[221](1055 0 obj SETable Table)/K[1](2994 0 obj SETR TR)/K[0](3020 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[222](1056 0 obj SETable Table)/K[1](2918 0 obj SETR TR)/K[0](2944 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[223](1057 0 obj SETable Table)/K[1](2842 0 obj SETR TR)/K[0](2868 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](296 0 obj PDStructTreeRoot)/K[0](350 0 obj SEDocument Document)/K[1](348 0 obj SEPart Part)/K[0](347 0 obj SESect Sect)/K[224](1058 0 obj SETable Table)/K[1](2741 0 obj SETR TR)/K[0](2792 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](6157 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769045408735" finish="1769045412938">00:00:04.203</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769045408634" finish="1769045412979">00:00:04.345</duration>
+  </batchSummary>
+</report>

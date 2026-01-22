@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="169191">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/aesmcp-rfq-attend.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="15378" failedChecks="16">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="29" status="failed" failedChecks="1" tags="lang">
+            <description>If the Lang entry is present in the document's Catalog dictionary or in a structure element dictionary or property list, its value shall be a language identifier as described in ISO 32000-1:2008, 14.9.2. A language identifier shall be a Language-Tag as defined in RFC 3066, Tags for the Identification of Languages</description>
+            <object>CosLang</object>
+            <test>/^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$/.test(unicodeValue)</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[0](366 0 obj SESect Sect)/Lang[0]</context>
+              <errorMessage>Value EN-US of the Lang entry is not a Language-Tag</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](523 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="13" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[17](69 0 obj SEL L)/K[0](136 0 obj SELI LI)/K[1](138 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[18](71 0 obj SEL L)/K[0](132 0 obj SELI LI)/K[1](134 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[19](73 0 obj SEL L)/K[0](128 0 obj SELI LI)/K[1](130 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[20](75 0 obj SEL L)/K[0](124 0 obj SELI LI)/K[1](126 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[21](77 0 obj SEL L)/K[0](120 0 obj SELI LI)/K[1](122 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[22](79 0 obj SEL L)/K[0](116 0 obj SELI LI)/K[1](118 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[23](81 0 obj SEL L)/K[0](112 0 obj SELI LI)/K[1](114 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[29](88 0 obj SEL L)/K[0](108 0 obj SELI LI)/K[1](110 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[30](90 0 obj SEL L)/K[0](104 0 obj SELI LI)/K[1](106 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[31](92 0 obj SEL L)/K[0](100 0 obj SELI LI)/K[1](102 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[32](94 0 obj SEL L)/K[0](98 0 obj SELI LI)/K[1](99 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[33](95 0 obj SEL L)/K[0](96 0 obj SELI LI)/K[1](97 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](18 0 obj PDStructTreeRoot)/K[1](40 0 obj SESect Sect)/K[34](39 0 obj SEL L)/K[0](38 0 obj SELI LI)/K[1](37 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](523 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769050542909" finish="1769050544282">00:00:01.373</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769050542764" finish="1769050544294">00:00:01.530</duration>
+  </batchSummary>
+</report>

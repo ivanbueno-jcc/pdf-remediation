@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1188915">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-08/1-plenary-presentation-2021.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="19187" failedChecks="17">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="2" status="failed" failedChecks="3" tags="artifact">
+            <description>Tagged content should not present inside content marked as Artifact</description>
+            <object>SEMarkedContent</object>
+            <test>isTaggedContent == false || parentsTags.contains('Artifact') == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[9](34 0 obj PDPage)/contentStream[0](1338 0 obj PDSemanticContentStream)/content[1]{mcid:2}</context>
+              <errorMessage>Tagged content (parent struct element 858 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](34 0 obj PDPage)/contentStream[0](1338 0 obj PDSemanticContentStream)/content[3]{mcid:6}</context>
+              <errorMessage>Tagged content (parent struct element 860 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](69 0 obj PDPage)/contentStream[0](1393 0 obj PDSemanticContentStream)/content[2]{mcid:5}</context>
+              <errorMessage>Tagged content (parent struct element 276 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](192 0 obj PDStructTreeRoot)/K[17](339 0 obj SESect Slide)/K[1](337 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (5 and 4 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="1" status="failed" failedChecks="3" tags="artifact">
+            <description>Content marked as Artifact should not present inside tagged content</description>
+            <object>SEMarkedContent</object>
+            <test>tag != 'Artifact' || isTaggedContent == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[9](34 0 obj PDPage)/contentStream[0](1338 0 obj PDSemanticContentStream)/content[1]{mcid:2}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 858 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](34 0 obj PDPage)/contentStream[0](1338 0 obj PDSemanticContentStream)/content[3]{mcid:6}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 860 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](69 0 obj PDPage)/contentStream[0](1393 0 obj PDSemanticContentStream)/content[2]{mcid:5}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 276 0 obj)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="7" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](3 0 obj PDPage)/contentStream[0](4 0 obj PDSemanticContentStream)/operators[24]/usedGlyphs[0](AAAABK+ChromeSansMM AAAABK+ChromeSansMM 149 0 1765900922 2 true)</context>
+              <errorMessage>Glyph width 416 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](3 0 obj PDPage)/contentStream[0](4 0 obj PDSemanticContentStream)/operators[36]/usedGlyphs[0](AAAABK+ChromeSansMM AAAABK+ChromeSansMM 149 0 178604517 2 true)</context>
+              <errorMessage>Glyph width 416 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](3 0 obj PDPage)/contentStream[0](4 0 obj PDSemanticContentStream)/operators[51]/usedGlyphs[0](AAAABK+ChromeSansMM AAAABK+ChromeSansMM 149 0 1064905627 2 true)</context>
+              <errorMessage>Glyph width 416 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](3 0 obj PDPage)/contentStream[0](4 0 obj PDSemanticContentStream)/operators[71]/usedGlyphs[0](AAAABK+ChromeSansMM AAAABK+ChromeSansMM 149 0 1302725372 2 true)</context>
+              <errorMessage>Glyph width 416 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](3 0 obj PDPage)/contentStream[0](4 0 obj PDSemanticContentStream)/operators[85]/usedGlyphs[0](AAAABK+ChromeSansMM AAAABK+ChromeSansMM 149 0 263833514 2 true)</context>
+              <errorMessage>Glyph width 416 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](3 0 obj PDPage)/contentStream[0](4 0 obj PDSemanticContentStream)/operators[97]/usedGlyphs[0](AAAABK+ChromeSansMM AAAABK+ChromeSansMM 149 0 1618984457 2 true)</context>
+              <errorMessage>Glyph width 416 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](3 0 obj PDPage)/contentStream[0](4 0 obj PDSemanticContentStream)/operators[111]/usedGlyphs[0](AAAABK+ChromeSansMM AAAABK+ChromeSansMM 149 0 1087072654 2 true)</context>
+              <errorMessage>Glyph width 416 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="3" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](192 0 obj PDStructTreeRoot)/K[9](870 0 obj SESect Slide)/K[1](858 0 obj SENonStandard Artifact)</context>
+              <errorMessage>Non-standard structure type Artifact is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](192 0 obj PDStructTreeRoot)/K[9](870 0 obj SESect Slide)/K[2](860 0 obj SENonStandard Artifact)</context>
+              <errorMessage>Non-standard structure type Artifact is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](192 0 obj PDStructTreeRoot)/K[17](339 0 obj SESect Slide)/K[1](337 0 obj SETable Table)/K[0](276 0 obj SENonStandard Artifact)</context>
+              <errorMessage>Non-standard structure type Artifact is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769039984328" finish="1769039986261">00:00:01.933</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769039984204" finish="1769039986359">00:00:02.155</duration>
+  </batchSummary>
+</report>

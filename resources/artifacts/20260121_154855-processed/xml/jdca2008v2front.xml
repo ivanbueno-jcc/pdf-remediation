@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1880664">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/jdca2008v2front.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="98" failedRules="6" passedChecks="4129" failedChecks="8">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](808 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.8" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>A PDF/UA compliant document shall not contain a reference to the .notdef glyph from any of the text showing operators, regardless of text rendering mode, in any content stream</description>
+            <object>Glyph</object>
+            <test>name != ".notdef"</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](423 0 obj PDPage)/contentStream[0](795 0 obj PDSemanticContentStream)/operators[4446]/usedGlyphs[0](TPJBAA+Goudy TPJBAA+Goudy 31 0 406749219 3 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="3" status="failed" failedChecks="3" tags="artifact">
+            <description>Content shall be marked as Artifact or tagged as real content</description>
+            <object>SESimpleContentItem</object>
+            <test>isTaggedContent == true || parentsTags.contains('Artifact') == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](423 0 obj PDPage)/contentStream[0](795 0 obj PDSemanticContentStream)/operators[25]/xObject[0]/contentStream[0](482 0 obj PDSemanticContentStream)/content[0]{mcid:0}/contentItem[0]{mcid:0}</context>
+              <errorMessage>Content is neither marked as Artifact nor tagged as real content</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](423 0 obj PDPage)/contentStream[0](795 0 obj PDSemanticContentStream)/operators[6495]/xObject[0]/contentStream[0](458 0 obj PDSemanticContentStream)/operators[6]/xObject[0]/contentStream[0](469 0 obj PDSemanticContentStream)/content[1]{mcid:2}/contentItem[0]{mcid:2}</context>
+              <errorMessage>Content is neither marked as Artifact nor tagged as real content</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](423 0 obj PDPage)/contentStream[0](795 0 obj PDSemanticContentStream)/operators[6561]/xObject[0]/contentStream[0](452 0 obj PDSemanticContentStream)/content[0]{mcid:9}/contentItem[0]{mcid:9}</context>
+              <errorMessage>Content is neither marked as Artifact nor tagged as real content</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](808 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="2" status="failed" failedChecks="1" tags="font">
+            <description>The Unicode values specified in the ToUnicode CMap shall all be greater than zero (0), but not equal to either U+FEFF or U+FFFE</description>
+            <object>Glyph</object>
+            <test>toUnicode == null || (toUnicode.indexOf("\u0000") == -1 &amp;&amp; toUnicode.indexOf("\uFFFE") == -1 &amp;&amp; toUnicode.indexOf("\uFEFF") == -1)</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](423 0 obj PDPage)/contentStream[0](795 0 obj PDSemanticContentStream)/operators[4446]/usedGlyphs[0](TPJBAA+Goudy TPJBAA+Goudy 31 0 406749219 3 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="29" status="failed" failedChecks="1" tags="lang">
+            <description>If the Lang entry is present in the document's Catalog dictionary or in a structure element dictionary or property list, its value shall be a language identifier as described in ISO 32000-1:2008, 14.9.2. A language identifier shall be a Language-Tag as defined in RFC 3066, Tags for the Identification of Languages</description>
+            <object>CosLang</object>
+            <test>/^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$/.test(unicodeValue)</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](41 0 obj PDStructTreeRoot)/K[1](98 0 obj SESect Sect)/Lang[0]</context>
+              <errorMessage>Value EN-US of the Lang entry is not a Language-Tag</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769043594405" finish="1769043595573">00:00:01.168</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769043594325" finish="1769043595742">00:00:01.417</duration>
+  </batchSummary>
+</report>

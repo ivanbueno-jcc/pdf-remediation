@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="549153">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/jv259c.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="15002" failedChecks="1226">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="4" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](90 0 obj PDStructTreeRoot)/K[0](92 0 obj SEDocument Document)/K[0](105 0 obj SEArt Article)/K[10](116 0 obj SESect Story)/K[0](276 0 obj SEL L)/K[0](278 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](90 0 obj PDStructTreeRoot)/K[0](92 0 obj SEDocument Document)/K[0](105 0 obj SEArt Article)/K[11](117 0 obj SESect Story)/K[0](256 0 obj SEL L)/K[0](258 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](90 0 obj PDStructTreeRoot)/K[0](92 0 obj SEDocument Document)/K[0](105 0 obj SEArt Article)/K[12](118 0 obj SESect Story)/K[0](236 0 obj SEL L)/K[0](238 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](90 0 obj PDStructTreeRoot)/K[0](92 0 obj SEDocument Document)/K[0](105 0 obj SEArt Article)/K[16](122 0 obj SESect Story)/K[0](176 0 obj SEL L)/K[0](178 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="4" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](90 0 obj PDStructTreeRoot)/K[0](92 0 obj SEDocument Document)/K[0](105 0 obj SEArt Article)/K[22](128 0 obj SESect Story)/K[0](133 0 obj SENonStandard _7_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _7_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](90 0 obj PDStructTreeRoot)/K[0](92 0 obj SEDocument Document)/K[0](105 0 obj SEArt Article)/K[22](128 0 obj SESect Story)/K[1](134 0 obj SENonStandard _7_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _7_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](90 0 obj PDStructTreeRoot)/K[0](92 0 obj SEDocument Document)/K[0](105 0 obj SEArt Article)/K[23](130 0 obj SESect Story)/K[0](131 0 obj SENonStandard _6_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _6_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](90 0 obj PDStructTreeRoot)/K[0](92 0 obj SEDocument Document)/K[0](105 0 obj SEArt Article)/K[23](130 0 obj SESect Story)/K[1](132 0 obj SENonStandard _9_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _9_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="3" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[2]/xObject[0]/contentStream[0](447 0 obj PDSemanticContentStream)/operators[20]/font[0](AUULKX+SourceHanSansSC-Bold)/DescendantFonts[0](AUULKX+SourceHanSansSC-Bold)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[19]/font[0](MAYARZ+SourceHanSansSC-Normal)/DescendantFonts[0](MAYARZ+SourceHanSansSC-Normal)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[462]/font[0](YSEGDB+SourceHanSerifSC-ExtraLight)/DescendantFonts[0](YSEGDB+SourceHanSerifSC-ExtraLight)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1210" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[0](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 14211 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[1](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 20872 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[2](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 20649 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[3](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9770 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[4](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 26950 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[6](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 15663 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[8](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11861 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[9](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11119 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[10](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 28809 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[11](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11205 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[12](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9825 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[14](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 32130 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[15](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 17865 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[16](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 16709 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[17](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 20681 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[18](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9828 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[19](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9641 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[20](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 43561 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[21](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 17347 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[22](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 17178 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[23](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 40139 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[24](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 36602 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[25](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 13117 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[26](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 14000 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[27](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 58960 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[28](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11164 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[29](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 38521 0 503595296 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[1](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 14211 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[2](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 20872 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[4](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 13235 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[6](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 21129 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[7](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9564 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[8](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 20649 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[11](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 58960 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[12](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 16926 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[14](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 17414 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[15](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 16703 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[16](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 13724 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[17](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 10969 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[18](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 20714 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[19](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 36644 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[20](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 21109 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[21](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 1405 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[22](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 17865 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[23](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 15683 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[24](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 43318 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[25](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 37268 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[26](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 26948 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[27](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 26950 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[28](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 38521 0 130166095 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[0](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 15663 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[1](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 17865 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[2](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11861 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[3](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11119 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[4](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 28809 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[5](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11205 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[6](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9825 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[7](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9605 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[8](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9770 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[9](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 13724 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[10](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 10969 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[11](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 27570 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[351]/usedGlyphs[12](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 1 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[369]/usedGlyphs[0](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 1 0 1189651769 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[369]/usedGlyphs[1](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 36644 0 1189651769 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[369]/usedGlyphs[2](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 21109 0 1189651769 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[0](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 1413 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[1](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 42433 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[2](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 15663 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[3](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 10830 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[4](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 29530 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[6](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 43522 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[7](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 15705 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[8](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 16869 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[9](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 28809 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[10](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11205 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[11](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9825 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[12](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 27570 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[380]/usedGlyphs[13](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 26950 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[408]/usedGlyphs[0](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 38521 0 727860268 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[408]/usedGlyphs[1](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 1414 0 727860268 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[0](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 27570 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[1](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11295 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[4](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 11944 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[5](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 23150 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[6](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 43005 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[7](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 19209 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[8](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9730 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[9](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 20714 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[10](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 36644 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[11](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 21109 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[12](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 20173 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[13](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 43318 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[14](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9859 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[15](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 9979 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[16](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 38998 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[17](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 26933 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[417]/usedGlyphs[18](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 1405 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[453]/usedGlyphs[0](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 58956 0 1598898814 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/contentStream[0](771 0 obj PDSemanticContentStream)/operators[453]/usedGlyphs[1](YORADB+SourceHanSerifSC-Regular YORADB+SourceHanSerifSC-Regular 37376 0 1598898814 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="5" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](407 0 obj PDPage)/annots[0](400 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[0](398 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[0](395 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](8 0 obj PDPage)/annots[0](393 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](8 0 obj PDPage)/annots[1](391 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040484512" finish="1769040486414">00:00:01.902</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040484097" finish="1769040486556">00:00:02.459</duration>
+  </batchSummary>
+</report>

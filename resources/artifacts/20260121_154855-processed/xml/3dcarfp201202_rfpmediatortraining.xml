@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="222940">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/3dcarfp201202_rfpmediatortraining.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="98" failedRules="6" passedChecks="30319" failedChecks="33">
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="2" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[17](302 0 obj SETable Table)/K[1](301 0 obj SETBody TBody)/K[0](311 0 obj SETR TR)/K[0](344 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[70](137 0 obj SETable Table)/K[1](136 0 obj SETBody TBody)/K[0](144 0 obj SETR TR)/K[0](157 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="14" status="failed" failedChecks="1" tags="structure,table">
+            <description>If Table element contains THead kid, Table element should contain one or more TBody kids</description>
+            <object>SETable</object>
+            <test>kidsStandardTypes.split('&amp;').filter(elem =&gt; elem == 'THead').length == 0 || kidsStandardTypes.split('&amp;').filter(elem =&gt; elem == 'TBody').length &gt; 0</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[20](280 0 obj SETable Table)</context>
+              <errorMessage>Table element contains THead kid, but does not contain TBody kids</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="14" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](849 0 obj PDSemanticContentStream)/operators[887]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1761217448 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](849 0 obj PDSemanticContentStream)/operators[923]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 396918327 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](849 0 obj PDSemanticContentStream)/operators[950]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 547441493 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[54]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1617174216 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[80]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1860886124 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[107]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 173791568 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[134]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1966670937 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[161]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 588449070 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[188]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 376725601 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[215]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1828508781 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[242]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1732663543 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[268]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1448805967 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[295]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1930837320 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](851 0 obj PDSemanticContentStream)/operators[322]/usedGlyphs[0](MNPICC+Wingdings-Regular MNPICC+Wingdings-Regular 190 0 1453606810 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="14" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[0](390 0 obj SELI LI)/K[1](420 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[1](391 0 obj SELI LI)/K[1](417 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[2](392 0 obj SELI LI)/K[1](414 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[3](393 0 obj SELI LI)/K[1](412 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[4](394 0 obj SELI LI)/K[1](411 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[5](395 0 obj SELI LI)/K[1](410 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[6](396 0 obj SELI LI)/K[1](409 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[7](397 0 obj SELI LI)/K[1](408 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[8](398 0 obj SELI LI)/K[1](407 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[9](399 0 obj SELI LI)/K[1](406 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[10](400 0 obj SELI LI)/K[1](405 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[11](401 0 obj SELI LI)/K[1](404 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[12](402 0 obj SELI LI)/K[1](403 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](36 0 obj PDStructTreeRoot)/K[0](37 0 obj SESect Sect)/K[9](389 0 obj SEL L)/K[13](388 0 obj SELI LI)/K[1](387 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](866 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](866 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769050691007" finish="1769050692836">00:00:01.829</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769050690947" finish="1769050692874">00:00:01.927</duration>
+  </batchSummary>
+</report>

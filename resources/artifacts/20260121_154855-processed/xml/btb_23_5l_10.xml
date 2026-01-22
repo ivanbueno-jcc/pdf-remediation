@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1306888">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/btb_23_5l_10.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="27464" failedChecks="48">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[46]/font[0](PKUELW+ITCFranklinGothicStd-Book)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3459]/font[0](PKUELW+JoannaMT-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.8" testNumber="1" status="failed" failedChecks="46" tags="font">
+            <description>A PDF/UA compliant document shall not contain a reference to the .notdef glyph from any of the text showing operators, regardless of text rendering mode, in any content stream</description>
+            <object>Glyph</object>
+            <test>name != ".notdef"</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3480]/usedGlyphs[45](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 226690498 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3489]/usedGlyphs[26](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1338368149 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3498]/usedGlyphs[31](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1129869771 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3519]/usedGlyphs[46](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1620459733 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3528]/usedGlyphs[28](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 2044337856 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3549]/usedGlyphs[42](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 435914790 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3558]/usedGlyphs[35](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 422409467 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3567]/usedGlyphs[42](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1273958371 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3576]/usedGlyphs[28](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1659515968 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3597]/usedGlyphs[37](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 664091267 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3746]/usedGlyphs[36](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1718322084 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[3886]/usedGlyphs[2](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1636588948 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[4017]/usedGlyphs[44](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 785271142 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[4026]/usedGlyphs[5](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 500230084 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](264 0 obj PDPage)/contentStream[0](733 0 obj PDSemanticContentStream)/operators[4220]/usedGlyphs[39](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 259630944 0 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[142]/usedGlyphs[40](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1660837991 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[151]/usedGlyphs[14](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1325866488 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[237]/usedGlyphs[6](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 865858182 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[382]/usedGlyphs[4](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1262237002 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[738]/usedGlyphs[13](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 103787801 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[879]/usedGlyphs[14](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1527254842 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[1278]/usedGlyphs[46](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 475394679 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[1901]/usedGlyphs[3](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1155757579 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[1910]/usedGlyphs[13](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1785111044 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[1919]/usedGlyphs[4](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 1482748887 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[1930]/usedGlyphs[26](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 494894055 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[1976]/usedGlyphs[13](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 2118096382 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2017]/usedGlyphs[1](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1731763384 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2026]/usedGlyphs[64](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1100619942 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2047]/usedGlyphs[10](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 864248990 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2067]/usedGlyphs[20](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 15892131 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2103]/usedGlyphs[22](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1483145520 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2130]/usedGlyphs[17](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1506938939 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2148]/usedGlyphs[66](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1850597787 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2166]/usedGlyphs[55](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1190566357 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2184]/usedGlyphs[24](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 428996455 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2193]/usedGlyphs[65](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1988939205 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2214]/usedGlyphs[10](PKUELW+JoannaMT-Bold PKUELW+JoannaMT-Bold 0 0 275056979 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2234]/usedGlyphs[22](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 371976476 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2271]/usedGlyphs[62](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 483525032 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[4](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 2109219177 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2289]/usedGlyphs[59](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 429058804 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2307]/usedGlyphs[52](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 52913970 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2316]/usedGlyphs[58](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1059634518 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2334]/usedGlyphs[50](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 436094532 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](766 0 obj PDSemanticContentStream)/operators[2352]/usedGlyphs[56](PKUELW+JoannaMT PKUELW+JoannaMT 0 0 1541433310 1 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041286189" finish="1769041287886">00:00:01.697</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041286154" finish="1769041287963">00:00:01.809</duration>
+  </batchSummary>
+</report>

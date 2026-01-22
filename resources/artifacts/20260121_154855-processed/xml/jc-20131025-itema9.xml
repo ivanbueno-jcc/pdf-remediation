@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="436638">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/jc-20131025-itema9.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="48422" failedChecks="12">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="17" status="failed" failedChecks="2" tags="structure,list">
+            <description>LI element should be contained in L element</description>
+            <object>SELI</object>
+            <test>parentStandardType == 'L'</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[0](235 0 obj SETable Table)/K[1](554 0 obj SETR TR)/K[0](577 0 obj SETD TD)/K[0](600 0 obj SEP Normal)/K[0](602 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[0](235 0 obj SETable Table)/K[2](555 0 obj SETR TR)/K[0](556 0 obj SETD TD)/K[0](573 0 obj SEP Normal)/K[0](575 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[0](663 0 obj SEPart Part)/K[0](662 0 obj SESect Sect)/K[0](660 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="9" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[0](235 0 obj SETable Table)/K[1](554 0 obj SETR TR)/K[0](577 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[1](236 0 obj SETable Table)/K[1](514 0 obj SETR TR)/K[0](515 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[2](237 0 obj SETable Table)/K[1](492 0 obj SETR TR)/K[0](493 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[3](238 0 obj SETable Table)/K[1](458 0 obj SETR TR)/K[0](459 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[4](231 0 obj SETable Table)/K[1](230 0 obj SETR TR)/K[0](625 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[5](239 0 obj SETable Table)/K[1](418 0 obj SETR TR)/K[0](438 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[6](240 0 obj SETable Table)/K[1](374 0 obj SETR TR)/K[0](375 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[7](241 0 obj SETable Table)/K[1](313 0 obj SETR TR)/K[0](314 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](218 0 obj PDStructTreeRoot)/K[0](219 0 obj SEDocument Document)/K[1](233 0 obj SEPart Part)/K[0](232 0 obj SESect Sect)/K[8](242 0 obj SETable Table)/K[1](245 0 obj SETR TR)/K[0](295 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769044034432" finish="1769044036497">00:00:02.065</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769044034378" finish="1769044036572">00:00:02.194</duration>
+  </batchSummary>
+</report>

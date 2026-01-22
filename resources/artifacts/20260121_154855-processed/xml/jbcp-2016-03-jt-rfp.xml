@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="991772">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/jbcp-2016-03-jt-rfp.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="88173" failedChecks="15">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="27" status="failed" failedChecks="1" tags="structure,toc">
+            <description>TOC element may contain only TOC, TOCI and Caption elements</description>
+            <object>SETOC</object>
+            <test>kidsStandardTypes.split('&amp;').filter(elem =&gt; elem != 'TOC' &amp;&amp; elem != 'TOCI' &amp;&amp; elem != 'Caption').length == 0 || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[1](1774 0 obj SEPart Part)/K[0](1773 0 obj SESect Sect)/K[4](1777 0 obj SETOC TOC)</context>
+              <errorMessage>TOC element contains P,P,P,P,P,P,P,P,P,P,P,P element(s) instead of TOC, TOCI or Caption</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns (3 and 1 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="4" status="failed" failedChecks="7" tags="structure,table">
+            <description>TR element should be contained in Table, THead, TBody or TFoot element</description>
+            <object>SETR</object>
+            <test>/^(Table|THead|TBody|TFoot)$/.test(parentStandardType)</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[5](707 0 obj SEP Body Text)/K[0](709 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in P instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[5](707 0 obj SEP Body Text)/K[1](710 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in P instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[5](707 0 obj SEP Body Text)/K[2](711 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in P instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[5](707 0 obj SEP Body Text)/K[3](712 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in P instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[5](707 0 obj SEP Body Text)/K[4](713 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in P instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[5](707 0 obj SEP Body Text)/K[5](714 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in P instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[5](707 0 obj SEP Body Text)/K[6](715 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in P instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="17" status="failed" failedChecks="5" tags="structure,list">
+            <description>LI element should be contained in L element</description>
+            <object>SELI</object>
+            <test>parentStandardType == 'L'</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[2](706 0 obj SEP Normal)/K[0](731 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[2](706 0 obj SEP Normal)/K[1](732 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[2](706 0 obj SEP Normal)/K[2](733 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[2](706 0 obj SEP Normal)/K[3](734 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[5](673 0 obj SEPart Part)/K[0](672 0 obj SESect Sect)/K[0](675 0 obj SETable Table)/K[9](686 0 obj SETR TR)/K[0](705 0 obj SETD TD)/K[2](706 0 obj SEP Normal)/K[4](735 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](603 0 obj PDStructTreeRoot)/K[0](604 0 obj SEDocument Document)/K[2](1029 0 obj SEPart Part)/K[0](1028 0 obj SESect Sect)/K[1](1033 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769051372179" finish="1769051375167">00:00:02.988</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769051372129" finish="1769051375214">00:00:03.085</duration>
+  </batchSummary>
+</report>

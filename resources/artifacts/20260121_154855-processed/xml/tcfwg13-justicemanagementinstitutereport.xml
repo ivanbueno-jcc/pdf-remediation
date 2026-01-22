@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="2321946">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/tcfwg13-justicemanagementinstitutereport.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="97" failedRules="7" passedChecks="638546" failedChecks="561">
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="4" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](488 0 obj PDStructTreeRoot)/K[2](618 0 obj SEPart Part)/K[18](636 0 obj SESect Sect)/K[3](2227 0 obj SESect Sect)/K[4](2270 0 obj SESect Sect)/K[4](2344 0 obj SETable Table)/K[1](2452 0 obj SETR TR)/K[0](2551 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](488 0 obj PDStructTreeRoot)/K[2](618 0 obj SEPart Part)/K[18](636 0 obj SESect Sect)/K[3](2227 0 obj SESect Sect)/K[4](2270 0 obj SESect Sect)/K[17](2357 0 obj SETable Table)/K[1](2392 0 obj SETR TR)/K[1](2429 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](488 0 obj PDStructTreeRoot)/K[2](618 0 obj SEPart Part)/K[19](637 0 obj SESect Sect)/K[3](1269 0 obj SESect Sect)/K[2](1362 0 obj SESect Sect)/K[7](1432 0 obj SETable Table)/K[1](1465 0 obj SETR TR)/K[1](1500 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](488 0 obj PDStructTreeRoot)/K[2](618 0 obj SEPart Part)/K[22](617 0 obj SESect Sect)/K[3](616 0 obj SESect Sect)/K[9](3626 0 obj SETable Table)/K[2](4409 0 obj SETR TR)/K[0](4473 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.1" testNumber="2" status="failed" failedChecks="2" tags="font">
+            <description>Embedded fonts shall define all glyphs referenced for rendering within the conforming file. A font referenced solely in text rendering mode 3 is not rendered and is thus exempt from the requirements that impact the visual representation of the glyphs of a font. In all cases for TrueType fonts that are to be rendered, character codes shall be able to be mapped to glyphs according to ISO 32000-1:2008, 9.6.6.4 without the use of a non-standard mapping chosen by the conforming processor</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || isGlyphPresent == null || isGlyphPresent == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](5 0 obj PDPage)/contentStream[0](7898 0 obj PDSemanticContentStream)/operators[255]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1453606810 2 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](5 0 obj PDPage)/contentStream[0](7898 0 obj PDSemanticContentStream)/operators[377]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 635610193 2 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](11097 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](11097 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](5 0 obj PDPage)/contentStream[0](7898 0 obj PDSemanticContentStream)/operators[255]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1453606810 2 true)</context>
+              <errorMessage>Glyph width 777.83203125 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 250)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](5 0 obj PDPage)/contentStream[0](7898 0 obj PDSemanticContentStream)/operators[377]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 635610193 2 true)</context>
+              <errorMessage>Glyph width 777.83203125 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 250)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.8" testNumber="1" status="failed" failedChecks="546" tags="font">
+            <description>A PDF/UA compliant document shall not contain a reference to the .notdef glyph from any of the text showing operators, regardless of text rendering mode, in any content stream</description>
+            <object>Glyph</object>
+            <test>name != ".notdef"</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](5 0 obj PDPage)/contentStream[0](7898 0 obj PDSemanticContentStream)/operators[255]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1453606810 2 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](5 0 obj PDPage)/contentStream[0](7898 0 obj PDSemanticContentStream)/operators[377]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 635610193 2 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[26]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 406749219 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[68]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1739267143 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[110]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 708613859 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[144]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 212963786 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[178]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 2032909428 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[212]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1280124872 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[254]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1348115836 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[312]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 26928827 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[374]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1926180325 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[436]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1170788511 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[489]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1110195322 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[532]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1976602906 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[580]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1394356510 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[628]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1919834117 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[671]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 235370598 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[743]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1073741635 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[788]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 997695567 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[833]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1625090026 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[904]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 41092582 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[940]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1871680329 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[985]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1547398254 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1070]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1979055448 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1119]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 812143047 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1155]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1205559205 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1191]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1182311147 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1226]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1491860739 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1261]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 172699023 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1314]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1552400354 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1350]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1372422140 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1395]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1089584667 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1438]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1493988307 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1486]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1978504976 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1529]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 2044337856 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1583]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1273958371 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1637]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1433208870 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1680]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1718322084 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1715]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 24039137 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1751]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1244867001 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1836]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 369805307 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1885]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1100109058 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1921]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1057307776 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1957]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 95685867 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[1992]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 509864971 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](10 0 obj PDPage)/contentStream[0](7908 0 obj PDSemanticContentStream)/operators[2027]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 677120200 4 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[40]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1692073709 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[93]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 500230084 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[129]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1628551735 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[165]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1527882132 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[200]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 300604602 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[243]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 34073107 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[312]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1478995734 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[355]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 104261836 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[476]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 351656492 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[517]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 597364637 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[551]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 515273883 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[587]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 737104370 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[623]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 505231702 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[659]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1408533352 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[695]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 79919963 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[749]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 176955204 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[811]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 979550238 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[845]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 2023917549 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[880]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 371397455 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[916]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 628392976 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[952]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1527007086 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[997]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 203819996 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1082]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 662925691 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1131]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1244880808 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1269773610 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1203]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 36531985 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1238]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1149407083 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1273]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1847431070 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1316]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1306794745 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1350]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 811562535 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1384]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 702999333 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1435]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 951988316 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1487]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 842331982 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1534]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 2076249476 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1582]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1088491512 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](12 0 obj PDPage)/contentStream[0](7917 0 obj PDSemanticContentStream)/operators[1616]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 2117642238 5 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[23]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 870322840 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1262237002 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[93]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 2029754983 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[141]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 564817260 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[166]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 194415222 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[214]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 638695843 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[230]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1411543296 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[271]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 1061448687 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](14 0 obj PDPage)/contentStream[0](7928 0 obj PDSemanticContentStream)/operators[336]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 2015999862 6 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](18 0 obj PDPage)/contentStream[0](7938 0 obj PDSemanticContentStream)/operators[26]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 2 0 548795052 8 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](34 0 obj PDPage)/contentStream[0](8018 0 obj PDSemanticContentStream)/operators[124]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 3 0 503595296 16 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](34 0 obj PDPage)/contentStream[0](8018 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 3 0 1175418534 16 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](34 0 obj PDPage)/contentStream[0](8018 0 obj PDSemanticContentStream)/operators[376]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 3 0 296541232 16 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](52 0 obj PDPage)/contentStream[0](8055 0 obj PDSemanticContentStream)/operators[1955]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 3 0 1466558382 25 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](52 0 obj PDPage)/contentStream[0](8055 0 obj PDSemanticContentStream)/operators[1999]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 3 0 649630909 25 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](52 0 obj PDPage)/contentStream[0](8055 0 obj PDSemanticContentStream)/operators[2134]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 3 0 817054343 25 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](52 0 obj PDPage)/contentStream[0](8055 0 obj PDSemanticContentStream)/operators[2186]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 3 0 913746983 25 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](52 0 obj PDPage)/contentStream[0](8055 0 obj PDSemanticContentStream)/operators[2294]/usedGlyphs[0](AAAANY+TimesNewRomanPSMT AAAANY+TimesNewRomanPSMT 3 0 1224064486 25 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="5" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[138](276 0 obj PDPage)/annots[0](278 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[146](299 0 obj PDPage)/annots[0](301 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[147](304 0 obj PDPage)/annots[0](306 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[153](319 0 obj PDPage)/annots[0](321 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[154](324 0 obj PDPage)/annots[0](326 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041759993" finish="1769041766328">00:00:06.335</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041759922" finish="1769041766375">00:00:06.453</duration>
+  </batchSummary>
+</report>

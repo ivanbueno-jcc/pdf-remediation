@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="483255">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/opinion-citing/s241434-link2.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="103" failedRules="1" passedChecks="96153" failedChecks="4">
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="4" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](156 0 obj PDPage)/contentStream[0](2560 0 obj PDSemanticContentStream)/operators[607]/usedGlyphs[0](AAAABM+TimesNewRomanPSMT AAAABM+TimesNewRomanPSMT 128 0 2075568954 0 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](156 0 obj PDPage)/contentStream[0](2560 0 obj PDSemanticContentStream)/operators[2979]/usedGlyphs[0](AAAABM+TimesNewRomanPSMT AAAABM+TimesNewRomanPSMT 129 0 833240229 0 true)</context>
+              <errorMessage>Glyph width 350.09765625 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](156 0 obj PDPage)/contentStream[0](2560 0 obj PDSemanticContentStream)/operators[3011]/usedGlyphs[0](AAAABM+TimesNewRomanPSMT AAAABM+TimesNewRomanPSMT 130 0 833240229 0 true)</context>
+              <errorMessage>Glyph width 333.0078125 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](156 0 obj PDPage)/contentStream[0](2560 0 obj PDSemanticContentStream)/operators[3507]/usedGlyphs[0](AAAABM+TimesNewRomanPSMT AAAABM+TimesNewRomanPSMT 131 0 833240229 0 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769053739945" finish="1769053740768">00:00:00.823</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769053739909" finish="1769053740784">00:00:00.875</duration>
+  </batchSummary>
+</report>

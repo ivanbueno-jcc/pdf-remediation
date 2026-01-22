@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="5408012">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/btb_23_2l_2.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="600980" failedChecks="72">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="1" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)</context>
+              <errorMessage>Non-standard structure type Article is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="48" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](3 0 obj PDPage)/contentStream[0](4 0 obj PDSemanticContentStream)/operators[8]/font[0](XQWYJG+AvantGarde-ExtraLight)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](55 0 obj PDPage)/contentStream[0](20540 0 obj PDSemanticContentStream)/operators[946]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](55 0 obj PDPage)/contentStream[0](20540 0 obj PDSemanticContentStream)/operators[966]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](64 0 obj PDPage)/contentStream[0](20604 0 obj PDSemanticContentStream)/operators[188]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](64 0 obj PDPage)/contentStream[0](20604 0 obj PDSemanticContentStream)/operators[1147]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](68 0 obj PDPage)/contentStream[0](20652 0 obj PDSemanticContentStream)/operators[77]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](68 0 obj PDPage)/contentStream[0](20652 0 obj PDSemanticContentStream)/operators[353]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](72 0 obj PDPage)/contentStream[0](20711 0 obj PDSemanticContentStream)/operators[77]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](72 0 obj PDPage)/contentStream[0](20711 0 obj PDSemanticContentStream)/operators[591]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](78 0 obj PDPage)/contentStream[0](20803 0 obj PDSemanticContentStream)/operators[317]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](78 0 obj PDPage)/contentStream[0](20803 0 obj PDSemanticContentStream)/operators[826]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[29](82 0 obj PDPage)/contentStream[0](20895 0 obj PDSemanticContentStream)/operators[418]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[29](82 0 obj PDPage)/contentStream[0](20895 0 obj PDSemanticContentStream)/operators[979]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[30](86 0 obj PDPage)/contentStream[0](20983 0 obj PDSemanticContentStream)/operators[106]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[30](86 0 obj PDPage)/contentStream[0](20983 0 obj PDSemanticContentStream)/operators[686]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[32](92 0 obj PDPage)/contentStream[0](21041 0 obj PDSemanticContentStream)/operators[86]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[32](92 0 obj PDPage)/contentStream[0](21041 0 obj PDSemanticContentStream)/operators[2000]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[34](98 0 obj PDPage)/contentStream[0](21108 0 obj PDSemanticContentStream)/operators[76]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[34](98 0 obj PDPage)/contentStream[0](21108 0 obj PDSemanticContentStream)/operators[1284]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[36](104 0 obj PDPage)/contentStream[0](21190 0 obj PDSemanticContentStream)/operators[111]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[36](104 0 obj PDPage)/contentStream[0](21190 0 obj PDSemanticContentStream)/operators[665]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[39](112 0 obj PDPage)/contentStream[0](21264 0 obj PDSemanticContentStream)/operators[141]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[39](112 0 obj PDPage)/contentStream[0](21264 0 obj PDSemanticContentStream)/operators[2223]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[40](116 0 obj PDPage)/contentStream[0](21320 0 obj PDSemanticContentStream)/operators[169]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[40](116 0 obj PDPage)/contentStream[0](21320 0 obj PDSemanticContentStream)/operators[2141]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[43](124 0 obj PDPage)/contentStream[0](21425 0 obj PDSemanticContentStream)/operators[134]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[43](124 0 obj PDPage)/contentStream[0](21425 0 obj PDSemanticContentStream)/operators[704]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[44](128 0 obj PDPage)/contentStream[0](21505 0 obj PDSemanticContentStream)/operators[141]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[44](128 0 obj PDPage)/contentStream[0](21505 0 obj PDSemanticContentStream)/operators[639]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[45](132 0 obj PDPage)/contentStream[0](21603 0 obj PDSemanticContentStream)/operators[134]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[45](132 0 obj PDPage)/contentStream[0](21603 0 obj PDSemanticContentStream)/operators[694]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](138 0 obj PDPage)/contentStream[0](21673 0 obj PDSemanticContentStream)/operators[143]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](138 0 obj PDPage)/contentStream[0](21673 0 obj PDSemanticContentStream)/operators[640]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[48](142 0 obj PDPage)/contentStream[0](21774 0 obj PDSemanticContentStream)/operators[134]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[48](142 0 obj PDPage)/contentStream[0](21774 0 obj PDSemanticContentStream)/operators[707]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[50](148 0 obj PDPage)/contentStream[0](21840 0 obj PDSemanticContentStream)/operators[96]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[50](148 0 obj PDPage)/contentStream[0](21840 0 obj PDSemanticContentStream)/operators[734]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[51](152 0 obj PDPage)/contentStream[0](21900 0 obj PDSemanticContentStream)/operators[96]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[51](152 0 obj PDPage)/contentStream[0](21900 0 obj PDSemanticContentStream)/operators[658]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[53](158 0 obj PDPage)/contentStream[0](21962 0 obj PDSemanticContentStream)/operators[94]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[53](158 0 obj PDPage)/contentStream[0](21962 0 obj PDSemanticContentStream)/operators[652]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[54](162 0 obj PDPage)/contentStream[0](22016 0 obj PDSemanticContentStream)/operators[95]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[54](162 0 obj PDPage)/contentStream[0](22016 0 obj PDSemanticContentStream)/operators[603]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[56](168 0 obj PDPage)/contentStream[0](22088 0 obj PDSemanticContentStream)/operators[76]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[56](168 0 obj PDPage)/contentStream[0](22088 0 obj PDSemanticContentStream)/operators[771]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[57](172 0 obj PDPage)/contentStream[0](22152 0 obj PDSemanticContentStream)/operators[76]/font[0](XQWYJG+Gotham-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[57](172 0 obj PDPage)/contentStream[0](22152 0 obj PDSemanticContentStream)/operators[706]/font[0](XQWYJG+Gotham-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[63](186 0 obj PDPage)/contentStream[0](18831 0 obj PDSemanticContentStream)/operators[4200]/font[0](XQWYJG+Gotham-Book)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="23" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[2](6058 0 obj SEP graphic_table)/K[0](16305 0 obj SETable Table)/K[3](16309 0 obj SETR TR)/K[0](17213 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[6](6062 0 obj SEP graphic_table)/K[0](15660 0 obj SETable Table)/K[3](15664 0 obj SETR TR)/K[0](16243 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[10](6066 0 obj SEP graphic_table)/K[0](14725 0 obj SETable Table)/K[3](14729 0 obj SETR TR)/K[0](15579 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[14](6070 0 obj SEP Table_Body)/K[0](13788 0 obj SETable Table)/K[3](13792 0 obj SETR TR)/K[0](14644 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[18](6074 0 obj SEP graphic_table)/K[0](13646 0 obj SETable Table)/K[3](13650 0 obj SETR TR)/K[0](13705 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[22](6078 0 obj SEP graphic_table)/K[0](12915 0 obj SETable Table)/K[3](12919 0 obj SETR TR)/K[0](13584 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[26](6082 0 obj SEP graphic_table)/K[0](11977 0 obj SETable Table)/K[3](11981 0 obj SETR TR)/K[0](12833 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[34](6090 0 obj SEP graphic_table)/K[0](11405 0 obj SETable Table)/K[3](11409 0 obj SETR TR)/K[0](11716 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[38](6094 0 obj SEP graphic_table)/K[0](10875 0 obj SETable Table)/K[2](10878 0 obj SETR TR)/K[0](11375 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[50](6106 0 obj SEP graphic_table)/K[0](9360 0 obj SETable Table)/K[3](9364 0 obj SETR TR)/K[0](10085 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[54](6110 0 obj SEP graphic_table)/K[0](8633 0 obj SETable Table)/K[3](8637 0 obj SETR TR)/K[0](9299 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[58](6114 0 obj SEP graphic_table)/K[0](7874 0 obj SETable Table)/K[3](7878 0 obj SETR TR)/K[0](8578 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[63](6119 0 obj SEP chart_description_fi)/K[0](7350 0 obj SETable Table)/K[3](7354 0 obj SETR TR)/K[0](7831 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[67](6123 0 obj SEP graphic_table)/K[0](6947 0 obj SETable Table)/K[2](6950 0 obj SETR TR)/K[0](7319 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[71](6127 0 obj SEP graphic_table)/K[0](6486 0 obj SETable Table)/K[2](6489 0 obj SETR TR)/K[0](6918 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[17](768 0 obj SESect Story)/K[75](6132 0 obj SEP graphic_table)/K[0](6135 0 obj SETable Table)/K[2](6138 0 obj SETR TR)/K[0](6459 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[46](797 0 obj SESect Story)/K[2](3705 0 obj SEP Pa39)/K[0](3713 0 obj SETable Table)/K[2](3716 0 obj SETR TR)/K[0](5884 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[51](802 0 obj SESect Story)/K[5](823 0 obj SEP graphic_table)/K[0](3622 0 obj SETable Table)/K[1](3624 0 obj SETR TR)/K[0](3680 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[51](802 0 obj SESect Story)/K[17](835 0 obj SEP graphic_table)/K[0](3385 0 obj SETable Table)/K[2](3388 0 obj SETR TR)/K[0](3410 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[51](802 0 obj SESect Story)/K[23](841 0 obj SEP graphic_table)/K[0](3162 0 obj SETable Table)/K[2](3165 0 obj SETR TR)/K[0](3354 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[51](802 0 obj SESect Story)/K[29](847 0 obj SEP graphic_table)/K[0](2988 0 obj SETable Table)/K[2](2991 0 obj SETR TR)/K[0](3131 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[51](802 0 obj SESect Story)/K[63](881 0 obj SEP graphic_table)/K[0](1856 0 obj SETable Table)/K[1](1858 0 obj SETR TR)/K[0](2614 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](692 0 obj PDStructTreeRoot)/K[0](694 0 obj SEDocument Document)/K[0](750 0 obj SENonStandard Article)/K[51](802 0 obj SESect Story)/K[67](885 0 obj SEP graphic_table)/K[0](888 0 obj SETable Table)/K[1](890 0 obj SETR TR)/K[0](1826 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041338334" finish="1769041345199">00:00:06.865</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041338191" finish="1769041345299">00:00:07.108</duration>
+  </batchSummary>
+</report>

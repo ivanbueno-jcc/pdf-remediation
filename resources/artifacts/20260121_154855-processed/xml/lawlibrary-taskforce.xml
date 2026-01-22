@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1045001">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/lawlibrary-taskforce.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="142365" failedChecks="42">
+          <rule specification="ISO 14289-1:2014" clause="7.21.3.2" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>ISO 32000-1:2008, 9.7.4, Table 117 requires that all embedded Type 2 CIDFonts in the CIDFont dictionary shall contain a CIDToGIDMap entry that shall be a stream mapping from CIDs to glyph indices or the name Identity, as described in ISO 32000-1:2008, 9.7.4, Table 117</description>
+            <object>PDCIDFont</object>
+            <test>Subtype != "CIDFontType2" || CIDToGIDMap != null || containsFontFile == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[341]/font[0](PIKLBG+Wingdings-Regular)/DescendantFonts[0](PIKLBG+Wingdings-Regular)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](68 0 obj PDPage)/contentStream[0](7606 0 obj PDSemanticContentStream)/operators[1909]/font[0](DMLABF+SymbolMT)/DescendantFonts[0](DMLABF+SymbolMT)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](7609 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="38" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[341]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1273958371 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[442]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1057307776 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[487]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 95685867 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[814]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 500230084 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[953]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1628551735 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[1144]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1527882132 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[1299]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 300604602 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[1586]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1658512704 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[1669]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1456061400 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[1770]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 259630944 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[1871]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 597364637 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[1916]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 515273883 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[1981]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 737104370 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[2208]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1408533352 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[2309]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 79919963 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[2354]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 176955204 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[2437]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1358857082 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[2693]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1213871206 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[2776]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1113895488 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[2841]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1807176280 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[2942]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 662925691 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](1 0 obj PDPage)/contentStream[0](7466 0 obj PDSemanticContentStream)/operators[3079]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1060519157 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](28 0 obj PDPage)/contentStream[0](6878 0 obj PDSemanticContentStream)/operators[1330]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 4073506 16 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](28 0 obj PDPage)/contentStream[0](6878 0 obj PDSemanticContentStream)/operators[1458]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 407493402 16 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](28 0 obj PDPage)/contentStream[0](6878 0 obj PDSemanticContentStream)/operators[1739]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 100445376 16 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](28 0 obj PDPage)/contentStream[0](6878 0 obj PDSemanticContentStream)/operators[1966]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 144699438 16 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](28 0 obj PDPage)/contentStream[0](6878 0 obj PDSemanticContentStream)/operators[2157]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1788380050 16 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](28 0 obj PDPage)/contentStream[0](6878 0 obj PDSemanticContentStream)/operators[2483]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 99770475 16 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[4150]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 373437697 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[4296]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 932885627 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[4442]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 748006558 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[4588]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 2093319848 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[4702]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 2052489518 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[4794]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 793269462 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[4886]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 15094126 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[4960]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 948960194 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](32 0 obj PDPage)/contentStream[0](6614 0 obj PDSemanticContentStream)/operators[5034]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 131 0 1720797452 18 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[29](78 0 obj PDPage)/contentStream[0](6524 0 obj PDSemanticContentStream)/operators[4758]/usedGlyphs[0](PIKLBG+Wingdings-Regular PIKLBG+Wingdings-Regular 122 0 461448225 29 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](7609 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040874018" finish="1769040877181">00:00:03.163</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040873888" finish="1769040877202">00:00:03.314</duration>
+  </batchSummary>
+</report>

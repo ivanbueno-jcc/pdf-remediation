@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="305129">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/fl350t.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="32265" failedChecks="10">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="1" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](65 0 obj SEDocument Document)/K[0](81 0 obj SEArt Article)/K[13](95 0 obj SESect Story)/K[0](96 0 obj SENonStandard _6_pt_centered_narro)</context>
+              <errorMessage>Non-standard structure type _6_pt_centered_narro is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="2" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](10 0 obj PDPage)/annots[1](674 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](10 0 obj PDPage)/annots[2](672 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="7" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](65 0 obj SEDocument Document)/K[0](81 0 obj SEArt Article)/K[4](86 0 obj SESect Story)/K[0](581 0 obj SEL L)/K[0](582 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L,L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](65 0 obj SEDocument Document)/K[0](81 0 obj SEArt Article)/K[9](91 0 obj SESect Story)/K[4](231 0 obj SEL L)/K[0](316 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](65 0 obj SEDocument Document)/K[0](81 0 obj SEArt Article)/K[9](91 0 obj SESect Story)/K[15](242 0 obj SEL L)/K[0](278 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](65 0 obj SEDocument Document)/K[0](81 0 obj SEArt Article)/K[9](91 0 obj SESect Story)/K[19](246 0 obj SEL L)/K[0](247 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](65 0 obj SEDocument Document)/K[0](81 0 obj SEArt Article)/K[10](92 0 obj SESect Story)/K[1](102 0 obj SEL L)/K[0](182 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](65 0 obj SEDocument Document)/K[0](81 0 obj SEArt Article)/K[10](92 0 obj SESect Story)/K[1](102 0 obj SEL L)/K[2](184 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](65 0 obj SEDocument Document)/K[0](81 0 obj SEArt Article)/K[10](92 0 obj SESect Story)/K[28](129 0 obj SEL L)/K[0](143 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769039878738" finish="1769039880794">00:00:02.056</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769039878372" finish="1769039880856">00:00:02.484</duration>
+  </batchSummary>
+</report>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="406214">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/c167a.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="118620" failedChecks="30">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="2" status="failed" failedChecks="4" tags="artifact">
+            <description>Tagged content should not present inside content marked as Artifact</description>
+            <object>SEMarkedContent</object>
+            <test>isTaggedContent == false || parentsTags.contains('Artifact') == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](1 0 obj PDPage)/contentStream[0](3681 0 obj PDSemanticContentStream)/content[0]{mcid:0}</context>
+              <errorMessage>Tagged content (parent struct element 3106 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](3 0 obj PDPage)/contentStream[0](3682 0 obj PDSemanticContentStream)/content[0]{mcid:0}</context>
+              <errorMessage>Tagged content (parent struct element 3049 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](5 0 obj PDPage)/contentStream[0](3685 0 obj PDSemanticContentStream)/content[0]{mcid:0}</context>
+              <errorMessage>Tagged content (parent struct element 2052 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](7 0 obj PDPage)/contentStream[0](3686 0 obj PDSemanticContentStream)/content[0]{mcid:0}</context>
+              <errorMessage>Tagged content (parent struct element 1280 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="4" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[1](3146 0 obj SESect Worksheet)/K[0](3106 0 obj SENonStandard Artifact)</context>
+              <errorMessage>Non-standard structure type Artifact is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[2](3075 0 obj SESect Worksheet)/K[0](3049 0 obj SENonStandard Artifact)</context>
+              <errorMessage>Non-standard structure type Artifact is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[0](2051 0 obj SESect Worksheet)/K[0](2052 0 obj SENonStandard Artifact)</context>
+              <errorMessage>Non-standard structure type Artifact is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[0](2051 0 obj SESect Worksheet)/K[4](1280 0 obj SENonStandard Artifact)</context>
+              <errorMessage>Non-standard structure type Artifact is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="1" status="failed" failedChecks="4" tags="artifact">
+            <description>Content marked as Artifact should not present inside tagged content</description>
+            <object>SEMarkedContent</object>
+            <test>tag != 'Artifact' || isTaggedContent == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](1 0 obj PDPage)/contentStream[0](3681 0 obj PDSemanticContentStream)/content[0]{mcid:0}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 3106 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](3 0 obj PDPage)/contentStream[0](3682 0 obj PDSemanticContentStream)/content[0]{mcid:0}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 3049 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](5 0 obj PDPage)/contentStream[0](3685 0 obj PDSemanticContentStream)/content[0]{mcid:0}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 2052 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](7 0 obj PDPage)/contentStream[0](3686 0 obj PDSemanticContentStream)/content[0]{mcid:0}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 1280 0 obj)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="16" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[0](3373 0 obj SESect Worksheet)/K[2](3376 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[0](3373 0 obj SESect Worksheet)/K[6](3379 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[0](3373 0 obj SESect Worksheet)/K[7](3380 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[1](3146 0 obj SESect Worksheet)/K[4](3149 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[1](3146 0 obj SESect Worksheet)/K[5](3150 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[1](3146 0 obj SESect Worksheet)/K[6](3151 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[2](3075 0 obj SESect Worksheet)/K[1](3073 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[3](3469 0 obj SEDocument Workbook)/K[0](115 0 obj SESect Worksheet)/K[2](117 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[4](3470 0 obj SEDocument Workbook)/K[0](405 0 obj SESect Worksheet)/K[2](407 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[0](2051 0 obj SESect Worksheet)/K[1](2053 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[1](983 0 obj SESect Worksheet)/K[0](984 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[1](983 0 obj SESect Worksheet)/K[1](985 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[1](983 0 obj SESect Worksheet)/K[2](981 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[1](983 0 obj SESect Worksheet)/K[3](986 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[2](752 0 obj SESect Worksheet)/K[2](750 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[6](3472 0 obj SEDocument Workbook)/K[0](205 0 obj SESect Worksheet)/K[2](203 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="2" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[2](87 0 obj SEDocument Workbook)/K[0](3373 0 obj SESect Worksheet)/K[1](3375 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns (10 and 9 respectively)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](86 0 obj PDStructTreeRoot)/K[0](3518 0 obj SEDocument Document)/K[5](3471 0 obj SEDocument Workbook)/K[0](2051 0 obj SESect Worksheet)/K[3](2049 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns (32 and 16 respectively)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041168266" finish="1769041170794">00:00:02.528</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041168193" finish="1769041170883">00:00:02.690</duration>
+  </batchSummary>
+</report>

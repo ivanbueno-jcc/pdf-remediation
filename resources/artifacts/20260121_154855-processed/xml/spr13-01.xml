@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="478261">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/itc/spr13-01.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="95227" failedChecks="5">
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="1" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](2129 0 obj PDPage)/annots[0](2150 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="17" status="failed" failedChecks="4" tags="structure,list">
+            <description>LI element should be contained in L element</description>
+            <object>SELI</object>
+            <test>parentStandardType == 'L'</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](185 0 obj PDStructTreeRoot)/K[0](186 0 obj SESect Sect)/K[86](1752 0 obj SETable Table)/K[0](1751 0 obj SETR TR)/K[0](1750 0 obj SETD TD)/K[2](1753 0 obj SEP Normal)/K[0](1755 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](185 0 obj PDStructTreeRoot)/K[0](186 0 obj SESect Sect)/K[86](1752 0 obj SETable Table)/K[0](1751 0 obj SETR TR)/K[0](1750 0 obj SETD TD)/K[2](1753 0 obj SEP Normal)/K[1](1756 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](185 0 obj PDStructTreeRoot)/K[0](186 0 obj SESect Sect)/K[86](1752 0 obj SETable Table)/K[0](1751 0 obj SETR TR)/K[0](1750 0 obj SETD TD)/K[2](1753 0 obj SEP Normal)/K[2](1757 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](185 0 obj PDStructTreeRoot)/K[0](186 0 obj SESect Sect)/K[86](1752 0 obj SETable Table)/K[0](1751 0 obj SETR TR)/K[0](1750 0 obj SETD TD)/K[2](1753 0 obj SEP Normal)/K[3](1758 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769052858093" finish="1769052860853">00:00:02.760</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769052858016" finish="1769052860889">00:00:02.873</duration>
+  </batchSummary>
+</report>

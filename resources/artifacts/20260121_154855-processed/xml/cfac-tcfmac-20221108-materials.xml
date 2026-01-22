@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1934204">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/cfac-tcfmac-20221108-materials.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="84546" failedChecks="14">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[1](137 0 obj SESect Sect)/K[0](172 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (3 and 2 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="19" status="failed" failedChecks="5" tags="structure,list">
+            <description>L element may contain only L, LI and Caption elements</description>
+            <object>SEL</object>
+            <test>kidsStandardTypes.split('&amp;').filter(elem =&gt; elem != 'L' &amp;&amp; elem != 'LI' &amp;&amp; elem != 'Caption').length == 0 || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[17](3088 0 obj SEL L)/K[6](3110 0 obj SELI LI)/K[0](3111 0 obj SELBody LBody)/K[0](3112 0 obj SEL L)</context>
+              <errorMessage>L element contains LBody element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[27](3152 0 obj SEL L)/K[1](3156 0 obj SELI LI)/K[0](3157 0 obj SELBody LBody)/K[0](3158 0 obj SEL L)</context>
+              <errorMessage>L element contains LBody element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[31](3171 0 obj SEL L)/K[0](3172 0 obj SELI LI)/K[0](3173 0 obj SELBody LBody)/K[0](3174 0 obj SEL L)</context>
+              <errorMessage>L element contains LBody element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[31](3171 0 obj SEL L)/K[0](3172 0 obj SELI LI)/K[0](3173 0 obj SELBody LBody)/K[0](3174 0 obj SEL L)/K[4](3183 0 obj SELBody LBody)/K[0](3184 0 obj SEL L)</context>
+              <errorMessage>L element contains LBody element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[31](3171 0 obj SEL L)/K[1](3200 0 obj SELI LI)/K[0](3201 0 obj SELBody LBody)/K[0](3202 0 obj SEL L)</context>
+              <errorMessage>L element contains LBody element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="3" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[4](1437 0 obj SESect Sect)/K[2](1466 0 obj SETable Table)/K[1](1477 0 obj SETR TR)/K[1](1480 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[13](4763 0 obj SESect Slide)/K[1](4766 0 obj SETable Table)/K[1](4774 0 obj SETR TR)/K[0](4775 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[24](4288 0 obj SESect Slide)/K[1](4291 0 obj SETable Table)/K[1](4299 0 obj SETR TR)/K[0](4300 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="18" status="failed" failedChecks="5" tags="structure,list">
+            <description>LBody element should be contained in LI element</description>
+            <object>SELBody</object>
+            <test>parentStandardType == 'LI'</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[17](3088 0 obj SEL L)/K[6](3110 0 obj SELI LI)/K[0](3111 0 obj SELBody LBody)/K[0](3112 0 obj SEL L)/K[6](3125 0 obj SELBody LBody)</context>
+              <errorMessage>LBody element contained in L instead of LI element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[27](3152 0 obj SEL L)/K[1](3156 0 obj SELI LI)/K[0](3157 0 obj SELBody LBody)/K[0](3158 0 obj SEL L)/K[3](3165 0 obj SELBody LBody)</context>
+              <errorMessage>LBody element contained in L instead of LI element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[31](3171 0 obj SEL L)/K[0](3172 0 obj SELI LI)/K[0](3173 0 obj SELBody LBody)/K[0](3174 0 obj SEL L)/K[4](3183 0 obj SELBody LBody)</context>
+              <errorMessage>LBody element contained in L instead of LI element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[31](3171 0 obj SEL L)/K[0](3172 0 obj SELI LI)/K[0](3173 0 obj SELBody LBody)/K[0](3174 0 obj SEL L)/K[4](3183 0 obj SELBody LBody)/K[0](3184 0 obj SEL L)/K[6](3197 0 obj SELBody LBody)</context>
+              <errorMessage>LBody element contained in L instead of LI element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](6 0 obj PDStructTreeRoot)/K[0](4567 0 obj SEDocument Document)/K[17](3070 0 obj SESect Sect)/K[31](3171 0 obj SEL L)/K[1](3200 0 obj SELI LI)/K[0](3201 0 obj SELBody LBody)/K[0](3202 0 obj SEL L)/K[4](3211 0 obj SELBody LBody)</context>
+              <errorMessage>LBody element contained in L instead of LI element</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769048249751" finish="1769048252735">00:00:02.984</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769048249710" finish="1769048252753">00:00:03.043</duration>
+  </batchSummary>
+</report>

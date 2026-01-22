@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1321350">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/itc/sp23-08.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="134803" failedChecks="8">
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="1" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](2613 0 obj PDPage)/annots[0](2649 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="7" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](242 0 obj PDStructTreeRoot)/K[0](243 0 obj SEDocument Document)/K[1](257 0 obj SESect Sect)/K[240](540 0 obj SEL L)/K[1](952 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](242 0 obj PDStructTreeRoot)/K[0](243 0 obj SEDocument Document)/K[1](257 0 obj SESect Sect)/K[244](544 0 obj SEL L)/K[4](937 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](242 0 obj PDStructTreeRoot)/K[0](243 0 obj SEDocument Document)/K[1](257 0 obj SESect Sect)/K[262](564 0 obj SEL L)/K[1](898 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](242 0 obj PDStructTreeRoot)/K[0](243 0 obj SEDocument Document)/K[1](257 0 obj SESect Sect)/K[275](578 0 obj SEL L)/K[2](876 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](242 0 obj PDStructTreeRoot)/K[0](243 0 obj SEDocument Document)/K[1](257 0 obj SESect Sect)/K[281](585 0 obj SEL L)/K[1](865 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](242 0 obj PDStructTreeRoot)/K[0](243 0 obj SEDocument Document)/K[1](257 0 obj SESect Sect)/K[287](592 0 obj SEL L)/K[0](852 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](242 0 obj PDStructTreeRoot)/K[0](243 0 obj SEDocument Document)/K[1](257 0 obj SESect Sect)/K[293](600 0 obj SEL L)/K[0](842 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769053433179" finish="1769053435989">00:00:02.810</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769053433052" finish="1769053436074">00:00:03.022</duration>
+  </batchSummary>
+</report>

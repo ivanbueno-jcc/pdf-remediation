@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="4043306">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/phoenix-rfp-ap012408.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="209135" failedChecks="112">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="29" status="failed" failedChecks="1" tags="lang">
+            <description>If the Lang entry is present in the document's Catalog dictionary or in a structure element dictionary or property list, its value shall be a language identifier as described in ISO 32000-1:2008, 14.9.2. A language identifier shall be a Language-Tag as defined in RFC 3066, Tags for the Identification of Languages</description>
+            <object>CosLang</object>
+            <test>/^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$/.test(unicodeValue)</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[3](1498 0 obj SESect Sect)/Lang[0]</context>
+              <errorMessage>Value EN-US of the Lang entry is not a Language-Tag</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](8128 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](8128 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="107" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[3](1566 0 obj SEL L)/K[0](4055 0 obj SELI LI)/K[1](4057 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[6](1569 0 obj SEL L)/K[0](4051 0 obj SELI LI)/K[1](4053 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[8](1571 0 obj SEL L)/K[0](4047 0 obj SELI LI)/K[1](4049 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[11](1574 0 obj SEL L)/K[0](4043 0 obj SELI LI)/K[1](4045 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[0](3999 0 obj SELI LI)/K[1](4041 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[1](4000 0 obj SELI LI)/K[1](4038 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[2](4001 0 obj SELI LI)/K[1](4035 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[3](4002 0 obj SELI LI)/K[1](4032 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[4](4003 0 obj SELI LI)/K[1](4029 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[5](4004 0 obj SELI LI)/K[1](4026 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[6](4005 0 obj SELI LI)/K[1](4023 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[7](4006 0 obj SELI LI)/K[1](4020 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[8](4007 0 obj SELI LI)/K[1](4017 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[9](4008 0 obj SELI LI)/K[1](4014 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[14](1577 0 obj SEL L)/K[10](4009 0 obj SELI LI)/K[1](4011 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[22](1585 0 obj SEL L)/K[0](3991 0 obj SELI LI)/K[1](3997 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[22](1585 0 obj SEL L)/K[1](3992 0 obj SELI LI)/K[1](3994 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[30](1593 0 obj SEL L)/K[0](3979 0 obj SELI LI)/K[1](3989 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[30](1593 0 obj SEL L)/K[1](3980 0 obj SELI LI)/K[1](3986 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[30](1593 0 obj SEL L)/K[2](3981 0 obj SELI LI)/K[1](3983 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[36](1599 0 obj SEL L)/K[0](3963 0 obj SELI LI)/K[1](3977 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[36](1599 0 obj SEL L)/K[1](3964 0 obj SELI LI)/K[1](3974 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[36](1599 0 obj SEL L)/K[2](3965 0 obj SELI LI)/K[1](3971 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[36](1599 0 obj SEL L)/K[3](3966 0 obj SELI LI)/K[1](3968 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[39](1602 0 obj SEL L)/K[0](3947 0 obj SELI LI)/K[1](3961 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[39](1602 0 obj SEL L)/K[1](3948 0 obj SELI LI)/K[1](3958 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[39](1602 0 obj SEL L)/K[2](3949 0 obj SELI LI)/K[1](3955 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[39](1602 0 obj SEL L)/K[3](3950 0 obj SELI LI)/K[1](3952 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[46](1610 0 obj SEL L)/K[0](3941 0 obj SELI LI)/K[1](3943 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[59](1629 0 obj SEL L)/K[0](3920 0 obj SELI LI)/K[1](3926 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[59](1629 0 obj SEL L)/K[1](3921 0 obj SELI LI)/K[1](3923 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[67](1637 0 obj SEL L)/K[0](3908 0 obj SELI LI)/K[1](3918 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[67](1637 0 obj SEL L)/K[1](3909 0 obj SELI LI)/K[1](3915 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[67](1637 0 obj SEL L)/K[2](3910 0 obj SELI LI)/K[1](3912 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[75](1645 0 obj SEL L)/K[0](3904 0 obj SELI LI)/K[1](3906 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[96](1667 0 obj SEL L)/K[0](3896 0 obj SELI LI)/K[1](3898 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[119](1698 0 obj SEL L)/K[0](3856 0 obj SELI LI)/K[1](3858 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[134](1716 0 obj SEL L)/K[0](3828 0 obj SELI LI)/K[1](3838 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[134](1716 0 obj SEL L)/K[1](3829 0 obj SELI LI)/K[1](3835 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[134](1716 0 obj SEL L)/K[2](3830 0 obj SELI LI)/K[1](3832 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[139](1721 0 obj SEL L)/K[0](3812 0 obj SELI LI)/K[1](3826 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[139](1721 0 obj SEL L)/K[1](3813 0 obj SELI LI)/K[1](3823 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[139](1721 0 obj SEL L)/K[2](3814 0 obj SELI LI)/K[1](3820 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[139](1721 0 obj SEL L)/K[3](3815 0 obj SELI LI)/K[1](3817 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[143](1725 0 obj SEL L)/K[0](3808 0 obj SELI LI)/K[1](3810 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[166](1753 0 obj SEL L)/K[0](3724 0 obj SELI LI)/K[1](3726 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[194](1788 0 obj SEL L)/K[0](3624 0 obj SELI LI)/K[1](3626 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[208](1805 0 obj SEL L)/K[0](3608 0 obj SELI LI)/K[1](3610 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[220](1820 0 obj SEL L)/K[0](3580 0 obj SELI LI)/K[1](3594 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[220](1820 0 obj SEL L)/K[1](3581 0 obj SELI LI)/K[1](3591 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[220](1820 0 obj SEL L)/K[2](3582 0 obj SELI LI)/K[1](3588 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[220](1820 0 obj SEL L)/K[3](3583 0 obj SELI LI)/K[1](3585 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[227](1827 0 obj SEL L)/K[0](3562 0 obj SELI LI)/K[1](3576 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[227](1827 0 obj SEL L)/K[1](3563 0 obj SELI LI)/K[1](3573 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[227](1827 0 obj SEL L)/K[2](3564 0 obj SELI LI)/K[1](3570 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[227](1827 0 obj SEL L)/K[3](3565 0 obj SELI LI)/K[1](3567 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[233](1833 0 obj SEL L)/K[0](3546 0 obj SELI LI)/K[1](3560 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[233](1833 0 obj SEL L)/K[1](3547 0 obj SELI LI)/K[1](3557 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[233](1833 0 obj SEL L)/K[2](3548 0 obj SELI LI)/K[1](3554 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[233](1833 0 obj SEL L)/K[3](3549 0 obj SELI LI)/K[1](3551 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[239](1839 0 obj SEL L)/K[0](3542 0 obj SELI LI)/K[1](3544 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[271](1879 0 obj SEL L)/K[0](3393 0 obj SELI LI)/K[1](3395 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[309](1927 0 obj SEL L)/K[0](3183 0 obj SELI LI)/K[1](3185 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[335](1962 0 obj SEL L)/K[0](3143 0 obj SELI LI)/K[1](3145 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[356](1987 0 obj SEL L)/K[0](3111 0 obj SELI LI)/K[1](3125 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[356](1987 0 obj SEL L)/K[1](3112 0 obj SELI LI)/K[1](3122 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[356](1987 0 obj SEL L)/K[2](3113 0 obj SELI LI)/K[1](3119 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[356](1987 0 obj SEL L)/K[3](3114 0 obj SELI LI)/K[1](3116 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[364](1995 0 obj SEL L)/K[0](3099 0 obj SELI LI)/K[1](3109 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[364](1995 0 obj SEL L)/K[1](3100 0 obj SELI LI)/K[1](3106 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[364](1995 0 obj SEL L)/K[2](3101 0 obj SELI LI)/K[1](3103 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[370](2001 0 obj SEL L)/K[0](3095 0 obj SELI LI)/K[1](3097 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[388](2024 0 obj SEL L)/K[0](3075 0 obj SELI LI)/K[1](3077 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[403](2044 0 obj SEL L)/K[0](3053 0 obj SELI LI)/K[1](3055 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[422](2068 0 obj SEL L)/K[0](3021 0 obj SELI LI)/K[1](3031 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[422](2068 0 obj SEL L)/K[1](3022 0 obj SELI LI)/K[1](3028 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[422](2068 0 obj SEL L)/K[2](3023 0 obj SELI LI)/K[1](3025 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[428](2074 0 obj SEL L)/K[0](3009 0 obj SELI LI)/K[1](3019 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[428](2074 0 obj SEL L)/K[1](3010 0 obj SELI LI)/K[1](3016 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[428](2074 0 obj SEL L)/K[2](3011 0 obj SELI LI)/K[1](3013 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[434](2080 0 obj SEL L)/K[0](3005 0 obj SELI LI)/K[1](3007 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[474](2131 0 obj SEL L)/K[0](2835 0 obj SELI LI)/K[1](2837 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[497](2160 0 obj SEL L)/K[0](2811 0 obj SELI LI)/K[1](2813 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[503](2167 0 obj SEL L)/K[0](2805 0 obj SELI LI)/K[1](2807 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[513](2180 0 obj SEL L)/K[0](2781 0 obj SELI LI)/K[1](2791 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[513](2180 0 obj SEL L)/K[1](2782 0 obj SELI LI)/K[1](2788 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[513](2180 0 obj SEL L)/K[2](2783 0 obj SELI LI)/K[1](2785 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[519](2187 0 obj SEL L)/K[0](2761 0 obj SELI LI)/K[1](2779 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[519](2187 0 obj SEL L)/K[1](2762 0 obj SELI LI)/K[1](2776 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[519](2187 0 obj SEL L)/K[2](2763 0 obj SELI LI)/K[1](2773 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[519](2187 0 obj SEL L)/K[3](2764 0 obj SELI LI)/K[1](2770 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[519](2187 0 obj SEL L)/K[4](2765 0 obj SELI LI)/K[1](2767 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[523](2191 0 obj SEL L)/K[0](2757 0 obj SELI LI)/K[1](2759 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[541](2214 0 obj SEL L)/K[0](2733 0 obj SELI LI)/K[1](2735 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[557](2233 0 obj SEL L)/K[0](2717 0 obj SELI LI)/K[1](2719 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[567](2247 0 obj SEL L)/K[0](2609 0 obj SELI LI)/K[1](2625 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[567](2247 0 obj SEL L)/K[1](2610 0 obj SELI LI)/K[1](2620 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[567](2247 0 obj SEL L)/K[2](2611 0 obj SELI LI)/K[1](2617 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[567](2247 0 obj SEL L)/K[3](2612 0 obj SELI LI)/K[1](2614 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[584](2264 0 obj SEL L)/K[0](2589 0 obj SELI LI)/K[1](2599 0 obj SENonStandard Lbody)</context>
+              <errorMessage>Non-standard structure type Lbody is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="2" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[567](2247 0 obj SEL L)/K[0](2609 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1380 0 obj PDStructTreeRoot)/K[2](1562 0 obj SESect Sect)/K[567](2247 0 obj SEL L)/K[1](2610 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Figure element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769052868516" finish="1769052872031">00:00:03.515</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769052868360" finish="1769052872087">00:00:03.727</duration>
+  </batchSummary>
+</report>

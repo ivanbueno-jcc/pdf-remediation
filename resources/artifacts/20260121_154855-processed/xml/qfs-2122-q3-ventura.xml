@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="301184">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/qfs-2122-q3-ventura.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="66584" failedChecks="21">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](54 0 obj PDPage)/contentStream[0](124 0 obj PDSemanticContentStream)/operators[83]/font[0](KLPKCB+Times-Roman)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](11 0 obj PDPage)/contentStream[0](1751 0 obj PDSemanticContentStream)/operators[11636]/font[0](KLPLFO+Helvetica)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="19" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1514]/usedGlyphs[0](KLPKKB+TimesNewRoman KLPKKB+TimesNewRoman 22 0 248710794 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1514]/usedGlyphs[1](KLPKKB+TimesNewRoman KLPKKB+TimesNewRoman 25 0 248710794 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1514]/usedGlyphs[2](KLPKKB+TimesNewRoman KLPKKB+TimesNewRoman 26 0 248710794 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1514]/usedGlyphs[3](KLPKKB+TimesNewRoman KLPKKB+TimesNewRoman 17 0 248710794 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1514]/usedGlyphs[4](KLPKKB+TimesNewRoman KLPKKB+TimesNewRoman 19 0 248710794 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1514]/usedGlyphs[5](KLPKKB+TimesNewRoman KLPKKB+TimesNewRoman 24 0 248710794 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1523]/usedGlyphs[0](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 22 0 48305285 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1523]/usedGlyphs[1](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 23 0 48305285 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1523]/usedGlyphs[2](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 19 0 48305285 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1523]/usedGlyphs[3](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 17 0 48305285 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1523]/usedGlyphs[4](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 27 0 48305285 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1523]/usedGlyphs[5](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 20 0 48305285 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1532]/usedGlyphs[1](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 22 0 1625090026 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1532]/usedGlyphs[3](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 17 0 1625090026 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1532]/usedGlyphs[4](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 27 0 1625090026 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1532]/usedGlyphs[5](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 20 0 1625090026 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1541]/usedGlyphs[3](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 17 0 1714378342 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1541]/usedGlyphs[4](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 28 0 1714378342 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1140 0 obj PDSemanticContentStream)/operators[1541]/usedGlyphs[5](KLPKKC+TimesNewRoman KLPKKC+TimesNewRoman 22 0 1714378342 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769045875242" finish="1769045877543">00:00:02.301</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769045875138" finish="1769045877621">00:00:02.483</duration>
+  </batchSummary>
+</report>

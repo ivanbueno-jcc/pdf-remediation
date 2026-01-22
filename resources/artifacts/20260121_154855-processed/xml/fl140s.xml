@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="215280">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/fl140s.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="8752" failedChecks="9">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="1" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[5345]/font[0](JHABEB+ArialUnicodeMS-KSCms-UHC-H)/DescendantFonts[0](JHABEB+ArialUnicodeMS-KSCms-UHC-H)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="8" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[3701]/usedGlyphs[0](JHABGF+Wingdings3 JHABGF+Wingdings3 88 0 992086987 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[5345]/usedGlyphs[0](JHABEB+ArialUnicodeMS-KSCms-UHC-H JHABEB+ArialUnicodeMS-KSCms-UHC-H 41 0 1197498159 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[5345]/usedGlyphs[1](JHABEB+ArialUnicodeMS-KSCms-UHC-H JHABEB+ArialUnicodeMS-KSCms-UHC-H 72 0 1197498159 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[5345]/usedGlyphs[2](JHABEB+ArialUnicodeMS-KSCms-UHC-H JHABEB+ArialUnicodeMS-KSCms-UHC-H 70 0 1197498159 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[5345]/usedGlyphs[3](JHABEB+ArialUnicodeMS-KSCms-UHC-H JHABEB+ArialUnicodeMS-KSCms-UHC-H 75 0 1197498159 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[5345]/usedGlyphs[4](JHABEB+ArialUnicodeMS-KSCms-UHC-H JHABEB+ArialUnicodeMS-KSCms-UHC-H 68 0 1197498159 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[5345]/usedGlyphs[5](JHABEB+ArialUnicodeMS-KSCms-UHC-H JHABEB+ArialUnicodeMS-KSCms-UHC-H 29 0 1197498159 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](393 0 obj PDSemanticContentStream)/operators[9306]/usedGlyphs[0](JHABJF+Wingdings JHABJF+Wingdings 122 0 1628551735 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040533353" finish="1769040534926">00:00:01.573</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040533135" finish="1769040535067">00:00:01.932</duration>
+  </batchSummary>
+</report>

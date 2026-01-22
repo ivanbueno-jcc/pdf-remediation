@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="370732">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/7a-2223-sanbenito.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="82203" failedChecks="61">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="2" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[2](3397 0 obj SENonStandard UnknownNodeType)</context>
+              <errorMessage>Non-standard structure type UnknownNodeType is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)</context>
+              <errorMessage>Non-standard structure type UnknownNodeType is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="2" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[20](85 0 obj SEDocument Workbook)/K[0](3060 0 obj SESect Worksheet)/K[1](3062 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns (12 and 9 respectively)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[0](3357 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (3 and 1 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="4" status="failed" failedChecks="39" tags="structure,table">
+            <description>TR element should be contained in Table, THead, TBody or TFoot element</description>
+            <object>SETR</object>
+            <test>/^(Table|THead|TBody|TFoot)$/.test(parentStandardType)</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[2](3397 0 obj SENonStandard UnknownNodeType)/K[0](3398 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[0](3432 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[1](3449 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[2](3466 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[3](3483 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[4](3500 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[5](3517 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[6](3534 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[7](3551 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[8](3568 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[9](3585 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[10](3602 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[11](3619 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[12](3636 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[13](3653 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[14](3670 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[15](3687 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[16](3704 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[17](3721 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[18](3738 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[19](3755 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[20](3772 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[21](3789 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[22](3806 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[23](3823 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[24](3840 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[25](3857 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[26](3874 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[27](3891 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[28](3908 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[29](3925 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[30](3942 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[31](3959 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[32](3976 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[33](3993 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[34](4010 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[35](4027 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[36](4044 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[21](3355 0 obj SEDocument Workbook)/K[0](3356 0 obj SESect Worksheet)/K[3](3431 0 obj SENonStandard UnknownNodeType)/K[37](4061 0 obj SETR TR)</context>
+              <errorMessage>TR element contained in null instead of Table, THead, TBody or TFoot element</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="18" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[20](85 0 obj SEDocument Workbook)/K[0](3060 0 obj SESect Worksheet)/K[2](3063 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[20](85 0 obj SEDocument Workbook)/K[0](3060 0 obj SESect Worksheet)/K[6](3067 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[20](85 0 obj SEDocument Workbook)/K[0](3060 0 obj SESect Worksheet)/K[7](3058 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[20](85 0 obj SEDocument Workbook)/K[1](2883 0 obj SESect Worksheet)/K[3](2886 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 6 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[20](85 0 obj SEDocument Workbook)/K[1](2883 0 obj SESect Worksheet)/K[4](2887 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[20](85 0 obj SEDocument Workbook)/K[1](2883 0 obj SESect Worksheet)/K[5](2888 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[20](85 0 obj SEDocument Workbook)/K[2](2818 0 obj SESect Worksheet)/K[0](2816 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[0](1314 0 obj SESect Worksheet)/K[0](1315 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[0](1314 0 obj SESect Worksheet)/K[1](1316 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[0](1314 0 obj SESect Worksheet)/K[2](1312 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[0](1314 0 obj SESect Worksheet)/K[3](1317 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[1](648 0 obj SESect Worksheet)/K[0](649 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[1](648 0 obj SESect Worksheet)/K[1](650 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[1](648 0 obj SESect Worksheet)/K[2](646 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[1](648 0 obj SESect Worksheet)/K[3](651 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[2](292 0 obj SESect Worksheet)/K[2](294 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[3](186 0 obj SESect Worksheet)/K[2](184 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](84 0 obj PDStructTreeRoot)/K[0](3354 0 obj SEDocument Document)/K[22](4078 0 obj SEDocument Workbook)/K[4](117 0 obj SESect Worksheet)/K[2](119 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769044934556" finish="1769044937035">00:00:02.479</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769044934469" finish="1769044937117">00:00:02.648</duration>
+  </batchSummary>
+</report>

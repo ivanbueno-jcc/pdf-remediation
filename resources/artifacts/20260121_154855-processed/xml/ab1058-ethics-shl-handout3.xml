@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="666032">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-08/ab1058-ethics-shl-handout3.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="19256" failedChecks="11">
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="3" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/annots[0](31 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](40 0 obj PDPage)/annots[9](50 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](40 0 obj PDPage)/annots[10](51 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="2" status="failed" failedChecks="8" tags="font">
+            <description>The Unicode values specified in the ToUnicode CMap shall all be greater than zero (0), but not equal to either U+FEFF or U+FFFE</description>
+            <object>Glyph</object>
+            <test>toUnicode == null || (toUnicode.indexOf("\u0000") == -1 &amp;&amp; toUnicode.indexOf("\uFFFE") == -1 &amp;&amp; toUnicode.indexOf("\uFEFF") == -1)</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](39 0 obj PDPage)/contentStream[0](190 0 obj PDSemanticContentStream)/operators[5888]/usedGlyphs[0](Lato-Light Lato-Light 215 0 1078262677 8 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](39 0 obj PDPage)/contentStream[0](190 0 obj PDSemanticContentStream)/operators[7368]/usedGlyphs[0](Lato-Light Lato-Light 215 0 727197178 8 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](39 0 obj PDPage)/contentStream[0](190 0 obj PDSemanticContentStream)/operators[13460]/usedGlyphs[0](Lato-Light Lato-Light 215 0 373097727 8 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](39 0 obj PDPage)/contentStream[0](190 0 obj PDSemanticContentStream)/operators[16843]/usedGlyphs[0](Lato-Light Lato-Light 215 0 576894497 8 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](39 0 obj PDPage)/contentStream[0](190 0 obj PDSemanticContentStream)/operators[17811]/usedGlyphs[0](Lato-Light Lato-Light 215 0 16148478 8 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](39 0 obj PDPage)/contentStream[0](190 0 obj PDSemanticContentStream)/operators[20149]/usedGlyphs[0](Lato-Light Lato-Light 215 0 1340848245 8 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](40 0 obj PDPage)/contentStream[0](191 0 obj PDSemanticContentStream)/operators[263]/usedGlyphs[0](Lato-Light Lato-Light 215 0 1280124872 9 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](40 0 obj PDPage)/contentStream[0](191 0 obj PDSemanticContentStream)/operators[6476]/usedGlyphs[0](Lato-Bold Lato-Bold 215 0 1479909053 9 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040833201" finish="1769040835059">00:00:01.858</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040833114" finish="1769040835072">00:00:01.958</duration>
+  </batchSummary>
+</report>

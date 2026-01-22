@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="144460">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/btb25-1g-07.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="8805" failedChecks="1731">
+          <rule specification="ISO 14289-1:2014" clause="7.18.1" testNumber="3" status="failed" failedChecks="1" tags="annotation,alt-text">
+            <description>A form field shall have a TU key present or all its Widget annotations shall have alternative descriptions (in the form of an Alt entry in the enclosing structure elements)</description>
+            <object>PDWidgetAnnot</object>
+            <test>isOutsideCropBox == true || (F &amp; 2) == 2 || (TU != null &amp;&amp; TU != '') || (Alt != null &amp;&amp; Alt != '')</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/annots[0](7 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A form field neither has TU key nor its Widget annotations have alternative descriptions (in the form of an Alt entry in the enclosing structure element)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="1" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/annots[0](7 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.1" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>The font programs for all fonts used for rendering within a conforming file shall be embedded within that file, as defined in ISO 32000-1:2008, 9.9</description>
+            <object>PDFont</object>
+            <test>Subtype == "Type3" || Subtype == "Type0" || renderingMode == 3 || containsFontFile == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[65]/font[0](AAAAAG+TimesNewRomanPSMT)/DescendantFonts[0](AAAAAG+TimesNewRomanPSMT)</context>
+              <errorMessage>The font program is not embedded</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1728" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[65]/usedGlyphs[0](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 13104 0 94830685 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[65]/usedGlyphs[1](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 12334 0 94830685 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[77]/usedGlyphs[0](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8447 0 1122233828 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[0](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 16672 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[1](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25448 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[2](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26988 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[3](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25632 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[4](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 30568 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[5](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28448 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[6](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25455 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[7](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28005 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[8](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29472 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[9](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 30569 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[10](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29800 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[11](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26990 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[12](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8289 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[88]/usedGlyphs[13](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28415 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[0](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 31008 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[1](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28518 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[2](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8308 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[3](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26725 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[4](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8294 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[5](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28524 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[6](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 27759 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[1](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28263 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[2](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8292 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[3](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25971 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[4](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25458 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[5](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26992 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[6](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29801 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[7](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28526 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[9](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26995 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[10](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8311 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[11](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26996 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[12](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26729 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[13](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28192 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[15](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26111 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[112]/usedGlyphs[1](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29289 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[112]/usedGlyphs[2](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29540 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[112]/usedGlyphs[3](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26979 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[112]/usedGlyphs[6](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8303 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[112]/usedGlyphs[7](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26144 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[112]/usedGlyphs[9](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25888 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[112]/usedGlyphs[10](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 27253 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[112]/usedGlyphs[11](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 30463 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[4](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 30066 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[5](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29728 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[8](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26656 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[9](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28001 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[11](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 24932 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[13](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25703 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[16](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 24948 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[17](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8304 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[18](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25970 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[19](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29551 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[21](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29807 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[22](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8290 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[24](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 24864 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[25](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25701 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[26](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28773 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[27](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28260 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[28](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25966 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[120]/usedGlyphs[29](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29951 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[127]/usedGlyphs[6](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8291 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[127]/usedGlyphs[7](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 28533 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[127]/usedGlyphs[8](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29300 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[127]/usedGlyphs[9](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 15103 0 538667887 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[137]/usedGlyphs[0](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 10337 0 1045731788 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[137]/usedGlyphs[1](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 10751 0 1045731788 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[0](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 21608 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[1](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25888 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[2](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25448 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[3](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26988 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[4](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25632 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[5](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26721 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[6](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29472 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[7](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29557 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[8](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26367 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[0](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26213 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[1](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29285 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[2](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25644 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[3](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8303 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[4](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29216 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[6](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 25970 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[9](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8289 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[10](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8307 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[11](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 30050 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[12](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29556 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[13](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 24942 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[14](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29801 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[15](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 24940 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[16](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8306 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[17](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26995 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[18](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 27424 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[19](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 29800 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[20](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 24948 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[21](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8308 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[22](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26725 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[23](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 8291 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[164]/usedGlyphs[24](AAAAAG+TimesNewRomanPSMT AAAAAG+TimesNewRomanPSMT 26729 0 1739267143 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769042881826" finish="1769042883462">00:00:01.636</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769042881791" finish="1769042883547">00:00:01.756</duration>
+  </batchSummary>
+</report>

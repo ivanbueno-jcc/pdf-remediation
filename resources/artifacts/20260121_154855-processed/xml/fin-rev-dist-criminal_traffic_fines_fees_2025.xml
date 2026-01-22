@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="608468">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/fin-rev-dist-criminal_traffic_fines_fees_2025.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="11515" failedChecks="7">
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="4" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](636 0 obj PDSemanticContentStream)/operators[491]/usedGlyphs[0](ELEWBU+FuturaStd-Condensed ELEWBU+FuturaStd-Condensed 31 0 833240229 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](636 0 obj PDSemanticContentStream)/operators[4457]/usedGlyphs[0](ELEWBU+ProximaNovaCond-Semibold ELEWBU+ProximaNovaCond-Semibold 30 0 1376017854 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](636 0 obj PDSemanticContentStream)/operators[5096]/usedGlyphs[0](ELEWBU+ProximaNovaCond-Bold ELEWBU+ProximaNovaCond-Bold 31 0 2022689531 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](636 0 obj PDSemanticContentStream)/operators[7061]/usedGlyphs[0](ELEWBU+ProximaNova-Medium ELEWBU+ProximaNova-Medium 29 0 226690498 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="3" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](636 0 obj PDSemanticContentStream)/operators[379]/font[0](ELEWBU+FuturaStd-Condensed)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](636 0 obj PDSemanticContentStream)/operators[2596]/font[0](ELEWBU+ProximaNovaCond-Semibold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](636 0 obj PDSemanticContentStream)/operators[5041]/font[0](ELEWBU+ProximaNovaCond-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769045136463" finish="1769045138058">00:00:01.595</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769045136336" finish="1769045138113">00:00:01.777</duration>
+  </batchSummary>
+</report>

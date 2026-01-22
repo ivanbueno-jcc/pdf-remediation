@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="294123">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/jv050infok.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="10855" failedChecks="1482">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="4" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/font[0](FLOAEJ+UnDotum-Bold-KSCms-UHC-H)/DescendantFonts[0](FLOAEJ+UnDotum-Bold-KSCms-UHC-H)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/font[0](FLOAFK+UnDotum-KSCms-UHC-H)/DescendantFonts[0](FLOAFK+UnDotum-KSCms-UHC-H)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/font[0](FLOAGK+UnBatang-KSCms-UHC-H)/DescendantFonts[0](FLOAGK+UnBatang-KSCms-UHC-H)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[7302]/font[0](FLOAHL+UnBatang-Bold-KSCms-UHC-H)/DescendantFonts[0](FLOAHL+UnBatang-Bold-KSCms-UHC-H)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1478" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[0](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 13013 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[1](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 7301 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[2](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 9409 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[5](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 13146 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[6](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 12929 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[7](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 9121 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[8](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 10437 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[9](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 15477 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[11](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 7861 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[12](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 9065 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[13](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 12649 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[14](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 9657 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[16](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 12537 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[17](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 8425 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[19](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 13133 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[20](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 14189 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[21](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 5957 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[22](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 3 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[23](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 13577 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[24](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 16590 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[25](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 8037 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[26](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 6545 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[27](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 12761 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[1326]/usedGlyphs[28](FLOAEJ+UnDotum-Bold-KSCms-UHC-H FLOAEJ+UnDotum-Bold-KSCms-UHC-H 34 0 1087072654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[0](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 13013 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[1](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 7301 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[2](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 9409 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[5](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 9709 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[6](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 9121 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[7](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 10437 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[8](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 15477 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[10](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 7861 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[11](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 9065 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[12](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 5961 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[14](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 12985 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[15](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 12901 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[16](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 7641 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[18](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 9849 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[19](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 12556 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[20](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 12993 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[21](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 6545 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[22](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 12761 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[23](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 34 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2228]/usedGlyphs[24](FLOAFK+UnDotum-KSCms-UHC-H FLOAFK+UnDotum-KSCms-UHC-H 3 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[0](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 7607 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[1](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6435 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[3](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6067 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[5](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13123 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[6](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 7411 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[7](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13067 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[9](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 12539 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[10](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13239 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[11](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13047 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[13](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 12983 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[14](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 16679 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[16](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 11923 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[17](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6291 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[18](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 9519 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[20](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 16699 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[21](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 11880 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[22](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 7803 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[23](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 7831 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[24](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 17 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[26](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6256 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[27](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 14307 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[28](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6323 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[29](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13095 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[30](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 7243 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2254]/usedGlyphs[31](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 3 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[0](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 11583 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[1](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 11535 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[3](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 12927 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[4](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 14999 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[5](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 7751 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[11](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 10407 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[12](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 16875 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[13](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 16651 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[14](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6627 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[20](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13055 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[21](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6319 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[23](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6092 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[24](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13043 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[26](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13347 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2280]/usedGlyphs[27](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 14859 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2306]/usedGlyphs[0](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 14747 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[0](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13123 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[1](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 7411 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[2](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 9519 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[4](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6067 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[5](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13256 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[6](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 13039 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[7](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 9231 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[8](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 10547 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[9](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 15587 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[11](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 7971 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[12](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 9175 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[13](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 12775 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[14](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 15 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[15](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 3 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](13 0 obj PDPage)/contentStream[0](8776 0 obj PDSemanticContentStream)/operators[2331]/usedGlyphs[16](FLOAGK+UnBatang-KSCms-UHC-H FLOAGK+UnBatang-KSCms-UHC-H 6571 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041332154" finish="1769041334311">00:00:02.157</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041332073" finish="1769041334362">00:00:02.289</duration>
+  </batchSummary>
+</report>

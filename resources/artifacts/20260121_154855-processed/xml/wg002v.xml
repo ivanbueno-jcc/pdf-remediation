@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="303501">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/2025-07/wg002v.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="21511" failedChecks="35">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="29" status="failed" failedChecks="1" tags="lang">
+            <description>If the Lang entry is present in the document's Catalog dictionary or in a structure element dictionary or property list, its value shall be a language identifier as described in ISO 32000-1:2008, 14.9.2. A language identifier shall be a Language-Tag as defined in RFC 3066, Tags for the Identification of Languages</description>
+            <object>CosLang</object>
+            <test>/^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$/.test(unicodeValue)</test>
+            <check status="failed">
+              <context>root/document[0]/Lang[0]</context>
+              <errorMessage>Value Vietnamese of the Lang entry is not a Language-Tag</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="2" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[4](218 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[5](220 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="2" status="failed" failedChecks="16" tags="structure">
+            <description>If the Form element omits a Role attribute (Table 348), it shall have only one child: an object reference (14.7.4.3) identifying the widget annotation per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>SEForm</object>
+            <test>roleAttribute != null || hasOneInteractiveChild == true</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[37](84 0 obj SEL L)/K[0](190 0 obj SELI LI)/K[0](211 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[37](84 0 obj SEL L)/K[1](191 0 obj SELI LI)/K[0](204 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[37](84 0 obj SEL L)/K[2](192 0 obj SELI LI)/K[0](198 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[37](84 0 obj SEL L)/K[3](193 0 obj SELI LI)/K[0](194 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[63](110 0 obj SEL L)/K[0](185 0 obj SELI LI)/K[0](186 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[66](113 0 obj SEL L)/K[0](164 0 obj SELI LI)/K[0](181 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[66](113 0 obj SEL L)/K[1](165 0 obj SELI LI)/K[0](166 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[66](113 0 obj SEL L)/K[1](165 0 obj SELI LI)/K[1](167 0 obj SELBody LBody)/K[0](168 0 obj SEL L)/K[0](169 0 obj SELI LI)/K[0](175 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[66](113 0 obj SEL L)/K[1](165 0 obj SELI LI)/K[1](167 0 obj SELBody LBody)/K[0](168 0 obj SEL L)/K[1](170 0 obj SELI LI)/K[0](171 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[68](115 0 obj SEL L)/K[0](144 0 obj SELI LI)/K[0](160 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[68](115 0 obj SEL L)/K[1](145 0 obj SELI LI)/K[0](156 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[68](115 0 obj SEL L)/K[2](146 0 obj SELI LI)/K[0](152 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[68](115 0 obj SEL L)/K[3](147 0 obj SELI LI)/K[0](148 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[75](122 0 obj SEL L)/K[0](129 0 obj SELI LI)/K[0](140 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[75](122 0 obj SEL L)/K[1](130 0 obj SELI LI)/K[0](136 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[75](122 0 obj SEL L)/K[2](131 0 obj SELI LI)/K[0](132 0 obj SEForm Form)</context>
+              <errorMessage>The Form element omits a Role attribute and doesn't have only one child identifying the widget annotation</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="16" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[37](84 0 obj SEL L)/K[0](190 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[37](84 0 obj SEL L)/K[1](191 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[37](84 0 obj SEL L)/K[2](192 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[37](84 0 obj SEL L)/K[3](193 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[63](110 0 obj SEL L)/K[0](185 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[66](113 0 obj SEL L)/K[0](164 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[66](113 0 obj SEL L)/K[1](165 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[66](113 0 obj SEL L)/K[1](165 0 obj SELI LI)/K[1](167 0 obj SELBody LBody)/K[0](168 0 obj SEL L)/K[0](169 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[66](113 0 obj SEL L)/K[1](165 0 obj SELI LI)/K[1](167 0 obj SELBody LBody)/K[0](168 0 obj SEL L)/K[1](170 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[68](115 0 obj SEL L)/K[0](144 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[68](115 0 obj SEL L)/K[1](145 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[68](115 0 obj SEL L)/K[2](146 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[68](115 0 obj SEL L)/K[3](147 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[75](122 0 obj SEL L)/K[0](129 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[75](122 0 obj SEL L)/K[1](130 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](35 0 obj PDStructTreeRoot)/K[0](36 0 obj SEDocument Document)/K[0](46 0 obj SESect Sect)/K[75](122 0 obj SEL L)/K[2](131 0 obj SELI LI)</context>
+              <errorMessage>LI element contains Form element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769047133808" finish="1769047135415">00:00:01.607</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769047133710" finish="1769047135499">00:00:01.789</duration>
+  </batchSummary>
+</report>

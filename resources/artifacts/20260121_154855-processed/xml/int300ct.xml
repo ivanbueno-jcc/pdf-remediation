@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="444124">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/int300ct.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="7912" failedChecks="731">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="3" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[7]/font[0](JDRBAE+STHeitiTC-Light)/DescendantFonts[0](JDRBAE+STHeitiTC-Light)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[1861]/font[0](JDRBAE+AppleGothic)/DescendantFonts[0](JDRBAE+AppleGothic)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[2218]/font[0](JDRBAE+ArialUnicodeMS)/DescendantFonts[0](JDRBAE+ArialUnicodeMS)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="728" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[7]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 3156 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[7]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 953 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[7]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 553 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[7]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 988 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[7]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 306 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 908 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 678 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 755 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 263 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 740 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[5](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 2277 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[6](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 711 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[7](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1385 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[8](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 2942 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[9](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 454 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[10](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 363 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[21]/usedGlyphs[11](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 703 0 1930837320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[37]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1616 0 2052223881 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[37]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 2242 0 2052223881 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[37]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 998 0 2052223881 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[37]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1192 0 2052223881 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 592 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 2923 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 846 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 953 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 657 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[5](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1339 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 592 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 769 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 717 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 3939 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 755 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[5](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 51742 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[6](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 934 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[7](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 386 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[64]/usedGlyphs[8](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 51743 0 628392976 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[73]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 3 0 725832346 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[363]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 592 0 1166230227 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[363]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 769 0 1166230227 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[363]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 717 0 1166230227 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[363]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 3939 0 1166230227 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[363]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 755 0 1166230227 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[372]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 51742 0 365056339 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[372]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 934 0 365056339 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[372]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 386 0 365056339 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[372]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 51743 0 365056339 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[459]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 457 0 166536076 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[473]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1133 0 166536076 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[480]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 17 0 166536076 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[487]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1380 0 166536076 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[510]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 2866 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[510]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 512 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[510]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1222 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[510]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 428 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[510]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 453 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[510]/usedGlyphs[5](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 657 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[510]/usedGlyphs[6](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1339 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[526]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1967 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[526]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 619 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[526]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 2496 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[526]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 822 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[557]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 592 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[557]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 2923 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[557]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 846 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[557]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 953 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[557]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 657 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[557]/usedGlyphs[5](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1339 0 1292472219 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 592 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 3602 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1012 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 657 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1339 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[5](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 489 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[6](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1541 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[7](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1229 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[8](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1609 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[9](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 389 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[10](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 350 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[11](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 616 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[599]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 3156 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[599]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 953 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[599]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 553 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[599]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 988 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[599]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 306 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[613]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 657 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[613]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1339 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[613]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 3602 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[613]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1012 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[613]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1967 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[613]/usedGlyphs[5](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 619 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[613]/usedGlyphs[6](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 2496 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[613]/usedGlyphs[7](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 822 0 548795052 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[629]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 503 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[629]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 263 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[629]/usedGlyphs[2](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 657 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[629]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 1339 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[629]/usedGlyphs[4](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 306 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[643]/usedGlyphs[0](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 423 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[643]/usedGlyphs[1](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 432 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](16 0 obj PDPage)/contentStream[0](418 0 obj PDSemanticContentStream)/operators[643]/usedGlyphs[3](JDRBAE+STHeitiTC-Light JDRBAE+STHeitiTC-Light 881 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040865238" finish="1769040867037">00:00:01.799</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040865110" finish="1769040867207">00:00:02.097</duration>
+  </batchSummary>
+</report>

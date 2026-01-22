@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1328272">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/rfp-refm-2016-29-jp-attachment-1-pasadena-ch-specifications.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="625501" failedChecks="16">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="4" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](7 0 obj PDPage)/contentStream[0](6272 0 obj PDSemanticContentStream)/operators[6]/font[0](AAAADK+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[46](143 0 obj PDPage)/contentStream[0](3115 0 obj PDSemanticContentStream)/operators[415]/font[0](AAAADL+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](146 0 obj PDPage)/contentStream[0](6800 0 obj PDSemanticContentStream)/operators[6]/font[0](AAAAGB+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[79](249 0 obj PDPage)/contentStream[0](7240 0 obj PDSemanticContentStream)/operators[1947]/font[0](AAAAGD+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="12" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](7 0 obj PDPage)/contentStream[0](6272 0 obj PDSemanticContentStream)/operators[53]/usedGlyphs[0](AAAADK+ChromeSansMM AAAADK+ChromeSansMM 150 0 1865201235 3 true)</context>
+              <errorMessage>Glyph width 473 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](7 0 obj PDPage)/contentStream[0](6272 0 obj PDSemanticContentStream)/operators[1426]/usedGlyphs[5](AAAADK+ChromeSansMM AAAADK+ChromeSansMM 146 0 1327895505 3 true)</context>
+              <errorMessage>Glyph width 215 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](7 0 obj PDPage)/contentStream[0](6272 0 obj PDSemanticContentStream)/operators[2642]/usedGlyphs[0](AAAADK+ChromeSansMM AAAADK+ChromeSansMM 147 0 771923297 3 true)</context>
+              <errorMessage>Glyph width 375 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](7 0 obj PDPage)/contentStream[0](6272 0 obj PDSemanticContentStream)/operators[2642]/usedGlyphs[6](AAAADK+ChromeSansMM AAAADK+ChromeSansMM 148 0 771923297 3 true)</context>
+              <errorMessage>Glyph width 375 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](7 0 obj PDPage)/contentStream[0](6272 0 obj PDSemanticContentStream)/operators[3292]/usedGlyphs[10](AAAADK+ChromeSansMM AAAADK+ChromeSansMM 146 0 144445623 3 true)</context>
+              <errorMessage>Glyph width 215 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](7 0 obj PDPage)/contentStream[0](6272 0 obj PDSemanticContentStream)/operators[4404]/usedGlyphs[10](AAAADK+ChromeSansMM AAAADK+ChromeSansMM 146 0 1780293706 3 true)</context>
+              <errorMessage>Glyph width 215 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](146 0 obj PDPage)/contentStream[0](6800 0 obj PDSemanticContentStream)/operators[107]/usedGlyphs[13](AAAAGB+ChromeSansMM AAAAGB+ChromeSansMM 151 0 1133088009 47 true)</context>
+              <errorMessage>Glyph width 946 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](146 0 obj PDPage)/contentStream[0](6800 0 obj PDSemanticContentStream)/operators[2448]/usedGlyphs[0](AAAAGB+ChromeSansMM AAAAGB+ChromeSansMM 147 0 1473496525 47 true)</context>
+              <errorMessage>Glyph width 375 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](146 0 obj PDPage)/contentStream[0](6800 0 obj PDSemanticContentStream)/operators[2448]/usedGlyphs[6](AAAAGB+ChromeSansMM AAAAGB+ChromeSansMM 148 0 1473496525 47 true)</context>
+              <errorMessage>Glyph width 375 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](146 0 obj PDPage)/contentStream[0](6800 0 obj PDSemanticContentStream)/operators[3096]/usedGlyphs[10](AAAAGB+ChromeSansMM AAAAGB+ChromeSansMM 146 0 558869213 47 true)</context>
+              <errorMessage>Glyph width 215 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](146 0 obj PDPage)/contentStream[0](6800 0 obj PDSemanticContentStream)/operators[4208]/usedGlyphs[10](AAAAGB+ChromeSansMM AAAAGB+ChromeSansMM 146 0 433798190 47 true)</context>
+              <errorMessage>Glyph width 215 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](146 0 obj PDPage)/contentStream[0](6800 0 obj PDSemanticContentStream)/operators[7107]/usedGlyphs[10](AAAAGB+ChromeSansMM AAAAGB+ChromeSansMM 146 0 558003530 47 true)</context>
+              <errorMessage>Glyph width 215 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769052304915" finish="1769052311128">00:00:06.213</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769052304867" finish="1769052311167">00:00:06.300</duration>
+  </batchSummary>
+</report>

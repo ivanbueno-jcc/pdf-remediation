@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="437543">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/effects-complex-trauma-on-youth-briefing.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="95411" failedChecks="19">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](1015 0 obj PDSemanticContentStream)/operators[18]/font[0](FDQJCQ+GoudyStd)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](53 0 obj PDPage)/contentStream[0](1156 0 obj PDSemanticContentStream)/operators[2]/xObject[0]/contentStream[0](75 0 obj PDSemanticContentStream)/operators[5909]/font[0](FDQJCQ+GoudyStd)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="17" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[7](202 0 obj SESect Story)/K[0](296 0 obj SENonStandard _1A_AOC_Brief__front)</context>
+              <errorMessage>Non-standard structure type _1A_AOC_Brief__front is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[7](202 0 obj SESect Story)/K[1](297 0 obj SENonStandard _1B_Date_Below_AOCBr)</context>
+              <errorMessage>Non-standard structure type _1B_Date_Below_AOCBr is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[7](202 0 obj SESect Story)/K[3](299 0 obj SENonStandard _1C_Titlebelow_Front)</context>
+              <errorMessage>Non-standard structure type _1C_Titlebelow_Front is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[9](204 0 obj SESect Story)/K[0](271 0 obj SENonStandard _2A_AOC_Brief_Inside)</context>
+              <errorMessage>Non-standard structure type _2A_AOC_Brief_Inside is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[9](204 0 obj SESect Story)/K[8](279 0 obj SENonStandard _2B_Prepredby_Inside)</context>
+              <errorMessage>Non-standard structure type _2B_Prepredby_Inside is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[5](333 0 obj SENonStandard _3B_Body_Text_w_Inde)</context>
+              <errorMessage>Non-standard structure type _3B_Body_Text_w_Inde is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[44](372 0 obj SENonStandard _3B_Body_Text_w_Inde)</context>
+              <errorMessage>Non-standard structure type _3B_Body_Text_w_Inde is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[51](379 0 obj SENonStandard _3D_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3D_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[52](380 0 obj SENonStandard _3D_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3D_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[53](381 0 obj SENonStandard _3D_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3D_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[75](404 0 obj SENonStandard _3C_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3C_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[76](405 0 obj SENonStandard _3C_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3C_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[77](406 0 obj SENonStandard _3C_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3C_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[79](408 0 obj SENonStandard _3C_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3C_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[81](410 0 obj SENonStandard _3C_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3C_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[12](192 0 obj SESect Story)/K[82](411 0 obj SENonStandard _3C_Body_Text_w_leve)</context>
+              <errorMessage>Non-standard structure type _3C_Body_Text_w_leve is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](119 0 obj PDStructTreeRoot)/K[0](121 0 obj SEDocument Document)/K[0](193 0 obj SEArt Article)/K[16](210 0 obj SESect Story)/K[0](227 0 obj SENonStandard _6_Side_Body_Text_Ab)</context>
+              <errorMessage>Non-standard structure type _6_Side_Body_Text_Ab is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041560316" finish="1769041562966">00:00:02.650</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041560279" finish="1769041563001">00:00:02.722</duration>
+  </batchSummary>
+</report>

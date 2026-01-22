@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="181749">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/2024-11/CNTransferabilityArticle.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="56065" failedChecks="125">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="7" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[77]/font[0](AAAAAB+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[2529]/font[0](AAAAAE+ChromeSerifMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[18990]/font[0](AAAAAF+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[32259]/font[0](AAAAAG+ChromeSerifMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[32280]/font[0](AAAAAH+ChromeSerifMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[32354]/font[0](AAAAAI+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[32508]/font[0](AAAAAK+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](815 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](815 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.1" testNumber="2" status="failed" failedChecks="58" tags="font">
+            <description>Embedded fonts shall define all glyphs referenced for rendering within the conforming file. A font referenced solely in text rendering mode 3 is not rendered and is thus exempt from the requirements that impact the visual representation of the glyphs of a font. In all cases for TrueType fonts that are to be rendered, character codes shall be able to be mapped to glyphs according to ISO 32000-1:2008, 9.6.6.4 without the use of a non-standard mapping chosen by the conforming processor</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || isGlyphPresent == null || isGlyphPresent == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[113]/usedGlyphs[5](AAAAAC+ChromeSansMM AAAAAC+ChromeSansMM 208 0 2145896000 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[3314]/usedGlyphs[7](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 749486981 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[3668]/usedGlyphs[4](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 275056979 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[4093]/usedGlyphs[2](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 198098993 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6425]/usedGlyphs[5](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 215759534 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6602]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 938405008 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6620]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 938405008 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6678]/usedGlyphs[1](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 560549459 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6947]/usedGlyphs[8](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 1504321715 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[7074]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1251897263 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[7691]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 1934692470 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[7742]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1635772897 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[8896]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1834031967 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[9863]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 1392886653 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[9998]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1346197173 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[10710]/usedGlyphs[8](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 507061061 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[13789]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1437983537 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[13862]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 1186371052 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[14455]/usedGlyphs[3](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 741883443 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[16395]/usedGlyphs[3](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 943666520 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[16706]/usedGlyphs[7](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 2026371507 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[16995]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 669200356 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[18736]/usedGlyphs[3](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1360878852 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[18758]/usedGlyphs[2](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1220524164 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[19219]/usedGlyphs[9](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1682157864 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[19241]/usedGlyphs[5](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 858727880 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[19741]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 2122991287 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[19935]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1884387196 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21029]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 336927685 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21110]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1476061571 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21201]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1651689839 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21559]/usedGlyphs[7](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1559788797 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21925]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 2000421523 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[22267]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1449987177 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[22325]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1048903970 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[22570]/usedGlyphs[4](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1103234208 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[22990]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1445999733 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[24269]/usedGlyphs[2](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 439720255 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[25534]/usedGlyphs[7](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 440295203 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[26186]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1248334686 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[26593]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 447320069 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[26903]/usedGlyphs[5](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 648303898 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[27107]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1133730108 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[27550]/usedGlyphs[8](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 607526140 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[28011]/usedGlyphs[12](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 184642382 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[28952]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1183572822 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[29036]/usedGlyphs[1](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 2048888303 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[29568]/usedGlyphs[5](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 859193874 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[29677]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 596905862 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[30186]/usedGlyphs[4](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 199041063 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[31176]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1280959582 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[31964]/usedGlyphs[3](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1187748003 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[31986]/usedGlyphs[2](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 557568981 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[33150]/usedGlyphs[0](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 165 0 1664757401 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[33231]/usedGlyphs[0](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 165 0 95964948 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[33280]/usedGlyphs[0](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 165 0 1761495255 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[33376]/usedGlyphs[0](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 165 0 1032532382 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[34005]/usedGlyphs[7](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 213 0 284123040 0 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="58" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[113]/usedGlyphs[5](AAAAAC+ChromeSansMM AAAAAC+ChromeSansMM 208 0 2145896000 0 true)</context>
+              <errorMessage>Glyph width 376 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[3314]/usedGlyphs[7](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 749486981 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[3668]/usedGlyphs[4](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 275056979 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[4093]/usedGlyphs[2](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 198098993 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6425]/usedGlyphs[5](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 215759534 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6602]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 938405008 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6620]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 938405008 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6678]/usedGlyphs[1](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 560549459 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[6947]/usedGlyphs[8](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 1504321715 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[7074]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1251897263 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[7691]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 1934692470 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[7742]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1635772897 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[8896]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1834031967 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[9863]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 1392886653 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[9998]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1346197173 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[10710]/usedGlyphs[8](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 507061061 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[13789]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1437983537 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[13862]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 1186371052 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[14455]/usedGlyphs[3](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 741883443 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[16395]/usedGlyphs[3](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 943666520 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[16706]/usedGlyphs[7](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 2026371507 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[16995]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 669200356 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[18736]/usedGlyphs[3](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1360878852 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[18758]/usedGlyphs[2](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1220524164 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[19219]/usedGlyphs[9](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1682157864 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[19241]/usedGlyphs[5](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 858727880 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[19741]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 2122991287 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[19935]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1884387196 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21029]/usedGlyphs[6](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 336927685 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21110]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1476061571 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21201]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1651689839 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21559]/usedGlyphs[7](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1559788797 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[21925]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 2000421523 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[22267]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1449987177 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[22325]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1048903970 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[22570]/usedGlyphs[4](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1103234208 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[22990]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1445999733 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[24269]/usedGlyphs[2](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 439720255 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[25534]/usedGlyphs[7](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 440295203 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[26186]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1248334686 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[26593]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 447320069 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[26903]/usedGlyphs[5](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 648303898 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[27107]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1133730108 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[27550]/usedGlyphs[8](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 607526140 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[28011]/usedGlyphs[12](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 184642382 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[28952]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 1183572822 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[29036]/usedGlyphs[1](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 2048888303 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[29568]/usedGlyphs[5](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 859193874 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[29677]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 210 0 596905862 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[30186]/usedGlyphs[4](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 211 0 199041063 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[31176]/usedGlyphs[0](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 1280959582 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[31964]/usedGlyphs[3](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 213 0 1187748003 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[31986]/usedGlyphs[2](AAAAAD+ChromeSerifMM AAAAAD+ChromeSerifMM 222 0 557568981 0 true)</context>
+              <errorMessage>Glyph width 337 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[33150]/usedGlyphs[0](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 165 0 1664757401 0 true)</context>
+              <errorMessage>Glyph width 376 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[33231]/usedGlyphs[0](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 165 0 95964948 0 true)</context>
+              <errorMessage>Glyph width 376 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[33280]/usedGlyphs[0](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 165 0 1761495255 0 true)</context>
+              <errorMessage>Glyph width 376 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[33376]/usedGlyphs[0](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 165 0 1032532382 0 true)</context>
+              <errorMessage>Glyph width 376 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](8 0 obj PDPage)/contentStream[0](814 0 obj PDSemanticContentStream)/operators[34005]/usedGlyphs[7](AAAAAJ+ChromeSansMM AAAAAJ+ChromeSansMM 213 0 284123040 0 true)</context>
+              <errorMessage>Glyph width 376 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769052861595" finish="1769052863990">00:00:02.395</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769052861544" finish="1769052864184">00:00:02.640</duration>
+  </batchSummary>
+</report>

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="30328421">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/cfac-20220207-materials.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="1468827" failedChecks="65">
+          <rule specification="ISO 14289-1:2014" clause="7.21.3.2" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>ISO 32000-1:2008, 9.7.4, Table 117 requires that all embedded Type 2 CIDFonts in the CIDFont dictionary shall contain a CIDToGIDMap entry that shall be a stream mapping from CIDs to glyph indices or the name Identity, as described in ISO 32000-1:2008, 9.7.4, Table 117</description>
+            <object>PDCIDFont</object>
+            <test>Subtype != "CIDFontType2" || CIDToGIDMap != null || containsFontFile == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[166](1956 0 obj PDPage)/contentStream[0](65122 0 obj PDSemanticContentStream)/operators[393]/font[0](ABCDEE+Times New Roman)/DescendantFonts[0](ABCDEE+Times New Roman)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="7" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[112](1468 0 obj PDPage)/contentStream[0](61993 0 obj PDSemanticContentStream)/operators[5693]/usedGlyphs[0](AAAAFI+ChromSymbolOTF AAAAFI+ChromSymbolOTF 149 0 380397539 395 true)</context>
+              <errorMessage>Glyph width 460 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[112](1468 0 obj PDPage)/contentStream[0](61993 0 obj PDSemanticContentStream)/operators[6290]/usedGlyphs[0](AAAAFI+ChromSymbolOTF AAAAFI+ChromSymbolOTF 149 0 1983947153 395 true)</context>
+              <errorMessage>Glyph width 460 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[113](1481 0 obj PDPage)/contentStream[0](62000 0 obj PDSemanticContentStream)/operators[2343]/usedGlyphs[0](AAAAFM+ChromSymbolOTF AAAAFM+ChromSymbolOTF 149 0 849691048 396 true)</context>
+              <errorMessage>Glyph width 460 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[114](1489 0 obj PDPage)/contentStream[0](39010 0 obj PDSemanticContentStream)/operators[670]/usedGlyphs[0](AAAAFP+ChromSymbolOTF AAAAFP+ChromSymbolOTF 149 0 1756130926 397 true)</context>
+              <errorMessage>Glyph width 460 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[123](1563 0 obj PDPage)/contentStream[0](39686 0 obj PDSemanticContentStream)/operators[1787]/usedGlyphs[0](AAAAHI+ChromSymbolOTF AAAAHI+ChromSymbolOTF 149 0 143948363 406 true)</context>
+              <errorMessage>Glyph width 460 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[123](1563 0 obj PDPage)/contentStream[0](39686 0 obj PDSemanticContentStream)/operators[2727]/usedGlyphs[0](AAAAHI+ChromSymbolOTF AAAAHI+ChromSymbolOTF 149 0 836128015 406 true)</context>
+              <errorMessage>Glyph width 460 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[123](1563 0 obj PDPage)/contentStream[0](39686 0 obj PDSemanticContentStream)/operators[3265]/usedGlyphs[0](AAAAHI+ChromSymbolOTF AAAAHI+ChromSymbolOTF 149 0 1207644362 406 true)</context>
+              <errorMessage>Glyph width 460 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="16" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[9](51 0 obj PDPage)/annots[0](8990 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/annots[5](2426 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](126 0 obj PDPage)/annots[0](8452 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](126 0 obj PDPage)/annots[1](8464 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](164 0 obj PDPage)/annots[0](8413 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[18](164 0 obj PDPage)/annots[1](2477 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](305 0 obj PDPage)/annots[1](2652 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](305 0 obj PDPage)/annots[2](2653 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[51](711 0 obj PDPage)/annots[0](6967 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[52](722 0 obj PDPage)/annots[0](6956 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[53](731 0 obj PDPage)/annots[0](6945 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[54](739 0 obj PDPage)/annots[0](6935 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[56](760 0 obj PDPage)/annots[0](6914 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[58](778 0 obj PDPage)/annots[0](6902 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[73](992 0 obj PDPage)/annots[1](6631 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[134](1681 0 obj PDPage)/annots[0](9234 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="41" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5821]/usedGlyphs[0](null null 1 0 461155951 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5830]/usedGlyphs[0](null null 2 0 1099694603 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5839]/usedGlyphs[0](null null 9 0 1362435880 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5848]/usedGlyphs[0](null null 10 0 560041895 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5857]/usedGlyphs[0](null null 11 0 368242083 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5868]/usedGlyphs[0](null null 12 0 885991756 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5879]/usedGlyphs[0](null null 13 0 1299885218 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5888]/usedGlyphs[0](null null 14 0 1615535645 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5897]/usedGlyphs[0](null null 10 0 1649829954 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5906]/usedGlyphs[0](null null 2 0 790538253 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5915]/usedGlyphs[0](null null 16 0 924393200 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5939]/usedGlyphs[0](null null 15 0 253380088 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5948]/usedGlyphs[0](null null 13 0 1591683105 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5957]/usedGlyphs[0](null null 10 0 81505591 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5966]/usedGlyphs[0](null null 2 0 2068499906 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5975]/usedGlyphs[0](null null 9 0 648176342 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5984]/usedGlyphs[0](null null 16 0 18601987 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[5993]/usedGlyphs[0](null null 1 0 1492156162 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6004]/usedGlyphs[0](null null 12 0 1970900227 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6015]/usedGlyphs[0](null null 3 0 1090057640 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6024]/usedGlyphs[0](null null 13 0 536671860 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6033]/usedGlyphs[0](null null 15 0 1143968486 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6042]/usedGlyphs[0](null null 16 0 2097614581 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6066]/usedGlyphs[0](null null 11 0 2052452680 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6075]/usedGlyphs[0](null null 2 0 48428832 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6084]/usedGlyphs[0](null null 1 0 987950392 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6093]/usedGlyphs[0](null null 10 0 2136419383 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6102]/usedGlyphs[0](null null 9 0 719146276 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6111]/usedGlyphs[0](null null 10 0 1066656936 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6118]/usedGlyphs[0](null null 15 0 1066656936 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6127]/usedGlyphs[0](null null 10 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6134]/usedGlyphs[0](null null 4 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6141]/usedGlyphs[0](null null 5 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6148]/usedGlyphs[0](null null 16 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6177]/usedGlyphs[0](null null 15 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6184]/usedGlyphs[0](null null 2 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6191]/usedGlyphs[0](null null 14 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6198]/usedGlyphs[0](null null 6 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6212]/usedGlyphs[0](null null 13 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6248]/usedGlyphs[0](null null 7 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](47412 0 obj PDSemanticContentStream)/operators[6255]/usedGlyphs[0](null null 8 0 313869647 50 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769048763997" finish="1769048794332">00:00:30.335</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769048763543" finish="1769048794431">00:00:30.888</duration>
+  </batchSummary>
+</report>

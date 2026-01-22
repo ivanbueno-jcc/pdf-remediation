@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1611272">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/fl810v.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="163055" failedChecks="11">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="1" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](226 0 obj PDStructTreeRoot)/K[0](228 0 obj SEDocument Document)/K[15](2318 0 obj SEArt Article)/K[1](2319 0 obj SEL L)/K[0](2320 0 obj SELI LI)/K[1](2254 0 obj SELBody LBody)/K[3](2328 0 obj SEL L)/K[1](2329 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="6" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](226 0 obj PDStructTreeRoot)/K[0](228 0 obj SEDocument Document)/K[7](1683 0 obj SEArt Article)/K[3](1687 0 obj SEP NormalParagraphStyle)/K[0](1688 0 obj SETable Table)/K[1](1690 0 obj SETBody TBody)/K[3](1694 0 obj SETR TR)/K[0](1885 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](226 0 obj PDStructTreeRoot)/K[0](228 0 obj SEDocument Document)/K[8](1356 0 obj SEArt Article)/K[4](1359 0 obj SEP NormalParagraphStyle)/K[0](1360 0 obj SETable Table)/K[1](1362 0 obj SETBody TBody)/K[3](1366 0 obj SETR TR)/K[0](1526 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](226 0 obj PDStructTreeRoot)/K[0](228 0 obj SEDocument Document)/K[9](967 0 obj SEArt Article)/K[0](968 0 obj SEP NormalParagraphStyle)/K[0](969 0 obj SETable Table)/K[1](971 0 obj SETBody TBody)/K[4](976 0 obj SETR TR)/K[0](1252 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](226 0 obj PDStructTreeRoot)/K[0](228 0 obj SEDocument Document)/K[10](538 0 obj SEArt Article)/K[0](539 0 obj SEP NormalParagraphStyle)/K[0](540 0 obj SETable Table)/K[1](542 0 obj SETBody TBody)/K[3](546 0 obj SETR TR)/K[0](742 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](226 0 obj PDStructTreeRoot)/K[0](228 0 obj SEDocument Document)/K[11](2833 0 obj SEArt Article)/K[0](2834 0 obj SEP NormalParagraphStyle)/K[0](2835 0 obj SETable Table)/K[1](2837 0 obj SETBody TBody)/K[3](2841 0 obj SETR TR)/K[0](2963 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](226 0 obj PDStructTreeRoot)/K[0](228 0 obj SEDocument Document)/K[12](2628 0 obj SEArt Article)/K[0](2629 0 obj SEP NormalParagraphStyle)/K[0](2630 0 obj SETable Table)/K[1](2632 0 obj SETBody TBody)/K[2](2635 0 obj SETR TR)/K[0](2724 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="2" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[21](66 0 obj PDPage)/annots[1](304 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](66 0 obj PDPage)/annots[2](302 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[21](66 0 obj PDPage)/annots[1](304 0 obj PDWidgetAnnot)/appearance[0]/contentStream[0](79 0 obj PDContentStream)/operators[42]/usedGlyphs[1](Arial,Bold Arial,Bold 136 0  0 false)</context>
+              <errorMessage>Glyph width 333.0078125 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 556)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](66 0 obj PDPage)/annots[2](302 0 obj PDWidgetAnnot)/appearance[0]/contentStream[0](77 0 obj PDContentStream)/operators[54]/usedGlyphs[0](Arial,Bold Arial,Bold 136 0  0 false)</context>
+              <errorMessage>Glyph width 333.0078125 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 556)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040532814" finish="1769040536373">00:00:03.559</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040532468" finish="1769040536460">00:00:03.992</duration>
+  </batchSummary>
+</report>

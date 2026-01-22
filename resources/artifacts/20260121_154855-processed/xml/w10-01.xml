@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="324305">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/itc/w10-01.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="46467" failedChecks="9">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](354 0 obj PDStructTreeRoot)/K[0](355 0 obj SEDocument Document)/K[0](458 0 obj SEPart Part)/K[0](457 0 obj SESect Sect)/K[2](463 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 5 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="7" status="failed" failedChecks="4" tags="structure">
+            <description>Standard tags defined in ISO 32000-1:2008, 14.8.4, shall not be remapped</description>
+            <object>PDStructElem</object>
+            <test>remappedStandardType == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](354 0 obj PDStructTreeRoot)/K[0](355 0 obj SEDocument Document)/K[0](458 0 obj SEPart Part)/K[0](457 0 obj SESect Sect)/K[2](463 0 obj SETable Table)/K[4](1233 0 obj SETR TR)/K[2](1243 0 obj SETD TD)/K[1](1246 0 obj SEP P)/K[0](358 0 obj SESpan Link)</context>
+              <errorMessage>Standard type Link is remapped</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](354 0 obj PDStructTreeRoot)/K[0](355 0 obj SEDocument Document)/K[0](458 0 obj SEPart Part)/K[0](457 0 obj SESect Sect)/K[4](455 0 obj SEP Normal)/K[0](360 0 obj SESpan Link)</context>
+              <errorMessage>Standard type Link is remapped</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](354 0 obj PDStructTreeRoot)/K[0](355 0 obj SEDocument Document)/K[0](458 0 obj SEPart Part)/K[0](457 0 obj SESect Sect)/K[4](455 0 obj SEP Normal)/K[1](359 0 obj SESpan Link)</context>
+              <errorMessage>Standard type Link is remapped</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](354 0 obj PDStructTreeRoot)/K[0](355 0 obj SEDocument Document)/K[1](365 0 obj SEPart Part)/K[0](364 0 obj SESect Sect)/K[12](362 0 obj SEP Normal)/K[0](361 0 obj SESpan Link)</context>
+              <errorMessage>Standard type Link is remapped</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="4" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[0](83 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Link tag (standard type = Span) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[0](85 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Link tag (standard type = Span) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[1](84 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Link tag (standard type = Span) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[14](29 0 obj PDPage)/annots[0](98 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Link tag (standard type = Span) instead of Link</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769053961051" finish="1769053961468">00:00:00.417</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769053961030" finish="1769053961480">00:00:00.450</duration>
+  </batchSummary>
+</report>

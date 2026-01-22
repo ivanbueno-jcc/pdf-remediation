@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="590126">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/ch165c.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="24902" failedChecks="1883">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="3" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[21]/font[0](CCTLYZ+SourceHanSansSC-Normal)/DescendantFonts[0](CCTLYZ+SourceHanSansSC-Normal)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[86]/xObject[0]/contentStream[0](751 0 obj PDSemanticContentStream)/operators[8]/font[0](QMXUQX+SourceHanSansSC-Bold)/DescendantFonts[0](QMXUQX+SourceHanSansSC-Bold)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[256]/font[0](WTXSSL+SourceHanSerifSC-Regular)/DescendantFonts[0](WTXSSL+SourceHanSerifSC-Regular)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1852" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[256]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 14337 0 99808631 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[256]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 21368 0 99808631 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[256]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11555 0 99808631 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[256]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 41233 0 99808631 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[256]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 30552 0 99808631 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[256]/usedGlyphs[5](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 99808631 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[290]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 4073506 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[290]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 45065 0 4073506 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[290]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59955 0 4073506 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[290]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11183 0 4073506 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 10056 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 27680 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 10923 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 17463 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 20481 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[5](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 21672 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[6](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 41256 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[7](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 9734 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[8](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 30552 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[318]/usedGlyphs[9](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 698747943 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[336]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 45061 0 480402503 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[336]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59955 0 480402503 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[336]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 17172 0 480402503 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[336]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 9550 0 480402503 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[336]/usedGlyphs[5](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 17469 0 480402503 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[336]/usedGlyphs[6](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 30552 0 480402503 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[336]/usedGlyphs[7](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 480402503 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[356]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 114414807 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[356]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 45061 0 114414807 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[356]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1398 0 114414807 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[520]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 29665 0 73688220 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[520]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11228 0 73688220 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[520]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 9829 0 73688220 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[520]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 39455 0 73688220 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[520]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 23515 0 73688220 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[520]/usedGlyphs[5](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 9773 0 73688220 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[520]/usedGlyphs[6](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59951 0 73688220 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[538]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 37545 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[538]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 21612 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[538]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 30552 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[538]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 1623060829 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[572]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 1189651769 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[572]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 45065 0 1189651769 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[572]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59952 0 1189651769 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[572]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 62291 0 1189651769 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[581]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 10914 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[581]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11984 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[581]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 62291 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[581]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 1607869297 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[616]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 15902 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[616]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11911 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[616]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11218 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[616]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 29665 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[616]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11228 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[616]/usedGlyphs[5](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 9607 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[616]/usedGlyphs[6](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 9773 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[616]/usedGlyphs[7](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59951 0 138536309 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[634]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 37545 0 1815370847 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[634]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 21612 0 1815370847 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[634]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 30552 0 1815370847 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[634]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 1815370847 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[668]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 22446425 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[668]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 45065 0 22446425 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[668]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59952 0 22446425 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[668]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 62291 0 22446425 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[677]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 10914 0 1870723838 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[677]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11984 0 1870723838 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[677]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 62291 0 1870723838 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[677]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 1870723838 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[712]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 10914 0 1850874910 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[712]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11984 0 1850874910 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[712]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 62291 0 1850874910 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[712]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 1850874910 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59951 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 14337 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 21368 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[3](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 39455 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 23515 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[5](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 37691 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[6](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 45993 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[7](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 13192 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[8](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59955 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[9](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11183 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[10](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 23739 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[11](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 43991 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[12](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 9911 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[13](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 13835 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[14](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 10989 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[15](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 30552 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[16](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 97901029 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[0](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 1 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[1](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 45065 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[2](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 59955 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[4](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 33058 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[5](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 14337 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[6](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 21368 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[7](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 39455 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[8](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 23515 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[9](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 35055 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/contentStream[0](1133 0 obj PDSemanticContentStream)/operators[765]/usedGlyphs[10](WTXSSL+SourceHanSerifSC-Regular WTXSSL+SourceHanSerifSC-Regular 11054 0 908722588 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="17" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[8](146 0 obj SESect Story)/K[1](596 0 obj SEL L)/K[0](660 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[8](146 0 obj SESect Story)/K[8](603 0 obj SEL L)/K[0](617 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[8](146 0 obj SESect Story)/K[8](603 0 obj SEL L)/K[0](617 0 obj SELI LI)/K[2](620 0 obj SEL L)/K[0](621 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[9](147 0 obj SESect Story)/K[1](494 0 obj SEL L)/K[0](534 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[9](147 0 obj SESect Story)/K[1](494 0 obj SEL L)/K[1](535 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[9](147 0 obj SESect Story)/K[1](494 0 obj SEL L)/K[1](535 0 obj SELI LI)/K[2](543 0 obj SEL L)/K[0](544 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[12](150 0 obj SESect Story)/K[2](436 0 obj SEL L)/K[0](465 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[12](150 0 obj SESect Story)/K[7](441 0 obj SEL L)/K[3](451 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[13](151 0 obj SESect Story)/K[2](356 0 obj SEL L)/K[1](414 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[13](151 0 obj SESect Story)/K[3](357 0 obj SEL L)/K[0](358 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[13](151 0 obj SESect Story)/K[3](357 0 obj SEL L)/K[0](358 0 obj SELI LI)/K[2](361 0 obj SEL L)/K[0](362 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L,L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[13](151 0 obj SESect Story)/K[3](357 0 obj SEL L)/K[0](358 0 obj SELI LI)/K[2](361 0 obj SEL L)/K[0](362 0 obj SELI LI)/K[3](366 0 obj SEL L)/K[0](367 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[14](152 0 obj SESect Story)/K[0](292 0 obj SEL L)/K[0](320 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[14](152 0 obj SESect Story)/K[0](292 0 obj SEL L)/K[0](320 0 obj SELI LI)/K[2](327 0 obj SEL L)/K[0](328 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L,L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[14](152 0 obj SESect Story)/K[3](295 0 obj SEL L)/K[0](296 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[15](153 0 obj SESect Story)/K[4](185 0 obj SEL L)/K[0](262 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[15](153 0 obj SESect Story)/K[6](187 0 obj SEL L)/K[0](233 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="7" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](712 0 obj PDPage)/annots[0](699 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[0](700 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/annots[0](701 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](10 0 obj PDPage)/annots[0](702 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](13 0 obj PDPage)/annots[0](696 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](16 0 obj PDPage)/annots[1](691 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](16 0 obj PDPage)/annots[2](689 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="4" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[19](157 0 obj SESect Story)/K[0](161 0 obj SENonStandard _7_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _7_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[19](157 0 obj SESect Story)/K[1](162 0 obj SENonStandard _7_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _7_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[20](158 0 obj SESect Story)/K[0](159 0 obj SENonStandard _6_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _6_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](118 0 obj PDStructTreeRoot)/K[0](120 0 obj SEDocument Document)/K[0](137 0 obj SEArt Article)/K[20](158 0 obj SESect Story)/K[1](160 0 obj SENonStandard _9_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _9_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769042626475" finish="1769042628713">00:00:02.238</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769042626130" finish="1769042628842">00:00:02.712</duration>
+  </batchSummary>
+</report>

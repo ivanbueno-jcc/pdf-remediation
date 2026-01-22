@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="274045">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/tcpjac_ceac-20230330-jls-notice_agenda.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="8338" failedChecks="4">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="1" status="failed" failedChecks="1" tags="artifact">
+            <description>Content marked as Artifact should not present inside tagged content</description>
+            <object>SEMarkedContent</object>
+            <test>tag != 'Artifact' || isTaggedContent == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](346 0 obj PDSemanticContentStream)/content[3]{mcid:3}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 75 0 obj)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="2" status="failed" failedChecks="1" tags="artifact">
+            <description>Tagged content should not present inside content marked as Artifact</description>
+            <object>SEMarkedContent</object>
+            <test>isTaggedContent == false || parentsTags.contains('Artifact') == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](346 0 obj PDSemanticContentStream)/content[3]{mcid:3}</context>
+              <errorMessage>Tagged content (parent struct element 75 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="2" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](16 0 obj PDStructTreeRoot)/K[0](17 0 obj SESect Sect)/K[2](176 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 4 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](16 0 obj PDStructTreeRoot)/K[0](17 0 obj SESect Sect)/K[10](40 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769048744024" finish="1769048746272">00:00:02.248</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769048743793" finish="1769048746291">00:00:02.498</duration>
+  </batchSummary>
+</report>

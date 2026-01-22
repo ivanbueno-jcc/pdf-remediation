@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="318355">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/itc/w10-04.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="37805" failedChecks="6">
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="3" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](1247 0 obj PDPage)/annots[0](1260 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Link tag (standard type = Span) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](1247 0 obj PDPage)/annots[1](1261 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Link tag (standard type = Span) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[13](30 0 obj PDPage)/annots[0](102 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Link tag (standard type = Span) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="7" status="failed" failedChecks="3" tags="structure">
+            <description>Standard tags defined in ISO 32000-1:2008, 14.8.4, shall not be remapped</description>
+            <object>PDStructElem</object>
+            <test>remappedStandardType == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](390 0 obj PDStructTreeRoot)/K[0](391 0 obj SEDocument Document)/K[0](499 0 obj SEPart Part)/K[0](498 0 obj SESect Sect)/K[2](496 0 obj SETable Table)/K[3](1183 0 obj SETR TR)/K[1](1185 0 obj SETD TD)/K[1](1187 0 obj SEP Normal)/K[0](394 0 obj SESpan Link)</context>
+              <errorMessage>Standard type Link is remapped</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](390 0 obj PDStructTreeRoot)/K[0](391 0 obj SEDocument Document)/K[0](499 0 obj SEPart Part)/K[0](498 0 obj SESect Sect)/K[2](496 0 obj SETable Table)/K[4](495 0 obj SETR TR)/K[1](494 0 obj SETD TD)/K[3](492 0 obj SEP Normal)/K[0](395 0 obj SESpan Link)</context>
+              <errorMessage>Standard type Link is remapped</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](390 0 obj PDStructTreeRoot)/K[0](391 0 obj SEDocument Document)/K[1](400 0 obj SEPart Part)/K[0](399 0 obj SESect Sect)/K[12](397 0 obj SEP Normal)/K[0](396 0 obj SESpan Link)</context>
+              <errorMessage>Standard type Link is remapped</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769053879397" finish="1769053879767">00:00:00.370</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769053879375" finish="1769053879784">00:00:00.409</duration>
+  </batchSummary>
+</report>

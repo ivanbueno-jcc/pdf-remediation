@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="573267">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/dv105k.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="59985" failedChecks="2946">
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="2" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[5](17 0 obj PDPage)/annots[0](3048 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](17 0 obj PDPage)/annots[1](3041 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="1" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](120 0 obj PDStructTreeRoot)/K[0](123 0 obj SEDocument Document)/K[4](1069 0 obj SEArt Article)/K[0](1070 0 obj SESect Story)/K[0](1073 0 obj SEL L)/K[0](1074 0 obj SELI LI)/K[1](724 0 obj SELBody LBody)/K[0](1079 0 obj SEL L)/K[0](1080 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="2943" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[32]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 12574 0 1824322115 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[32]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 12974 0 1824322115 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[32]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 6425 0 1824322115 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[50]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 10140 0 1705277839 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[68]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 9729 0 142099757 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[68]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 13214 0 142099757 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[86]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 6365 0 137533655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[86]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 11450 0 137533655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[86]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 6425 0 137533655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 9746 0 1527254842 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[104]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 9158 0 1527254842 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[122]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 12833 0 1800693087 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[122]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 14394 0 1800693087 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[122]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 11433 0 1800693087 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[131]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 11321 0 1717473929 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[131]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 6145 0 1717473929 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[149]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 10261 0 659996839 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[149]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 16837 0 659996839 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 10274 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 12893 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 12637 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[4](KGGZWJ+UnDotum KGGZWJ+UnDotum 13225 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[5](KGGZWJ+UnDotum KGGZWJ+UnDotum 14633 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[6](KGGZWJ+UnDotum KGGZWJ+UnDotum 16613 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[7](KGGZWJ+UnDotum KGGZWJ+UnDotum 13645 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[8](KGGZWJ+UnDotum KGGZWJ+UnDotum 3 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[9](KGGZWJ+UnDotum KGGZWJ+UnDotum 9557 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[10](KGGZWJ+UnDotum KGGZWJ+UnDotum 11898 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[11](KGGZWJ+UnDotum KGGZWJ+UnDotum 11881 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[176]/usedGlyphs[12](KGGZWJ+UnDotum KGGZWJ+UnDotum 12721 0 1429616542 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[221]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 13645 0 662666707 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[221]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 14837 0 662666707 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[277]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 13029 0 466032056 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[295]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 16641 0 726212590 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[295]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 7814 0 726212590 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[295]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 13061 0 726212590 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[295]/usedGlyphs[3](KGGZWJ+UnDotum KGGZWJ+UnDotum 6281 0 726212590 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[295]/usedGlyphs[4](KGGZWJ+UnDotum KGGZWJ+UnDotum 13029 0 726212590 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[313]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 11321 0 475394679 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[313]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 13057 0 475394679 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[313]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 12637 0 475394679 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[331]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 8161 0 1662592920 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[349]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 13085 0 1491522744 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[349]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 7373 0 1491522744 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[349]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 12637 0 1491522744 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[367]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 7821 0 929706284 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[367]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 16617 0 929706284 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[385]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 9746 0 1822434669 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[385]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 9158 0 1822434669 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[385]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 13009 0 1822434669 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[403]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 12833 0 955611965 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[403]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 14394 0 955611965 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[403]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 16613 0 955611965 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[403]/usedGlyphs[3](KGGZWJ+UnDotum KGGZWJ+UnDotum 9137 0 955611965 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[403]/usedGlyphs[4](KGGZWJ+UnDotum KGGZWJ+UnDotum 9729 0 955611965 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[421]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 13057 0 1021565761 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[439]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 12574 0 2002790740 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[439]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 11882 0 2002790740 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[439]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 13009 0 2002790740 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[457]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 11321 0 742255664 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[457]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 12854 0 742255664 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[457]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 16613 0 742255664 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[457]/usedGlyphs[3](KGGZWJ+UnDotum KGGZWJ+UnDotum 11898 0 742255664 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[457]/usedGlyphs[4](KGGZWJ+UnDotum KGGZWJ+UnDotum 11881 0 742255664 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[457]/usedGlyphs[5](KGGZWJ+UnDotum KGGZWJ+UnDotum 12721 0 742255664 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[475]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 12833 0 749486981 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[475]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 14394 0 749486981 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[475]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 16621 0 749486981 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[493]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 11685 0 385332399 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[511]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 13077 0 883020319 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[511]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 7713 0 883020319 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[529]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 9746 0 1942356772 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[529]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 9158 0 1942356772 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[529]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 12637 0 1942356772 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[547]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 7821 0 1269118128 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[547]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 16617 0 1269118128 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[565]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 13085 0 739264372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[565]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 11461 0 739264372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[565]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 16617 0 739264372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 7233 0 1313960293 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 12854 0 1313960293 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[583]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 13005 0 1313960293 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[623]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 12574 0 494894055 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[623]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 12974 0 494894055 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[623]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 6425 0 494894055 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[641]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 10140 0 500885941 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[659]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 9729 0 616412281 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[659]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 13214 0 616412281 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[677]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 6365 0 878861517 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[677]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 11450 0 878861517 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[677]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 6425 0 878861517 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[695]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 9746 0 1705665942 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[695]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 9158 0 1705665942 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[713]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 12833 0 1100619942 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[713]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 14394 0 1100619942 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[713]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 13009 0 1100619942 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[0](KGGZWJ+UnDotum KGGZWJ+UnDotum 16866 0 864248990 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[1](KGGZWJ+UnDotum KGGZWJ+UnDotum 13061 0 864248990 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[2](KGGZWJ+UnDotum KGGZWJ+UnDotum 16613 0 864248990 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3069 0 obj PDPage)/contentStream[0](35384 0 obj PDSemanticContentStream)/operators[731]/usedGlyphs[3](KGGZWJ+UnDotum KGGZWJ+UnDotum 11898 0 864248990 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040287876" finish="1769040290716">00:00:02.840</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040287686" finish="1769040290817">00:00:03.131</duration>
+  </batchSummary>
+</report>

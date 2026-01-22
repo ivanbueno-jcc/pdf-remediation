@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="207079">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/2011srl2glakemedsc_0.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="12062" failedChecks="16">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.1" testNumber="2" status="failed" failedChecks="8" tags="font">
+            <description>Embedded fonts shall define all glyphs referenced for rendering within the conforming file. A font referenced solely in text rendering mode 3 is not rendered and is thus exempt from the requirements that impact the visual representation of the glyphs of a font. In all cases for TrueType fonts that are to be rendered, character codes shall be able to be mapped to glyphs according to ISO 32000-1:2008, 9.6.6.4 without the use of a non-standard mapping chosen by the conforming processor</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || isGlyphPresent == null || isGlyphPresent == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1455204443 1 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[181]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 812143047 1 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[739]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1182311147 1 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[1451]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 172699023 1 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[1774]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1552400354 1 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[2248]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1089584667 1 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[2795]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1493988307 1 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[3034]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1338368149 1 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="8" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1455204443 1 true)</context>
+              <errorMessage>Glyph width 250 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[181]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 812143047 1 true)</context>
+              <errorMessage>Glyph width 250 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[739]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1182311147 1 true)</context>
+              <errorMessage>Glyph width 250 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[1451]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 172699023 1 true)</context>
+              <errorMessage>Glyph width 250 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[1774]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1552400354 1 true)</context>
+              <errorMessage>Glyph width 250 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[2248]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1089584667 1 true)</context>
+              <errorMessage>Glyph width 250 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[2795]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1493988307 1 true)</context>
+              <errorMessage>Glyph width 250 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](271 0 obj PDSemanticContentStream)/operators[3034]/usedGlyphs[0](AAAAAF+ChromSymbolOTF AAAAAF+ChromSymbolOTF 183 0 1338368149 1 true)</context>
+              <errorMessage>Glyph width 250 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041452789" finish="1769041454435">00:00:01.646</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041452711" finish="1769041454480">00:00:01.769</duration>
+  </batchSummary>
+</report>

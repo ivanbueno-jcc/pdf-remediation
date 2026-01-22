@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="4368399">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/jc-20120622-itema1.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="390566" failedChecks="25">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[0](1812 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 4 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[1](1813 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (4 and 1 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="10" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[0](935 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[1](936 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](6 0 obj PDPage)/annots[0](943 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](6 0 obj PDPage)/annots[1](944 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](6 0 obj PDPage)/annots[2](945 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](6 0 obj PDPage)/annots[3](946 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](6 0 obj PDPage)/annots[4](947 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](11 0 obj PDPage)/annots[0](956 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](11 0 obj PDPage)/annots[1](957 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](11 0 obj PDPage)/annots[2](958 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="13" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[2](1814 0 obj SETable Table)/K[1](2292 0 obj SETR TR)/K[0](2309 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[3](1815 0 obj SETable Table)/K[1](2259 0 obj SETR TR)/K[0](2275 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[4](1816 0 obj SETable Table)/K[1](2217 0 obj SETR TR)/K[0](2244 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[5](1817 0 obj SETable Table)/K[1](2181 0 obj SETR TR)/K[0](2198 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[6](1818 0 obj SETable Table)/K[1](2133 0 obj SETR TR)/K[0](2166 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[7](1819 0 obj SETable Table)/K[1](2100 0 obj SETR TR)/K[0](2117 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[8](1820 0 obj SETable Table)/K[1](2061 0 obj SETR TR)/K[0](2086 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[9](1821 0 obj SETable Table)/K[1](2036 0 obj SETR TR)/K[0](2046 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[10](1822 0 obj SETable Table)/K[1](1998 0 obj SETR TR)/K[0](2021 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[11](1823 0 obj SETable Table)/K[1](1949 0 obj SETR TR)/K[0](1974 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[12](1824 0 obj SETable Table)/K[1](1903 0 obj SETR TR)/K[0](1933 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[13](1825 0 obj SETable Table)/K[1](1850 0 obj SETR TR)/K[0](1888 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1661 0 obj PDStructTreeRoot)/K[0](1807 0 obj SEDocument Document)/K[1](1809 0 obj SEPart Part)/K[0](1811 0 obj SESect Sect)/K[14](1826 0 obj SETable Table)/K[1](1829 0 obj SETR TR)/K[0](1830 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041999316" finish="1769042004601">00:00:05.285</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041999221" finish="1769042004723">00:00:05.502</duration>
+  </batchSummary>
+</report>

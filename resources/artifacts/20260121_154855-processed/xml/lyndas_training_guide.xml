@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="2603497">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-08/lyndas_training_guide.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="135275" failedChecks="17">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="19" status="failed" failedChecks="4" tags="structure,list">
+            <description>L element may contain only L, LI and Caption elements</description>
+            <object>SEL</object>
+            <test>kidsStandardTypes.split('&amp;').filter(elem =&gt; elem != 'L' &amp;&amp; elem != 'LI' &amp;&amp; elem != 'Caption').length == 0 || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[14](266 0 obj SEL L)</context>
+              <errorMessage>L element contains Span element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[104](597 0 obj SEL L)</context>
+              <errorMessage>L element contains Span element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[150](1093 0 obj SEL L)</context>
+              <errorMessage>L element contains Span element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[327](2114 0 obj SEL L)</context>
+              <errorMessage>L element contains Span element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="3" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[8](253 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[9](256 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[161](1194 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="10" status="failed" failedChecks="9" tags="structure,table">
+            <description>TR element may contain only TH and TD elements</description>
+            <object>SETR</object>
+            <test>/^(TH|TD)(&amp;(TH|TD))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[0](229 0 obj SETable Table)/K[0](230 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[0](229 0 obj SETable Table)/K[1](234 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[0](229 0 obj SETable Table)/K[2](238 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[271](1807 0 obj SETable Table)/K[0](1808 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[271](1807 0 obj SETable Table)/K[1](1819 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[271](1807 0 obj SETable Table)/K[2](1829 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[271](1807 0 obj SETable Table)/K[3](1837 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[271](1807 0 obj SETable Table)/K[4](1845 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](222 0 obj PDStructTreeRoot)/K[0](224 0 obj SESect Sect)/K[271](1807 0 obj SETable Table)/K[5](1853 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](3081 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041889953" finish="1769041892756">00:00:02.803</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041889733" finish="1769041892808">00:00:03.075</duration>
+  </batchSummary>
+</report>

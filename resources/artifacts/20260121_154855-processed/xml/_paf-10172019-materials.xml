@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="591564">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/_paf-10172019-materials.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="42454" failedChecks="45">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="1" status="failed" failedChecks="15" tags="artifact">
+            <description>Content marked as Artifact should not present inside tagged content</description>
+            <object>SEMarkedContent</object>
+            <test>tag != 'Artifact' || isTaggedContent == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](631 0 obj PDPage)/contentStream[0](1052 0 obj PDSemanticContentStream)/content[3]{mcid:2}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 594 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](631 0 obj PDPage)/contentStream[0](1052 0 obj PDSemanticContentStream)/content[21]{mcid:21}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 572 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](631 0 obj PDPage)/contentStream[0](1052 0 obj PDSemanticContentStream)/content[22]{mcid:23}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 569 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[4]{mcid:7}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 471 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[9]{mcid:14}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 476 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[12]{mcid:19}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 466 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[15]{mcid:24}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 461 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[18]{mcid:29}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 456 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[23]{mcid:38}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 395 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[26]{mcid:43}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 390 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[29]{mcid:48}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 385 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[32]{mcid:53}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 380 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[35]{mcid:58}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 375 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[38]{mcid:63}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 370 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[41]{mcid:68}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 365 0 obj)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="10" status="failed" failedChecks="15" tags="structure,table">
+            <description>TR element may contain only TH and TD elements</description>
+            <object>SETR</object>
+            <test>/^(TH|TD)(&amp;(TH|TD))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[0](496 0 obj SESect Sect)/K[0](497 0 obj SETable Table)/K[0](566 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[0](496 0 obj SESect Sect)/K[0](497 0 obj SETable Table)/K[1](567 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[0](496 0 obj SESect Sect)/K[0](497 0 obj SETable Table)/K[2](568 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[30](307 0 obj SETable Table)/K[0](452 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[30](307 0 obj SETable Table)/K[1](306 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[30](307 0 obj SETable Table)/K[2](453 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[30](307 0 obj SETable Table)/K[3](454 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[30](307 0 obj SETable Table)/K[4](455 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[32](343 0 obj SETable Table)/K[0](358 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[32](343 0 obj SETable Table)/K[1](359 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[32](343 0 obj SETable Table)/K[2](360 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[32](343 0 obj SETable Table)/K[3](361 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[32](343 0 obj SETable Table)/K[4](362 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[32](343 0 obj SETable Table)/K[5](363 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](136 0 obj PDStructTreeRoot)/K[0](137 0 obj SEDocument Document)/K[1](309 0 obj SESect Sect)/K[32](343 0 obj SETable Table)/K[6](364 0 obj SETR TR)</context>
+              <errorMessage>TR element contains P element(s) instead of TH or TD</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="2" status="failed" failedChecks="15" tags="artifact">
+            <description>Tagged content should not present inside content marked as Artifact</description>
+            <object>SEMarkedContent</object>
+            <test>isTaggedContent == false || parentsTags.contains('Artifact') == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](631 0 obj PDPage)/contentStream[0](1052 0 obj PDSemanticContentStream)/content[3]{mcid:2}</context>
+              <errorMessage>Tagged content (parent struct element 594 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](631 0 obj PDPage)/contentStream[0](1052 0 obj PDSemanticContentStream)/content[21]{mcid:21}</context>
+              <errorMessage>Tagged content (parent struct element 572 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](631 0 obj PDPage)/contentStream[0](1052 0 obj PDSemanticContentStream)/content[22]{mcid:23}</context>
+              <errorMessage>Tagged content (parent struct element 569 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[4]{mcid:7}</context>
+              <errorMessage>Tagged content (parent struct element 471 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[9]{mcid:14}</context>
+              <errorMessage>Tagged content (parent struct element 476 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[12]{mcid:19}</context>
+              <errorMessage>Tagged content (parent struct element 466 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[15]{mcid:24}</context>
+              <errorMessage>Tagged content (parent struct element 461 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[18]{mcid:29}</context>
+              <errorMessage>Tagged content (parent struct element 456 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[23]{mcid:38}</context>
+              <errorMessage>Tagged content (parent struct element 395 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[26]{mcid:43}</context>
+              <errorMessage>Tagged content (parent struct element 390 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[29]{mcid:48}</context>
+              <errorMessage>Tagged content (parent struct element 385 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[32]{mcid:53}</context>
+              <errorMessage>Tagged content (parent struct element 380 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[35]{mcid:58}</context>
+              <errorMessage>Tagged content (parent struct element 375 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[38]{mcid:63}</context>
+              <errorMessage>Tagged content (parent struct element 370 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](26 0 obj PDPage)/contentStream[0](1059 0 obj PDSemanticContentStream)/content[41]{mcid:68}</context>
+              <errorMessage>Tagged content (parent struct element 365 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769048891682" finish="1769048893855">00:00:02.173</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769048891565" finish="1769048893898">00:00:02.333</duration>
+  </batchSummary>
+</report>

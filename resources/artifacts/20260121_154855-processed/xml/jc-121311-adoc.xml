@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="592463">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/jc-121311-adoc.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="101269" failedChecks="102">
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](2803 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](2803 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[0](146 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (3 and 1 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[125](356 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="10" status="failed" failedChecks="98" tags="structure,table">
+            <description>TR element may contain only TH and TD elements</description>
+            <object>SETR</object>
+            <test>/^(TH|TD)(&amp;(TH|TD))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[0](146 0 obj SETable Table)/K[1](2113 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[125](356 0 obj SETable Table)/K[0](1528 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[125](356 0 obj SETable Table)/K[1](1529 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[125](356 0 obj SETable Table)/K[2](1530 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[125](356 0 obj SETable Table)/K[3](1531 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[125](356 0 obj SETable Table)/K[4](1532 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[125](356 0 obj SETable Table)/K[5](1533 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[128](361 0 obj SETable Table)/K[0](1456 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[128](361 0 obj SETable Table)/K[1](1457 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[128](361 0 obj SETable Table)/K[2](1458 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[128](361 0 obj SETable Table)/K[3](1459 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[128](361 0 obj SETable Table)/K[4](1460 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[128](361 0 obj SETable Table)/K[5](1461 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[0](1156 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[1](1157 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[2](1158 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[3](1159 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[4](1160 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[5](1161 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[6](1162 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[7](1163 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[8](1164 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[9](1165 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[10](1166 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[11](1167 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[12](1168 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[13](1169 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[14](1170 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[15](1171 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[16](1172 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[17](1173 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[18](1174 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[19](1175 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[20](1176 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[21](1177 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[22](1178 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[23](1179 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[131](365 0 obj SETable Table)/K[24](1180 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[0](832 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[1](833 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[2](834 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[3](835 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[4](836 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[5](837 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[6](838 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[7](839 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[8](840 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[9](841 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[10](842 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[11](843 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[12](844 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[13](845 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[14](846 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[15](847 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[16](848 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[17](849 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[18](850 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[19](851 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[20](852 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[21](853 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[22](854 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[23](855 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[24](856 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[25](857 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[132](366 0 obj SETable Table)/K[26](858 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[0](496 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[1](497 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[2](498 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[3](499 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[4](500 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[5](501 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[6](502 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[7](503 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[8](504 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[9](505 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[10](506 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[11](507 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[12](508 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[13](509 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[14](510 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[15](511 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[16](512 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[17](513 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[18](514 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[19](515 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[20](516 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[21](517 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[22](518 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[23](519 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[24](520 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[25](521 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[26](522 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[133](367 0 obj SETable Table)/K[27](523 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[134](368 0 obj SETable Table)/K[0](436 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[134](368 0 obj SETable Table)/K[1](437 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[134](368 0 obj SETable Table)/K[2](438 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[134](368 0 obj SETable Table)/K[3](439 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](114 0 obj PDStructTreeRoot)/K[0](145 0 obj SESect Sect)/K[134](368 0 obj SETable Table)/K[4](440 0 obj SETR TR)</context>
+              <errorMessage>TR element contains Span element(s) instead of TH or TD</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769045062424" finish="1769045065073">00:00:02.649</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769045062254" finish="1769045065194">00:00:02.940</duration>
+  </batchSummary>
+</report>

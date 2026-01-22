@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="764017">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/jctc-20141027-meetingmaterials.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="81848" failedChecks="7">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="3" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](328 0 obj PDStructTreeRoot)/K[0](329 0 obj SEDocument Document)/K[5](428 0 obj SEPart Part)/K[4](427 0 obj SESect Slide)/K[1](715 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 4 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](328 0 obj PDStructTreeRoot)/K[0](329 0 obj SEDocument Document)/K[5](428 0 obj SEPart Part)/K[4](427 0 obj SESect Slide)/K[7](721 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 4 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](328 0 obj PDStructTreeRoot)/K[0](329 0 obj SEDocument Document)/K[5](428 0 obj SEPart Part)/K[4](427 0 obj SESect Slide)/K[8](425 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 4 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[45](116 0 obj PDPage)/contentStream[0](3391 0 obj PDSemanticContentStream)/operators[469]/usedGlyphs[0](AAAAEN+ChromeSansMM AAAAEN+ChromeSansMM 150 0 332498651 52 true)</context>
+              <errorMessage>Glyph width 473 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="3" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[6](32 0 obj PDPage)/contentStream[0](33 0 obj PDSemanticContentStream)/operators[15]/font[0](AAAADP+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[39](103 0 obj PDPage)/contentStream[0](3345 0 obj PDSemanticContentStream)/operators[18]/font[0](AAAAEB+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[45](116 0 obj PDPage)/contentStream[0](3391 0 obj PDSemanticContentStream)/operators[18]/font[0](AAAAEM+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769049989876" finish="1769049992749">00:00:02.873</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769049989783" finish="1769049992789">00:00:03.006</duration>
+  </batchSummary>
+</report>

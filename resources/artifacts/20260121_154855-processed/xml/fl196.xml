@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1365485">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/fl196.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="40696" failedChecks="25">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="19" status="failed" failedChecks="7" tags="structure,list">
+            <description>L element may contain only L, LI and Caption elements</description>
+            <object>SEL</object>
+            <test>kidsStandardTypes.split('&amp;').filter(elem =&gt; elem != 'L' &amp;&amp; elem != 'LI' &amp;&amp; elem != 'Caption').length == 0 || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](64 0 obj SEDocument Document)/K[0](404 0 obj SEPart Page)/K[0](403 0 obj SESect Sect)/K[5](402 0 obj SEL L)</context>
+              <errorMessage>L element contains P,P,P,P,P,P,P,P,P,P element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](64 0 obj SEDocument Document)/K[0](404 0 obj SEPart Page)/K[0](403 0 obj SESect Sect)/K[6](417 0 obj SEL L)</context>
+              <errorMessage>L element contains P element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](64 0 obj SEDocument Document)/K[2](296 0 obj SEPart Page)/K[0](295 0 obj SESect Sect)/K[2](304 0 obj SEL L)</context>
+              <errorMessage>L element contains P,P,P element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](64 0 obj SEDocument Document)/K[3](269 0 obj SEPart Page)/K[0](268 0 obj SESect Sect)/K[1](274 0 obj SEL L)</context>
+              <errorMessage>L element contains P,P,P,P element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](64 0 obj SEDocument Document)/K[3](269 0 obj SEPart Page)/K[0](268 0 obj SESect Sect)/K[2](275 0 obj SEL L)</context>
+              <errorMessage>L element contains P,P,P element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](64 0 obj SEDocument Document)/K[5](174 0 obj SEPart Page)/K[0](173 0 obj SESect Sect)/K[2](180 0 obj SEL L)</context>
+              <errorMessage>L element contains P,P,P,P element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](63 0 obj PDStructTreeRoot)/K[0](64 0 obj SEDocument Document)/K[5](174 0 obj SEPart Page)/K[0](173 0 obj SESect Sect)/K[3](181 0 obj SEL L)</context>
+              <errorMessage>L element contains P,P,P,P element(s) instead of L, LI or Caption</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="2" status="failed" failedChecks="4" tags="artifact">
+            <description>Tagged content should not present inside content marked as Artifact</description>
+            <object>SEMarkedContent</object>
+            <test>isTaggedContent == false || parentsTags.contains('Artifact') == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](717 0 obj PDSemanticContentStream)/content[26]{mcid:17}</context>
+              <errorMessage>Tagged content (parent struct element 428 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](718 0 obj PDSemanticContentStream)/content[10]{mcid:10}</context>
+              <errorMessage>Tagged content (parent struct element 375 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/contentStream[0](721 0 obj PDSemanticContentStream)/content[4]{mcid:4}</context>
+              <errorMessage>Tagged content (parent struct element 239 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/contentStream[0](721 0 obj PDSemanticContentStream)/content[19]{mcid:13}</context>
+              <errorMessage>Tagged content (parent struct element 208 0 obj) is present inside content marked as Artifact</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="9" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/annots[1](141 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[0](139 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](5 0 obj PDPage)/annots[2](136 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/annots[0](133 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/annots[1](134 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/annots[2](135 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/annots[3](132 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](15 0 obj PDPage)/annots[0](142 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](15 0 obj PDPage)/annots[1](120 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](717 0 obj PDSemanticContentStream)/operators[735]/usedGlyphs[0](FEZNJY+Wingdings-Regular FEZNJY+Wingdings-Regular 108 0 1831882653 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="1" status="failed" failedChecks="4" tags="artifact">
+            <description>Content marked as Artifact should not present inside tagged content</description>
+            <object>SEMarkedContent</object>
+            <test>tag != 'Artifact' || isTaggedContent == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](717 0 obj PDSemanticContentStream)/content[26]{mcid:17}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 428 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](718 0 obj PDSemanticContentStream)/content[10]{mcid:10}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 375 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/contentStream[0](721 0 obj PDSemanticContentStream)/content[4]{mcid:4}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 239 0 obj)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/contentStream[0](721 0 obj PDSemanticContentStream)/content[19]{mcid:13}</context>
+              <errorMessage>Content marked as Artifact is present inside tagged content (parent struct element 208 0 obj)</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769042649436" finish="1769042651376">00:00:01.940</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769042649193" finish="1769042651387">00:00:02.194</duration>
+  </batchSummary>
+</report>

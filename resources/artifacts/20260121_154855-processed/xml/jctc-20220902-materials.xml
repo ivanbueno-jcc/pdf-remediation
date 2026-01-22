@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="527996">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/jctc-20220902-materials.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="89464" failedChecks="8">
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="1" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[4](10 0 obj PDPage)/annots[0](1198 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="5" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](461 0 obj PDStructTreeRoot)/K[0](462 0 obj SEDocument Document)/K[3](3415 0 obj SESect Slide)/K[1](3414 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 4 span different number of columns (4 and 3 respectively)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](461 0 obj PDStructTreeRoot)/K[0](462 0 obj SEDocument Document)/K[9](695 0 obj SEDocument Workbook)/K[0](694 0 obj SESect Worksheet)/K[0](692 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 3 span different number of columns (5 and 4 respectively)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](461 0 obj PDStructTreeRoot)/K[0](462 0 obj SEDocument Document)/K[9](695 0 obj SEDocument Workbook)/K[0](694 0 obj SESect Worksheet)/K[1](696 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (5 and 3 respectively)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](461 0 obj PDStructTreeRoot)/K[0](462 0 obj SEDocument Document)/K[9](695 0 obj SEDocument Workbook)/K[0](694 0 obj SESect Worksheet)/K[4](699 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (5 and 3 respectively)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](461 0 obj PDStructTreeRoot)/K[0](462 0 obj SEDocument Document)/K[10](1392 0 obj SEDocument Workbook)/K[0](1391 0 obj SESect Worksheet)/K[0](1393 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (18 and 5 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="2" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](461 0 obj PDStructTreeRoot)/K[0](462 0 obj SEDocument Document)/K[9](695 0 obj SEDocument Workbook)/K[0](694 0 obj SESect Worksheet)/K[2](697 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 5 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](461 0 obj PDStructTreeRoot)/K[0](462 0 obj SEDocument Document)/K[9](695 0 obj SEDocument Workbook)/K[0](694 0 obj SESect Worksheet)/K[3](698 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 5 span different number of columns</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769047390043" finish="1769047392677">00:00:02.634</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769047389914" finish="1769047392750">00:00:02.836</duration>
+  </batchSummary>
+</report>

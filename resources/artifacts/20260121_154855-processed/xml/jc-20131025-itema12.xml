@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="613496">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/jc-20131025-itema12.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="134725" failedChecks="28">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[1](388 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns (5 and 4 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="2" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[0](1887 0 obj SEPart Part)/K[0](1886 0 obj SESect Sect)/K[0](1889 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[0](387 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="17" status="failed" failedChecks="1" tags="structure,list">
+            <description>LI element should be contained in L element</description>
+            <object>SELI</object>
+            <test>parentStandardType == 'L'</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[0](387 0 obj SETable Table)/K[2](1688 0 obj SETR TR)/K[0](1763 0 obj SETD TD)/K[0](1864 0 obj SEP Normal)/K[0](1866 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="24" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[2](389 0 obj SETable Table)/K[1](1579 0 obj SETR TR)/K[0](1606 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[3](390 0 obj SETable Table)/K[1](1522 0 obj SETR TR)/K[0](1561 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[4](391 0 obj SETable Table)/K[1](1498 0 obj SETR TR)/K[0](1499 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[5](392 0 obj SETable Table)/K[1](1476 0 obj SETR TR)/K[0](1477 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[6](393 0 obj SETable Table)/K[1](1435 0 obj SETR TR)/K[0](1455 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[7](394 0 obj SETable Table)/K[1](1378 0 obj SETR TR)/K[0](1379 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[8](395 0 obj SETable Table)/K[1](1329 0 obj SETR TR)/K[0](1330 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[9](396 0 obj SETable Table)/K[1](1278 0 obj SETR TR)/K[0](1279 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[10](397 0 obj SETable Table)/K[1](1203 0 obj SETR TR)/K[0](1254 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[11](398 0 obj SETable Table)/K[1](1144 0 obj SETR TR)/K[0](1145 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[12](399 0 obj SETable Table)/K[1](1072 0 obj SETR TR)/K[0](1103 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[13](400 0 obj SETable Table)/K[1](1023 0 obj SETR TR)/K[0](1024 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[14](401 0 obj SETable Table)/K[1](978 0 obj SETR TR)/K[0](1001 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[15](402 0 obj SETable Table)/K[1](902 0 obj SETR TR)/K[0](953 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[16](403 0 obj SETable Table)/K[1](844 0 obj SETR TR)/K[0](868 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[17](404 0 obj SETable Table)/K[1](781 0 obj SETR TR)/K[0](782 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[18](405 0 obj SETable Table)/K[1](720 0 obj SETR TR)/K[0](721 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[19](406 0 obj SETable Table)/K[1](681 0 obj SETR TR)/K[0](682 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[20](407 0 obj SETable Table)/K[1](642 0 obj SETR TR)/K[0](661 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[21](408 0 obj SETable Table)/K[1](588 0 obj SETR TR)/K[0](589 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[22](409 0 obj SETable Table)/K[1](529 0 obj SETR TR)/K[0](530 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[23](410 0 obj SETable Table)/K[1](490 0 obj SETR TR)/K[0](491 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[24](411 0 obj SETable Table)/K[1](426 0 obj SETR TR)/K[0](459 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](348 0 obj PDStructTreeRoot)/K[0](349 0 obj SEDocument Document)/K[1](384 0 obj SEPart Part)/K[0](383 0 obj SESect Sect)/K[25](412 0 obj SETable Table)/K[1](414 0 obj SETR TR)/K[0](415 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769043774843" finish="1769043777577">00:00:02.734</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769043774792" finish="1769043777597">00:00:02.805</duration>
+  </batchSummary>
+</report>

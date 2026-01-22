@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="5331740">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/jc-20150626-itemg.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="252873" failedChecks="31">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1197 0 obj PDStructTreeRoot)/K[0](1199 0 obj SEDocument Document)/K[0](2992 0 obj SEPart Part)/K[0](2991 0 obj SESect Sect)/K[0](2994 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="6" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[7](29 0 obj PDPage)/contentStream[0](4481 0 obj PDSemanticContentStream)/operators[46]/xObject[0]/contentStream[0](537 0 obj PDSemanticContentStream)/operators[11]/font[0](JJYYAD+AGaramondPro-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](39 0 obj PDPage)/contentStream[0](4489 0 obj PDSemanticContentStream)/operators[26]/font[0](JJYYAD+AGaramondPro-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](39 0 obj PDPage)/contentStream[0](4489 0 obj PDSemanticContentStream)/operators[44]/font[0](IBOSMF+AGaramondPro-Regular)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](88 0 obj PDPage)/contentStream[0](6487 0 obj PDSemanticContentStream)/operators[47]/font[0](JJYYAD+AGaramondPro-Bold)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](88 0 obj PDPage)/contentStream[0](6487 0 obj PDSemanticContentStream)/operators[58]/font[0](IBOSMF+AGaramondPro-Regular)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[60](395 0 obj PDPage)/contentStream[0](12537 0 obj PDSemanticContentStream)/operators[332]/font[0](KWIEOB+AGaramondPro-BoldItalic)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.20" testNumber="2" status="failed" failedChecks="24" tags="syntax">
+            <description>The content of Form XObjects shall be incorporated into structure elements according to ISO 32000-1:2008, 14.7.2</description>
+            <object>PDXForm</object>
+            <test>isUniqueSemanticParent == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[23](184 0 obj PDPage)/contentStream[0](7234 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](194 0 obj PDPage)/contentStream[0](7647 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](202 0 obj PDPage)/contentStream[0](8061 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[31](223 0 obj PDPage)/contentStream[0](8897 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[33](237 0 obj PDPage)/contentStream[0](9331 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[35](246 0 obj PDPage)/contentStream[0](10089 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[39](266 0 obj PDPage)/contentStream[0](10213 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](274 0 obj PDPage)/contentStream[0](10859 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[43](288 0 obj PDPage)/contentStream[0](11018 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[47](314 0 obj PDPage)/contentStream[0](11343 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[51](336 0 obj PDPage)/contentStream[0](11547 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[53](356 0 obj PDPage)/contentStream[0](12068 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[61](399 0 obj PDPage)/contentStream[0](12651 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[65](424 0 obj PDPage)/contentStream[0](12847 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[67](437 0 obj PDPage)/contentStream[0](12902 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[69](441 0 obj PDPage)/contentStream[0](12928 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[71](449 0 obj PDPage)/contentStream[0](13134 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[73](461 0 obj PDPage)/contentStream[0](13317 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](473 0 obj PDPage)/contentStream[0](14261 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[79](488 0 obj PDPage)/contentStream[0](14320 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[81](493 0 obj PDPage)/contentStream[0](14350 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[83](501 0 obj PDPage)/contentStream[0](14379 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[87](515 0 obj PDPage)/contentStream[0](14426 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[88](519 0 obj PDPage)/contentStream[0](14510 0 obj PDSemanticContentStream)/operators[2]/xObject[0]</context>
+              <errorMessage>Form XObject contains MCIDs and is referenced more than once</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040446155" finish="1769040451087">00:00:04.932</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040445968" finish="1769040451130">00:00:05.162</duration>
+  </batchSummary>
+</report>

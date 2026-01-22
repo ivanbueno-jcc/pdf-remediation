@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="385801">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/fl191k.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="23014" failedChecks="3244">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="2" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[20]/font[0](IQGNTX+MalgunGothic)/DescendantFonts[0](IQGNTX+MalgunGothic)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[386]/font[0](LDMVJR+MalgunGothicBold)/DescendantFonts[0](LDMVJR+MalgunGothicBold)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="3242" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[20]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2237 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[20]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1599 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[20]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2239 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[20]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 723 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[20]/usedGlyphs[5](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 3 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[20]/usedGlyphs[6](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2231 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[20]/usedGlyphs[7](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2120 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[39]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1574 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[39]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2133 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[39]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2046 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[39]/usedGlyphs[5](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2487 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[39]/usedGlyphs[6](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2844 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[39]/usedGlyphs[7](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2319 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1409 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1899 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1892 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[46]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2077 0 1302725372 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[55]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1740 0 2054757222 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[55]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 674 0 2054757222 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[55]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 3 0 2054757222 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[55]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1569 0 2054757222 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[55]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2894 0 2054757222 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[74]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 29 0 2054757222 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1574 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2133 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2046 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2239 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[5](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2487 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[6](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2844 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[7](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2319 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[8](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 3 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[9](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1409 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[10](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1899 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[11](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1892 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[83]/usedGlyphs[12](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2077 0 1865201235 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1238 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[7](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1590 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[8](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2894 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[11](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2039 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[12](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1045 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[14](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1082 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[15](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1740 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[16](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2197 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[92]/usedGlyphs[17](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 3 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[99]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 11 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[118]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2183 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[118]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1394 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[137]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 15 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[137]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2287 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[137]/usedGlyphs[8](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1183 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[137]/usedGlyphs[9](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1340 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[137]/usedGlyphs[11](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1569 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[156]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1813 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[175]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 12 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[175]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 29 0 348132918 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[184]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2231 0 1338368149 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[184]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2904 0 1338368149 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[184]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1569 0 1338368149 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[184]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2894 0 1338368149 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[203]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 29 0 1338368149 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[212]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2752 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[212]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1883 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[212]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1569 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[212]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2894 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[212]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 3 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[219]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 11 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[238]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1780 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[238]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2644 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[238]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1740 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[238]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2852 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 12 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[257]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 29 0 1129869771 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[273]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2183 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[273]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1449 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[273]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2186 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[273]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 3 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[273]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2287 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[273]/usedGlyphs[5](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1813 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[292]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 11 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[311]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1780 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[311]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2644 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[311]/usedGlyphs[3](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1740 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[311]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2852 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[330]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 12 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[330]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 29 0 1620459733 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[339]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1590 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[339]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2894 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[339]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1740 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[339]/usedGlyphs[4](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1894 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[339]/usedGlyphs[5](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2448 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[339]/usedGlyphs[6](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2185 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[339]/usedGlyphs[7](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 3 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[339]/usedGlyphs[8](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 11 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[358]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 2183 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[358]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1394 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[377]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 12 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[377]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 29 0 2044337856 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[414]/usedGlyphs[0](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 672 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[414]/usedGlyphs[1](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 1401 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](479 0 obj PDPage)/contentStream[0](1130 0 obj PDSemanticContentStream)/operators[414]/usedGlyphs[2](IQGNTX+MalgunGothic IQGNTX+MalgunGothic 3 0 1433208870 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040261280" finish="1769040263349">00:00:02.069</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040260952" finish="1769040263389">00:00:02.437</duration>
+  </batchSummary>
+</report>

@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="651553">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-08/ab1058-interstate-child-uifsa-2018-ppt.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="13281" failedChecks="115">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4016]/font[0](PDHCEG+Courier)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="114" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4016]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 1 0 1747053097 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4016]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 3 0 1747053097 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4024]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 4 0 1747053097 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4024]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 5 0 1747053097 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4024]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 6 0 1747053097 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4024]/usedGlyphs[3](PDHCEG+Courier PDHCEG+Courier 7 0 1747053097 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4032]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 8 0 1747053097 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4032]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 9 0 1747053097 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4520]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 10 0 582300198 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4544]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 11 0 582300198 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4552]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 6 0 582300198 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](714 0 obj PDSemanticContentStream)/operators[4552]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 4 0 582300198 1 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[2385]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 2054757222 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[2385]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 2054757222 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[2393]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 14 0 2054757222 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[2393]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 2054757222 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[4765]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 348132918 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[4765]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 348132918 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[4773]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 14 0 348132918 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[4773]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 348132918 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[7249]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 1805443519 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[7249]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 1805443519 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[7257]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 14 0 1805443519 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](16 0 obj PDPage)/contentStream[0](719 0 obj PDSemanticContentStream)/operators[7257]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 1805443519 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[2338]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 664091267 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[2338]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 664091267 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[2346]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 16 0 664091267 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[2346]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 17 0 664091267 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[2346]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 664091267 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[4825]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 1724814719 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[4825]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 1724814719 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[4835]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 16 0 1437988306 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[4835]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 1437988306 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[6113]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 1543146693 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[6113]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 1543146693 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[6121]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 17 0 1543146693 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](19 0 obj PDPage)/contentStream[0](724 0 obj PDSemanticContentStream)/operators[6121]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 1543146693 4 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[2479]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 314562573 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[2479]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 314562573 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[2489]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 14 0 1100109058 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[2489]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 1100109058 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[8538]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 1394010463 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[8538]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 1394010463 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[8546]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 18 0 1394010463 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[8546]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 17 0 1394010463 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[5](22 0 obj PDPage)/contentStream[0](729 0 obj PDSemanticContentStream)/operators[8546]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 1394010463 5 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[1314]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 19 0 500230084 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[1340]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 20 0 2023026843 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[1340]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 21 0 2023026843 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[1340]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 22 0 2023026843 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[1348]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 23 0 2023026843 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[1348]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 6 0 2023026843 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[1348]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 24 0 2023026843 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[3744]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 19 0 1628551735 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[3768]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 20 0 1628551735 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[3768]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 21 0 1628551735 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[3768]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 22 0 1628551735 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[3776]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 23 0 1628551735 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[3776]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 6 0 1628551735 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[3776]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 24 0 1628551735 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[6255]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 19 0 606775513 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[6279]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 20 0 606775513 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[6279]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 21 0 606775513 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[6279]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 22 0 606775513 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[6287]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 23 0 606775513 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[6287]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 6 0 606775513 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](27 0 obj PDPage)/contentStream[0](744 0 obj PDSemanticContentStream)/operators[6287]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 24 0 606775513 6 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[1382]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 19 0 1661777060 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[1406]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 20 0 1661777060 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[1406]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 21 0 1661777060 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[1406]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 22 0 1661777060 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[1416]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 23 0 104261836 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[1416]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 6 0 104261836 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[1416]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 24 0 104261836 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5070]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 19 0 1527086220 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5094]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 20 0 1527086220 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5094]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 21 0 1527086220 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5094]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 22 0 1527086220 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5102]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 23 0 1527086220 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5102]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 6 0 1527086220 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5102]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 24 0 1527086220 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5111]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 25 0 515273883 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5121]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 1697281847 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5121]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 13 0 1697281847 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5129]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 17 0 1697281847 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[7](30 0 obj PDPage)/contentStream[0](753 0 obj PDSemanticContentStream)/operators[5129]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 15 0 1697281847 7 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2355]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 12 0 1907604549 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2355]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 26 0 1907604549 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2355]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 17 0 1907604549 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2355]/usedGlyphs[3](PDHCEG+Courier PDHCEG+Courier 15 0 1907604549 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2857]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 19 0 176955204 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2883]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 20 0 353023213 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2883]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 21 0 353023213 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2883]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 22 0 353023213 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2891]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 23 0 353023213 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2891]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 6 0 353023213 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[8](33 0 obj PDPage)/contentStream[0](776 0 obj PDSemanticContentStream)/operators[2891]/usedGlyphs[2](PDHCEG+Courier PDHCEG+Courier 24 0 353023213 8 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](39 0 obj PDPage)/contentStream[0](520 0 obj PDSemanticContentStream)/operators[2317]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 19 0 628392976 9 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](39 0 obj PDPage)/contentStream[0](520 0 obj PDSemanticContentStream)/operators[2325]/usedGlyphs[0](PDHCEG+Courier PDHCEG+Courier 20 0 628392976 9 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](39 0 obj PDPage)/contentStream[0](520 0 obj PDSemanticContentStream)/operators[2325]/usedGlyphs[1](PDHCEG+Courier PDHCEG+Courier 21 0 628392976 9 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769039752624" finish="1769039755059">00:00:02.435</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769039752574" finish="1769039755170">00:00:02.596</duration>
+  </batchSummary>
+</report>

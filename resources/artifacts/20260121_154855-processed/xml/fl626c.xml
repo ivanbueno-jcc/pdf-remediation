@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="806840">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/fl626c.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="23331" failedChecks="1832">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](1286 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.3.2" testNumber="1" status="failed" failedChecks="3" tags="font">
+            <description>ISO 32000-1:2008, 9.7.4, Table 117 requires that all embedded Type 2 CIDFonts in the CIDFont dictionary shall contain a CIDToGIDMap entry that shall be a stream mapping from CIDs to glyph indices or the name Identity, as described in ISO 32000-1:2008, 9.7.4, Table 117</description>
+            <object>PDCIDFont</object>
+            <test>Subtype != "CIDFontType2" || CIDToGIDMap != null || containsFontFile == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[853]/font[0](CVKYRX+LinGothic-Bold)/DescendantFonts[0](CVKYRX+LinGothic-Bold)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[862]/font[0](AAQMPB+LinGothic-Medium)/DescendantFonts[0](AAQMPB+LinGothic-Medium)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[930]/font[0](SOOQHR+LinGothic-Extra)/DescendantFonts[0](SOOQHR+LinGothic-Extra)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](1286 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1827" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[862]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 16148478 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[871]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4074 0 1594039997 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[871]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3990 0 1594039997 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[871]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3955 0 1594039997 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[871]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4677 0 1594039997 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[871]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 1594039997 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[878]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 1594039997 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[885]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3655 0 1594039997 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[885]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2508 0 1594039997 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[894]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 1323531427 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[903]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4074 0 1170788511 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[903]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 772 0 1170788511 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[903]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3598 0 1170788511 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[903]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1030 0 1170788511 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[903]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1075 0 1170788511 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[903]/usedGlyphs[5](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1260 0 1170788511 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[912]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 1400973979 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[921]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1952 0 347091104 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[921]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2352 0 347091104 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[953]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 1110195322 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[962]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3542 0 404947798 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[962]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4029 0 404947798 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[962]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1075 0 404947798 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[962]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1260 0 404947798 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[962]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 404947798 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[971]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 226690498 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[980]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3598 0 1455204443 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[980]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2777 0 1455204443 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[980]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1075 0 1455204443 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[980]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1260 0 1455204443 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[980]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 1455204443 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[989]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 1976602906 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[998]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1905 0 1978209605 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[998]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 958 0 1978209605 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[998]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4355 0 1978209605 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[998]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3598 0 1978209605 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[998]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4429 0 1978209605 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[998]/usedGlyphs[5](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2721 0 1978209605 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[998]/usedGlyphs[6](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3955 0 1978209605 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[998]/usedGlyphs[7](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 1978209605 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1007]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 1624351535 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1016]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 822 0 582300198 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1016]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3146 0 582300198 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1016]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1065 0 582300198 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1016]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4301 0 582300198 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1016]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 582300198 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1025]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 1265053098 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1034]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4763 0 246003654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1034]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 5752 0 246003654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1034]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 736 0 246003654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1034]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 48 0 246003654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1034]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2279 0 246003654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1034]/usedGlyphs[5](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1240 0 246003654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1034]/usedGlyphs[6](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 246003654 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1043]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 235370598 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1052]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3469 0 248710794 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1052]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 5916 0 248710794 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1052]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 736 0 248710794 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1052]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 48 0 248710794 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1052]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3100 0 248710794 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1052]/usedGlyphs[5](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1240 0 248710794 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1052]/usedGlyphs[6](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 248710794 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1061]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2 0 2083217543 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1070]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1486 0 1073741635 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1070]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 897 0 1073741635 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1070]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 877 0 1073741635 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1070]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 979 0 1073741635 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1070]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 1073741635 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1106]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2415 0 2066892165 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1106]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3955 0 2066892165 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1106]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 2066892165 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1140]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 41 0 1714378342 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1140]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1558 0 1714378342 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1140]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1065 0 1714378342 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1140]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 42 0 1714378342 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1140]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 1714378342 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1149]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 41 0 265824587 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1149]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 5108 0 265824587 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1149]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4932 0 265824587 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1149]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1617 0 265824587 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1149]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 42 0 265824587 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1149]/usedGlyphs[5](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 265824587 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1158]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 41 0 93798665 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1158]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 5108 0 93798665 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1158]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 4932 0 93798665 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1158]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1617 0 93798665 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1158]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 42 0 93798665 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1158]/usedGlyphs[5](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 264 0 93798665 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1621 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3409 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[4](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1952 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[5](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 2352 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[6](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1758 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[7](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 3850 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[8](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1456 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1167]/usedGlyphs[9](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 736 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1174]/usedGlyphs[0](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 41 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1174]/usedGlyphs[1](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1558 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1174]/usedGlyphs[2](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 1065 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](87 0 obj PDPage)/contentStream[0](1223 0 obj PDSemanticContentStream)/operators[1174]/usedGlyphs[3](AAQMPB+LinGothic-Medium AAQMPB+LinGothic-Medium 259 0 1976166251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769042156442" finish="1769042158613">00:00:02.171</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769042156313" finish="1769042158709">00:00:02.396</duration>
+  </batchSummary>
+</report>

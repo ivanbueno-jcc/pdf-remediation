@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="2113746">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/jc-20131213-info1.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="471521" failedChecks="16">
+          <rule specification="ISO 14289-1:2014" clause="7.21.8" testNumber="1" status="failed" failedChecks="8" tags="font">
+            <description>A PDF/UA compliant document shall not contain a reference to the .notdef glyph from any of the text showing operators, regardless of text rendering mode, in any content stream</description>
+            <object>Glyph</object>
+            <test>name != ".notdef"</test>
+            <check status="failed">
+              <context>root/document[0]/pages[48](103 0 obj PDPage)/contentStream[0](1226 0 obj PDSemanticContentStream)/operators[3244]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1969856053 48 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[50](107 0 obj PDPage)/contentStream[0](1265 0 obj PDSemanticContentStream)/operators[3824]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 648358364 50 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[55](117 0 obj PDPage)/contentStream[0](1357 0 obj PDSemanticContentStream)/operators[926]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1835316563 55 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[60](127 0 obj PDPage)/contentStream[0](3372 0 obj PDSemanticContentStream)/operators[1042]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 10 0 1472036907 60 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[60](127 0 obj PDPage)/contentStream[0](3372 0 obj PDSemanticContentStream)/operators[1065]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 10 0 1555793073 60 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[91](189 0 obj PDPage)/contentStream[0](1859 0 obj PDSemanticContentStream)/operators[1150]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1299661385 91 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[93](193 0 obj PDPage)/contentStream[0](1877 0 obj PDSemanticContentStream)/operators[1570]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1174737066 93 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[96](199 0 obj PDPage)/contentStream[0](3394 0 obj PDSemanticContentStream)/operators[4663]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1269006535 96 true)</context>
+              <errorMessage>The document contains a reference to the .notdef glyph</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="2" status="failed" failedChecks="8" tags="font">
+            <description>The Unicode values specified in the ToUnicode CMap shall all be greater than zero (0), but not equal to either U+FEFF or U+FFFE</description>
+            <object>Glyph</object>
+            <test>toUnicode == null || (toUnicode.indexOf("\u0000") == -1 &amp;&amp; toUnicode.indexOf("\uFFFE") == -1 &amp;&amp; toUnicode.indexOf("\uFEFF") == -1)</test>
+            <check status="failed">
+              <context>root/document[0]/pages[48](103 0 obj PDPage)/contentStream[0](1226 0 obj PDSemanticContentStream)/operators[3244]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1969856053 48 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[50](107 0 obj PDPage)/contentStream[0](1265 0 obj PDSemanticContentStream)/operators[3824]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 648358364 50 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[55](117 0 obj PDPage)/contentStream[0](1357 0 obj PDSemanticContentStream)/operators[926]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1835316563 55 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[60](127 0 obj PDPage)/contentStream[0](3372 0 obj PDSemanticContentStream)/operators[1042]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 10 0 1472036907 60 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[60](127 0 obj PDPage)/contentStream[0](3372 0 obj PDSemanticContentStream)/operators[1065]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 10 0 1555793073 60 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[91](189 0 obj PDPage)/contentStream[0](1859 0 obj PDSemanticContentStream)/operators[1150]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1299661385 91 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[93](193 0 obj PDPage)/contentStream[0](1877 0 obj PDSemanticContentStream)/operators[1570]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1174737066 93 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[96](199 0 obj PDPage)/contentStream[0](3394 0 obj PDSemanticContentStream)/operators[4663]/usedGlyphs[0](ABCDEE+Calibri ABCDEE+Calibri 9 0 1269006535 96 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769041487402" finish="1769041493609">00:00:06.207</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769041487269" finish="1769041493659">00:00:06.390</duration>
+  </batchSummary>
+</report>

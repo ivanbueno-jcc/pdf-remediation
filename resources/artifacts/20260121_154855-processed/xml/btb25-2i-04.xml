@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="4349328">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/btb25-2i-04.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="896252" failedChecks="69">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="8" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](7 0 obj PDPage)/contentStream[0](783 0 obj PDSemanticContentStream)/operators[234]/font[0](ELOJCN+MyriadPro-Regular)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](24 0 obj PDPage)/contentStream[0](1038 0 obj PDSemanticContentStream)/operators[16]/font[0](ELOJCN+MyriadPro-Regular)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[39](175 0 obj PDPage)/contentStream[0](7724 0 obj PDSemanticContentStream)/operators[55]/font[0](AAAABB+ChromeSerifMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[40](179 0 obj PDPage)/contentStream[0](7765 0 obj PDSemanticContentStream)/operators[588]/font[0](AAAABD+ChromeSerifMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[107]/font[0](AAAADH+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[336]/font[0](ELOJCN+MyriadPro-Regular)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[4471]/font[0](AAAADI+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[5881]/font[0](AAAADJ+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.1" testNumber="2" status="failed" failedChecks="14" tags="font">
+            <description>Embedded fonts shall define all glyphs referenced for rendering within the conforming file. A font referenced solely in text rendering mode 3 is not rendered and is thus exempt from the requirements that impact the visual representation of the glyphs of a font. In all cases for TrueType fonts that are to be rendered, character codes shall be able to be mapped to glyphs according to ISO 32000-1:2008, 9.6.6.4 without the use of a non-standard mapping chosen by the conforming processor</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || isGlyphPresent == null || isGlyphPresent == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[0](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 77 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[1](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 65 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[2](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 90 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[3](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 69 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[69]/usedGlyphs[0](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 32 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[0](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 79 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[1](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 70 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[1](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 78 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[2](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 74 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[3](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 85 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[4](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 83 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[5](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 84 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[6](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 73 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[7](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 67 0 1781082115 111 true)</context>
+              <errorMessage>Not all glyphs referenced for rendering are present in the embedded font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.5" testNumber="1" status="failed" failedChecks="16" tags="font">
+            <description>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</description>
+            <object>Glyph</object>
+            <test>renderingMode == 3 || widthFromFontProgram == null || widthFromDictionary == null || Math.abs(widthFromFontProgram - widthFromDictionary) &lt;= 1</test>
+            <check status="failed">
+              <context>root/document[0]/pages[3](21 0 obj PDPage)/contentStream[0](6810 0 obj PDSemanticContentStream)/operators[1811]/usedGlyphs[13](AAAAAB+ChromeSansMM AAAAAB+ChromeSansMM 146 0 1533547487 3 true)</context>
+              <errorMessage>Glyph width 215 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[6](34 0 obj PDPage)/contentStream[0](6834 0 obj PDSemanticContentStream)/operators[3421]/usedGlyphs[5](AAAADE+ChromeSerifMM AAAADE+ChromeSerifMM 146 0 2077662850 6 true)</context>
+              <errorMessage>Glyph width 252 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 0)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[0](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 77 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 907)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[1](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 65 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 685)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[2](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 90 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 648)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[3](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 69 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 648)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[69]/usedGlyphs[0](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 32 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 278)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[0](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 79 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 778)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[1](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 70 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 593)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[1](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 78 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 741)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[2](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 74 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 556)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[3](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 85 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 741)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[4](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 83 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 649)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[5](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 84 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 611)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[6](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 73 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 295)</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[111](470 0 obj PDPage)/contentStream[0](9660 0 obj PDSemanticContentStream)/operators[96]/usedGlyphs[7](AAAADG+HelveticaNeue-Bold AAAADG+HelveticaNeue-Bold 67 0 1781082115 111 true)</context>
+              <errorMessage>Glyph width 500 in the embedded font program is not consistent with the Widths entry of the font dictionary (value 741)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="30" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[15](77 0 obj PDPage)/contentStream[0](7067 0 obj PDSemanticContentStream)/operators[7637]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1039245740 15 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](109 0 obj PDPage)/contentStream[0](1898 0 obj PDSemanticContentStream)/operators[312]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1311933430 23 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](109 0 obj PDPage)/contentStream[0](1898 0 obj PDSemanticContentStream)/operators[836]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1402148539 23 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](109 0 obj PDPage)/contentStream[0](1898 0 obj PDSemanticContentStream)/operators[1955]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 676678344 23 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](109 0 obj PDPage)/contentStream[0](1898 0 obj PDSemanticContentStream)/operators[3547]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1914847495 23 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](114 0 obj PDPage)/contentStream[0](1920 0 obj PDSemanticContentStream)/operators[15]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 558984328 24 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](114 0 obj PDPage)/contentStream[0](1920 0 obj PDSemanticContentStream)/operators[793]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 318787032 24 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](114 0 obj PDPage)/contentStream[0](1920 0 obj PDSemanticContentStream)/operators[1994]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1708779306 24 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[31](146 0 obj PDPage)/contentStream[0](7491 0 obj PDSemanticContentStream)/operators[5460]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1188469924 31 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[31](146 0 obj PDPage)/contentStream[0](7491 0 obj PDSemanticContentStream)/operators[6037]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1927585642 31 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[31](146 0 obj PDPage)/contentStream[0](7491 0 obj PDSemanticContentStream)/operators[6760]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1577428742 31 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[32](149 0 obj PDPage)/contentStream[0](7525 0 obj PDSemanticContentStream)/operators[15]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 503486980 32 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[32](149 0 obj PDPage)/contentStream[0](7525 0 obj PDSemanticContentStream)/operators[584]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1618043679 32 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[39](175 0 obj PDPage)/contentStream[0](7724 0 obj PDSemanticContentStream)/operators[15]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 534598935 39 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[39](175 0 obj PDPage)/contentStream[0](7724 0 obj PDSemanticContentStream)/operators[1553]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 940454178 39 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[39](175 0 obj PDPage)/contentStream[0](7724 0 obj PDSemanticContentStream)/operators[6557]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 942901628 39 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[40](179 0 obj PDPage)/contentStream[0](7765 0 obj PDSemanticContentStream)/operators[15]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 49534413 40 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[573]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1173151026 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[1028]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1759914811 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[1625]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 885186621 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[1982]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1107476456 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[2455]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1405230085 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[3000]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1246132954 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[3661]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 621942110 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[4157]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1386863459 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[41](183 0 obj PDPage)/contentStream[0](2708 0 obj PDSemanticContentStream)/operators[4672]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 62505055 41 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[99](425 0 obj PDPage)/contentStream[0](5094 0 obj PDSemanticContentStream)/operators[5116]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 789911376 99 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[99](425 0 obj PDPage)/contentStream[0](5094 0 obj PDSemanticContentStream)/operators[5370]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 1694552838 99 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[100](430 0 obj PDPage)/contentStream[0](9137 0 obj PDSemanticContentStream)/operators[15]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 2087267876 100 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[100](430 0 obj PDPage)/contentStream[0](9137 0 obj PDSemanticContentStream)/operators[379]/usedGlyphs[0](EFHHML+Webdings EFHHML+Webdings 27 0 381741723 100 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.3.2" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>ISO 32000-1:2008, 9.7.4, Table 117 requires that all embedded Type 2 CIDFonts in the CIDFont dictionary shall contain a CIDToGIDMap entry that shall be a stream mapping from CIDs to glyph indices or the name Identity, as described in ISO 32000-1:2008, 9.7.4, Table 117</description>
+            <object>PDCIDFont</object>
+            <test>Subtype != "CIDFontType2" || CIDToGIDMap != null || containsFontFile == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[15](77 0 obj PDPage)/contentStream[0](7067 0 obj PDSemanticContentStream)/operators[7637]/font[0](EFHHML+Webdings)/DescendantFonts[0](EFHHML+Webdings)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769042985043" finish="1769042991755">00:00:06.712</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769042984960" finish="1769042991828">00:00:06.868</duration>
+  </batchSummary>
+</report>

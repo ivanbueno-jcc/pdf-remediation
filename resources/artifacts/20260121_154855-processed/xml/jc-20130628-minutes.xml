@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="27404995">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/jc-20130628-minutes.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="480256" failedChecks="25">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[74](202 0 obj PDPage)/contentStream[0](9665 0 obj PDSemanticContentStream)/operators[47]/font[0](AAAAHM+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[74](202 0 obj PDPage)/contentStream[0](9665 0 obj PDSemanticContentStream)/operators[58]/font[0](AAAAHN+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="22" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[131](427 0 obj PDPage)/contentStream[0](9915 0 obj PDSemanticContentStream)/operators[3643]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 57 2 1131673199 236 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[131](427 0 obj PDPage)/contentStream[0](9915 0 obj PDSemanticContentStream)/operators[3861]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 57 2 953191605 236 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[131](427 0 obj PDPage)/contentStream[0](9915 0 obj PDSemanticContentStream)/operators[4054]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 57 2 422882684 236 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[131](427 0 obj PDPage)/contentStream[0](9915 0 obj PDSemanticContentStream)/operators[4272]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 57 2 65567135 236 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[131](427 0 obj PDPage)/contentStream[0](9915 0 obj PDSemanticContentStream)/operators[4490]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 57 2 512029640 236 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[131](427 0 obj PDPage)/contentStream[0](9915 0 obj PDSemanticContentStream)/operators[4683]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 57 2 1353406178 236 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[1703]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 273531298 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[1724]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1741892180 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[1888]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1868288866 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[1909]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 977278793 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2031]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 746757564 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2052]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1475331837 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2124]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 561783758 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2145]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 970890202 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2223]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1844349670 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2244]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1526090976 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2338]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1451516720 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2359]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1240727361 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2431]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 348209600 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2452]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1636256669 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2524]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 496556704 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[133](431 0 obj PDPage)/contentStream[0](9971 0 obj PDSemanticContentStream)/operators[2545]/usedGlyphs[0](LOPBCC+Wingdings-Regular LOPBCC+Wingdings-Regular 132 0 1890097328 238 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.1" testNumber="1" status="failed" failedChecks="1" tags="annotation">
+            <description>An annotation, excluding annotations of subtype Widget, PrinterMark or Link, shall be nested within an Annot tag</description>
+            <object>PDAnnot</object>
+            <test>Subtype == 'Widget' || Subtype == 'PrinterMark' || Subtype == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2 || structParentStandardType == 'Annot'</test>
+            <check status="failed">
+              <context>root/document[0]/pages[74](202 0 obj PDPage)/annots[2](665 0 obj PDFileAttachmentAnnot)</context>
+              <errorMessage>FileAttachment annotation is an Artifact or is nested within null tag (standard type = null) instead of Annot</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769046338765" finish="1769046345614">00:00:06.849</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769046338672" finish="1769046345808">00:00:07.136</duration>
+  </batchSummary>
+</report>

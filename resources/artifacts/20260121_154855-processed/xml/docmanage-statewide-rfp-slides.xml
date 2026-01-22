@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="414158">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/solicitation-request-document/docmanage-statewide-rfp-slides.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="23019" failedChecks="114">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[24](155 0 obj SENonStandard Slide)/K[3](209 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 2 span different number of columns</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="3" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table element may contain only TR, THead, TBody, TFoot and Caption elements</description>
+            <object>SETable</object>
+            <test>kidsStandardTypes.split('&amp;').filter(elem =&gt; elem != 'TR' &amp;&amp; elem != 'THead' &amp;&amp; elem != 'TBody' &amp;&amp; elem != 'TFoot' &amp;&amp; elem != 'Caption').length == 0 || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[24](155 0 obj SENonStandard Slide)/K[3](209 0 obj SETable Table)</context>
+              <errorMessage>Table element contains Span element(s) instead of TR, THead, TBode, TFoot or Caption</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="112" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[0](623 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[0](623 0 obj SENonStandard Slide)/K[1](624 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[0](623 0 obj SENonStandard Slide)/K[2](622 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[1](608 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[1](608 0 obj SENonStandard Slide)/K[1](597 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[1](608 0 obj SENonStandard Slide)/K[2](609 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[1](608 0 obj SENonStandard Slide)/K[3](607 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[2](580 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[2](580 0 obj SENonStandard Slide)/K[1](570 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[2](580 0 obj SENonStandard Slide)/K[2](581 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[2](580 0 obj SENonStandard Slide)/K[3](579 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[3](561 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[3](561 0 obj SENonStandard Slide)/K[1](554 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[3](561 0 obj SENonStandard Slide)/K[2](562 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[3](561 0 obj SENonStandard Slide)/K[3](560 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[1](132 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[4](135 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[8](139 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[10](141 0 obj SEP P)/K[1](545 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[10](141 0 obj SEP P)/K[4](548 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[11](142 0 obj SEP P)/K[1](526 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[11](142 0 obj SEP P)/K[3](528 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[11](142 0 obj SEP P)/K[5](530 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[11](142 0 obj SEP P)/K[8](533 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[11](142 0 obj SEP P)/K[10](535 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[11](142 0 obj SEP P)/K[14](539 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[12](143 0 obj SEP P)/K[1](522 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[13](144 0 obj SEP P)/K[1](516 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[13](144 0 obj SEP P)/K[2](517 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[13](144 0 obj SEP P)/K[4](519 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[14](145 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[14](145 0 obj SENonStandard Slide)/K[1](496 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[14](145 0 obj SENonStandard Slide)/K[2](497 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[14](145 0 obj SENonStandard Slide)/K[3](498 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[14](145 0 obj SENonStandard Slide)/K[4](499 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[15](146 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[15](146 0 obj SENonStandard Slide)/K[1](479 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[15](146 0 obj SENonStandard Slide)/K[2](480 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[15](146 0 obj SENonStandard Slide)/K[3](481 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[15](146 0 obj SENonStandard Slide)/K[4](482 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[16](147 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[16](147 0 obj SENonStandard Slide)/K[1](465 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[16](147 0 obj SENonStandard Slide)/K[2](466 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[16](147 0 obj SENonStandard Slide)/K[3](467 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[2](433 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[7](438 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[8](439 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[9](440 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[11](442 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[13](444 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[15](446 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[17](448 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[19](450 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[21](452 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[22](453 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[23](454 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[17](148 0 obj SENonStandard Slide)/K[24](455 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[18](149 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[18](149 0 obj SENonStandard Slide)/K[1](401 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[18](149 0 obj SENonStandard Slide)/K[2](402 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[18](149 0 obj SENonStandard Slide)/K[3](403 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[18](149 0 obj SENonStandard Slide)/K[4](404 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[19](150 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[19](150 0 obj SENonStandard Slide)/K[1](379 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[19](150 0 obj SENonStandard Slide)/K[2](380 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[19](150 0 obj SENonStandard Slide)/K[3](381 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[20](151 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[20](151 0 obj SENonStandard Slide)/K[1](356 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[20](151 0 obj SENonStandard Slide)/K[2](357 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[20](151 0 obj SENonStandard Slide)/K[3](358 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[20](151 0 obj SENonStandard Slide)/K[4](359 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[20](151 0 obj SENonStandard Slide)/K[5](360 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[21](152 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[21](152 0 obj SENonStandard Slide)/K[1](333 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[21](152 0 obj SENonStandard Slide)/K[2](334 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[21](152 0 obj SENonStandard Slide)/K[3](335 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[21](152 0 obj SENonStandard Slide)/K[4](336 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[22](153 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[22](153 0 obj SENonStandard Slide)/K[1](316 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[22](153 0 obj SENonStandard Slide)/K[2](317 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[22](153 0 obj SENonStandard Slide)/K[3](318 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[22](153 0 obj SENonStandard Slide)/K[4](319 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[23](154 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[23](154 0 obj SENonStandard Slide)/K[1](301 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[23](154 0 obj SENonStandard Slide)/K[2](302 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[23](154 0 obj SENonStandard Slide)/K[3](303 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[23](154 0 obj SENonStandard Slide)/K[4](304 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[24](155 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[24](155 0 obj SENonStandard Slide)/K[1](207 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[24](155 0 obj SENonStandard Slide)/K[2](208 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[24](155 0 obj SENonStandard Slide)/K[4](210 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[25](156 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[25](156 0 obj SENonStandard Slide)/K[1](188 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[25](156 0 obj SENonStandard Slide)/K[2](189 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[25](156 0 obj SENonStandard Slide)/K[3](190 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[25](156 0 obj SENonStandard Slide)/K[4](191 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[26](157 0 obj SENonStandard Slide)</context>
+              <errorMessage>Non-standard structure type Slide is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](103 0 obj PDStructTreeRoot)/K[4](130 0 obj SENonStandard Slide)/K[26](157 0 obj SENonStandard Slide)/K[1](172 0 obj SENonStandard Textbox)</context>
+              <errorMessage>Non-standard structure type Textbox is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769052978661" finish="1769052980646">00:00:01.985</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769052978549" finish="1769052980720">00:00:02.171</duration>
+  </batchSummary>
+</report>

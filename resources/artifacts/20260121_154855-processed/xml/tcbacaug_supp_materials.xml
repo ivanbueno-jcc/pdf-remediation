@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="328392">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/tcbacaug_supp_materials.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="103" failedRules="1" passedChecks="71789" failedChecks="2">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="42" status="failed" failedChecks="2" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan != null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](123 0 obj PDStructTreeRoot)/K[0](124 0 obj SEDocument Document)/K[1](555 0 obj SEPart Part)/K[0](554 0 obj SEDocument Workbook)/K[0](557 0 obj SESect Worksheet)/K[0](558 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 4 span different number of columns</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](123 0 obj PDStructTreeRoot)/K[0](124 0 obj SEDocument Document)/K[1](555 0 obj SEPart Part)/K[0](554 0 obj SEDocument Workbook)/K[1](553 0 obj SESect Worksheet)/K[0](551 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 6 span different number of columns</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769045464245" finish="1769045466714">00:00:02.469</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769045464207" finish="1769045466736">00:00:02.529</duration>
+  </batchSummary>
+</report>

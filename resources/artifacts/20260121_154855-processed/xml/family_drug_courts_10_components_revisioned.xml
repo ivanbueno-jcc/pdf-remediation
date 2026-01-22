@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="259955">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/family_drug_courts_10_components_revisioned.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="37433" failedChecks="9">
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](282 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.6" testNumber="3" status="failed" failedChecks="8" tags="font">
+            <description>Symbolic TrueType fonts shall not contain an Encoding entry in the font dictionary</description>
+            <object>PDTrueTypeFont</object>
+            <test>isSymbolic == false || Encoding == null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](267 0 obj PDSemanticContentStream)/operators[8]/font[0](RRTVUI+Calibri)</context>
+              <errorMessage>A symbolic TrueType font specifies an Encoding entry in its dictionary</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](267 0 obj PDSemanticContentStream)/operators[35]/font[0](AUXYXE+Calibri,Bold)</context>
+              <errorMessage>A symbolic TrueType font specifies an Encoding entry in its dictionary</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](267 0 obj PDSemanticContentStream)/operators[184]/font[0](CUUQAF+TimesNewRoman,Bold)</context>
+              <errorMessage>A symbolic TrueType font specifies an Encoding entry in its dictionary</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](267 0 obj PDSemanticContentStream)/operators[827]/font[0](VNZQXL+Calibri,BoldItalic)</context>
+              <errorMessage>A symbolic TrueType font specifies an Encoding entry in its dictionary</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](19 0 obj PDPage)/contentStream[0](122 0 obj PDSemanticContentStream)/operators[26]/font[0](YBWBJD+TimesNewRoman,BoldItalic)</context>
+              <errorMessage>A symbolic TrueType font specifies an Encoding entry in its dictionary</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](26 0 obj PDPage)/contentStream[0](269 0 obj PDSemanticContentStream)/operators[761]/font[0](CUUQAF+TimesNewRoman)</context>
+              <errorMessage>A symbolic TrueType font specifies an Encoding entry in its dictionary</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](26 0 obj PDPage)/contentStream[0](269 0 obj PDSemanticContentStream)/operators[772]/font[0](WQDACH+Calibri,Italic)</context>
+              <errorMessage>A symbolic TrueType font specifies an Encoding entry in its dictionary</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](26 0 obj PDPage)/contentStream[0](269 0 obj PDSemanticContentStream)/operators[4555]/font[0](LWWHKC+TimesNewRoman,Italic)</context>
+              <errorMessage>A symbolic TrueType font specifies an Encoding entry in its dictionary</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040369784" finish="1769040371738">00:00:01.954</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040369729" finish="1769040371759">00:00:02.030</duration>
+  </batchSummary>
+</report>

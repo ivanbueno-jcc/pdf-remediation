@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="299497">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-10/qfs-2021-q1-ventura.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="65794" failedChecks="12">
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="10" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1540]/usedGlyphs[1](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 20 0 1265053098 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1540]/usedGlyphs[3](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 17 0 1265053098 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1540]/usedGlyphs[4](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 23 0 1265053098 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1540]/usedGlyphs[5](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 19 0 1265053098 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1549]/usedGlyphs[0](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 22 0 478139423 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1549]/usedGlyphs[1](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 26 0 478139423 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1549]/usedGlyphs[2](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 21 0 478139423 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1549]/usedGlyphs[3](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 17 0 478139423 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1549]/usedGlyphs[4](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 27 0 478139423 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](4 0 obj PDPage)/contentStream[0](1126 0 obj PDSemanticContentStream)/operators[1549]/usedGlyphs[5](IOODHI+TimesNewRoman IOODHI+TimesNewRoman 19 0 478139423 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="2" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](49 0 obj PDPage)/contentStream[0](129 0 obj PDSemanticContentStream)/operators[94]/font[0](IOOCOI+Times-Roman)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[3](9 0 obj PDPage)/contentStream[0](1769 0 obj PDSemanticContentStream)/operators[11636]/font[0](IOOEAG+Helvetica)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769044924425" finish="1769044926734">00:00:02.309</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769044924332" finish="1769044926801">00:00:02.469</duration>
+  </batchSummary>
+</report>

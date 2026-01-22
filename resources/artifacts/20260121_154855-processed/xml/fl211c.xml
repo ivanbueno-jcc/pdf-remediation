@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="183983">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-11/fl211c.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="6404" failedChecks="685">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="1" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[151]/font[0](WXRORQ+SourceHanSansSC-Normal)/DescendantFonts[0](WXRORQ+SourceHanSansSC-Normal)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="2" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](16 0 obj PDStructTreeRoot)/K[0](19 0 obj SEDocument Document)/K[0](102 0 obj SEArt Article)/K[7](110 0 obj SESect Story)/K[0](116 0 obj SEL L)/K[0](117 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](16 0 obj PDStructTreeRoot)/K[0](19 0 obj SEDocument Document)/K[0](102 0 obj SEArt Article)/K[7](110 0 obj SESect Story)/K[0](116 0 obj SEL L)/K[1](118 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="4" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](16 0 obj PDStructTreeRoot)/K[0](19 0 obj SEDocument Document)/K[0](102 0 obj SEArt Article)/K[10](113 0 obj SESect Story)/K[0](97 0 obj SENonStandard _7_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _7_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](16 0 obj PDStructTreeRoot)/K[0](19 0 obj SEDocument Document)/K[0](102 0 obj SEArt Article)/K[10](113 0 obj SESect Story)/K[1](98 0 obj SENonStandard _7_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _7_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](16 0 obj PDStructTreeRoot)/K[0](19 0 obj SEDocument Document)/K[0](102 0 obj SEArt Article)/K[11](101 0 obj SESect Story)/K[0](99 0 obj SENonStandard _6_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _6_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](16 0 obj PDStructTreeRoot)/K[0](19 0 obj SEDocument Document)/K[0](102 0 obj SEArt Article)/K[11](101 0 obj SESect Story)/K[1](100 0 obj SENonStandard _9_pt_footer_button_)</context>
+              <errorMessage>Non-standard structure type _9_pt_footer_button_ is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="676" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[151]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9762 0 1430199669 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[151]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 10080 0 1430199669 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[151]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11847 0 1430199669 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[151]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 32275 0 1430199669 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[160]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9496 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[160]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 17410 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[160]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11960 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[160]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 23247 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[160]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 43162 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[160]/usedGlyphs[5](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 19232 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[160]/usedGlyphs[6](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9708 0 1530957251 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[169]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 21190 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[169]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9837 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[169]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 31809 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[169]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11929 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[169]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 767511741 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[178]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9496 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[178]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 17410 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[178]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11960 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[178]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 23247 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[178]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 43162 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[178]/usedGlyphs[5](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 19232 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[178]/usedGlyphs[6](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9708 0 2143571436 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 18525 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[5](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 20208 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[6](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 40004 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[7](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 18761 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[8](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 17393 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[9](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 16691 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[10](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 17294 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[11](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9668 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[269]/usedGlyphs[12](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9749 0 691863815 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[304]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 16632 0 2070160397 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[304]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 17393 0 2070160397 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[304]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 16691 0 2070160397 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[304]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 10909 0 2070160397 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[304]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9890 0 2070160397 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[304]/usedGlyphs[5](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 31809 0 2070160397 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[304]/usedGlyphs[6](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11929 0 2070160397 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[304]/usedGlyphs[7](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 2070160397 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[313]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 14436 0 1831141281 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[313]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11955 0 1831141281 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[313]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 1831141281 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[322]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 17393 0 2000648320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[322]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 18598 0 2000648320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[322]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11955 0 2000648320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[322]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 29154 0 2000648320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[322]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 2000648320 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[331]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 36725 0 1114335860 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[331]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 40442 0 1114335860 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[331]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 13264 0 1114335860 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[331]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 13285 0 1114335860 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[331]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 1114335860 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[340]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 16684 0 137533655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[340]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 137533655 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[375]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 16632 0 1527254842 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[375]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 1527254842 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[410]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 40657 0 1800693087 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[410]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 31809 0 1800693087 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[410]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 1800693087 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[419]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 27070 0 2100572327 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[419]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 38490 0 2100572327 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[419]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11929 0 2100572327 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[419]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 28318 0 2100572327 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[419]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 2100572327 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[454]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9897 0 659996839 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[454]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 27937 0 659996839 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[454]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11929 0 659996839 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[454]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 28318 0 659996839 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[454]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 659996839 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 27070 0 1768127248 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 15353 0 1768127248 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 40657 0 1768127248 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 30068 0 1768127248 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 13264 0 1768127248 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[5](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 13285 0 1768127248 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[463]/usedGlyphs[6](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 1768127248 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[472]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 17393 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[472]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 16691 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[472]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 14439 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[472]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 18650 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[472]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 9749 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[481]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 59054 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[481]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 14436 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[481]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 11955 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[481]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 59055 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[481]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 375074687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[499]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 36725 0 1191864687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[499]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 40442 0 1191864687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[499]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 13264 0 1191864687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[499]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 13285 0 1191864687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[499]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 1191864687 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[508]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 40657 0 690822257 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[508]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 15582 0 690822257 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[508]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 13264 0 690822257 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[508]/usedGlyphs[3](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 13285 0 690822257 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[508]/usedGlyphs[4](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 63150 0 690822257 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[517]/usedGlyphs[0](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 16684 0 1058822905 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[517]/usedGlyphs[1](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 12144 0 1058822905 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/contentStream[0](431 0 obj PDSemanticContentStream)/operators[517]/usedGlyphs[2](WXRORQ+SourceHanSansSC-Normal WXRORQ+SourceHanSansSC-Normal 40657 0 1058822905 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="2" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/annots[0](194 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](201 0 obj PDPage)/annots[1](192 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040990556" finish="1769040992181">00:00:01.625</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040990220" finish="1769040992227">00:00:02.007</duration>
+  </batchSummary>
+</report>

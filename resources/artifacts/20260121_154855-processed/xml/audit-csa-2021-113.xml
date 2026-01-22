@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="5652967">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/audit-csa-2021-113.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="100" failedRules="4" passedChecks="319877" failedChecks="17">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="20" status="failed" failedChecks="3" tags="structure,list">
+            <description>LI element may contain only Lbl and LBody elements</description>
+            <object>SELI</object>
+            <test>/^(Lbl|LBody)(&amp;(Lbl|LBody))*$/.test(kidsStandardTypes) || kidsStandardTypes == ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[11](1191 0 obj SESect Story)/K[2](1920 0 obj SEL L)/K[0](1921 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[11](1191 0 obj SESect Story)/K[2](1920 0 obj SEL L)/K[1](1922 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[11](1191 0 obj SESect Story)/K[2](1920 0 obj SEL L)/K[2](1923 0 obj SELI LI)</context>
+              <errorMessage>LI element contains L element(s) instead of Lbl or LBody</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="2" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[4](48 0 obj PDPage)/annots[2](2563 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[4](48 0 obj PDPage)/annots[3](50 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="6" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](5813 0 obj PDSemanticContentStream)/operators[18]/font[0](GYAKPW+WarnockPro-Light)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[16](98 0 obj PDPage)/contentStream[0](6094 0 obj PDSemanticContentStream)/operators[166]/font[0](XVTUTO+ClarendonTextPro)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[19](173 0 obj PDPage)/contentStream[0](6153 0 obj PDSemanticContentStream)/operators[167]/font[0](XVTUTO+ClarendonTextPro)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](206 0 obj PDPage)/contentStream[0](6215 0 obj PDSemanticContentStream)/operators[263]/font[0](XVTUTO+ClarendonTextPro)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[35](308 0 obj PDPage)/contentStream[0](6446 0 obj PDSemanticContentStream)/operators[481]/font[0](XVTUTO+ClarendonTextPro)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[52](502 0 obj PDPage)/contentStream[0](6833 0 obj PDSemanticContentStream)/operators[428]/font[0](XVTUTO+ClarendonTextPro)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.5" testNumber="1" status="failed" failedChecks="6" tags="structure,table">
+            <description>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</description>
+            <object>SETD</object>
+            <test>hasConnectedHeader != false || unknownHeaders != ''</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[10](1190 0 obj SESect Story)/K[80](2050 0 obj SEP body)/K[0](2401 0 obj SETable Table)/K[1](2403 0 obj SETR TR)/K[0](2404 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[10](1190 0 obj SESect Story)/K[169](2141 0 obj SEP body)/K[0](2143 0 obj SETable Table)/K[1](2145 0 obj SETR TR)/K[0](2322 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[18](1198 0 obj SESect Story)/K[2](1792 0 obj SEP body)/K[0](1796 0 obj SETable Table)/K[1](1798 0 obj SETR TR)/K[0](1855 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[19](1199 0 obj SESect Story)/K[2](1747 0 obj SEP body)/K[0](1752 0 obj SETable Table)/K[1](1754 0 obj SETR TR)/K[0](1755 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[20](1200 0 obj SESect Sect)/K[0](1615 0 obj SESect Story)/K[2](1622 0 obj SEP body)/K[0](1625 0 obj SETable Table)/K[2](1628 0 obj SETR TR)/K[0](1698 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](1093 0 obj PDStructTreeRoot)/K[0](1095 0 obj SEDocument Document)/K[0](1179 0 obj SEArt Article)/K[24](1204 0 obj SESect Story)/K[2](1442 0 obj SEP body)/K[0](1447 0 obj SETable Table)/K[1](1449 0 obj SETR TR)/K[0](1545 0 obj SETD TD)</context>
+              <errorMessage>TD does not contain Headers attribute, and Headers for this table cell cannot be determined algorithmically</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769039350158" finish="1769039355371">00:00:05.213</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769039349935" finish="1769039355443">00:00:05.508</duration>
+  </batchSummary>
+</report>

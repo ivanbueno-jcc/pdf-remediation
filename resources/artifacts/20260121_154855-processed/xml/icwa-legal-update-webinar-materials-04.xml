@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="11686701">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-08/icwa-legal-update-webinar-materials-04.06.2022.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="530986" failedChecks="96">
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="6" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[20](314 0 obj PDPage)/annots[6](4733 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[20](314 0 obj PDPage)/annots[12](4793 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[52](402 0 obj PDPage)/annots[0](4026 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[52](402 0 obj PDPage)/annots[1](4028 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[53](405 0 obj PDPage)/annots[0](4030 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[53](405 0 obj PDPage)/annots[1](4032 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within null tag (standard type = null) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[56](515 0 obj PDPage)/contentStream[0](9834 0 obj PDSemanticContentStream)/operators[173]/usedGlyphs[0](CIDFont+F3 CIDFont+F3 3031 0 546886525 93 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="2" status="failed" failedChecks="89" tags="font">
+            <description>The Unicode values specified in the ToUnicode CMap shall all be greater than zero (0), but not equal to either U+FEFF or U+FFFE</description>
+            <object>Glyph</object>
+            <test>toUnicode == null || (toUnicode.indexOf("\u0000") == -1 &amp;&amp; toUnicode.indexOf("\uFFFE") == -1 &amp;&amp; toUnicode.indexOf("\uFEFF") == -1)</test>
+            <check status="failed">
+              <context>root/document[0]/pages[20](314 0 obj PDPage)/contentStream[0](9801 0 obj PDSemanticContentStream)/operators[735]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 985487390 20 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[20](314 0 obj PDPage)/contentStream[0](9801 0 obj PDSemanticContentStream)/operators[1321]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 668760567 20 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[20](314 0 obj PDPage)/contentStream[0](9801 0 obj PDSemanticContentStream)/operators[2279]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 417875774 20 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[20](314 0 obj PDPage)/contentStream[0](9801 0 obj PDSemanticContentStream)/operators[7266]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1121891386 20 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[2149]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 238431319 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[9344]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1699265405 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[11238]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 358019805 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[14433]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 103118806 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[16438]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1801422599 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[24752]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 2041264753 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[25693]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1851522556 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[32745]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1622694817 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[32925]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 292958927 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[37166]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 987595204 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[21](323 0 obj PDPage)/contentStream[0](9802 0 obj PDSemanticContentStream)/operators[38243]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 29774113 32 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[855]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1883971879 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[2935]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 130850024 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[3273]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 202064342 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[6167]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 738174829 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[13807]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1830969563 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[16509]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1237264838 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[16668]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 4181455 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[16799]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1177101170 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[17130]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1816397102 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[17993]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1393198164 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[34056]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 823758059 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[38141]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1965036946 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[22](325 0 obj PDPage)/contentStream[0](9803 0 obj PDSemanticContentStream)/operators[44028]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 673384643 33 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[2261]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1133227388 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[3075]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1340051218 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[3511]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1425405511 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[13690]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 828088650 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[17162]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 670084377 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[22970]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 953528583 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[26808]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1355766307 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[32829]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 658281599 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[23](327 0 obj PDPage)/contentStream[0](9804 0 obj PDSemanticContentStream)/operators[34727]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1663738275 34 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[4005]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 2011342562 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[5956]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 807872790 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[10901]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1316001196 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[11018]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 699871906 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[20909]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 185203393 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[21481]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1627496281 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[29029]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1951500432 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[33552]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1814908102 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[36006]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 814111376 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[24](329 0 obj PDPage)/contentStream[0](9805 0 obj PDSemanticContentStream)/operators[38191]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1907467420 35 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](331 0 obj PDPage)/contentStream[0](9806 0 obj PDSemanticContentStream)/operators[4303]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1552179791 36 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](331 0 obj PDPage)/contentStream[0](9806 0 obj PDSemanticContentStream)/operators[9698]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 708926121 36 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](331 0 obj PDPage)/contentStream[0](9806 0 obj PDSemanticContentStream)/operators[11653]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 708926121 36 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](331 0 obj PDPage)/contentStream[0](9806 0 obj PDSemanticContentStream)/operators[14807]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1911168986 36 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](331 0 obj PDPage)/contentStream[0](9806 0 obj PDSemanticContentStream)/operators[34600]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1531175283 36 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](331 0 obj PDPage)/contentStream[0](9806 0 obj PDSemanticContentStream)/operators[37221]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 586831282 36 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[25](331 0 obj PDPage)/contentStream[0](9806 0 obj PDSemanticContentStream)/operators[40701]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1704214570 36 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[2564]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1914615775 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[4080]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1385750189 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[9538]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 80191608 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[10394]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1522119751 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[10893]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1334618867 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[27592]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1800605369 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[32440]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1736458419 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[39444]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 2099932844 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[26](333 0 obj PDPage)/contentStream[0](9807 0 obj PDSemanticContentStream)/operators[42192]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 739210872 37 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](335 0 obj PDPage)/contentStream[0](9808 0 obj PDSemanticContentStream)/operators[4905]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1544147328 38 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](335 0 obj PDPage)/contentStream[0](9808 0 obj PDSemanticContentStream)/operators[7477]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1599556802 38 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](335 0 obj PDPage)/contentStream[0](9808 0 obj PDSemanticContentStream)/operators[18150]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1222094219 38 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](335 0 obj PDPage)/contentStream[0](9808 0 obj PDSemanticContentStream)/operators[24578]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1612853208 38 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](335 0 obj PDPage)/contentStream[0](9808 0 obj PDSemanticContentStream)/operators[32029]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 10915321 38 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](335 0 obj PDPage)/contentStream[0](9808 0 obj PDSemanticContentStream)/operators[33624]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 131037934 38 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](335 0 obj PDPage)/contentStream[0](9808 0 obj PDSemanticContentStream)/operators[40546]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1685134322 38 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[27](335 0 obj PDPage)/contentStream[0](9808 0 obj PDSemanticContentStream)/operators[44022]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1008608255 38 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[408]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 2063009760 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[991]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1053744929 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[3220]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 918899286 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[10028]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1933077874 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[12940]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 308021294 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[16336]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 1756160273 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[18497]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1337655323 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[20330]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 874153561 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[22430]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1592763413 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[22876]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 2027227708 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[23627]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 215632153 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[24083]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 215632153 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[25086]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 790229674 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[25147]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 1778877569 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[28500]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 422134367 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[28](337 0 obj PDPage)/contentStream[0](9809 0 obj PDSemanticContentStream)/operators[29521]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 670283478 39 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[29](339 0 obj PDPage)/contentStream[0](9810 0 obj PDSemanticContentStream)/operators[1119]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 120 0 2107706203 40 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[29](339 0 obj PDPage)/contentStream[0](9810 0 obj PDSemanticContentStream)/operators[1865]/usedGlyphs[0](SourceSansPro-Regular SourceSansPro-Regular 119 0 564086167 40 true)</context>
+              <errorMessage>The glyph has Unicode value 0, U+FEFF or U+FFFE, which is invalid by Unicode standard</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769043042250" finish="1769043050724">00:00:08.474</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769043042133" finish="1769043050748">00:00:08.615</duration>
+  </batchSummary>
+</report>

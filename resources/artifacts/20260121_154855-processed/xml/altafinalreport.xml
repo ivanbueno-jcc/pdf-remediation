@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="8634551">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/altafinalreport.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="98" failedRules="6" passedChecks="660374" failedChecks="1075">
+          <rule specification="ISO 14289-1:2014" clause="5" testNumber="1" status="failed" failedChecks="1" tags="metadata">
+            <description>The PDF/UA version and conformance level of a file shall be specified using the PDF/UA Identification extension schema</description>
+            <object>MainXMPPackage</object>
+            <test>containsPDFUAIdentification == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](20911 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>The document metadata stream doesn't contains PDF/UA Identification Schema</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="9" status="failed" failedChecks="1" tags="metadata">
+            <description>The Metadata stream in the document's catalog dictionary shall contain a dc:title entry, where dc is the recommended prefix for the Dublin Core metadata schema as defined in the XMP specification, which clearly identifies the document</description>
+            <object>MainXMPPackage</object>
+            <test>dc_title != null</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](20911 0 obj PDMetadata)/XMPPackage[0]</context>
+              <errorMessage>Metadata stream does not contain dc:title</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.3.2" testNumber="1" status="failed" failedChecks="10" tags="font">
+            <description>ISO 32000-1:2008, 9.7.4, Table 117 requires that all embedded Type 2 CIDFonts in the CIDFont dictionary shall contain a CIDToGIDMap entry that shall be a stream mapping from CIDs to glyph indices or the name Identity, as described in ISO 32000-1:2008, 9.7.4, Table 117</description>
+            <object>PDCIDFont</object>
+            <test>Subtype != "CIDFontType2" || CIDToGIDMap != null || containsFontFile == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](7734 0 obj PDPage)/contentStream[0](9019 0 obj PDSemanticContentStream)/operators[97]/font[0](ZPPFVK+Arial-Black)/DescendantFonts[0](ZPPFVK+Arial-Black)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](7734 0 obj PDPage)/contentStream[0](9019 0 obj PDSemanticContentStream)/operators[151]/font[0](EREONA+ArialMT)/DescendantFonts[0](EREONA+ArialMT)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](13105 0 obj PDSemanticContentStream)/operators[669]/font[0](USABDU+Arial-ItalicMT)/DescendantFonts[0](USABDU+Arial-ItalicMT)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[9](28 0 obj PDPage)/contentStream[0](13350 0 obj PDSemanticContentStream)/operators[763]/font[0](PQLSLE+ZapfDingbatsITCbyBT-Regular)/DescendantFonts[0](PQLSLE+ZapfDingbatsITCbyBT-Regular)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[11](35 0 obj PDPage)/contentStream[0](13526 0 obj PDSemanticContentStream)/operators[1074]/font[0](PQLSLE+BookAntiqua-Italic)/DescendantFonts[0](PQLSLE+BookAntiqua-Italic)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[17](53 0 obj PDPage)/contentStream[0](13774 0 obj PDSemanticContentStream)/operators[1101]/font[0](KQCTTO+Arial-BoldMT)/DescendantFonts[0](KQCTTO+Arial-BoldMT)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[17]/font[0](JPMIFQ+TimesNewRomanPSMT)/DescendantFonts[0](JPMIFQ+TimesNewRomanPSMT)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/font[0](UQURDU+Arial-BoldMT)/DescendantFonts[0](UQURDU+Arial-BoldMT)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/font[0](UQURDU+ArialMT)/DescendantFonts[0](UQURDU+ArialMT)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[81](240 0 obj PDPage)/contentStream[0](16620 0 obj PDSemanticContentStream)/operators[60]/font[0](JSGYFQ+Arial-ItalicMT)/DescendantFonts[0](JSGYFQ+Arial-ItalicMT)</context>
+              <errorMessage>A Type 2 CIDFont dictionary has missing or invalid CIDToGIDMap entry</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="3" status="failed" failedChecks="1" tags="artifact">
+            <description>Content shall be marked as Artifact or tagged as real content</description>
+            <object>SESimpleContentItem</object>
+            <test>isTaggedContent == true || parentsTags.contains('Artifact') == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](7734 0 obj PDPage)/contentStream[0](9019 0 obj PDSemanticContentStream)/operators[6]/xObject[0]/contentStream[0](7787 0 obj PDSemanticContentStream)/content[1]{mcid:0}/contentItem[0]{mcid:0}/contentItem[0]</context>
+              <errorMessage>Content is neither marked as Artifact nor tagged as real content</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.1" testNumber="5" status="failed" failedChecks="133" tags="structure">
+            <description>All non-standard structure types shall be mapped to the nearest functionally equivalent standard type, as defined in ISO 32000-1:2008, 14.8.4, in the role map dictionary of the structure tree root. This mapping may be indirect; within the role map a non-standard type can map directly to another non-standard type, but eventually the mapping shall terminate at a standard type</description>
+            <object>SENonStandard</object>
+            <test>isNotMappedToStandardType == false</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[12](1332 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[15](1336 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[17](1338 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[18](1340 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[19](1341 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[20](1342 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[21](1343 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[22](1345 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[23](1346 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[24](1347 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[25](1348 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[26](1350 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[27](1351 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[28](1352 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[29](1353 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[30](1355 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[31](1356 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[32](1357 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[33](1358 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[34](1359 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[35](1360 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[36](1361 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[37](1362 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[38](1363 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[39](1364 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[40](1365 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[41](1366 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[42](1367 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[43](1368 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[44](1369 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[45](1371 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[46](1372 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[47](1373 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[48](1374 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[49](1375 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[50](1376 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[247](1663 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[248](1665 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[249](1666 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[250](1667 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[251](1668 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[252](1669 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[253](1671 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[254](1672 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[255](1673 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[256](1674 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[257](1676 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[258](1677 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[259](1678 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[260](1679 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[261](1681 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[262](1682 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[263](1683 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[265](1686 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[266](1688 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[267](1689 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[268](1690 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[269](1691 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[270](1692 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[271](1693 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[272](1694 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[273](1695 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[274](1696 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[275](1697 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[276](1698 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[277](1699 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[278](1700 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[279](1701 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[280](1702 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[281](1704 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[282](1705 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[283](1706 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[284](1707 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[285](1708 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[286](1709 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1023](2981 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1025](2983 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1026](2984 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1027](2985 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1028](2986 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1030](2990 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1031](2991 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1032](2992 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1033](2993 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1035](2996 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1036](2997 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1037](2998 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1039](3001 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1041](3004 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1042](3005 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1043](3006 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1044](3007 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1045](3008 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1047](3013 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1049](3016 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1050](3017 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1051](3018 0 obj SENonStandard _1column_table_heade)</context>
+              <errorMessage>Non-standard structure type _1column_table_heade is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1053](3021 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1054](3022 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](605 0 obj PDStructTreeRoot)/K[0](606 0 obj SEDocument Document)/K[0](675 0 obj SEArt Article)/K[71](748 0 obj SESect Story)/K[1055](3023 0 obj SENonStandard _1column_table_bulle)</context>
+              <errorMessage>Non-standard structure type _1column_table_bulle is not mapped to a standard type</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="929" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[17]/usedGlyphs[0](JPMIFQ+TimesNewRomanPSMT JPMIFQ+TimesNewRomanPSMT 20 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[0](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 44 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[5](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 89 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[12](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 85 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[18](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 92 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[24](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 73 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[26](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 46 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[28](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 82 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[29](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 90 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[33](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 74 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[37](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 54 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[38](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 78 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[43](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 15 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[45](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 68 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[46](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 81 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[47](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 71 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[49](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 36 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[50](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 69 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[52](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 79 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[54](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 87 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[55](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 76 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[56](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 72 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[57](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 86 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[58](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 3 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[0](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 56 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[14](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 38 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[16](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 88 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[25](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 83 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 55 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[6](UQURDU+ArialMT UQURDU+ArialMT 86 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[9](UQURDU+ArialMT UQURDU+ArialMT 75 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[21](UQURDU+ArialMT UQURDU+ArialMT 71 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[23](UQURDU+ArialMT UQURDU+ArialMT 70 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[24](UQURDU+ArialMT UQURDU+ArialMT 88 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[31](UQURDU+ArialMT UQURDU+ArialMT 74 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[45](UQURDU+ArialMT UQURDU+ArialMT 73 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[47](UQURDU+ArialMT UQURDU+ArialMT 82 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[48](UQURDU+ArialMT UQURDU+ArialMT 80 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[50](UQURDU+ArialMT UQURDU+ArialMT 68 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[52](UQURDU+ArialMT UQURDU+ArialMT 3 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[54](UQURDU+ArialMT UQURDU+ArialMT 81 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[55](UQURDU+ArialMT UQURDU+ArialMT 87 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[57](UQURDU+ArialMT UQURDU+ArialMT 85 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[58](UQURDU+ArialMT UQURDU+ArialMT 89 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[59](UQURDU+ArialMT UQURDU+ArialMT 76 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[60](UQURDU+ArialMT UQURDU+ArialMT 72 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[61](UQURDU+ArialMT UQURDU+ArialMT 90 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[78]/usedGlyphs[62](UQURDU+ArialMT UQURDU+ArialMT 17 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[85]/usedGlyphs[9](UQURDU+ArialMT UQURDU+ArialMT 83 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[103]/usedGlyphs[27](UQURDU+ArialMT UQURDU+ArialMT 92 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[103]/usedGlyphs[55](UQURDU+ArialMT UQURDU+ArialMT 78 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[103]/usedGlyphs[58](UQURDU+ArialMT UQURDU+ArialMT 79 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[103]/usedGlyphs[60](UQURDU+ArialMT UQURDU+ArialMT 15 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[117]/usedGlyphs[4](UQURDU+ArialMT UQURDU+ArialMT 69 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[153]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 54 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[153]/usedGlyphs[5](UQURDU+ArialMT UQURDU+ArialMT 84 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[185]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 50 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[185]/usedGlyphs[50](UQURDU+ArialMT UQURDU+ArialMT 91 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[185]/usedGlyphs[62](UQURDU+ArialMT UQURDU+ArialMT 52 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[210]/usedGlyphs[38](UQURDU+ArialMT UQURDU+ArialMT 47 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[210]/usedGlyphs[40](UQURDU+ArialMT UQURDU+ArialMT 36 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[278]/usedGlyphs[7](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 70 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[278]/usedGlyphs[13](UQURDU+Arial-BoldMT UQURDU+Arial-BoldMT 52 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[303]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 20 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[321]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 39 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[321]/usedGlyphs[3](UQURDU+ArialMT UQURDU+ArialMT 44 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[321]/usedGlyphs[44](UQURDU+ArialMT UQURDU+ArialMT 34 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[321]/usedGlyphs[59](UQURDU+ArialMT UQURDU+ArialMT 66 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[353]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 21 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[492]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 22 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[517]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 58 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[617]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 23 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[635]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 43 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[721]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 24 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[739]/usedGlyphs[25](UQURDU+ArialMT UQURDU+ArialMT 40 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[825]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 25 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[864]/usedGlyphs[22](UQURDU+ArialMT UQURDU+ArialMT 11 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[871]/usedGlyphs[4](UQURDU+ArialMT UQURDU+ArialMT 29 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[75](205 0 obj PDPage)/contentStream[0](15626 0 obj PDSemanticContentStream)/operators[889]/usedGlyphs[36](UQURDU+ArialMT UQURDU+ArialMT 12 0 522188921 108 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[17]/usedGlyphs[0](JPMIFQ+TimesNewRomanPSMT JPMIFQ+TimesNewRomanPSMT 21 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 26 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[35]/usedGlyphs[1](UQURDU+ArialMT UQURDU+ArialMT 17 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[42]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 3 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[60]/usedGlyphs[0](UQURDU+ArialMT UQURDU+ArialMT 41 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[5](UQURDU+ArialMT UQURDU+ArialMT 90 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[10](UQURDU+ArialMT UQURDU+ArialMT 74 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[12](UQURDU+ArialMT UQURDU+ArialMT 75 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[14](UQURDU+ArialMT UQURDU+ArialMT 89 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[17](UQURDU+ArialMT UQURDU+ArialMT 92 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[21](UQURDU+ArialMT UQURDU+ArialMT 69 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[31](UQURDU+ArialMT UQURDU+ArialMT 73 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[34](UQURDU+ArialMT UQURDU+ArialMT 86 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[38](UQURDU+ArialMT UQURDU+ArialMT 68 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[39](UQURDU+ArialMT UQURDU+ArialMT 79 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[41](UQURDU+ArialMT UQURDU+ArialMT 70 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[42](UQURDU+ArialMT UQURDU+ArialMT 82 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[43](UQURDU+ArialMT UQURDU+ArialMT 88 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[47](UQURDU+ArialMT UQURDU+ArialMT 76 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[48](UQURDU+ArialMT UQURDU+ArialMT 81 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[76](211 0 obj PDPage)/contentStream[0](15795 0 obj PDSemanticContentStream)/operators[67]/usedGlyphs[52](UQURDU+ArialMT UQURDU+ArialMT 83 0 1115099772 109 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769042446704" finish="1769042453289">00:00:06.585</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769042446463" finish="1769042453444">00:00:06.981</duration>
+  </batchSummary>
+</report>

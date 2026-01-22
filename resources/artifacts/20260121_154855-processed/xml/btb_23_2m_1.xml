@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="524146">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/courts/default/2024-12/btb_23_2m_1.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="99" failedRules="5" passedChecks="99224" failedChecks="118">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="43" status="failed" failedChecks="1" tags="structure,table">
+            <description>Table rows shall have the same number of columns (taking into account column spans)</description>
+            <object>SETable</object>
+            <test>numberOfRowWithWrongColumnSpan == null || wrongColumnSpan == null</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)</context>
+              <errorMessage>Table rows 1 and 14 span different number of columns (4 and 1 respectively)</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="1" status="failed" failedChecks="1" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded Type 1 font contains a CharSet string, then it shall list the character names of all glyphs present in the font program, regardless of whether a glyph in the font is referenced or used by the PDF or not</description>
+            <object>PDType1Font</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || CharSet == null || charSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[14](42 0 obj PDPage)/contentStream[0](4510 0 obj PDSemanticContentStream)/operators[1709]/font[0](AAAAAK+ChromeSansMM)</context>
+              <errorMessage>A CharSet entry in the Descriptor dictionary of a Type1 font incorrectly lists glyphs present in the font program</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.5" testNumber="1" status="failed" failedChecks="33" tags="annotation">
+            <description>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</description>
+            <object>PDLinkAnnot</object>
+            <test>structParentStandardType == 'Link' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[0](3722 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[1](3723 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[2](3724 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[3](3725 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[4](3726 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[5](3727 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[6](3728 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[7](3729 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[8](3730 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[9](3731 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[10](3732 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[11](3733 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[12](3734 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[13](3735 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](3703 0 obj PDPage)/annots[14](3736 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[0](175 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[1](174 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[2](173 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[3](172 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[4](171 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[5](170 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[6](169 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[7](168 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[8](167 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[9](166 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[10](165 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[11](164 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[12](163 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[13](162 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[14](161 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[15](160 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[16](159 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[17](158 0 obj PDLinkAnnot)</context>
+              <errorMessage>A Link annotation is an Artifact or is nested within Reference tag (standard type = Reference) instead of Link</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="26" status="failed" failedChecks="35" tags="structure,toc">
+            <description>TOCI element should be contained in TOC element</description>
+            <object>SETOCI</object>
+            <test>parentStandardType == 'TOC'</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[25](995 0 obj SETR TR)/K[2](2805 0 obj SETD TD)/K[2](2808 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[32](1002 0 obj SETR TR)/K[2](2661 0 obj SETD TD)/K[1](2664 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[32](1002 0 obj SETR TR)/K[2](2661 0 obj SETD TD)/K[2](2665 0 obj SETOCI TOC 1)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[49](1019 0 obj SETR TR)/K[3](2344 0 obj SETD TD)/K[1](2347 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[50](1020 0 obj SETR TR)/K[1](2323 0 obj SETD TD)/K[1](2333 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[52](1022 0 obj SETR TR)/K[2](2281 0 obj SETD TD)/K[1](2284 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[62](1032 0 obj SETR TR)/K[3](2077 0 obj SETD TD)/K[1](2080 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[66](1036 0 obj SETR TR)/K[1](2000 0 obj SETD TD)/K[1](2014 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[70](1040 0 obj SETR TR)/K[2](1913 0 obj SETD TD)/K[2](1916 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[70](1040 0 obj SETR TR)/K[2](1913 0 obj SETD TD)/K[3](1917 0 obj SETOCI TOC 1)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[70](1040 0 obj SETR TR)/K[2](1913 0 obj SETD TD)/K[4](1918 0 obj SETOCI TOC 2)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[74](1044 0 obj SETR TR)/K[3](1821 0 obj SETD TD)/K[2](1824 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[75](1045 0 obj SETR TR)/K[3](1790 0 obj SETD TD)/K[2](1793 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[75](1045 0 obj SETR TR)/K[3](1790 0 obj SETD TD)/K[3](1795 0 obj SETOCI TOC 2)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[77](1047 0 obj SETR TR)/K[1](1758 0 obj SETD TD)/K[2](1778 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[79](1049 0 obj SETR TR)/K[1](1719 0 obj SETD TD)/K[1](1739 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[80](1050 0 obj SETR TR)/K[1](1694 0 obj SETD TD)/K[1](1710 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[81](1051 0 obj SETR TR)/K[1](1669 0 obj SETD TD)/K[1](1685 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[82](1052 0 obj SETR TR)/K[1](1640 0 obj SETD TD)/K[1](1660 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[86](1056 0 obj SETR TR)/K[2](1551 0 obj SETD TD)/K[1](1557 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[87](1057 0 obj SETR TR)/K[2](1523 0 obj SETD TD)/K[1](1529 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[88](1058 0 obj SETR TR)/K[0](1493 0 obj SETD TD)/K[1](1497 0 obj SETOCI TOC 1)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[88](1058 0 obj SETR TR)/K[0](1493 0 obj SETD TD)/K[2](1499 0 obj SETOCI TOC 2)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[89](1059 0 obj SETR TR)/K[1](1467 0 obj SETD TD)/K[2](1487 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[89](1059 0 obj SETR TR)/K[3](1469 0 obj SETD TD)/K[1](1472 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[90](1060 0 obj SETR TR)/K[2](1429 0 obj SETD TD)/K[1](1435 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[90](1060 0 obj SETR TR)/K[2](1429 0 obj SETD TD)/K[2](1437 0 obj SETOCI TOC 2)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[92](1062 0 obj SETR TR)/K[3](1400 0 obj SETD TD)/K[1](1403 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[92](1062 0 obj SETR TR)/K[3](1400 0 obj SETD TD)/K[2](1404 0 obj SETOCI TOC 1)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[95](1065 0 obj SETR TR)/K[2](1341 0 obj SETD TD)/K[1](1349 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[95](1065 0 obj SETR TR)/K[2](1341 0 obj SETD TD)/K[2](1351 0 obj SETOCI TOC 2)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[106](1076 0 obj SETR TR)/K[1](1204 0 obj SETD TD)/K[2](1219 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[107](1077 0 obj SETR TR)/K[3](1182 0 obj SETD TD)/K[2](1185 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[108](1078 0 obj SETR TR)/K[3](1154 0 obj SETD TD)/K[2](1157 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[109](1079 0 obj SETR TR)/K[3](1128 0 obj SETD TD)/K[2](1131 0 obj SETOCI TOC Heading)</context>
+              <errorMessage>TOCI element contained in TD instead of TOC element</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="17" status="failed" failedChecks="48" tags="structure,list">
+            <description>LI element should be contained in L element</description>
+            <object>SELI</object>
+            <test>parentStandardType == 'L'</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[0](3075 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[1](3076 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[2](3077 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[3](3078 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[4](3079 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[5](3080 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[6](3081 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[7](3082 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[8](3083 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[9](3084 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[10](3085 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[11](3086 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[12](3087 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[13](3088 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[14](3089 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[15](3090 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[11](981 0 obj SETR TR)/K[3](3071 0 obj SETD TD)/K[1](3073 0 obj SEP Normal)/K[16](3091 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[21](991 0 obj SETR TR)/K[3](2874 0 obj SETD TD)/K[1](2876 0 obj SEP Normal)/K[0](2878 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[21](991 0 obj SETR TR)/K[3](2874 0 obj SETD TD)/K[1](2876 0 obj SEP Normal)/K[1](2879 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[21](991 0 obj SETR TR)/K[3](2874 0 obj SETD TD)/K[1](2876 0 obj SEP Normal)/K[2](2880 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[21](991 0 obj SETR TR)/K[3](2874 0 obj SETD TD)/K[1](2876 0 obj SEP Normal)/K[3](2881 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[21](991 0 obj SETR TR)/K[3](2874 0 obj SETD TD)/K[1](2876 0 obj SEP Normal)/K[4](2882 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[21](991 0 obj SETR TR)/K[3](2874 0 obj SETD TD)/K[1](2876 0 obj SEP Normal)/K[5](2883 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[23](993 0 obj SETR TR)/K[2](2837 0 obj SETD TD)/K[1](2839 0 obj SEP Normal)/K[0](2843 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[23](993 0 obj SETR TR)/K[2](2837 0 obj SETD TD)/K[1](2839 0 obj SEP Normal)/K[1](2844 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[25](995 0 obj SETR TR)/K[2](2805 0 obj SETD TD)/K[2](2808 0 obj SETOCI TOC Heading)/K[0](2810 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[25](995 0 obj SETR TR)/K[2](2805 0 obj SETD TD)/K[2](2808 0 obj SETOCI TOC Heading)/K[1](2811 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[32](1002 0 obj SETR TR)/K[2](2661 0 obj SETD TD)/K[1](2664 0 obj SETOCI TOC Heading)/K[0](2670 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[32](1002 0 obj SETR TR)/K[2](2661 0 obj SETD TD)/K[1](2664 0 obj SETOCI TOC Heading)/K[1](2671 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[32](1002 0 obj SETR TR)/K[2](2661 0 obj SETD TD)/K[1](2664 0 obj SETOCI TOC Heading)/K[2](2672 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[37](1007 0 obj SETR TR)/K[2](2566 0 obj SETD TD)/K[1](2568 0 obj SEP Normal)/K[0](2572 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[37](1007 0 obj SETR TR)/K[2](2566 0 obj SETD TD)/K[1](2568 0 obj SEP Normal)/K[1](2573 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[37](1007 0 obj SETR TR)/K[2](2566 0 obj SETD TD)/K[1](2568 0 obj SEP Normal)/K[2](2574 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[37](1007 0 obj SETR TR)/K[2](2566 0 obj SETD TD)/K[1](2568 0 obj SEP Normal)/K[3](2575 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[37](1007 0 obj SETR TR)/K[2](2566 0 obj SETD TD)/K[1](2568 0 obj SEP Normal)/K[4](2576 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[37](1007 0 obj SETR TR)/K[2](2566 0 obj SETD TD)/K[1](2568 0 obj SEP Normal)/K[5](2577 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in P instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[74](1044 0 obj SETR TR)/K[3](1821 0 obj SETD TD)/K[2](1824 0 obj SETOCI TOC Heading)/K[0](1826 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[75](1045 0 obj SETR TR)/K[3](1790 0 obj SETD TD)/K[2](1793 0 obj SETOCI TOC Heading)/K[0](1799 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[107](1077 0 obj SETR TR)/K[3](1182 0 obj SETD TD)/K[2](1185 0 obj SETOCI TOC Heading)/K[0](1187 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[107](1077 0 obj SETR TR)/K[3](1182 0 obj SETD TD)/K[2](1185 0 obj SETOCI TOC Heading)/K[1](1188 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[107](1077 0 obj SETR TR)/K[3](1182 0 obj SETD TD)/K[2](1185 0 obj SETOCI TOC Heading)/K[2](1189 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[108](1078 0 obj SETR TR)/K[3](1154 0 obj SETD TD)/K[2](1157 0 obj SETOCI TOC Heading)/K[0](1159 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[108](1078 0 obj SETR TR)/K[3](1154 0 obj SETD TD)/K[2](1157 0 obj SETOCI TOC Heading)/K[1](1160 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[108](1078 0 obj SETR TR)/K[3](1154 0 obj SETD TD)/K[2](1157 0 obj SETOCI TOC Heading)/K[2](1161 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[108](1078 0 obj SETR TR)/K[3](1154 0 obj SETD TD)/K[2](1157 0 obj SETOCI TOC Heading)/K[3](1162 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[108](1078 0 obj SETR TR)/K[3](1154 0 obj SETD TD)/K[2](1157 0 obj SETOCI TOC Heading)/K[4](1163 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[109](1079 0 obj SETR TR)/K[3](1128 0 obj SETD TD)/K[2](1131 0 obj SETOCI TOC Heading)/K[0](1135 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](925 0 obj PDStructTreeRoot)/K[0](926 0 obj SESect Sect)/K[7](969 0 obj SETable Table)/K[109](1079 0 obj SETR TR)/K[3](1128 0 obj SETD TD)/K[2](1131 0 obj SETOCI TOC Heading)/K[1](1136 0 obj SELI LI)</context>
+              <errorMessage>LI element contained in TOCI instead of L element</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769040305453" finish="1769040308098">00:00:02.645</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769040305265" finish="1769040308238">00:00:02.973</duration>
+  </batchSummary>
+</report>

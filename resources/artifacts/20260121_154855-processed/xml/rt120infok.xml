@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="466136">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/2025-07/rt120infok.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="101" failedRules="3" passedChecks="18727" failedChecks="1758">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="2" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[99]/font[0](IZPTKY+Batang)/DescendantFonts[0](IZPTKY+Batang)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/contentStream[0](361 0 obj PDSemanticContentStream)/operators[4861]/font[0](IXJJKY+MalgunGothic)/DescendantFonts[0](IXJJKY+MalgunGothic)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.18.4" testNumber="1" status="failed" failedChecks="2" tags="annotation">
+            <description>A Widget annotation shall be nested within a Form tag per ISO 32000-1:2008, 14.8.4.5, Table 340</description>
+            <object>PDWidgetAnnot</object>
+            <test>structParentStandardType == 'Form' || isOutsideCropBox == true || (F &amp; 2) == 2</test>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[6](140 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](1 0 obj PDPage)/annots[7](138 0 obj PDWidgetAnnot)</context>
+              <errorMessage>A Widget annotation is an Artifact or is nested within null tag (standard type = null) instead of Form</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="1754" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[99]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 17902 0 1045731788 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[99]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 14794 0 1045731788 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[99]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 15382 0 1045731788 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1178]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 13282 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1178]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 11322 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1178]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 14950 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1202]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 12010 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1202]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 15130 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1236]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 8286 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1236]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 15382 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1268]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 11483 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1268]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 10895 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1290]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 13622 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1290]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 16131 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1290]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 13170 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1290]/usedGlyphs[3](IZPTKY+Batang IZPTKY+Batang 14374 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1322]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 14346 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1322]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 10257 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1322]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 7906 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1354]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 9547 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1354]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 12054 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1354]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 18378 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1354]/usedGlyphs[3](IZPTKY+Batang IZPTKY+Batang 14290 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1386]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 18358 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1386]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 8354 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1386]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 14570 0 0 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1458]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 12110 0 515273883 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1480]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 15382 0 515273883 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1480]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 16574 0 515273883 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1480]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 14374 0 515273883 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1480]/usedGlyphs[3](IZPTKY+Batang IZPTKY+Batang 13170 0 515273883 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1506]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 17679 0 737104370 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1506]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 14955 0 737104370 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1534]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 13058 0 821405322 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1534]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 10902 0 821405322 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1534]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 14374 0 821405322 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1558]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 8022 0 821405322 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1558]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 18354 0 821405322 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1584]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 11518 0 1328323494 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1584]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 10038 0 1328323494 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1610]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 15390 0 1408533352 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1610]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 14766 0 1408533352 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1638]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 13058 0 252615006 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1638]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 18371 0 252615006 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1638]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 14746 0 252615006 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1666]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 9530 0 1943750504 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1666]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 11078 0 1943750504 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1690]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 13422 0 1943750504 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1690]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 9450 0 1943750504 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1718]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 14364 0 176955204 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1718]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 13579 0 176955204 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1718]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 9502 0 176955204 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1718]/usedGlyphs[3](IZPTKY+Batang IZPTKY+Batang 9530 0 176955204 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1766]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 12110 0 979550238 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1766]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 14798 0 979550238 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1766]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 14766 0 979550238 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1796]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 8162 0 1558395480 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1796]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 11266 0 1558395480 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1824]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 12106 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1824]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 18574 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1824]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 11218 0 1213871206 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1850]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 14682 0 725832346 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1850]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 18378 0 725832346 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1876]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 14346 0 1527007086 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1876]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 10257 0 1527007086 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1876]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 7906 0 1527007086 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1898]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 18378 0 1527007086 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1898]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 14290 0 1527007086 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1924]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 18358 0 1807176280 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1924]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 15382 0 1807176280 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1946]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 14830 0 1807176280 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1974]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 11518 0 1977618945 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1974]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 11210 0 1977618945 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1974]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 7926 0 1977618945 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1974]/usedGlyphs[3](IZPTKY+Batang IZPTKY+Batang 9530 0 1977618945 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[1974]/usedGlyphs[4](IZPTKY+Batang IZPTKY+Batang 11466 0 1977618945 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2004]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 12054 0 1995952705 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2004]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 18574 0 1995952705 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2004]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 13058 0 1995952705 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2004]/usedGlyphs[3](IZPTKY+Batang IZPTKY+Batang 14486 0 1995952705 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2032]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 13079 0 1060519157 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2032]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 9546 0 1060519157 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2032]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 18378 0 1060519157 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2032]/usedGlyphs[3](IZPTKY+Batang IZPTKY+Batang 14290 0 1060519157 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2060]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 18367 0 1269773610 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2060]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 9502 0 1269773610 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2060]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 9530 0 1269773610 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2093]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 13282 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2093]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 11322 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2093]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 14950 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2115]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 12010 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2115]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 15130 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2137]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 8286 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2137]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 15382 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2159]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 11483 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2159]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 10895 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2159]/usedGlyphs[2](IZPTKY+Batang IZPTKY+Batang 14794 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2159]/usedGlyphs[3](IZPTKY+Batang IZPTKY+Batang 10710 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2181]/usedGlyphs[0](IZPTKY+Batang IZPTKY+Batang 11658 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](248 0 obj PDPage)/contentStream[0](360 0 obj PDSemanticContentStream)/operators[2181]/usedGlyphs[1](IZPTKY+Batang IZPTKY+Batang 14365 0 464649704 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769046904877" finish="1769046906943">00:00:02.066</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769046904596" finish="1769046906969">00:00:02.373</duration>
+  </batchSummary>
+</report>

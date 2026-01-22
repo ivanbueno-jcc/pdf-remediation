@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.27.50" buildDate="2024-11-04T12:01:00-08:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.27.89" buildDate="2024-11-04T12:03:00-08:00"></releaseDetails>
+    <releaseDetails id="gui" version="1.27.0-SNAPSHOT" buildDate="2024-11-05T14:39:00-08:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="365892">
+        <name>/Users/ivanbueno/Sites/pdf-remediation/resources/projects/courts/workspace/default/active/processed/private/courts/file/san-francisco-fy-2025-26-q1-qfs.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="2" passedChecks="61260" failedChecks="77">
+          <rule specification="ISO 14289-1:2014" clause="7.21.4.2" testNumber="2" status="failed" failedChecks="3" tags="font">
+            <description>If the FontDescriptor dictionary of an embedded CID font contains a CIDSet stream, then it shall identify all CIDs which are present in the font program, regardless of whether a CID in the font is referenced or used by the PDF or not</description>
+            <object>PDCIDFont</object>
+            <test>containsFontFile == false || fontName.search(/[A-Z]{6}\+/) != 0 || containsCIDSet == false || cidSetListsAllGlyphs == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1329]/font[0](AAAARH+ArialMT)/DescendantFonts[0](AAAARH+ArialMT)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1344]/font[0](AAAJKC+OpenSans-Regular)/DescendantFonts[0](AAAJKC+OpenSans-Regular)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1387]/font[0](AAALSC+OpenSans-Bold)/DescendantFonts[0](AAALSC+OpenSans-Bold)</context>
+              <errorMessage>A CIDSet entry in the Font descriptor does not correctly identify all glyphs present in the embedded font subset</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.21.7" testNumber="1" status="failed" failedChecks="74" tags="font">
+            <description>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</description>
+            <object>Glyph</object>
+            <test>toUnicode != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1264]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 83 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1264]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 97 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1264]/usedGlyphs[2](BYBCPX+Calibri BYBCPX+Calibri 110 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1271]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1278]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 70 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1278]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 114 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1278]/usedGlyphs[5](BYBCPX+Calibri BYBCPX+Calibri 105 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1278]/usedGlyphs[6](BYBCPX+Calibri BYBCPX+Calibri 115 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1278]/usedGlyphs[7](BYBCPX+Calibri BYBCPX+Calibri 99 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1278]/usedGlyphs[8](BYBCPX+Calibri BYBCPX+Calibri 111 0 1406253491 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1305]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 48 0 1625090026 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1305]/usedGlyphs[3](BYBCPX+Calibri BYBCPX+Calibri 53 0 1625090026 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1305]/usedGlyphs[4](BYBCPX+Calibri BYBCPX+Calibri 45 0 1625090026 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1305]/usedGlyphs[5](BYBCPX+Calibri BYBCPX+Calibri 50 0 1625090026 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1305]/usedGlyphs[6](BYBCPX+Calibri BYBCPX+Calibri 54 0 1625090026 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1312]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1625090026 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1319]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 81 0 1625090026 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](4 0 obj PDPage)/contentStream[0](1049 0 obj PDSemanticContentStream)/operators[1319]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 49 0 1625090026 0 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[246]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 83 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[246]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 97 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[246]/usedGlyphs[2](BYBCPX+Calibri BYBCPX+Calibri 110 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[253]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[260]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 70 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[260]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 114 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[260]/usedGlyphs[5](BYBCPX+Calibri BYBCPX+Calibri 105 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[260]/usedGlyphs[6](BYBCPX+Calibri BYBCPX+Calibri 115 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[260]/usedGlyphs[7](BYBCPX+Calibri BYBCPX+Calibri 99 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[260]/usedGlyphs[8](BYBCPX+Calibri BYBCPX+Calibri 111 0 259630944 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[287]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 48 0 351656492 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[287]/usedGlyphs[3](BYBCPX+Calibri BYBCPX+Calibri 53 0 351656492 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[287]/usedGlyphs[4](BYBCPX+Calibri BYBCPX+Calibri 45 0 351656492 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[287]/usedGlyphs[5](BYBCPX+Calibri BYBCPX+Calibri 50 0 351656492 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[287]/usedGlyphs[6](BYBCPX+Calibri BYBCPX+Calibri 54 0 351656492 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[294]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 351656492 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[301]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 81 0 351656492 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[301]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 49 0 351656492 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[325]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 316335490 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[334]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 597364637 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[343]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1637613097 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[352]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1527086220 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[361]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 515273883 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[370]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1697281847 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[379]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1535026957 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[388]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 737104370 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[397]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 105966264 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[406]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 821405322 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[415]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 505231702 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[424]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1328323494 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[433]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1311292881 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[442]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1408533352 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[1](118 0 obj PDPage)/contentStream[0](270 0 obj PDSemanticContentStream)/operators[451]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 617928649 2 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1550]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 52 0 638695843 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1550]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 48 0 638695843 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1550]/usedGlyphs[2](BYBCPX+Calibri BYBCPX+Calibri 49 0 638695843 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1550]/usedGlyphs[3](BYBCPX+Calibri BYBCPX+Calibri 46 0 638695843 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1550]/usedGlyphs[4](BYBCPX+Calibri BYBCPX+Calibri 55 0 638695843 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1583]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 83 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1583]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 97 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1583]/usedGlyphs[2](BYBCPX+Calibri BYBCPX+Calibri 110 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1590]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1597]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 70 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1597]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 114 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1597]/usedGlyphs[5](BYBCPX+Calibri BYBCPX+Calibri 105 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1597]/usedGlyphs[6](BYBCPX+Calibri BYBCPX+Calibri 115 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1597]/usedGlyphs[7](BYBCPX+Calibri BYBCPX+Calibri 99 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1597]/usedGlyphs[8](BYBCPX+Calibri BYBCPX+Calibri 111 0 1411543296 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1622]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 48 0 1800967368 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1622]/usedGlyphs[3](BYBCPX+Calibri BYBCPX+Calibri 53 0 1800967368 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1622]/usedGlyphs[4](BYBCPX+Calibri BYBCPX+Calibri 45 0 1800967368 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1622]/usedGlyphs[5](BYBCPX+Calibri BYBCPX+Calibri 50 0 1800967368 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1622]/usedGlyphs[6](BYBCPX+Calibri BYBCPX+Calibri 54 0 1800967368 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1629]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 32 0 1800967368 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1636]/usedGlyphs[0](BYBCPX+Calibri BYBCPX+Calibri 81 0 1800967368 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[2](127 0 obj PDPage)/contentStream[0](339 0 obj PDSemanticContentStream)/operators[1636]/usedGlyphs[1](BYBCPX+Calibri BYBCPX+Calibri 49 0 1800967368 3 true)</context>
+              <errorMessage>The glyph can not be mapped to Unicode</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1769049605137" finish="1769049607350">00:00:02.213</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="0" nonCompliant="1" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1769049604959" finish="1769049607366">00:00:02.407</duration>
+  </batchSummary>
+</report>
