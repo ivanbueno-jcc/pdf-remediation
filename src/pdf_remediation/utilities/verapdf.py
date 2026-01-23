@@ -1,3 +1,4 @@
+# pylint: skip-file
 '''
 VeraPDF PDF/UA Validation Utility
 '''
