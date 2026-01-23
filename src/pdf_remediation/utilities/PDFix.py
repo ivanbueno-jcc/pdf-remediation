@@ -9,7 +9,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 from parallelbar import progress_map
 from pdfixsdk import *
-from python_on_whales import docker
 from .Resources import stream_to_data, get_configuration_file, append_to_csv
 
 def get_page_count(inpput_pdf_path: str) -> list:
@@ -177,31 +176,6 @@ def fix(
     # original_file.unlink(missing_ok=True)
 
     # print(f"Remediation completed: {output_pdf_path}")
-
-def font_fix(input_pdf_path: Path, output_pdf_path: Path, project_path: Path = None) -> None:
-    '''
-    Make a docker container font fix call to Callas pdfToolbox to fix font issues in the PDF.
-    Use python-on-whales to make the call.
-    '''
-    # docker run -v "/Users/ivanbueno/Sites/pdf-remediation/resources/font/tmp:/data" 
-    # --env-file "/Users/ivanbueno/Sites/pdf-remediation/resources/font/.env" -w "/data" 
-    # --rm pdfix/font-fix-callas:v1.0.4 fix -i "input/input.pdf" -o "output/output.pdf"
-    input_relative_path = input_pdf_path.relative_to(
-        project_path / "resources" / "font" / "tmp" / "input"
-    )
-    output_relative_path = output_pdf_path.relative_to(
-        project_path / "resources" / "font" / "tmp" / "output"
-    )
-    # docker.run(
-    #     "pdfix/font-fix-callas:v1.0.4",
-    #     "fix -i \"input/{}\" -o \"output/{}\"".format(input_relative_path, output_relative_path),
-    #     volumes={str(project_path / "resources" / "font" / "tmp"): {'bind': '/data', 'mode': 'rw'}},
-    #     env_file=str(project_path / "resources" / "font" / ".env"),
-    #     working_dir="/data",
-    #     remove=True
-    # )
-
-
 
 def License() -> json:
     pdfix = GetPdfix()
