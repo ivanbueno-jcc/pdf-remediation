@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 '''
 Move processed PDF files back to the active workspace folder.
 '''

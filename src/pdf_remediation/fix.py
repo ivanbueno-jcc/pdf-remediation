@@ -1,4 +1,4 @@
-# pylint: disable=too-many-nested-blocks
+# pylint: disable=too-many-nested-blocks, duplicate-code
 '''PDF Remediation Main Fix Script'''
 
 import argparse

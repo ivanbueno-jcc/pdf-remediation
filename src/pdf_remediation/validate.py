@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 '''
 Validate PDF files in a project workspace folder.
 '''
