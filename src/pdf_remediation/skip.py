@@ -2,7 +2,7 @@
 Add a file to the skipped files list.
 '''
 import argparse
-from .utilities.Resources import get_project_path
+from .utilities.resources import get_project_path
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(

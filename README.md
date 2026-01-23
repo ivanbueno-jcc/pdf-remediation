@@ -158,7 +158,7 @@ Use a new `workspace` name here to create a fresh workspace seeded from
 
 ### External tools and assets
 - `lib/greenfield-apps-1.27.0-SNAPSHOT.jar`: veraPDF validation tool invoked by
-  `src/pdf_remediation/utilities/VeraPDF.py`.
+  `src/pdf_remediation/utilities/verapdf.py`.
 - `resources/configuration/default.json`: PDFix command profile applied
   during remediation.
 - `resources/configuration/WCAG-2-2-Complete.xml`: optional veraPDF profile
@@ -178,7 +178,7 @@ PROJECT_BASE_PATH="/Volumes/ExternalDrive/pdf-remediation-projects"
 ```
 
 ### Project workspace structure
-The workspace structure is created on demand by `Resources.py`:
+The workspace structure is created on demand by `resources.py`:
 
 ```
 resources/projects/<project>/

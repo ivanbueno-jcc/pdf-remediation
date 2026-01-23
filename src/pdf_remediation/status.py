@@ -2,7 +2,7 @@
 List the status of the project.
 '''
 import argparse
-from .utilities.Resources import get_project_source_path
+from .utilities.resources import get_project_source_path
 
 def main():
     '''Main function to list project status.'''

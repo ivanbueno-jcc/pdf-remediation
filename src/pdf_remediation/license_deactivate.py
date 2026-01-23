@@ -1,7 +1,7 @@
 '''
 Deactivate PDFix license.
 '''
-from .utilities.PDFix import license_status, license_deactivate
+from .utilities.pdfix import license_status, license_deactivate
 
 if __name__ == "__main__":
     LICENSE = license_status()

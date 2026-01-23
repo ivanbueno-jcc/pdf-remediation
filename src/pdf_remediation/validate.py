@@ -4,11 +4,11 @@ Validate PDF files in a project workspace.
 import argparse
 from datetime import datetime
 import sys
-from .utilities.PDFix import get_page_count_multiprocess
-from .utilities.VeraPDF import validate_pdf_multiprocess
-from .utilities.Resources import get_project_source_path
-from .utilities.Resources import get_project_workspace_subfolder_file_paths
-from .utilities.Resources import get_project_workspace_subfolder_path
+from .utilities.pdfix import get_page_count_multiprocess
+from .utilities.verapdf import validate_pdf_multiprocess
+from .utilities.resources import get_project_source_path
+from .utilities.resources import get_project_workspace_subfolder_file_paths
+from .utilities.resources import get_project_workspace_subfolder_path
 
 if __name__ == '__main__':
 

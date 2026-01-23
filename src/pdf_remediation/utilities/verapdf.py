@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
 from parallelbar import progress_starmap
-from .Resources import ROOT_DIR
+from .resources import ROOT_DIR
 from ..report import run_report_generation
 
 def runJavaValidation(pdfPath: str, reportPath: str, format: str = "xml"):
@@ -44,7 +44,7 @@ def runJavaValidation(pdfPath: str, reportPath: str, format: str = "xml"):
         if result.returncode <= 1:
             filename = Path(pdfPath).stem.split('.')[0] + f".{format}"
             reportPath = Path(reportPath) / filename
-            
+
             with open(reportPath, "w", encoding="utf-8") as file:
                 file.write(result.stdout)
 
@@ -88,7 +88,7 @@ def parseValidationReport(xmlReport: str):
     # print the result
     # for i, rule in enumerate(rules, 1):
     #     print(f"Rule {i}: {rule}")
-        
+
     return rules
 
 def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str = "xml") -> list:
@@ -130,21 +130,35 @@ def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str =
     # return rules
 
 def write_validation_report(folder: str, results: list) -> None:
+    '''
+    Write the validation results to CSV reports.
+    
+    :param folder: Description
+    :type folder: str
+    :param results: Description
+    :type results: list
+    '''
 
     failed_rules = []
     passed = failed = error = 0
     for row in results:
-        filename, result, rules, count = row
-        if result == False:
+        filename, result, rules, _ = row
+        if result is False:
             failed += 1
-        elif result == True:
+        elif result is True:
             passed += 1
         elif result == 'Error':
             error += 1
-        
+
         if len(rules) > 0:
             for rule in rules:
-                failed_rules.append([filename, rule["specification"], rule["clause"], rule["tags"], rule["test"], rule["description"]])
+                failed_rules.append(
+                    [filename, rule["specification"],
+                     rule["clause"],
+                     rule["tags"],
+                     rule["test"],
+                     rule["description"]]
+                )
 
         del row[2]
 
@@ -157,33 +171,57 @@ def write_validation_report(folder: str, results: list) -> None:
     print()
 
     # Write results to CSV
-    with open(folder / f"vera_validation_results.csv", mode='w', newline='') as file:
+    with open(folder / "vera_validation_results.csv",
+              mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(['path', 'validation_result', 'failed_rule_count'])
         writer.writerows(results)
 
     if len(failed_rules) > 0:
-        with open(folder / f"failed_rules.csv", mode='w', newline='') as file:
+        with open(folder / "failed_rules.csv", mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
-            writer.writerow(['path', 'specification', 'clause', 'tags', 'testnumber', 'description'])
+            writer.writerow(
+                ['path', 'specification', 'clause', 'tags', 'testnumber', 'description']
+            )
             writer.writerows(failed_rules)
 
     print(f"Reports: {folder}")
 
-def validate_pdf_multiprocess(workspace_folder_path: Path, file_paths: list, timestamp: str = None, subfolder: str = None) -> None:
-    # Prepare the validation file paths, which are tupples of (inputPdfPath, reportPath).
+def validate_pdf_multiprocess(
+        workspace_folder_path: Path,
+        file_paths: list,
+        timestamp: str = None,
+        subfolder: str = None) -> None:
+    '''
+    Multiprocess to validate PDF files using VeraPDF.
+    
+    :param workspace_folder_path: Description
+    :type workspace_folder_path: Path
+    :param file_paths: Description
+    :type file_paths: list
+    :param timestamp: Description
+    :type timestamp: str
+    :param subfolder: Description
+    :type subfolder: str
+    '''
+    # Prepare the validation file paths, which are tuples of (inputPdfPath, reportPath).
     validation_file_paths = []
 
     # Create a timestamped report folder inside the reports folder.
     if timestamp is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    report_path = workspace_folder_path.parent / "reports" / f"{timestamp}-{subfolder if subfolder else 'files'}"
+    report_path = workspace_folder_path.parent / "reports" / \
+        f"{timestamp}-{subfolder if subfolder else 'files'}"
     report_path_xml = report_path / "xml"
     report_path_xml.mkdir(parents=True, exist_ok=True)
 
     for file_path in file_paths:
-        validation_file_paths.append((str(file_path), str(report_path_xml), str(workspace_folder_path)))
-    
+        validation_file_paths.append(
+            (str(file_path),
+             str(report_path_xml),
+             str(workspace_folder_path))
+        )
+
     print()
     print("Validating PDFs...")
     results = progress_starmap(validatePdf, validation_file_paths, total=len(file_paths))

@@ -3,7 +3,7 @@ Activate PDFix license using provided license key.
 '''
 
 import sys
-from .utilities.PDFix import license_activate
+from .utilities.pdfix import license_activate
 
 if __name__ == "__main__":
     LICENSE_KEY = ""

@@ -4,8 +4,8 @@ Reset the files in the working directory with the source files.
 
 import argparse
 import sys
-from .utilities.Resources import get_project_source_path
-from .utilities.Resources import get_project_workspace_subfolder_path, clear_workspace_folder
+from .utilities.resources import get_project_source_path
+from .utilities.resources import get_project_workspace_subfolder_path, clear_workspace_folder
 
 if __name__ == '__main__':
 

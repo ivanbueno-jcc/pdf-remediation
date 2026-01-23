@@ -9,7 +9,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from parallelbar import progress_map
 from pdfixsdk import * # pylint: disable=wildcard-import, unused-wildcard-import
-from .Resources import stream_to_data, get_configuration_file, append_to_csv
+from .resources import stream_to_data, get_configuration_file, append_to_csv
 
 def get_page_count(inpput_pdf_path: str) -> list:
     '''

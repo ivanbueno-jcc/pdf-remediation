@@ -2,7 +2,7 @@
 Check and display license information.
 '''
 import json
-from .utilities.PDFix import license_status
+from .utilities.pdfix import license_status
 
 if __name__ == "__main__":
     pdfix_license = license_status()
