@@ -1,20 +1,52 @@
 '''PDF Remediation Main Fix Script'''
 
 import argparse
+import csv
 import multiprocessing
 from datetime import datetime
 from pathlib import Path
 import plotext as plot
 from parallelbar import progress_starmap
-from .utilities.callas import font_fix
-from .utilities.PDFix import get_page_count_multiprocess
+from .utilities.PDFix import fix, get_page_count_multiprocess
 from .utilities.VeraPDF import validate_pdf_multiprocess
 from .utilities.Resources import get_project_workspace_subfolder_file_paths
 from .utilities.Resources import get_project_workspace_path
-from .utilities.Resources import get_project_workspace_subfolder_path
+from .utilities.Resources import get_project_path, get_project_workspace_subfolder_path
 from .utilities.Resources import get_project_workspace_file_paths, move_file_and_delete_source
 
-def main():
+def get_skipped_files_list(project_name: str) -> list[str]:
+    '''
+    Get a list of files to skip during processing.
+    '''
+
+    # open the skipped files list from a text file
+    skipped_files = []
+    skipped_files_path = get_project_path(project_name) / "skipped_files.txt"
+    if skipped_files_path.exists():
+        with open(skipped_files_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                skipped_file = line.strip()
+                if skipped_file and skipped_file not in skipped_files:
+                    skipped_files.append(skipped_file)
+
+    # Open the pdfix-cannot-process list from a csv file.
+    # Use the first column as the relative file path to skip.
+    pdfix_cannot_process_files = []
+    pdfix_cannot_process_files_path = \
+        get_project_path(project_name) / "pdfix_cannot_process_files.csv"
+    if pdfix_cannot_process_files_path.exists():
+        with open(pdfix_cannot_process_files_path, 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if len(row) > 0:
+                    relative_file_path = row[0].strip()
+                    if relative_file_path and relative_file_path not in pdfix_cannot_process_files:
+                        pdfix_cannot_process_files.append(relative_file_path)
+    skipped_files.extend(pdfix_cannot_process_files)
+
+    return skipped_files
+
+def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-branches
     '''Main function to remediate PDF files in a project workspace.'''
 
     multiprocessing.freeze_support()
@@ -35,8 +67,21 @@ def main():
         "workspace_folder",
         type=str,
         nargs='?',
-        default='font-issues',
+        default='active',
         help="Workspace subfolder (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--config-file",
+        "--c",
+        type=str,
+        default='default.json',
+        help="Configuration file name (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action='store_true',
+        help="Enable verbose output."
     )
     parser.add_argument(
         "--chunk-size",
@@ -45,10 +90,10 @@ def main():
         help="Chunk Size (default: %(default)s)"
     )
     parser.add_argument(
-        "--verbose",
-        "-v",
-        action='store_true',
-        help="Enable verbose output."
+        "--n-cpu",
+        type=int,
+        default=4,
+        help="Number of CPUs (default: %(default)s)"
     )
     args = parser.parse_args()
 
@@ -56,6 +101,7 @@ def main():
         print(f"PROJECT: {args.project_name}")
         print(f"WORKSPACE: {args.workspace_name}")
         print(f"FOLDER: {args.workspace_folder}")
+        print(f"CONFIG FILE: {args.config_file}")
         print()
 
         workspace_path = get_project_workspace_path(
@@ -77,16 +123,26 @@ def main():
         output_pdf_folder = workspace_folder_path.parent / "processed"
         output_pdf_folder.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        skipped_files = get_skipped_files_list(args.project_name)
 
         if len(file_paths) > 0:
 
             for file_path in file_paths:
                 relative_path = file_path.relative_to(workspace_folder_path)
 
+                if str(relative_path) in skipped_files:
+                    if args.verbose:
+                        print(f" Skipping: {relative_path}")
+                    continue
+
                 destination_path = output_pdf_folder / relative_path
                 destination_path.parent.mkdir(parents=True, exist_ok=True)
-                file_paths_for_remediation.append([file_path, destination_path])
+                file_paths_for_remediation.append([str(file_path), str(destination_path)])
                 file_paths_for_counting.append(file_path)
+
+            if len(skipped_files) > 0:
+                print(f"Total skipped files: {len(skipped_files)}")
+                print()
 
             page_count_lookup = {}
             if len(file_paths_for_counting) > 0:
@@ -111,9 +167,9 @@ def main():
                 '1001-3000': [],
                 '3001 or more': []
             }
-            for input_path, output_path in file_paths_for_remediation:
-                payload = (input_path, output_path, workspace_path)
-                match page_count_lookup[str(input_path)]:
+            for input_path, input_workspace_path in file_paths_for_remediation:
+                payload = (input_path, input_workspace_path, args.config_file, workspace_folder_path)
+                match page_count_lookup[input_path]:
                     case 1:
                         chunks['1'].append(payload)
                     case x if 1 < x <= 5:
@@ -174,7 +230,7 @@ def main():
 
             if len(file_paths_for_remediation) > 0:
                 print()
-                print("FIXING FONT ISSUES...")
+                print("REMEDIATING FILES...")
                 for key, chunk_file_paths in chunks.items():
                     if len(chunk_file_paths) == 0:
                         continue
@@ -185,13 +241,13 @@ def main():
                     if args.verbose:
                         print()
                         print("   Files to process in this chunk:")
-                        for input_path, _, _ in chunk_file_paths:
+                        for input_path, input_workspace_path, _, _ in chunk_file_paths:
                             relative_chunk_path = Path(input_path).relative_to(workspace_folder_path)
                             print(f"    * {relative_chunk_path}")
                         print()
 
                     progress_starmap(
-                        font_fix,
+                        fix,
                         chunk_file_paths,
                         total=len(chunk_file_paths),
                         error_behavior="coerce",
@@ -257,6 +313,38 @@ def main():
                     )
                     continue
             print(f"Total error files moved to error folder: {validation_iteration_counter}")
+
+            if args.workspace_folder != "font-issues":
+                font_issue_clauses = [
+                    '7.21.7',
+                    '7.21.4.1',
+                    '7.21.3.2',
+                    '7.21.4.2',
+                    '7.21.5',
+                    '7.21.8'
+                ]
+                files_with_font_issues_total = 0
+                for file_path, is_compliant, violations, _ in validation_results:
+                    if is_compliant is False:
+                        has_font_violation = False
+                        for violation in violations:
+                            if violation['clause'] in font_issue_clauses:
+                                has_font_violation = True
+                                break
+
+                        if has_font_violation:
+                            files_with_font_issues_total += 1
+                            if args.verbose:
+                                print(f"{file_path}")
+                            move_file_and_delete_source(
+                                Path(file_path),
+                                output_pdf_folder,
+                                args.project_name,
+                                args.workspace_name,
+                                "font-issues"
+                            )
+
+                print(f"Total files with font issues: {files_with_font_issues_total}")
 
         else:
             print("No PDF files found for validation.")

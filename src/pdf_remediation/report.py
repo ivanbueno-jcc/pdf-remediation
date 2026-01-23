@@ -202,8 +202,15 @@ def write_compliance_report(summary: Dict[str, List[dict]], txt_path: str) -> No
         for path in non_compliant_files_sorted:
             f.write(os.path.basename(path) + "\n")
 
-
 def write_clause_summary_csv(summary: Dict[str, List[dict]], csv_path: str) -> None:
+    '''
+    Docstring for write_clause_summary_csv.
+    
+    :param summary: Description
+    :type summary: Dict[str, List[dict]]
+    :param csv_path: Description
+    :type csv_path: str
+    '''
     # clause -> {"description": str, "count": int}
     clause_stats: Dict[str, dict] = {}
 
@@ -238,6 +245,14 @@ def write_clause_summary_csv(summary: Dict[str, List[dict]], csv_path: str) -> N
 
 
 def write_file_summary_csv(summary: Dict[str, List[dict]], csv_path: str) -> None:
+    '''
+    Docstring for write_file_summary_csv.
+    
+    :param summary: Description
+    :type summary: Dict[str, List[dict]]
+    :param csv_path: Description
+    :type csv_path: str
+    '''
     all_clauses = {
         issue["clause"]
         for issues in summary.values()
@@ -282,6 +297,14 @@ def write_synthetic_before_output_txt(path: str, num_files: int, duration_sec: f
 # ---------------------------------------------------------------------------
 
 def parse_output_txt(path: str) -> List[dict]:
+    '''
+    Docstring for parse_output_txt
+    
+    :param path: Description
+    :type path: str
+    :return: Description
+    :rtype: List[dict]
+    '''
     if not os.path.exists(path):
         return []
 
@@ -326,6 +349,14 @@ def parse_output_txt(path: str) -> List[dict]:
 
 
 def parse_compliance_txt(path: str) -> Tuple[int, int, List[str], List[str]]:
+    '''
+    Docstring for parse_compliance_txt
+    
+    :param path: Description
+    :type path: str
+    :return: Description
+    :rtype: Tuple[int, int, List[str], List[str]]
+    '''
     compliant_count = 0
     non_compliant_count = 0
     compliant_files: List[str] = []
@@ -372,6 +403,14 @@ def parse_compliance_txt(path: str) -> Tuple[int, int, List[str], List[str]]:
 
 
 def parse_clause_summary_csv(path: str) -> List[dict]:
+    '''
+    Docstring for parse_clause_summary_csv
+    
+    :param path: Description
+    :type path: str
+    :return: Description
+    :rtype: List[dict]
+    '''
     clauses: List[dict] = []
     if not os.path.exists(path):
         return []
@@ -388,6 +427,14 @@ def parse_clause_summary_csv(path: str) -> List[dict]:
 
 
 def parse_file_summary_csv(path: str) -> int:
+    '''
+    Docstring for parse_file_summary_csv
+    
+    :param path: Description
+    :type path: str
+    :return: Description
+    :rtype: int
+    '''
     if not os.path.exists(path):
         return 0
 
@@ -402,12 +449,28 @@ def parse_file_summary_csv(path: str) -> int:
 
 
 def format_duration(seconds: Optional[float]) -> str:
+    '''
+    Docstring for format_duration
+    
+    :param seconds: Description
+    :type seconds: Optional[float]
+    :return: Description
+    :rtype: str
+    '''
     if seconds is None:
         return "N/A"
     return f"{seconds:.2f} s"
 
 
 def html_escape(s: str) -> str:
+    '''
+    Docstring for html_escape
+    
+    :param s: Description
+    :type s: str
+    :return: Description
+    :rtype: str
+    '''
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
@@ -420,6 +483,28 @@ def generate_phase_html(
     clause_stats: List[dict],
     file_summary_file_count: int,
 ) -> str:
+    '''
+    Docstring for generate_phase_html
+    
+    :param state_name: Description
+    :type state_name: str
+    :param phase: Description
+    :type phase: str
+    :param company: Description
+    :type company: str
+    :param steps: Description
+    :type steps: List[dict]
+    :param compliant_count: Description
+    :type compliant_count: int
+    :param non_compliant_count: Description
+    :type non_compliant_count: int
+    :param clause_stats: Description
+    :type clause_stats: List[dict]
+    :param file_summary_file_count: Description
+    :type file_summary_file_count: int
+    :return: Description
+    :rtype: str
+    '''
     total_files = compliant_count + non_compliant_count
     total_files_text = str(total_files) if total_files > 0 else "N/A"
 
@@ -658,6 +743,12 @@ def build_report(output_dir: str, state: str, company: str) -> str:
 # ---------------------------------------------------------------------------
 
 def main() -> int:
+    '''
+    Docstring for main
+    
+    :return: Description
+    :rtype: int
+    '''
     parser = argparse.ArgumentParser(
         description="Generate 'report' report artifacts (CSV/TXT/HTML) from veraPDF XML reports."
     )
@@ -706,6 +797,12 @@ def main() -> int:
     return 0
 
 def run_report_generation(folder: Path) -> None:
+    '''
+    Docstring for run_report_generation
+    
+    :param folder: Description
+    :type folder: Path
+    '''
     xml_dir = folder / "xml"
     # check if xml_dir exists
     if not xml_dir.exists():

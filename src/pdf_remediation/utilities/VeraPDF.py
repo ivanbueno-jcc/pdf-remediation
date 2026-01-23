@@ -1,12 +1,14 @@
-from .Resources import ROOT_DIR, CONFIG_DIR
-from ..Report import run_report_generation
-from datetime import datetime
+'''
+VeraPDF PDF/UA Validation Utility
+'''
 import csv
-import subprocess, sys
-import xml.etree.ElementTree as ET
+from datetime import datetime
 from pathlib import Path
-import multiprocessing
+import subprocess
+import xml.etree.ElementTree as ET
 from parallelbar import progress_starmap
+from .Resources import ROOT_DIR
+from ..report import run_report_generation
 
 def runJavaValidation(pdfPath: str, reportPath: str, format: str = "xml"):
     """

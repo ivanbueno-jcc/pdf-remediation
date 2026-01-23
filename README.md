@@ -19,16 +19,16 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
    ```
 4) Initialize a project:
    ```
-   uv run -m pdf_remediation.Init <project_name>
+   uv run -m pdf_remediation.init <project_name>
    ```
 5) Copy PDFs into `resources/projects/<project>/source`.
 6) Remediate PDFs:
    ```
-   uv run -m pdf_remediation.Fix <project_name>
+   uv run -m pdf_remediation.fix <project_name>
    ```
 7) If font issues are flagged, run Callas font remediation:
    ```
-   uv run -m pdf_remediation.FontFix <project_name> [workspace]
+   uv run -m pdf_remediation.font_fix <project_name> [workspace]
    ```
 8) Review reports in `resources/projects/<project>/workspace/<workspace>/active/reports/<timestamp>`.
 
@@ -46,14 +46,14 @@ Bootstrap a project and get a clean baseline before remediation begins.
 
 #### 1) Initialize a project
 ```
-uv run -m pdf_remediation.Init <project_name>
+uv run -m pdf_remediation.init <project_name>
 ```
 
 Copy PDFs into the printed `resources/projects/<project>/source` directory.
 
 #### 2) Validate PDFs
 ```
-uv run -m pdf_remediation.Validate <project_name> [workspace] [folder]
+uv run -m pdf_remediation.validate <project_name> [workspace] [folder]
 ```
 
 Defaults:
@@ -64,21 +64,21 @@ You can target any workspace and subfolder by passing these arguments.
 If the `active/files` folder is empty, the system copies PDFs from `source/`
 into `active/files` once and creates `.remediation.lock`.
 
-### Fix and ReProcess
+### Fix and Reprocess
 
 Run remediation, then loop back for another pass when you have a better config.
 
-![Fix and ReProcess Diagram of PDF Remediation Process](resources/images/slide_2_fix_reprocess.png)
+![Fix and Reprocess Diagram of PDF Remediation Process](resources/images/slide_2_fix_reprocess.png)
 
 #### 1) Remediate PDFs
 ```
-uv run -m pdf_remediation.Fix <project_name> [workspace] [folder]
+uv run -m pdf_remediation.fix <project_name> [workspace] [folder]
 ```
 
 Use `workspace` and `folder` to remediate a specific subfolder in the project.
 
 For verbose progress and file-level visibility (useful for spotting blocking files), run:
-`uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --verbose`
+`uv run -m pdf_remediation.fix <project_name> [workspace] [folder] --verbose`
 Tune processing with:
 - `--chunk-size <n>` to control batch size (default: 500)
 - `--n-cpu <n>` to control parallel workers (default: 4)
@@ -97,7 +97,7 @@ If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
 
 #### 2) Fix font issues (Callas)
 ```
-uv run -m pdf_remediation.FontFix <project_name> [workspace] [folder]
+uv run -m pdf_remediation.font_fix <project_name> [workspace] [folder]
 ```
 
 `FontFix` targets the `font-issues` folder by default, runs Callas pdfToolbox
@@ -110,7 +110,7 @@ Options:
 
 #### 3) Reprocess with a new configuration
 ```
-uv run -m pdf_remediation.ReProcess <project_name> [workspace] [folder]
+uv run -m pdf_remediation.reprocess <project_name> [workspace] [folder]
 ```
 
 This moves processed PDFs back to `active/files`. Update
@@ -118,17 +118,17 @@ This moves processed PDFs back to `active/files`. Update
 then re-run `Fix`.
 
 ```
-uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --config-file [new-config.json]
+uv run -m pdf_remediation.fix <project_name> [workspace] [folder] --config-file [new-config.json]
 ```
 
 `new-config.json` is located in `resources/configuration`
 
-For font-issue retries, run ReProcess with `font-issues` as the folder,
+For font-issue retries, run reprocess with `font-issues` as the folder,
 update the config, then re-run `Fix` on that subfolder. You can also run
 `FontFix` to attempt automatic font remediation with Callas pdfToolbox.
 
 To skip a blocking file before reprocessing, run:
-`uv run -m pdf_remediation.Skip <project_name> <relative_file_path>`
+`uv run -m pdf_remediation.skip <project_name> <relative_file_path>`
 
 ### Workspace Control
 
@@ -138,7 +138,7 @@ Use these controls to reset or fork clean workspaces without touching your origi
 
 #### 1) Reset workspace
 ```
-uv run -m pdf_remediation.Reset <project_name> [workspace] [folder]
+uv run -m pdf_remediation.reset <project_name> [workspace] [folder]
 ```
 
 Clears `active/files` and `active/processed`, then re-copies files from `source/`
@@ -203,22 +203,23 @@ argument so you can run separate workflows in different subfolders (for example,
 ## Commands
 
 ### Initialization
-- `Init.py` bootstraps a project workspace and prints the source path for ingest.
+- `init.py` bootstraps a project workspace and prints the source path for ingest.
 
 ### Validation
-- `Validate.py` runs page counting (PDFix) and PDF/UA validation via veraPDF (Java).
+- `validate.py` runs page counting (PDFix) and PDF/UA validation via veraPDF (Java).
 - Results feed the reporting pipeline in `reports/<timestamp>`.
 
 ### Remediation
-- `Fix.py` applies the PDFix remediation profile (e.g., `default.json`) with
+- `fix.py` applies the PDFix remediation profile (e.g., `default.json`) with
   multiprocessing and keeps folder structure intact.
 - Validation post-checks route outputs into `remediated/` and `font-issues/`.
 
 ### Font remediation
-- `FontFix.py` runs Callas pdfToolbox via Docker on `font-issues/`, then
+- `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, then
   re-validates and moves results to `remediated/` or `unable-to-process/`.
 
 ### Reporting (internal function, part of Validate)
+- `report.py` generates CSV/TXT/HTML report artifacts from veraPDF XML output.
 - Every Validate and Fix run generates a suite of reports under `reports/<timestamp>`.
 - Report outputs include:
   - `vera_validation_results.csv`: per-file pass/fail status and rule counts.
@@ -231,13 +232,13 @@ argument so you can run separate workflows in different subfolders (for example,
   - `summary/*.html`: human-readable compliance report.
 
 ### Reprocess
-- `ReProcess.py` returns processed PDFs to `active/files` so you can iterate with
+- `reprocess.py` returns processed PDFs to `active/files` so you can iterate with
   a revised configuration file.
 
 ### Skip
-- `Skip.py` appends a problematic file to `skipped_files.txt` so it is ignored
+- `skip.py` appends a problematic file to `skipped_files.txt` so it is ignored
   during processing.
-- Syntax: `uv run -m pdf_remediation.Skip <project_name> <relative_file_path>`
+- Syntax: `uv run -m pdf_remediation.skip <project_name> <relative_file_path>`
   
 ### Auto-skip (PDFix failures)
 - Files that PDFix cannot open/process are recorded in
@@ -245,12 +246,12 @@ argument so you can run separate workflows in different subfolders (for example,
   subsequent runs.
 
 ### Status
-- `Status.py` prints a summary of the source PDF count and per-workspace file
+- `status.py` prints a summary of the source PDF count and per-workspace file
   counts (including a remediated percentage).
-- Syntax: `uv run -m pdf_remediation.Status <project_name>`
+- Syntax: `uv run -m pdf_remediation.status <project_name>`
 
 ### Reset
-- `Reset.py` refreshes a workspace from `source/` and resets the copy semaphore.
+- `reset.py` refreshes a workspace from `source/` and resets the copy semaphore.
 
 ### Licensing
 - `license.py` reads license state from PDFix.
@@ -261,5 +262,5 @@ argument so you can run separate workflows in different subfolders (for example,
 ## Notes and Considerations
 - Remediation deletes the original file in `active/files` after successful save
   (see `PDFix.fix`), so `Reset` is the canonical way to restore originals.
-- Validation and remediation use multiprocessing; `Fix.py` sets spawn mode for
+- Validation and remediation use multiprocessing; `fix.py` sets spawn mode for
   compatibility.
