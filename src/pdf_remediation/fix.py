@@ -168,7 +168,12 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 '3001 or more': []
             }
             for input_path, input_workspace_path in file_paths_for_remediation:
-                payload = (input_path, input_workspace_path, args.config_file, workspace_folder_path)
+                payload = (
+                    input_path,
+                    input_workspace_path,
+                    args.config_file,
+                    workspace_folder_path
+                )
                 match page_count_lookup[input_path]:
                     case 1:
                         chunks['1'].append(payload)
@@ -242,7 +247,8 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         print()
                         print("   Files to process in this chunk:")
                         for input_path, input_workspace_path, _, _ in chunk_file_paths:
-                            relative_chunk_path = Path(input_path).relative_to(workspace_folder_path)
+                            relative_chunk_path = Path(input_path).relative_to(
+                                workspace_folder_path)
                             print(f"    * {relative_chunk_path}")
                         print()
 
