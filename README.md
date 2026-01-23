@@ -253,9 +253,9 @@ argument so you can run separate workflows in different subfolders (for example,
 - `Reset.py` refreshes a workspace from `source/` and resets the copy semaphore.
 
 ### Licensing
-- `License.py` reads license state from PDFix.
-- `LicenseActivate.py` activates a license key.
-- `LicenseDeactivate.py` deactivates an active license.
+- `license.py` reads license state from PDFix.
+- `license_activate.py` activates a license key.
+- `license_deactivate.py` deactivates an active license.
 - `.env` supports `PDFIX_LICENSE_NAME` and `PDFIX_LICENSE_KEY` for remediation.
 
 ## Notes and Considerations
