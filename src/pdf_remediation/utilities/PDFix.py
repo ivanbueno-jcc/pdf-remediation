@@ -8,7 +8,7 @@ import multiprocessing
 from pathlib import Path
 from dotenv import load_dotenv
 from parallelbar import progress_map
-from pdfixsdk import *
+from pdfixsdk import * # pylint: disable=wildcard-import, unused-wildcard-import
 from .Resources import stream_to_data, get_configuration_file, append_to_csv
 
 def get_page_count(inpput_pdf_path: str) -> list:
@@ -106,9 +106,10 @@ def fix(
 
     pdfix  = GetPdfix()
     if pdfix is None:
-        raise Exception('Pdfix Initialization fail')
-    
-    error_file_path = workspace_folder_path.parent.parent.parent.parent / "pdfix_cannot_process_files.csv"
+        raise Exception('Pdfix Initialization fail') # pylint: disable=broad-exception-raised
+
+    error_file_path = workspace_folder_path.parent.parent.parent.parent \
+        / "pdfix_cannot_process_files.csv"
 
     # Load the license and authorize the account.
     load_dotenv()
@@ -124,7 +125,7 @@ def fix(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
         )
-        raise Exception('Unable to open pdf : ' + pdfix.GetError())
+        raise Exception('Unable to open pdf : ' + pdfix.GetError()) # pylint: disable=broad-exception-raised
 
     command = doc.GetCommand()
     command_statement = None
@@ -137,14 +138,14 @@ def fix(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
         )
-        raise Exception(pdfix.GetError())
+        raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
     if not command.LoadParamsFromStream(command_statement, kDataFormatJson):
         print('Error', pdfix.GetError())
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
         )
-        raise Exception(pdfix.GetError())
+        raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
     command_statement.Destroy()
 
     # run the command
@@ -155,7 +156,7 @@ def fix(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
         )
-        raise Exception(pdfix.GetError())
+        raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
 
     # print(f"Remediation completed: {output_pdf_path}")
 
@@ -165,47 +166,62 @@ def fix(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
         )
-        raise Exception(pdfix.GetError())
+        raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
     doc.Close()
 
     Path(input_pdf_path).unlink(missing_ok=True)
 
-    # Delete file from the active directory once fixed.
-    # original_file = Path(input_pdf_path)
-    # print(original_file)
-    # original_file.unlink(missing_ok=True)
-
     # print(f"Remediation completed: {output_pdf_path}")
 
-def License() -> json:
-    pdfix = GetPdfix()
-    if pdfix is None:
-        print('Pdfix Initialization fail')
-    else:
-        mem_stm = pdfix.CreateMemStream()
-        pdfix.GetStandardAuthorization().SaveToStream(mem_stm, kDataFormatJson)
-        bytes = bytearray(stream_to_data(mem_stm))
-        json_data = json.loads(bytes.decode("utf-8"))
-        mem_stm.Destroy()
-
-        return json_data
+def license_status() -> json:
+    '''
+    Display license information.
     
-def LicenseActivate(licenseKey: str) -> bool:
+    :return: Description
+    :rtype: Any
+    '''
     pdfix = GetPdfix()
     if pdfix is None:
         print('Pdfix Initialization fail')
-    else:
-        if not pdfix.GetStandardAuthorization().Activate(licenseKey):
-            return False
-        else:
-            return True
+        return False
 
-def LicenseDeactivate() -> bool:
+    mem_stm = pdfix.CreateMemStream()
+    pdfix.GetStandardAuthorization().SaveToStream(mem_stm, kDataFormatJson)
+    bytes_data = bytearray(stream_to_data(mem_stm))
+    json_data = json.loads(bytes_data.decode("utf-8"))
+    mem_stm.Destroy()
+
+    return json_data
+
+def license_activate(license_key: str) -> bool:
+    '''
+    Activate the license.
+    
+    :param licenseKey: Description
+    :type licenseKey: str
+    :return: Description
+    :rtype: bool
+    '''
     pdfix = GetPdfix()
     if pdfix is None:
         print('Pdfix Initialization fail')
-    else:
-        if not pdfix.GetStandardAuthorization().Deactivate():
-            return False
-        else:
-            return True
+        return False
+
+    if not pdfix.GetStandardAuthorization().Activate(license_key):
+        return False
+
+    return True
+
+def license_deactivate() -> bool:
+    '''
+    Deactivate the license.
+    '''
+    pdfix = GetPdfix()
+    if pdfix is None:
+        print('Pdfix Initialization fail')
+        return False
+
+    if not pdfix.GetStandardAuthorization().Deactivate():
+        return False
+
+    return True

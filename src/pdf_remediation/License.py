@@ -2,10 +2,10 @@
 Check and display license information.
 '''
 import json
-from .utilities.PDFix import License
+from .utilities.PDFix import license_status
 
 if __name__ == "__main__":
-    pdfix_license = License()
+    pdfix_license = license_status()
 
     if pdfix_license['status']['authorized'] == "false":
         print("License is not active.")

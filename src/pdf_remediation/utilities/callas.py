@@ -1,3 +1,6 @@
+'''
+PDF Remediation Callas Font Fix Utility
+'''
 from pathlib import Path
 from python_on_whales import docker
 from python_on_whales.exceptions import DockerException
@@ -28,7 +31,7 @@ def font_fix(input_pdf_path: Path, output_pdf_path: Path, workspace_path: Path =
             input_pdf_path.unlink(missing_ok=True)
         else:
             print(f"DockerException occurred: {e}")
-            raise DockerException(0)
+            raise DockerException(0) # pylint: disable=raise-missing-from, no-value-for-parameter
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         raise e
