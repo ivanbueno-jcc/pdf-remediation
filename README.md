@@ -26,7 +26,11 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
    ```
    uv run -m pdf_remediation.Fix <project_name>
    ```
-7) Review reports in `resources/projects/<project>/workspace/<workspace>/active/reports/<timestamp>`.
+7) If font issues are flagged, run Callas font remediation:
+   ```
+   uv run -m pdf_remediation.FontFix <project_name> [workspace]
+   ```
+8) Review reports in `resources/projects/<project>/workspace/<workspace>/active/reports/<timestamp>`.
 
 ## Process Flow
 
@@ -91,7 +95,20 @@ Steps executed:
 
 If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
 
-#### 2) Reprocess with a new configuration
+#### 2) Fix font issues (Callas)
+```
+uv run -m pdf_remediation.FontFix <project_name> [workspace] [folder]
+```
+
+`FontFix` targets the `font-issues` folder by default, runs Callas pdfToolbox
+inside Docker, then re-validates and routes results into `remediated/` or
+`unable-to-process/`.
+
+Options:
+- `--chunk-size <n>` to control batch size (default: 500)
+- `--verbose` to list files in each chunk
+
+#### 3) Reprocess with a new configuration
 ```
 uv run -m pdf_remediation.ReProcess <project_name> [workspace] [folder]
 ```
@@ -107,7 +124,8 @@ uv run -m pdf_remediation.Fix <project_name> [workspace] [folder] --config-file 
 `new-config.json` is located in `resources/configuration`
 
 For font-issue retries, run ReProcess with `font-issues` as the folder,
-update the config, then re-run `Fix` on that subfolder.
+update the config, then re-run `Fix` on that subfolder. You can also run
+`FontFix` to attempt automatic font remediation with Callas pdfToolbox.
 
 To skip a blocking file before reprocessing, run:
 `uv run -m pdf_remediation.Skip <project_name> <relative_file_path>`
@@ -136,6 +154,7 @@ Use a new `workspace` name here to create a fresh workspace seeded from
 - Java runtime is required for veraPDF validation (used by the JAR in `lib/`).
 - PDFix SDK (`pdfix-sdk`) provides remediation and license operations.
 - `parallelbar` is used for multiprocessing progress and job dispatch.
+- Callas pdfToolbox runs in Docker for `FontFix` font remediation.
 
 ### External tools and assets
 - `lib/greenfield-apps-1.27.0-SNAPSHOT.jar`: veraPDF validation tool invoked by
@@ -144,6 +163,7 @@ Use a new `workspace` name here to create a fresh workspace seeded from
   during remediation.
 - `resources/configuration/WCAG-2-2-Complete.xml`: optional veraPDF profile
   (currently commented in code).
+- `resources/font/.env`: Callas pdfToolbox license config for `FontFix`.
 
 ### Directory layout
 - `src/pdf_remediation/`: CLI entry points and orchestration scripts.
@@ -193,6 +213,10 @@ argument so you can run separate workflows in different subfolders (for example,
 - `Fix.py` applies the PDFix remediation profile (e.g., `default.json`) with
   multiprocessing and keeps folder structure intact.
 - Validation post-checks route outputs into `remediated/` and `font-issues/`.
+
+### Font remediation
+- `FontFix.py` runs Callas pdfToolbox via Docker on `font-issues/`, then
+  re-validates and moves results to `remediated/` or `unable-to-process/`.
 
 ### Reporting (internal function, part of Validate)
 - Every Validate and Fix run generates a suite of reports under `reports/<timestamp>`.
