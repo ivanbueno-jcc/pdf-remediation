@@ -79,7 +79,10 @@ def get_project_workspace_path(project_name: str, workspace_name: str = "default
 
     return workspace_path
 
-def get_project_workspace_file_paths(project_name: str, workspace_name: str, subfolder_name: str) -> list:
+def get_project_workspace_file_paths(
+        project_name: str,
+        workspace_name: str,
+        subfolder_name: str) -> list:
     '''
     Get the PDF file paths in the project workspace subfolder.
     

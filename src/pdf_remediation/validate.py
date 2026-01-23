@@ -1,5 +1,5 @@
 '''
-Validate PDF files in a project workspace.
+Validate PDF files in a project workspace folder.
 '''
 import argparse
 from datetime import datetime

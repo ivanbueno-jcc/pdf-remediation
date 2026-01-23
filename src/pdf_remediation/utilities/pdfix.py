@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable
 '''
 PDFix utility functions for PDF remediation and page count.
 '''
@@ -5,6 +6,7 @@ PDFix utility functions for PDF remediation and page count.
 import csv
 import json
 import multiprocessing
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 from parallelbar import progress_map
@@ -184,6 +186,13 @@ def license_status() -> json:
     if pdfix is None:
         print('Pdfix Initialization fail')
         return False
+
+    # Load the license and authorize the account.
+    load_dotenv()
+    pdfix_license_name = os.getenv('PDFIX_LICENSE_NAME')
+    pdfix_license_key = os.getenv('PDFIX_LICENSE_KEY')
+    if pdfix_license_name and pdfix_license_key:
+        pdfix.GetAccountAuthorization().Authorize(pdfix_license_name, pdfix_license_key)
 
     mem_stm = pdfix.CreateMemStream()
     pdfix.GetStandardAuthorization().SaveToStream(mem_stm, kDataFormatJson)

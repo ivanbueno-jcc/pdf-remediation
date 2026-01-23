@@ -1,3 +1,4 @@
+# pylint: disable=too-many-nested-blocks
 '''PDF Remediation Main Fix Script'''
 
 import argparse
@@ -184,7 +185,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     case x if 10 < x <= 50:
                         chunks['11-50'].append(payload)
                     case x if 50 < x <= 100:
-                        chunks['51-100'].append(payload) 
+                        chunks['51-100'].append(payload)
                     case x if 100 < x <= 200:
                         chunks['101-200'].append(payload)
                     case x if 200 < x <= 500:
