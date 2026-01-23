@@ -186,7 +186,9 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         print()
                         print("   Files to process in this chunk:")
                         for input_path, _, _ in chunk_file_paths:
-                            relative_chunk_path = Path(input_path).relative_to(workspace_folder_path)
+                            relative_chunk_path = Path(input_path).relative_to(
+                                workspace_folder_path
+                            )
                             print(f"    * {relative_chunk_path}")
                         print()
 
