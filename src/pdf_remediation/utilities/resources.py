@@ -235,10 +235,34 @@ def append_to_csv(file_path: Path, row: list) -> None:
     :param row: Description
     :type row: list
     '''
-    # Add row to csv.  Make sure there are no duplicates.
-    with open(file_path, mode='a', newline='', encoding='utf-8') as csvfile:
-        csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(row)
+    unique_key = str(row[0])
+    existing_keys = set()
+
+    if file_path.exists():
+        try:
+            with open(file_path, mode='r', newline='', encoding='utf-8') as infile:
+                reader = csv.reader(infile)
+                for r in reader:
+                    if r: # Ensure the row is not empty
+                        existing_keys.add(r[0])
+        except Exception: # pylint: disable=broad-exception-caught
+            return False
+
+    if unique_key in existing_keys:
+        return False
+
+    try:
+        with open(file_path, mode='a', newline='', encoding='utf-8') as outfile:
+            writer = csv.writer(outfile)
+            writer.writerow(row)
+        return True
+    except Exception as e: # pylint: disable=broad-exception-caught
+        print(f"Error writing to CSV file: {e}")
+        return False
+
+    # with open(file_path, mode='a', newline='', encoding='utf-8') as csvfile:
+    #     csv_writer = csv.writer(csvfile)
+    #     csv_writer.writerow(row)
 
 def print_workspace_summary(project_name: str, workspace_name: str) -> None:
     '''
