@@ -60,6 +60,9 @@ Defaults:
 - `workspace` = `default`
 - `folder` = `active`
 You can target any workspace and subfolder by passing these arguments.
+Validation defaults to PDF/UA (veraPDF `ua1`). To validate against WCAG 2.2,
+enable the WCAG profile in `src/pdf_remediation/utilities/verapdf.py` by passing
+`is_wcag=True` to `runJavaValidation` or `validatePdf`.
 
 If the `active/files` folder is empty, the system copies PDFs from `source/`
 into `active/files` once and creates `.remediation.lock`.
@@ -168,8 +171,9 @@ Use a new `workspace` name here to create a fresh workspace seeded from
   `src/pdf_remediation/utilities/verapdf.py`.
 - `resources/configuration/default.json`: PDFix command profile applied
   during remediation.
-- `resources/configuration/WCAG-2-2-Complete.xml`: optional veraPDF profile
-  (currently commented in code).
+- `resources/configuration/WCAG-2-2-Complete.xml`: optional veraPDF WCAG 2.2
+  profile, enabled by passing `is_wcag=True` into `runJavaValidation` or
+  `validatePdf`.
 - `resources/font/.env`: Callas pdfToolbox license config for `FontFix`.
 
 ### Directory layout
