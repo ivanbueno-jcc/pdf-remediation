@@ -18,7 +18,7 @@ def font_fix(input_pdf_path: Path, output_pdf_path: Path, workspace_path: Path =
     input_relative_path = Path(input_pdf_path).relative_to(workspace_path)
     output_relative_path = Path(output_pdf_path).relative_to(workspace_path)
 
-    CALLAS_ERROR_CODES = {
+    callas_error_codes = {
         104: "File could not be opened",
         105: "File is encrypted and could not be opened for writing",
         106: "File could not be saved",
@@ -39,13 +39,14 @@ def font_fix(input_pdf_path: Path, output_pdf_path: Path, workspace_path: Path =
             case value if value >= 5 and value <= 8: # pylint: disable=chained-comparison
                 input_pdf_path.unlink(missing_ok=True)
             case value if value >= 104 and value <= 107: # pylint: disable=chained-comparison
-                print(f"{input_relative_path}: {CALLAS_ERROR_CODES.get(e.return_code, 'Unknown Error')}")
+                print(f"{input_relative_path}: \
+                      {callas_error_codes.get(e.return_code, 'Unknown Error')}")
                 append_to_csv(
                     workspace_path.parent.parent / "callas_font_fix_errors.csv",
                     [
                         input_relative_path,
                         e.return_code,
-                        CALLAS_ERROR_CODES.get(e.return_code, "Unknown Error")
+                        callas_error_codes.get(e.return_code, "Unknown Error")
                     ]
                 )
                 raise DockerException(0) # pylint: disable=raise-missing-from, no-value-for-parameter
