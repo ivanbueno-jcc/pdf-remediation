@@ -8,10 +8,10 @@ from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
 from parallelbar import progress_starmap
-from .resources import ROOT_DIR
+from .resources import ROOT_DIR, get_configuration_file
 from ..report import run_report_generation
 
-def runJavaValidation(pdfPath: str, reportPath: str, format: str = "xml"):
+def runJavaValidation(pdfPath: str, reportPath: str, is_wcag: bool = False, format: str = "xml") -> tuple:
     """
     Executes a Java-based PDF/UA validation tool on the specified PDF file.
 
@@ -32,9 +32,14 @@ def runJavaValidation(pdfPath: str, reportPath: str, format: str = "xml"):
     """
     jarPath = ROOT_DIR / "lib/greenfield-apps-1.27.0-SNAPSHOT.jar"
     try:
+        profile_path = get_configuration_file("WCAG-2-2-Complete.xml")
+        command = []
+        if is_wcag is True:
+            command = ["java", "-jar", jarPath, "--profile=", str(profile_path), "--format", format, pdfPath]
+        else:
+            command = ["java", "-jar", jarPath, "--flavour", "ua1", "--format", format, pdfPath]
         result = subprocess.run(
-            ["java", "-jar", jarPath, "--flavour", "ua1", "--format", format, pdfPath],  # JAR execution cmd
-            # ["java", "-jar", jarPath, "--profile", str(CONFIG_DIR / "WCAG-2-2-Complete.xml"), "--format", format, pdfPath], 
+            command,
             capture_output=True,  # capture output
             text=True  # read output as text
         )
@@ -92,7 +97,7 @@ def parseValidationReport(xmlReport: str):
 
     return rules
 
-def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str = "xml") -> list:
+def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str = "xml", is_wcag: bool = False) -> list:
     """
     Validates a PDF document against PDF/UA standards using a Java validation tool.
 
