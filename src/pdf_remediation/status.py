@@ -34,8 +34,9 @@ def main():
         for workspace_path in workspace_main_path.iterdir():
             if workspace_path.is_dir():
                 workspace_name = workspace_path.name
-                print(f"  {workspace_name}")
+                print(f"  * {workspace_name}")
                 print_workspace_summary(args.project_name, workspace_name)
+                print()
 
 if __name__ == '__main__':
     main()

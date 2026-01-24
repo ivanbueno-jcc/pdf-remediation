@@ -302,7 +302,7 @@ def print_workspace_summary(project_name: str, workspace_name: str) -> None:
             if summary_file_total > 0 else 0
 
         print()
-        print(f"    {folder_name}: {values['total']} files ({workspace_percentage}%)")
+        print(f"    + {folder_name}: {values['total']} files ({workspace_percentage}%)")
 
         if 'files' in values:
             print(f"      - files: {values['files']}")
