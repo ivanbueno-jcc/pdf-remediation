@@ -94,6 +94,8 @@ Steps executed:
 8. Move font-violation failures into `font-issues/files`.
 
 If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
+Runs end with a workspace summary showing totals plus `files`/`processed`
+breakdowns.
 
 #### 2) Fix font issues (Callas)
 ```
@@ -103,6 +105,11 @@ uv run -m pdf_remediation.font_fix <project_name> [workspace] [folder]
 `FontFix` targets the `font-issues` folder by default, runs Callas pdfToolbox
 inside Docker, then re-validates and routes results into `remediated/` or
 `unable-to-process/`.
+Runs end with a workspace summary showing totals plus `files`/`processed`
+breakdowns.
+
+Callas file-level failures (error codes 104-107) are logged to
+`callas_font_fix_errors.csv` in the project root.
 
 Options:
 - `--chunk-size <n>` to control batch size (default: 500)
@@ -247,7 +254,7 @@ argument so you can run separate workflows in different subfolders (for example,
 
 ### Status
 - `status.py` prints a summary of the source PDF count and per-workspace file
-  counts (including a remediated percentage).
+  counts, including totals plus `files`/`processed` breakdowns.
 - Syntax: `uv run -m pdf_remediation.status <project_name>`
 
 ### Reset

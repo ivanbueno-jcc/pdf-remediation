@@ -2,7 +2,7 @@
 List the status of the project.
 '''
 import argparse
-from .utilities.resources import get_project_source_path
+from .utilities.resources import get_project_source_path, print_workspace_summary
 
 def main():
     '''Main function to list project status.'''
@@ -29,24 +29,13 @@ def main():
         # Count the number of workspaces
         print()
         print("WORKSPACES")
+        print()
         workspace_main_path = source_path.parent / "workspace"
-        workspaces = {}
         for workspace_path in workspace_main_path.iterdir():
             if workspace_path.is_dir():
                 workspace_name = workspace_path.name
-                workspaces[workspace_name] = {}
-                for subfolder_path in workspace_path.iterdir():
-                    if subfolder_path.is_dir():
-                        pdf_files = list(subfolder_path.rglob("*.pdf"))
-                        workspaces[workspace_name][subfolder_path.name] = len(pdf_files)
-
-        for workspace_name, folders in workspaces.items():
-            print()
-            total_percentage = round(100 * (folders['remediated'] / sum(folders.values()))) \
-                if sum(folders.values()) > 0 else 0
-            print(f"  {workspace_name} ({total_percentage}%):")
-            for folder_name, count in folders.items():
-                print(f"    {folder_name}: {count}")
+                print(f"  {workspace_name}")
+                print_workspace_summary(args.project_name, workspace_name)
 
 if __name__ == '__main__':
     main()

@@ -11,7 +11,7 @@ from .utilities.callas import font_fix
 from .utilities.pdfix import get_page_count_multiprocess
 from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import get_project_workspace_subfolder_file_paths
-from .utilities.resources import get_project_workspace_path
+from .utilities.resources import get_project_workspace_path, print_workspace_summary
 from .utilities.resources import get_project_workspace_subfolder_path
 from .utilities.resources import get_project_workspace_file_paths, move_file_and_delete_source
 
@@ -265,17 +265,9 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             print("No PDF files found for validation.")
 
         print()
-        print("SUMMARY")
-        summary_file_total = 0
-        workspaces = {}
-        for subfolder_path in workspace_path.iterdir():
-            if subfolder_path.is_dir():
-                num_of_pdf_files = len(list(subfolder_path.rglob("*.pdf")))
-                summary_file_total += num_of_pdf_files
-                workspaces[subfolder_path.name] = num_of_pdf_files
-
-        for folder_name, count in workspaces.items():
-            print(f"* {folder_name}: {count} files ({round(100 * (count/summary_file_total))}%)")
+        print("WORKSPACE SUMMARY")
+        print(f"  {args.workspace_name}")
+        print_workspace_summary(args.project_name, args.workspace_name)
 
 if __name__ == '__main__':
     main()

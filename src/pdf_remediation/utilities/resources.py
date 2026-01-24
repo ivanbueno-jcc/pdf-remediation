@@ -240,6 +240,51 @@ def append_to_csv(file_path: Path, row: list) -> None:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(row)
 
+def print_workspace_summary(project_name: str, workspace_name: str) -> None:
+    '''
+    Print a summary of the workspace folders and file counts.
+    
+    :param project_name: Description
+    :type project_name: str
+    :param workspace_name: Description
+    :type workspace_name: str
+    '''
+    workspace_path = get_project_workspace_path(project_name, workspace_name)
+
+    summary_file_total = 0
+    workspaces = {}
+    for subfolder_path in workspace_path.iterdir():
+        if subfolder_path.is_dir():
+            num_of_pdf_files = len(list(subfolder_path.rglob("*.pdf")))
+            summary_file_total += num_of_pdf_files
+            workspaces[subfolder_path.name] = {
+                "total": num_of_pdf_files
+            }
+
+            if Path(subfolder_path / "files").exists():
+                num_of_pdf_files_in_files = len(
+                    list((subfolder_path / "files").rglob("*.pdf"))
+                )
+                workspaces[subfolder_path.name]["files"] = num_of_pdf_files_in_files
+
+            if Path(subfolder_path / "processed").exists():
+                num_of_pdf_files_in_processed = len(
+                    list((subfolder_path / "processed").rglob("*.pdf"))
+                )
+                workspaces[subfolder_path.name]["processed"] = num_of_pdf_files_in_processed
+
+    for folder_name, values in workspaces.items():
+        workspace_percentage = round(100 * (values['total']/summary_file_total)) \
+            if summary_file_total > 0 else 0
+
+        print()
+        print(f"    {folder_name}: {values['total']} files ({workspace_percentage}%)")
+
+        if 'files' in values:
+            print(f"      - files: {values['files']}")
+        if 'processed' in values:
+            print(f"      - processed: {values['processed']}")
+
 def stream_to_data(stm):
     '''
     Return raw data from stream object.
