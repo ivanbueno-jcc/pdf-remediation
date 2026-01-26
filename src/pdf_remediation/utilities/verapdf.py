@@ -170,10 +170,12 @@ def write_validation_report(folder: str, results: list) -> None:
     wcag_passed_count = total_files - wcag_failed_count - wcag_error_count
     ua1_success_rate = (ua1_passed_count / total_files) * 100 if total_files > 0 else 0
     wcag_success_rate = (wcag_passed_count / total_files) * 100 if total_files > 0 else 0
+    ua1_violation_total = df['ua1_failed_rules_count'].sum()
+    wcag_violation_total = df['wcag_failed_rules_count'].sum()
     print()
     print("Validation Summary:")
-    print(f"  UA1 ({ua1_success_rate:.0f}%) - Passed: {ua1_passed_count}, Failed: {ua1_failed_count}, Error: {ua1_error_count}")
-    print(f"  WCAG ({wcag_success_rate:.0f}%) - Passed: {wcag_passed_count}, Failed: {wcag_failed_count}, Error: {wcag_error_count}")
+    print(f"  UA1 ({ua1_success_rate:.0f}%) - Passed: {ua1_passed_count}, Failed: {ua1_failed_count}, Error: {ua1_error_count}, Total Violations: {ua1_violation_total}")
+    print(f"  WCAG ({wcag_success_rate:.0f}%) - Passed: {wcag_passed_count}, Failed: {wcag_failed_count}, Error: {wcag_error_count}, Total Violations: {wcag_violation_total}")
     print()
 
     # Write results to CSV

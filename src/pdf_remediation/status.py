@@ -21,7 +21,7 @@ def main():
 
         print()
         if len(file_paths) > 0:
-            print(f"TOTAL PDF FILES: {len(file_paths)}")
+            print(f"TOTAL SOURCE PDF FILES: {len(file_paths)}")
         else:
             print("No PDF files found in the source.")
             print(f"Copy PDF files to the source path: {source_path.resolve()}")
@@ -33,9 +33,9 @@ def main():
         workspace_main_path = source_path.parent / "workspace"
         for workspace_path in workspace_main_path.iterdir():
             if workspace_path.is_dir():
-                workspace_name = workspace_path.name
-                print(f"  * {workspace_name}")
-                print_workspace_summary(args.project_name, workspace_name)
+                total_pdfs = len(list(workspace_path.rglob("*.pdf")))
+                print(f"  * {workspace_path.name} ({total_pdfs} PDFs)")
+                print_workspace_summary(args.project_name, workspace_path.name)
                 print()
 
 if __name__ == '__main__':
