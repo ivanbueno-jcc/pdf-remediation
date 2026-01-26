@@ -17,20 +17,69 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
    PDFIX_LICENSE_NAME="your-name"
    PDFIX_LICENSE_KEY="your-key"
    ```
-4) Initialize a project:
+
+   Check if the license is valid:
    ```
-   uv run -m pdf_remediation.init <project_name>
+   uv run -m pdf_remediation.status delnorte
    ```
-5) Copy PDFs into `resources/projects/<project>/source`.
-6) Remediate PDFs:
+
+4) Start Docker Desktop (required for Callas Font Fix)
+5) Save the Callas license in `resources/font/.env`
+
+## Walkthrough
+
+Here's an example walkthrough of remediating the Del Norte trial court.
+
+1) Initialize a project:
    ```
-   uv run -m pdf_remediation.fix <project_name>
+   uv run -m pdf_remediation.init delnorte
    ```
-7) If font issues are flagged, run Callas font remediation:
+2) Copy PDFs into `resources/projects/delnorte/source`.
+3) Validate the PDFs to establish a baseline.
    ```
-   uv run -m pdf_remediation.font_fix <project_name> [workspace]
+   uv run -m pdf_remediation.validate delnorte
    ```
-8) Review reports in `resources/projects/<project>/workspace/<workspace>/active/reports/<timestamp>`.
+4) Remediate PDFs:
+   ```
+   uv run -m pdf_remediation.fix delnorte
+   ```
+5) If font issues are flagged, run Callas font remediation:
+   ```
+   uv run -m pdf_remediation.font_fix delnorte
+   ```
+6) Run the fallback remediation on pdf's that were not remediated in #4.
+
+   a. Queue the files for re-processing:
+   ```
+   uv run -m pdf_remediation.reprocess delnorte
+   ```
+
+   b. Remediate with the fallback configuration.
+   ```
+   uv run -m pdf_remediation.fix delnorte --config-file=default-fallback.json
+   ```
+7) Run the fallback remediation on the files with font issues.
+   
+   a. Queue the files for re-processing:
+   ```
+   uv run -m pdf_remediation.reprocess delnorte default font-issues
+   ```
+
+   b. Remediate with the fallback configuration:
+   ```
+   uv run -m pdf_remediation.fix delnorte default font-issues --config-file=default-fallback.json
+   ```
+
+8) Check the workspace status:
+   ```
+   uv run -m pdf_remediation.status delnorte
+   ```
+
+9) Review the reports in various folders:
+   `resources/projects/<project>/workspace/<workspace>/<folder>/reports/<timestamp>`.
+
+10) Remediated files will be located in:
+    `resources/projects/<project>/workspace/remediated/<folder>`
 
 ## Process Flow
 
