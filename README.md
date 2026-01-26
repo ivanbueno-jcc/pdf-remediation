@@ -20,7 +20,7 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
 
    Check if the license is valid:
    ```
-   uv run -m pdf_remediation.status delnorte
+   uv run -m pdf_remediation.license delnorte
    ```
 
 4) Start Docker Desktop (required for Callas Font Fix)
