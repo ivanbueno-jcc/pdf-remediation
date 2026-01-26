@@ -195,7 +195,7 @@ def license_status() -> json:
         pdfix.GetAccountAuthorization().Authorize(pdfix_license_name, pdfix_license_key)
 
     mem_stm = pdfix.CreateMemStream()
-    pdfix.GetStandardAuthorization().SaveToStream(mem_stm, kDataFormatJson)
+    pdfix.GetAccountAuthorization().SaveToStream(mem_stm, kDataFormatJson)
     bytes_data = bytearray(stream_to_data(mem_stm))
     json_data = json.loads(bytes_data.decode("utf-8"))
     mem_stm.Destroy()

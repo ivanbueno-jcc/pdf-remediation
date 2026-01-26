@@ -31,12 +31,12 @@ def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", forma
         The flavour identifies the accessibility stndard ["ua1", "ua2"]. For WCAG use --profile with 
         valid path to validation profile. For more information see https://github.com/veraPDF/veraPDF-validation-profiles
     """
-    jarPath = ROOT_DIR / "lib/greenfield-apps-1.27.0-SNAPSHOT.jar"
+    jarPath = ROOT_DIR / "lib/greenfield-apps-1.28.0.jar"
     try:
         command = []
         if profile == "wcag":
             profile_path = get_configuration_file("WCAG-2-2-Complete.xml")
-            command = ["java", "-jar", jarPath, "--profile=", str(profile_path), "--format", format, pdfPath]
+            command = ["java", "-jar", jarPath, "--profile", str(profile_path), "--format", format, pdfPath]
         else:
             command = ["java", "-jar", jarPath, "--flavour", "ua1", "--format", format, pdfPath]
 
