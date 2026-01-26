@@ -797,39 +797,42 @@ def main() -> int:
 
     return 0
 
-def run_report_generation(folder: Path) -> None:
+def run_report_generation(folder: Path, profiles: list) -> None:
     '''
     Docstring for run_report_generation
     
     :param folder: Description
     :type folder: Path
     '''
-    xml_dir = folder / "xml"
-    # check if xml_dir exists
-    if not xml_dir.exists():
-        raise SystemExit(f"{args.folder} does not exist. Run Validate first.")
-    # check if xml_dir contains xml files
-    if not any(xml_dir.glob("*.xml")):
-        raise SystemExit(f"No XML files found in {args.folder}. Run Validate first.")
-    
-    out_dir = folder / "summary"
-    out_dir.mkdir(exist_ok=True)
 
-    t0 = time.perf_counter()
-    summary = load_xml_reports(xml_dir, max_threads=max(1, 4))
-    duration = time.perf_counter() - t0
+    for profile in profiles:
+        
+        xml_dir = folder / "xml" / profile
+        # check if xml_dir exists
+        if not xml_dir.exists():
+            raise SystemExit(f"{args.folder} does not exist. Run Validate first.")
+        # check if xml_dir contains xml files
+        if not any(xml_dir.glob("*.xml")):
+            raise SystemExit(f"No XML files found in {args.folder}. Run Validate first.")
+        
+        out_dir = folder / "summary" / profile
+        out_dir.mkdir(parents=True, exist_ok=True)
 
-    num_files = len(summary)
+        t0 = time.perf_counter()
+        summary = load_xml_reports(xml_dir, max_threads=max(1, 4))
+        duration = time.perf_counter() - t0
 
-    # Write "report" artifacts (same naming as your pipeline)
-    compliance_txt = os.path.join(out_dir, "verapdf-compliance-report.txt")
-    clause_csv = os.path.join(out_dir, "verapdf-clause-summary.csv")
-    file_csv = os.path.join(out_dir, "verapdf-file-summary.csv")
-    out_txt = os.path.join(out_dir, "output.txt")
+        num_files = len(summary)
 
-    write_file_summary_csv(summary, file_csv)
-    write_clause_summary_csv(summary, clause_csv)
-    write_compliance_report(summary, compliance_txt)
-    write_synthetic_before_output_txt(out_txt, num_files=num_files, duration_sec=duration)
+        # Write "report" artifacts (same naming as your pipeline)
+        compliance_txt = os.path.join(out_dir, "verapdf-compliance-report.txt")
+        clause_csv = os.path.join(out_dir, "verapdf-clause-summary.csv")
+        file_csv = os.path.join(out_dir, "verapdf-file-summary.csv")
+        out_txt = os.path.join(out_dir, "output.txt")
 
-    html_path = build_report(out_dir, state="California", company="PDFix")
+        write_file_summary_csv(summary, file_csv)
+        write_clause_summary_csv(summary, clause_csv)
+        write_compliance_report(summary, compliance_txt)
+        write_synthetic_before_output_txt(out_txt, num_files=num_files, duration_sec=duration)
+
+        html_path = build_report(out_dir, state="California", company="PDFix")

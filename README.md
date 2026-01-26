@@ -60,9 +60,11 @@ Defaults:
 - `workspace` = `default`
 - `folder` = `active`
 You can target any workspace and subfolder by passing these arguments.
-Validation defaults to PDF/UA (veraPDF `ua1`). To validate against WCAG 2.2,
-enable the WCAG profile in `src/pdf_remediation/utilities/verapdf.py` by passing
-`is_wcag=True` to `runJavaValidation` or `validatePdf`.
+Validation runs both PDF/UA (veraPDF `ua1`) and WCAG 2.2 profiles by default.
+Results include `ua1` and `wcag` columns in `vera_validation_results.csv`, and
+per-profile report folders under `reports/<timestamp>` (for example,
+`xml/ua1`, `xml/wcag`, `summary/ua1`, `summary/wcag`). To change profiles, edit
+the `profiles` list in `src/pdf_remediation/utilities/verapdf.py`.
 
 If the `active/files` folder is empty, the system copies PDFs from `source/`
 into `active/files` once and creates `.remediation.lock`.
@@ -164,6 +166,7 @@ Use a new `workspace` name here to create a fresh workspace seeded from
 - Java runtime is required for veraPDF validation (used by the JAR in `lib/`).
 - PDFix SDK (`pdfix-sdk`) provides remediation and license operations.
 - `parallelbar` is used for multiprocessing progress and job dispatch.
+- `pandas` is used to summarize validation results and write CSV reports.
 - Callas pdfToolbox runs in Docker for `FontFix` font remediation.
 
 ### External tools and assets
@@ -171,9 +174,9 @@ Use a new `workspace` name here to create a fresh workspace seeded from
   `src/pdf_remediation/utilities/verapdf.py`.
 - `resources/configuration/default.json`: PDFix command profile applied
   during remediation.
-- `resources/configuration/WCAG-2-2-Complete.xml`: optional veraPDF WCAG 2.2
-  profile, enabled by passing `is_wcag=True` into `runJavaValidation` or
-  `validatePdf`.
+- `resources/configuration/WCAG-2-2-Complete.xml`: veraPDF WCAG 2.2 profile used
+  alongside `ua1` by default (adjust the `profiles` list in
+  `src/pdf_remediation/utilities/verapdf.py` to change this).
 - `resources/font/.env`: Callas pdfToolbox license config for `FontFix`.
 
 ### Directory layout
@@ -217,7 +220,8 @@ argument so you can run separate workflows in different subfolders (for example,
 - `init.py` bootstraps a project workspace and prints the source path for ingest.
 
 ### Validation
-- `validate.py` runs page counting (PDFix) and PDF/UA validation via veraPDF (Java).
+- `validate.py` runs page counting (PDFix) and veraPDF validation for PDF/UA
+  (`ua1`) plus WCAG 2.2.
 - Results feed the reporting pipeline in `reports/<timestamp>`.
 
 ### Remediation
@@ -233,14 +237,13 @@ argument so you can run separate workflows in different subfolders (for example,
 - `report.py` generates CSV/TXT/HTML report artifacts from veraPDF XML output.
 - Every Validate and Fix run generates a suite of reports under `reports/<timestamp>`.
 - Report outputs include:
-  - `vera_validation_results.csv`: per-file pass/fail status and rule counts.
-  - `failed_rules.csv`: detailed list of failed rules with clauses and descriptions.
-  - `xml/`: raw veraPDF XML reports per file.
-  - `summary/verapdf-compliance-report.txt`: compliant vs non-compliant file list.
-  - `summary/verapdf-clause-summary.csv`: clause-level rollup across the run.
-  - `summary/verapdf-file-summary.csv`: per-file summary of violations.
-  - `summary/output.txt`: synthetic log used by HTML report generation.
-  - `summary/*.html`: human-readable compliance report.
+  - `vera_validation_results.csv`: per-file `ua1`/`wcag` pass/fail status and rule counts.
+  - `xml/<profile>/`: raw veraPDF XML reports per file (for example, `xml/ua1`).
+  - `summary/<profile>/verapdf-compliance-report.txt`: compliant vs non-compliant file list.
+  - `summary/<profile>/verapdf-clause-summary.csv`: clause-level rollup across the run.
+  - `summary/<profile>/verapdf-file-summary.csv`: per-file summary of violations.
+  - `summary/<profile>/output.txt`: synthetic log used by HTML report generation.
+  - `summary/<profile>/*.html`: human-readable compliance report.
 
 ### Reprocess
 - `reprocess.py` returns processed PDFs to `active/files` so you can iterate with

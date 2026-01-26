@@ -288,12 +288,13 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             # Loop through the validation results.
             # Move files that passed to a "remediated" folder in the same workspace.
             validation_iteration_counter = 0
-            for file_path, is_compliant, violations, _ in validation_results:
-                if is_compliant is True:
+            for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
+                if ua1_result is True and wcag_result is True:
                     validation_iteration_counter += 1
 
                     if args.verbose:
                         print(f"{file_path}")
+
                     move_file_and_delete_source(
                         Path(file_path),
                         output_pdf_folder,
@@ -301,12 +302,14 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         args.workspace_name,
                         "remediated"
                     )
+
                     continue
+
             print(f"Total valid files moved to remediated folder: {validation_iteration_counter}")
 
             validation_iteration_counter = 0
-            for file_path, is_compliant, violations, _ in validation_results:
-                if is_compliant == 'Error':
+            for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
+                if ua1_result == 'Error' or wcag_result == 'Error':
                     validation_iteration_counter += 1
 
                     if args.verbose:
@@ -331,18 +334,22 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     '7.21.8'
                 ]
                 files_with_font_issues_total = 0
-                for file_path, is_compliant, violations, _ in validation_results:
-                    if is_compliant is False:
+                for file_path, ua1_result, _, wcag_result, _, ua1_violations, \
+                    wcag_violations in validation_results:
+
+                    if ua1_result is False or wcag_result is False:
                         has_font_violation = False
-                        for violation in violations:
+                        for violation in ua1_violations + wcag_violations:
                             if violation['clause'] in font_issue_clauses:
                                 has_font_violation = True
                                 break
 
                         if has_font_violation:
                             files_with_font_issues_total += 1
+
                             if args.verbose:
                                 print(f"{file_path}")
+
                             move_file_and_delete_source(
                                 Path(file_path),
                                 output_pdf_folder,

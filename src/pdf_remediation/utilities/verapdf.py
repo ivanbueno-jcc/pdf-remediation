@@ -4,6 +4,7 @@ VeraPDF PDF/UA Validation Utility
 '''
 import csv
 from datetime import datetime
+import pandas as pd
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
@@ -11,7 +12,7 @@ from parallelbar import progress_starmap
 from .resources import ROOT_DIR, get_configuration_file
 from ..report import run_report_generation
 
-def runJavaValidation(pdfPath: str, reportPath: str, is_wcag: bool = False, format: str = "xml") -> tuple:
+def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
     """
     Executes a Java-based PDF/UA validation tool on the specified PDF file.
 
@@ -32,12 +33,13 @@ def runJavaValidation(pdfPath: str, reportPath: str, is_wcag: bool = False, form
     """
     jarPath = ROOT_DIR / "lib/greenfield-apps-1.27.0-SNAPSHOT.jar"
     try:
-        profile_path = get_configuration_file("WCAG-2-2-Complete.xml")
         command = []
-        if is_wcag is True:
+        if profile == "wcag":
+            profile_path = get_configuration_file("WCAG-2-2-Complete.xml")
             command = ["java", "-jar", jarPath, "--profile=", str(profile_path), "--format", format, pdfPath]
         else:
             command = ["java", "-jar", jarPath, "--flavour", "ua1", "--format", format, pdfPath]
+
         result = subprocess.run(
             command,
             capture_output=True,  # capture output
@@ -49,7 +51,8 @@ def runJavaValidation(pdfPath: str, reportPath: str, is_wcag: bool = False, form
 
         if result.returncode <= 1:
             filename = Path(pdfPath).stem.split('.')[0] + f".{format}"
-            reportPath = Path(reportPath) / filename
+            reportPath = Path(reportPath) / profile / filename
+            reportPath.parent.mkdir(parents=True, exist_ok=True)
 
             with open(reportPath, "w", encoding="utf-8") as file:
                 file.write(result.stdout)
@@ -97,7 +100,7 @@ def parseValidationReport(xmlReport: str):
 
     return rules
 
-def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str = "xml", is_wcag: bool = False) -> list:
+def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, profiles: list = ["ua1", "wcag"], format: str = "xml") -> list:
     """
     Validates a PDF document against PDF/UA standards using a Java validation tool.
 
@@ -110,30 +113,38 @@ def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, format: str =
 
     Raises:
         Exception: If the document cannot be saved or if validation fails unexpectedly.
-    """    
-    exitCode, output, error = runJavaValidation(pdfPath, reportPath, "xml")
-    filename = pdfPath#.replace(subfolderPath, "")
+    """
+    results = {}
 
-    if exitCode > 1:
-        # print(error)
-        # raise Exception((f"Validation failed with error {exitCode}"))
-        return [filename, 'Error', [], 0]
+    for profile in profiles:
+        exitCode, output, error = runJavaValidation(pdfPath, reportPath, profile, "xml")
+        filename = pdfPath
 
-    # optional - generate HTML validation report
-    # runJavaValidation(pdfPath, reportPath, "html")
+        if exitCode > 1:
+            results[profile] = [filename, 'Error', 0, []]
 
-    rules = []
-    if exitCode == 0: 
-        #print("Validation successfull.")
-        return [filename, True, [], 0]
-    elif exitCode == 1:
-        # print("Non-valid PDF/UA document")
-        rules = parseValidationReport(output)
-        return [filename, False, rules, len(rules)]
-    else:
-        return [filename, 'Error', [], 0]
+        rules = []
+        if exitCode == 0: 
+            #print("Validation successfull.")
+            results[profile] = [filename, True, 0, []]
+        elif exitCode == 1:
+            # print("Non-valid PDF/UA document")
+            rules = parseValidationReport(output)
+            results[profile] = [filename, False, len(rules), rules]
+        else:
+            results[profile] = [filename, 'Error', 0, []]
 
-    # return rules
+    flattened_result = [
+        filename,
+        results['ua1'][1],
+        results['ua1'][2],
+        results['wcag'][1],
+        results['wcag'][2],
+        results['ua1'][3],
+        results['wcag'][3]
+    ]
+
+    return flattened_result
 
 def write_validation_report(folder: str, results: list) -> None:
     '''
@@ -145,51 +156,32 @@ def write_validation_report(folder: str, results: list) -> None:
     :type results: list
     '''
 
-    failed_rules = []
-    passed = failed = error = 0
-    for row in results:
-        filename, result, rules, _ = row
-        if result is False:
-            failed += 1
-        elif result is True:
-            passed += 1
-        elif result == 'Error':
-            error += 1
-
-        if len(rules) > 0:
-            for rule in rules:
-                failed_rules.append(
-                    [filename, rule["specification"],
-                     rule["clause"],
-                     rule["tags"],
-                     rule["test"],
-                     rule["description"]]
-                )
-
-        del row[2]
-
-    print(f"Passed: {passed}, Failed: {failed}, Unable to Process: {error}")
-    # success rate
-    total = passed + failed + error
-    if total > 0:
-        success_rate = (passed / total) * 100
-        print(f"Success Rate: {success_rate:.2f}%")
+    df = pd.DataFrame(results, columns=['path', 'ua1', 'ua1_failed_rules_count', 'wcag', 'wcag_failed_rules_count'])
+    total_files = len(df)
+    ua1_failed = df['ua1'] == False
+    ua1_error = df['ua1'] == 'Error'
+    wcag_failed = df['wcag'] == False
+    wcag_error = df['wcag'] == 'Error'
+    ua1_failed_count = ua1_failed.sum()
+    wcag_failed_count = wcag_failed.sum()
+    ua1_error_count = ua1_error.sum()
+    wcag_error_count = wcag_error.sum()
+    ua1_passed_count = total_files - ua1_failed_count - ua1_error_count
+    wcag_passed_count = total_files - wcag_failed_count - wcag_error_count
+    ua1_success_rate = (ua1_passed_count / total_files) * 100 if total_files > 0 else 0
+    wcag_success_rate = (wcag_passed_count / total_files) * 100 if total_files > 0 else 0
+    print()
+    print("Validation Summary:")
+    print(f"  UA1 ({ua1_success_rate:.0f}%) - Passed: {ua1_passed_count}, Failed: {ua1_failed_count}, Error: {ua1_error_count}")
+    print(f"  WCAG ({wcag_success_rate:.0f}%) - Passed: {wcag_passed_count}, Failed: {wcag_failed_count}, Error: {wcag_error_count}")
     print()
 
     # Write results to CSV
     with open(folder / "vera_validation_results.csv",
               mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(['path', 'validation_result', 'failed_rule_count'])
+        writer.writerow(['path', 'ua1', 'ua1_failed_rules_count', 'wcag', 'wcag_failed_rules_count'])
         writer.writerows(results)
-
-    if len(failed_rules) > 0:
-        with open(folder / "failed_rules.csv", mode='w', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
-            writer.writerow(
-                ['path', 'specification', 'clause', 'tags', 'testnumber', 'description']
-            )
-            writer.writerows(failed_rules)
 
     print(f"Reports: {folder}")
 
@@ -210,6 +202,7 @@ def validate_pdf_multiprocess(
     :param subfolder: Description
     :type subfolder: str
     '''
+    profiles = ["ua1", "wcag"]
     # Prepare the validation file paths, which are tuples of (inputPdfPath, reportPath).
     validation_file_paths = []
 
@@ -225,7 +218,8 @@ def validate_pdf_multiprocess(
         validation_file_paths.append(
             (str(file_path),
              str(report_path_xml),
-             str(workspace_folder_path))
+             str(workspace_folder_path),
+             profiles)
         )
 
     print()
@@ -237,8 +231,12 @@ def validate_pdf_multiprocess(
         csv_result = result[:]
         csv_result[0] = csv_result[0].replace(str(workspace_folder_path), "")
         csv_results.append(csv_result)
+        
+        # delete columns with rule details to reduce memory usage
+        del csv_result[5:]
 
     write_validation_report(report_path, csv_results)
-    run_report_generation(report_path)
+
+    run_report_generation(report_path, profiles)
 
     return results
