@@ -7,8 +7,8 @@ import multiprocessing
 from datetime import datetime
 from pathlib import Path
 import plotext as plot
-from parallelbar import progress_starmap
-from .utilities.pdfix import fix, get_page_count_multiprocess
+from parallelbar import progress_starmap, progress_map
+from .utilities.pdfix import fix, get_page_count_multiprocess, is_pdf_secured
 from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import get_project_workspace_subfolder_file_paths
 from .utilities.resources import print_workspace_summary
@@ -154,6 +154,45 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 )
             else:
                 print("No files found for remediation.")
+
+            # Filter out secured files that cannot be processed.
+            print()
+            print("Checking for secured files...")
+            security_check_results = []
+            security_input_files = [str(file_path) for file_path in file_paths_for_counting]
+            security_check_results = progress_map(
+                is_pdf_secured,
+                security_input_files,
+                total=len(security_input_files),
+                n_cpu=multiprocessing.cpu_count()
+            )
+
+            secured_files_count = 0
+            for d in security_check_results:
+                for file_path, is_secured in d.items():
+                    if is_secured:
+                        secured_files_count += 1
+                        relative_path = Path(file_path).relative_to(workspace_folder_path)
+
+                        if args.verbose:
+                            print(f" Skipping secured file: {relative_path}")
+
+                        # remove from remediation list
+                        file_paths_for_remediation = [
+                            item for item in file_paths_for_remediation
+                            if item[0] != file_path
+                        ]
+
+                        move_file_and_delete_source(
+                            Path(file_path),
+                            workspace_folder_path,
+                            args.project_name,
+                            args.workspace_name,
+                            "secured-files"
+                        )
+            print(f"Total secured files skipped: {secured_files_count}")
+            print()
+            print(f"Total files to remediate: {len(file_paths_for_remediation)}")
 
             # split the file_paths into batches based on the page count.
             chunks = {
@@ -326,11 +365,9 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
 
             if args.workspace_folder != "font-issues":
                 font_issue_clauses = [
-                    '7.21.7',
                     '7.21.4.1',
                     '7.21.3.2',
                     '7.21.4.2',
-                    '7.21.5',
                     '7.21.8'
                 ]
                 files_with_font_issues_total = 0

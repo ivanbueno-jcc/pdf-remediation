@@ -13,12 +13,37 @@ from parallelbar import progress_map
 from pdfixsdk import * # pylint: disable=wildcard-import, unused-wildcard-import
 from .resources import stream_to_data, get_configuration_file, append_to_csv
 
-def get_page_count(inpput_pdf_path: str) -> list:
+def is_pdf_secured(input_pdf_path: str) -> bool:
+    '''
+    Check if a PDF file is secured.
+    
+    :param input_pdf_path: Description
+    :type input_pdf_path: str
+    :return: Description
+    :rtype: bool
+    '''
+    pdfix  = GetPdfix()
+    if pdfix is None:
+        print('Pdfix Initialization fail')
+
+    doc = pdfix.OpenDoc(input_pdf_path, "")
+    if doc is None:
+        print('Unable to open pdf', pdfix.GetError())
+        return {input_pdf_path: 'Error'}
+
+    is_secured = doc.IsSecured()
+
+    doc.Close()
+
+    return {input_pdf_path: is_secured}
+
+
+def get_page_count(input_pdf_path: str) -> list:
     '''
     Get page count of a PDF file.
     
-    :param inpput_pdf_path: Description
-    :type inpput_pdf_path: str
+    :param input_pdf_path: Description
+    :type input_pdf_path: str
     :return: Description
     :rtype: list
     '''
@@ -26,14 +51,14 @@ def get_page_count(inpput_pdf_path: str) -> list:
     if pdfix is None:
         print('Pdfix Initialization fail')
 
-    doc = pdfix.OpenDoc(inpput_pdf_path, "")
+    doc = pdfix.OpenDoc(input_pdf_path, "")
     if doc is None:
-        return {inpput_pdf_path: 0}
+        return {input_pdf_path: 0}
 
     size = doc.GetNumPages()
     doc.Close()
 
-    return {inpput_pdf_path: size}
+    return {input_pdf_path: size}
 
 def get_page_count_multiprocess(
         workspace_folder_path: Path,

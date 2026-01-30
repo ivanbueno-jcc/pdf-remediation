@@ -7,7 +7,6 @@ from datetime import datetime
 import sys
 from .utilities.pdfix import get_page_count_multiprocess
 from .utilities.verapdf import validate_pdf_multiprocess
-from .utilities.resources import get_project_source_path
 from .utilities.resources import get_project_workspace_subfolder_file_paths
 from .utilities.resources import get_project_workspace_subfolder_path
 
