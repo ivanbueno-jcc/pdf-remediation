@@ -42,7 +42,7 @@ def font_fix(input_pdf_path: Path, output_pdf_path: Path, workspace_path: Path =
                 print(f"{input_relative_path}: \
                       {callas_error_codes.get(e.return_code, 'Unknown Error')}")
                 append_to_csv(
-                    workspace_path.parent.parent / "callas_font_fix_errors.csv",
+                    workspace_path.parent.parent / "callas-font-errors.csv",
                     [
                         input_relative_path,
                         e.return_code,

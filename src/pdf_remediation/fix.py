@@ -10,7 +10,7 @@ import plotext as plot
 from parallelbar import progress_starmap, progress_map
 from .utilities.pdfix import fix, get_page_count_multiprocess, is_pdf_secured
 from .utilities.verapdf import validate_pdf_multiprocess
-from .utilities.resources import get_project_workspace_subfolder_file_paths
+from .utilities.resources import append_to_csv, get_project_workspace_subfolder_file_paths
 from .utilities.resources import print_workspace_summary
 from .utilities.resources import get_project_path, get_project_workspace_subfolder_path
 from .utilities.resources import get_project_workspace_file_paths, move_file_and_delete_source
@@ -173,6 +173,11 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     if is_secured:
                         secured_files_count += 1
                         relative_path = Path(file_path).relative_to(workspace_folder_path)
+
+                        append_to_csv(
+                            workspace_folder_path.parent.parent.parent.parent / "secured-files.csv",
+                            [relative_path]
+                        )
 
                         if args.verbose:
                             print(f" Skipping secured file: {relative_path}")
