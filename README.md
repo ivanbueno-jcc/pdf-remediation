@@ -140,12 +140,13 @@ Tune processing with:
 Steps executed:
 1. Apply the skip lists (`skipped_files.txt` and `pdfix_cannot_process_files.csv`) to exclude problematic files.
 2. Count pages for each PDF (PDFix).
-3. Split files into size buckets for parallel remediation.
-4. Remediate with PDFix, write to `active/processed/`.
-5. Validate all processed files with veraPDF.
-6. Move compliant files into `remediated/files`.
-7. Move error files into `unable-to-process/files`.
-8. Move font-violation failures into `font-issues/files`.
+3. Check for secured PDFs; move secured files into `secured-files/files` and exclude them from remediation.
+4. Split files into size buckets for parallel remediation.
+5. Remediate with PDFix, write to `active/processed/`.
+6. Validate all processed files with veraPDF.
+7. Move compliant files into `remediated/files`.
+8. Move error files into `unable-to-process/files`.
+9. Move font-violation failures into `font-issues/files`.
 
 If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
 Runs end with a workspace summary showing totals plus `files`/`processed`
@@ -256,6 +257,8 @@ resources/projects/<project>/
       files/             # validated, compliant PDFs
     font-issues/
       files/             # font-related validation failures
+    secured-files/
+      files/             # secured PDFs skipped during remediation
     unable-to-process/
       files/             # validation errors or unreadable PDFs
 ```
