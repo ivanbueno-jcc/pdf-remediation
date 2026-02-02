@@ -27,7 +27,7 @@ def font_fix(input_pdf_path: Path, output_pdf_path: Path, workspace_path: Path =
 
     try:
         docker.run(
-            "pdfix/font-fix-callas:v1.0.4",
+            "pdfix/font-fix-callas:v1.0.5",
             ["fix", "-i", str(input_relative_path), "-o", str(output_relative_path)],
             volumes=[(workspace_path.resolve(), '/data')],
             env_files=[env_file],
