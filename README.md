@@ -47,7 +47,11 @@ Here's an example walkthrough of remediating the Del Norte trial court.
    ```
    uv run -m pdf_remediation.font_fix delnorte
    ```
-6) Run the fallback remediation on pdf's that were not remediated in #4.
+6) After Callas, run the PDFix missing-unicode font fix on any remaining font issues:
+   ```
+   uv run -m pdf_remediation.font_fix_pdfix delnorte
+   ```
+7) Run the fallback remediation on pdf's that were not remediated in #4.
 
    a. Queue the files for re-processing:
    ```
@@ -58,27 +62,29 @@ Here's an example walkthrough of remediating the Del Norte trial court.
    ```
    uv run -m pdf_remediation.fix delnorte --config-file=default-fallback.json
    ```
-7) Run the fallback remediation on the files with font issues.
+8) Run the fallback remediation on the files with remaining font issues.
    
    a. Queue the files for re-processing:
    ```
    uv run -m pdf_remediation.reprocess delnorte default font-issues
    ```
+   Use `font-issues-missing-unicode` instead of `font-issues` if you are
+   reprocessing the PDFix font pass.
 
    b. Remediate with the fallback configuration:
    ```
    uv run -m pdf_remediation.fix delnorte default font-issues --config-file=default-fallback.json
    ```
 
-8) Check the workspace status:
+9) Check the workspace status:
    ```
    uv run -m pdf_remediation.status delnorte
    ```
 
-9) Review the reports in various folders:
+10) Review the reports in various folders:
    `resources/projects/<project>/workspace/<workspace>/<folder>/reports/<timestamp>`.
 
-10) Remediated files will be located in:
+11) Remediated files will be located in:
     `resources/projects/<project>/workspace/remediated/<folder>`
 
 ## Process Flow
@@ -162,6 +168,8 @@ inside Docker, then re-validates and routes results into `remediated/` or
 `unable-to-process/`.
 Runs end with a workspace summary showing totals plus `files`/`processed`
 breakdowns.
+Missing-unicode violations detected after validation are routed to
+`font-issues-missing-unicode/` for the PDFix pass.
 
 Callas file-level failures (error codes 104-107) are logged to
 `callas_font_fix_errors.csv` in the project root.
@@ -170,7 +178,23 @@ Options:
 - `--chunk-size <n>` to control batch size (default: 500)
 - `--verbose` to list files in each chunk
 
-#### 3) Reprocess with a new configuration
+#### 3) Fix missing-unicode font issues (PDFix)
+```
+uv run -m pdf_remediation.font_fix_pdfix <project_name> [workspace] [folder]
+```
+
+Run this after `FontFix` to handle files moved into `font-issues-missing-unicode`.
+It uses PDFix font remediation via Docker, re-validates, and routes results into
+`remediated/` or `unable-to-process/`.
+
+PDFix file-level failures are logged to `pdfix-font-errors.csv` in the project root.
+
+Options:
+- `--chunk-size <n>` to control batch size (default: 500)
+- `--n-cpu <n>` to control parallel workers (default: all cores)
+- `--verbose` to list files in each chunk
+
+#### 4) Reprocess with a new configuration
 ```
 uv run -m pdf_remediation.reprocess <project_name> [workspace] [folder]
 ```
@@ -186,8 +210,9 @@ uv run -m pdf_remediation.fix <project_name> [workspace] [folder] --config-file 
 `new-config.json` is located in `resources/configuration`
 
 For font-issue retries, run reprocess with `font-issues` as the folder,
-update the config, then re-run `Fix` on that subfolder. You can also run
-`FontFix` to attempt automatic font remediation with Callas pdfToolbox.
+update the config, then re-run `Fix` on that subfolder. Run `FontFix` to
+attempt automatic font remediation with Callas pdfToolbox, then follow with
+`font_fix_pdfix` on `font-issues-missing-unicode`.
 
 To skip a blocking file before reprocessing, run:
 `uv run -m pdf_remediation.skip <project_name> <relative_file_path>`
@@ -257,6 +282,8 @@ resources/projects/<project>/
       files/             # validated, compliant PDFs
     font-issues/
       files/             # font-related validation failures
+    font-issues-missing-unicode/
+      files/             # missing-unicode font issues after Callas validation
     secured-files/
       files/             # secured PDFs skipped during remediation
     unable-to-process/
@@ -284,6 +311,9 @@ argument so you can run separate workflows in different subfolders (for example,
 ### Font remediation
 - `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, then
   re-validates and moves results to `remediated/` or `unable-to-process/`.
+- `font_fix_pdfix.py` runs PDFix font remediation via Docker on
+  `font-issues-missing-unicode/`, then re-validates and moves results to
+  `remediated/` or `unable-to-process/`.
 
 ### Reporting (internal function, part of Validate)
 - `report.py` generates CSV/TXT/HTML report artifacts from veraPDF XML output.

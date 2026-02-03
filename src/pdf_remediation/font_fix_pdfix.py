@@ -1,5 +1,5 @@
 # pylint: disable=too-many-nested-blocks, duplicate-code
-'''PDF Remediation Main Fix Script'''
+'''Missing Unicode Utility using PDFix'''
 
 import argparse
 import multiprocessing
@@ -7,8 +7,7 @@ from datetime import datetime
 from pathlib import Path
 import plotext as plot
 from parallelbar import progress_starmap
-from .utilities.callas import font_fix
-from .utilities.pdfix import get_page_count_multiprocess
+from .utilities.pdfix import font_fix_pdfix, get_page_count_multiprocess
 from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import get_project_workspace_subfolder_file_paths
 from .utilities.resources import get_project_workspace_path, print_workspace_summary
@@ -36,7 +35,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         "workspace_folder",
         type=str,
         nargs='?',
-        default='font-issues',
+        default='font-issues-missing-unicode',
         help="Workspace subfolder (default: %(default)s)"
     )
     parser.add_argument(
@@ -50,6 +49,12 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         "-v",
         action='store_true',
         help="Enable verbose output."
+    )
+    parser.add_argument(
+        "--n-cpu",
+        type=int,
+        default=multiprocessing.cpu_count(),
+        help="Number of CPU cores to use (default: all available cores)."
     )
     args = parser.parse_args()
 
@@ -175,7 +180,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
 
             if len(file_paths_for_remediation) > 0:
                 print()
-                print("FIXING FONT ISSUES WITH CALLAS...")
+                print("FIXING MISSING UNICODE FONT WITH PDFIX...")
                 for key, chunk_file_paths in chunks.items():
                     if len(chunk_file_paths) == 0:
                         continue
@@ -194,12 +199,12 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         print()
 
                     progress_starmap(
-                        font_fix,
+                        font_fix_pdfix,
                         chunk_file_paths,
                         total=len(chunk_file_paths),
                         error_behavior="coerce",
                         process_timeout=600,
-                        n_cpu=4
+                        n_cpu=args.n_cpu
                     )
         else:
             print("No PDF files to process in the active folder.")
@@ -246,38 +251,6 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     continue
 
             print(f"Total valid files moved to remediated folder: {validation_iteration_counter}")
-
-            # Loop through the validation results.
-            # Move files that passed to a "font-issues-missing-unicode"
-            # folder in the same workspace.
-            font_issue_clauses = [
-                '7.21.7'
-            ]
-            files_with_font_issues_total = 0
-            for file_path, ua1_result, _, wcag_result, _, ua1_violations, \
-                wcag_violations in validation_results:
-
-                if ua1_result is False or wcag_result is False:
-                    has_font_violation = False
-                    for violation in ua1_violations + wcag_violations:
-                        if violation['clause'] in font_issue_clauses:
-                            has_font_violation = True
-                            break
-
-                    if has_font_violation:
-                        files_with_font_issues_total += 1
-
-                        if args.verbose:
-                            print(f"{file_path}")
-
-                        move_file_and_delete_source(
-                            Path(file_path),
-                            output_pdf_folder,
-                            args.project_name,
-                            args.workspace_name,
-                            "font-issues-missing-unicode"
-                        )
-            print(f"Total files with font issues moved to font-issues-missing-unicode folder: {files_with_font_issues_total}") # pylint: disable=line-too-long
 
             validation_iteration_counter = 0
             for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:

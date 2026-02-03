@@ -11,6 +11,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from parallelbar import progress_map
 from pdfixsdk import * # pylint: disable=wildcard-import, unused-wildcard-import
+from python_on_whales import docker
+from python_on_whales.exceptions import DockerException
 from .resources import stream_to_data, get_configuration_file, append_to_csv
 
 def is_pdf_secured(input_pdf_path: str) -> bool:
@@ -199,6 +201,62 @@ def fix(
     Path(input_pdf_path).unlink(missing_ok=True)
 
     # print(f"Remediation completed: {output_pdf_path}")
+
+def font_fix_pdfix(
+        input_pdf_path: Path,
+        output_pdf_path: Path,
+        workspace_path: Path = None) -> None:
+    '''
+    PDFix font fix utility.
+    :param input_pdf_path: Description
+    :type input_pdf_path: Path
+    :param output_pdf_path: Description
+    :type output_pdf_path: Path
+    :param workspace_path: Description
+    :type workspace_path: Path
+    '''
+
+    # Load the license and authorize the account.
+    load_dotenv()
+    pdfix_license_name = os.getenv('PDFIX_LICENSE_NAME')
+    pdfix_license_key = os.getenv('PDFIX_LICENSE_KEY')
+
+    output_pdf_path.parent.mkdir(parents=True, exist_ok=True)
+    input_relative_path = Path(input_pdf_path).relative_to(workspace_path)
+    output_relative_path = Path(output_pdf_path).relative_to(workspace_path)
+
+    try:
+        docker.run(
+            "pdfix/font-fix-pdfix:v1.0.3",
+            [
+                "fix-missing-unicode",
+                "--name", pdfix_license_name,
+                "--key", pdfix_license_key,
+                "-i", str(input_relative_path),
+                "-o", str(output_relative_path)
+            ],
+            volumes=[(workspace_path.resolve(), '/data')],
+            workdir="/data",
+            remove=True
+        )
+    except DockerException as e:
+        print(f"DockerException occurred: {e}")
+        match e.return_code:
+            case _:
+                append_to_csv(
+                    workspace_path.parent.parent / "pdfix-font-errors.csv",
+                    [
+                        input_relative_path,
+                        e.return_code
+                    ]
+                )
+                input_pdf_path.unlink(missing_ok=True)
+                raise DockerException(0) # pylint: disable=raise-missing-from, no-value-for-parameter
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        raise e
+    finally:
+        input_pdf_path.unlink(missing_ok=True)
 
 def license_status() -> json:
     '''
