@@ -30,7 +30,7 @@ def is_pdf_secured(input_pdf_path: str) -> bool:
 
     doc = pdfix.OpenDoc(input_pdf_path, "")
     if doc is None:
-        print('Unable to open pdf', pdfix.GetError())
+        # print('Unable to open pdf', pdfix.GetError())
         return {input_pdf_path: 'Error'}
 
     is_secured = doc.IsSecured()
