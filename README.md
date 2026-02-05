@@ -142,6 +142,7 @@ For verbose progress and file-level visibility (useful for spotting blocking fil
 Tune processing with:
 - `--chunk-size <n>` to control batch size (default: 500)
 - `--n-cpu <n>` to control parallel workers (default: 4)
+- `--debug` to set `--verbose` and `--chunk-size 1` so you can spot a slow file
 
 Steps executed:
 1. Apply the skip lists (`skipped_files.txt` and `pdfix_cannot_process_files.csv`) to exclude problematic files.
@@ -164,11 +165,11 @@ uv run -m pdf_remediation.font_fix <project_name> [workspace] [folder]
 ```
 
 `FontFix` targets the `font-issues` folder by default, runs Callas pdfToolbox
-inside Docker, then re-validates and routes results into `remediated/` or
-`unable-to-process/`.
+inside Docker on those files, then re-validates and routes results into
+`remediated/` or `unable-to-process/`.
 Runs end with a workspace summary showing totals plus `files`/`processed`
 breakdowns.
-Missing-unicode violations detected after validation are routed to
+Missing-unicode violations detected after validation are moved to
 `font-issues-missing-unicode/` for the PDFix pass.
 
 Callas file-level failures (error codes 104-107) are logged to
@@ -177,13 +178,14 @@ Callas file-level failures (error codes 104-107) are logged to
 Options:
 - `--chunk-size <n>` to control batch size (default: 500)
 - `--verbose` to list files in each chunk
+- `--debug` to set `--verbose` and `--chunk-size 1` so you can spot a slow file
 
 #### 3) Fix missing-unicode font issues (PDFix)
 ```
 uv run -m pdf_remediation.font_fix_pdfix <project_name> [workspace] [folder]
 ```
 
-Run this after `FontFix` to handle files moved into `font-issues-missing-unicode`.
+Run this after `FontFix` to process files moved into `font-issues-missing-unicode`.
 It uses PDFix font remediation via Docker, re-validates, and routes results into
 `remediated/` or `unable-to-process/`.
 
@@ -193,6 +195,7 @@ Options:
 - `--chunk-size <n>` to control batch size (default: 500)
 - `--n-cpu <n>` to control parallel workers (default: all cores)
 - `--verbose` to list files in each chunk
+- `--debug` to set `--verbose` and `--chunk-size 1` so you can spot a slow file
 
 #### 4) Reprocess with a new configuration
 ```
@@ -304,15 +307,17 @@ argument so you can run separate workflows in different subfolders (for example,
 - Results feed the reporting pipeline in `reports/<timestamp>`.
 
 ### Remediation
-- `fix.py` applies the PDFix remediation profile (e.g., `default.json`) with
-  multiprocessing and keeps folder structure intact.
-- Validation post-checks route outputs into `remediated/` and `font-issues/`.
+- `fix.py` runs the PDFix remediation profile (e.g., `default.json`) with
+  multiprocessing and preserves folder structure.
+- Post-validation routes outputs to `remediated/` and moves font-issue files to
+  `font-issues/`.
 
 ### Font remediation
-- `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, then
-  re-validates and moves results to `remediated/` or `unable-to-process/`.
+- `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, re-validates,
+  then moves results to `remediated/` or `unable-to-process/`. Missing-unicode
+  files move to `font-issues-missing-unicode/`.
 - `font_fix_pdfix.py` runs PDFix font remediation via Docker on
-  `font-issues-missing-unicode/`, then re-validates and moves results to
+  `font-issues-missing-unicode/`, re-validates, then moves results to
   `remediated/` or `unable-to-process/`.
 
 ### Reporting (internal function, part of Validate)

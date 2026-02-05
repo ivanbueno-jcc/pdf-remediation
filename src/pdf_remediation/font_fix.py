@@ -51,6 +51,12 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         action='store_true',
         help="Enable verbose output."
     )
+    parser.add_argument(
+        "--debug",
+        "-d",
+        action='store_true',
+        help="Enable debug output."
+    )
     args = parser.parse_args()
 
     if args.project_name:
@@ -58,6 +64,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         print(f"WORKSPACE: {args.workspace_name}")
         print(f"FOLDER: {args.workspace_folder}")
         print()
+
+        if args.debug:
+            args.verbose = True
+            args.chunk_size = 1
 
         workspace_path = get_project_workspace_path(
             args.project_name,
@@ -142,7 +152,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         chunks['3001 or more'].append(payload)
 
             if len(file_paths_for_remediation) > 0:
-                pull_image(CALLAS_FONT_IMAGE)
+                pull_image(CALLAS_FONT_IMAGE, verbose=args.verbose)
 
                 print()
                 page_count_file_num = []

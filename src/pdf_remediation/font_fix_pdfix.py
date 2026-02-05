@@ -56,6 +56,12 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         default=multiprocessing.cpu_count(),
         help="Number of CPU cores to use (default: all available cores)."
     )
+    parser.add_argument(
+        "--debug",
+        "-d",
+        action='store_true',
+        help="Enable debug output."
+    )
     args = parser.parse_args()
 
     if args.project_name:
@@ -63,6 +69,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         print(f"WORKSPACE: {args.workspace_name}")
         print(f"FOLDER: {args.workspace_folder}")
         print()
+
+        if args.debug:
+            args.verbose = True
+            args.chunk_size = 1
 
         workspace_path = get_project_workspace_path(
             args.project_name,
@@ -184,7 +194,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             chunks = sub_chunks
 
             if len(file_paths_for_remediation) > 0:
-                pull_image(PDFIX_FONT_IMAGE)
+                pull_image(PDFIX_FONT_IMAGE, verbose=args.verbose)
 
                 print()
                 print("FIXING MISSING UNICODE FONT WITH PDFIX...")

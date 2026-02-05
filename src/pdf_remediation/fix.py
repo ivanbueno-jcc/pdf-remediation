@@ -96,6 +96,12 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         default=4,
         help="Number of CPUs (default: %(default)s)"
     )
+    parser.add_argument(
+        "--debug",
+        "-d",
+        action='store_true',
+        help="Enable debug output."
+    )
     args = parser.parse_args()
 
     if args.project_name:
@@ -104,6 +110,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         print(f"FOLDER: {args.workspace_folder}")
         print(f"CONFIG FILE: {args.config_file}")
         print()
+
+        if args.debug:
+            args.verbose = True
+            args.chunk_size = 1
 
         # workspace_path = get_project_workspace_path(
         #     args.project_name,

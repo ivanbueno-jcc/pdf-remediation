@@ -42,9 +42,6 @@ if __name__ == '__main__':
             args.workspace_name,
             args.workspace_folder
         )
-        clear_workspace_folder(workspace_folder_path)
-        semaphore = workspace_folder_path / ".remediation.lock"
-        semaphore.touch(exist_ok=True)
 
         workspace_folder_path_processed = get_project_workspace_subfolder_path(
             args.project_name,
@@ -54,6 +51,11 @@ if __name__ == '__main__':
         )
 
         if len(list(workspace_folder_path_processed.rglob("*.pdf"))) > 0:
+
+            # clear_workspace_folder(workspace_folder_path)
+            # semaphore = workspace_folder_path / ".remediation.lock"
+            # semaphore.touch(exist_ok=True)
+
             for file_path in workspace_folder_path_processed.rglob("*.pdf"):
                 move_file_and_delete_source(
                     Path(file_path),

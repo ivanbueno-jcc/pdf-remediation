@@ -15,7 +15,7 @@ from python_on_whales import docker
 from python_on_whales.exceptions import DockerException, NoSuchImage
 from .resources import PDFIX_FONT_IMAGE, stream_to_data, get_configuration_file, append_to_csv
 
-def pull_image(image_name: str) -> None:
+def pull_image(image_name: str, verbose: bool = False) -> None:
     '''
     Pull a Docker image if it is not already present locally.
 
@@ -24,11 +24,14 @@ def pull_image(image_name: str) -> None:
     '''
     try:
         docker.image.inspect(image_name)
-        print(f"Docker image '{image_name}' is already present locally.")
+        if verbose:
+            print(f"Docker image '{image_name}' is already present locally.")
     except NoSuchImage:
-        print(f"Pulling Docker image '{image_name}'...")
+        if verbose:
+            print(f"Pulling Docker image '{image_name}'...")
         docker.image.pull(image_name)
-        print(f"Docker image '{image_name}' pulled successfully.")
+        if verbose:
+            print(f"Docker image '{image_name}' pulled successfully.")
 
 def is_pdf_secured(input_pdf_path: str) -> bool:
     '''
