@@ -19,6 +19,9 @@ CONFIG_FILE = CONFIG_DIR / "default.json"
 PROJECT_BASE_PATH = Path(os.getenv('PROJECT_BASE_PATH', './resources/projects'))
 PROJECT_BASE_PATH.mkdir(parents=True, exist_ok=True)
 
+CALLAS_FONT_IMAGE = "pdfix/font-fix-callas:v1.0.5"
+PDFIX_FONT_IMAGE = "pdfix/font-fix-pdfix:v1.0.5"
+
 def get_configuration_file(config_file: str = "default.json") -> Path:
     '''
     Get the configuration file path.

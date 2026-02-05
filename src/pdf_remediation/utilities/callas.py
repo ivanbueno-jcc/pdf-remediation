@@ -4,7 +4,7 @@ PDF Remediation Callas Font Fix Utility
 from pathlib import Path
 from python_on_whales import docker
 from python_on_whales.exceptions import DockerException
-from pdf_remediation.utilities.resources import append_to_csv
+from pdf_remediation.utilities.resources import CALLAS_FONT_IMAGE, append_to_csv
 
 def font_fix(input_pdf_path: Path, output_pdf_path: Path, workspace_path: Path = None) -> Path:
     '''
@@ -27,7 +27,7 @@ def font_fix(input_pdf_path: Path, output_pdf_path: Path, workspace_path: Path =
 
     try:
         docker.run(
-            "pdfix/font-fix-callas:v1.0.5",
+            CALLAS_FONT_IMAGE,
             ["fix", "-i", str(input_relative_path), "-o", str(output_relative_path)],
             volumes=[(workspace_path.resolve(), '/data')],
             env_files=[env_file],

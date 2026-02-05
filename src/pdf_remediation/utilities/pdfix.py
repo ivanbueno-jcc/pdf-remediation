@@ -12,8 +12,23 @@ from dotenv import load_dotenv
 from parallelbar import progress_map
 from pdfixsdk import * # pylint: disable=wildcard-import, unused-wildcard-import
 from python_on_whales import docker
-from python_on_whales.exceptions import DockerException
-from .resources import stream_to_data, get_configuration_file, append_to_csv
+from python_on_whales.exceptions import DockerException, NoSuchImage
+from .resources import PDFIX_FONT_IMAGE, stream_to_data, get_configuration_file, append_to_csv
+
+def pull_image(image_name: str) -> None:
+    '''
+    Pull a Docker image if it is not already present locally.
+
+    :param image_name: Name of the Docker image to pull.
+    :type image_name: str
+    '''
+    try:
+        docker.image.inspect(image_name)
+        print(f"Docker image '{image_name}' is already present locally.")
+    except NoSuchImage:
+        print(f"Pulling Docker image '{image_name}'...")
+        docker.image.pull(image_name)
+        print(f"Docker image '{image_name}' pulled successfully.")
 
 def is_pdf_secured(input_pdf_path: str) -> bool:
     '''
@@ -227,7 +242,7 @@ def font_fix_pdfix(
 
     try:
         docker.run(
-            "pdfix/font-fix-pdfix:v1.0.3",
+            PDFIX_FONT_IMAGE,
             [
                 "fix-missing-unicode",
                 "--name", pdfix_license_name,

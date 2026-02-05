@@ -8,9 +8,9 @@ from pathlib import Path
 import plotext as plot
 from parallelbar import progress_starmap
 from .utilities.callas import font_fix
-from .utilities.pdfix import get_page_count_multiprocess
+from .utilities.pdfix import get_page_count_multiprocess, pull_image
 from .utilities.verapdf import validate_pdf_multiprocess
-from .utilities.resources import get_project_workspace_subfolder_file_paths
+from .utilities.resources import CALLAS_FONT_IMAGE, get_project_workspace_subfolder_file_paths
 from .utilities.resources import get_project_workspace_path, print_workspace_summary
 from .utilities.resources import get_project_workspace_subfolder_path
 from .utilities.resources import get_project_workspace_file_paths, move_file_and_delete_source
@@ -137,6 +137,8 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         chunks['3001 or more'].append(payload)
 
             if len(file_paths_for_remediation) > 0:
+                pull_image(CALLAS_FONT_IMAGE)
+
                 print()
                 page_count_file_num = []
                 page_count_bucket = []
