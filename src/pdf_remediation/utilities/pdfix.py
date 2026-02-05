@@ -134,7 +134,8 @@ def fix(
         input_pdf_path: str,
         output_pdf_path: str,
         config_file: str = "default.json",
-        workspace_folder_path: Path = None) -> None:
+        workspace_folder_path: Path = None,
+        verbose: bool = False) -> None:
     '''
     Wrapper for PDFix remediation command.
     
@@ -164,7 +165,8 @@ def fix(
 
     doc = pdfix.OpenDoc(input_pdf_path, "")
     if doc is None:
-        print('Unable to open pdf', pdfix.GetError())
+        if verbose:
+            print('Unable to open pdf', pdfix.GetError())
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
@@ -177,14 +179,16 @@ def fix(
 
     command_statement = pdfix.CreateFileStream(command_path, kPsReadOnly)
     if not command_statement:
-        print('Error', pdfix.GetError())
+        if verbose:
+            print('Error', pdfix.GetError())
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
         )
         raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
     if not command.LoadParamsFromStream(command_statement, kDataFormatJson):
-        print('Error', pdfix.GetError())
+        if verbose:
+            print('Error', pdfix.GetError())
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
@@ -195,7 +199,8 @@ def fix(
     # run the command
     if not command.Run():
         # print(input_pdf_path)
-        print('Error', pdfix.GetError())
+        if verbose:
+            print('Error', pdfix.GetError())
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
@@ -205,7 +210,8 @@ def fix(
     # print(f"Remediation completed: {output_pdf_path}")
 
     if not doc.Save(output_pdf_path, kSaveFull):
-        print('Unable to save', pdfix.GetError())
+        if verbose:
+            print('Unable to save', pdfix.GetError())
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]

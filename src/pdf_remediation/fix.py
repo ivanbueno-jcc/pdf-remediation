@@ -197,7 +197,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         )
             print(f"Total secured files skipped: {secured_files_count}")
             print()
-            print(f"Total files to remediate: {len(file_paths_for_remediation)}")
+            processed_files_count = len(list(output_pdf_folder.rglob('*.pdf')))
+            print(f"Total files processed: {processed_files_count}")
+            print()
+            print(f"Total files left to remediate: {len(file_paths_for_remediation)}")
 
             # split the file_paths into batches based on the page count.
             chunks = {
@@ -217,7 +220,8 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     input_path,
                     input_workspace_path,
                     args.config_file,
-                    workspace_folder_path
+                    workspace_folder_path,
+                    args.verbose
                 )
                 match page_count_lookup[input_path]:
                     case 1:
@@ -291,7 +295,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     if args.verbose:
                         print()
                         print("   Files to process in this chunk:")
-                        for input_path, input_workspace_path, _, _ in chunk_file_paths:
+                        for input_path, input_workspace_path, _, _, _ in chunk_file_paths:
                             relative_chunk_path = Path(input_path).relative_to(
                                 workspace_folder_path)
                             print(f"    * {relative_chunk_path}")
