@@ -97,7 +97,7 @@ def get_page_count_multiprocess(
     :rtype: dict
     '''
 
-    print('Counting files and pages...')
+    print('Counting pages...')
     input_files = [str(file_path) for file_path in file_paths]
 
     results = []
