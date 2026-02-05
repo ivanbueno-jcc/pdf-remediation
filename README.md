@@ -360,6 +360,18 @@ argument so you can run separate workflows in different subfolders (for example,
 - `license_deactivate.py` deactivates an active license.
 - `.env` supports `PDFIX_LICENSE_NAME` and `PDFIX_LICENSE_KEY` for remediation.
 
+## Troubleshooting
+
+### Find slow files in a batch
+1) Press Ctrl+C to stop the current run.
+2) Re-run the fix command with `--debug` (or `-d`).
+3) When a file hangs, copy the file path and press Ctrl+C again.
+4) Skip the file:
+   ```
+   uv run -m pdf_remediation.skip <project_name> <file_path>
+   ```
+5) Run `fix` again without `--debug`/`-d`.
+
 ## Notes and Considerations
 - Remediation deletes the original file in `active/files` after successful save
   (see `PDFix.fix`), so `Reset` is the canonical way to restore originals.
