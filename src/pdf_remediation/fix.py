@@ -143,7 +143,11 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
 
             if len(skipped_files) > 0:
                 print(f"Total skipped files: {len(skipped_files)}")
-                print()
+
+            processed_files_count = len(list(output_pdf_folder.rglob('*.pdf')))
+            print(f"Total files processed: {processed_files_count}")
+            print(f"Total files left to remediate: {len(file_paths_for_remediation)}")
+            print()
 
             page_count_lookup = {}
             if len(file_paths_for_counting) > 0:
@@ -197,10 +201,6 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         )
             print(f"Total secured files skipped: {secured_files_count}")
             print()
-            processed_files_count = len(list(output_pdf_folder.rglob('*.pdf')))
-            print(f"Total files processed: {processed_files_count}")
-            print()
-            print(f"Total files left to remediate: {len(file_paths_for_remediation)}")
 
             # split the file_paths into batches based on the page count.
             chunks = {

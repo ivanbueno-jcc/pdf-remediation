@@ -94,6 +94,11 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 file_paths_for_remediation.append([file_path, destination_path])
                 file_paths_for_counting.append(file_path)
 
+            processed_files_count = len(list(output_pdf_folder.rglob('*.pdf')))
+            print(f"Total files processed: {processed_files_count}")
+            print(f"Total files left to remediate: {len(file_paths_for_remediation)}")
+            print()
+
             page_count_lookup = {}
             if len(file_paths_for_counting) > 0:
                 page_count_lookup = get_page_count_multiprocess(

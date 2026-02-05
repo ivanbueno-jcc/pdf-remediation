@@ -116,7 +116,6 @@ def get_page_count_multiprocess(
             total_pages += count
             page_counts_csv.append([file.replace(str(workspace_folder_path), ""), count])
 
-    print(f"Total PDF files: {len(input_files):}")
     print(f"Total Pages: {total_pages}")
 
     report_path = workspace_folder_path.parent / "reports" / \
