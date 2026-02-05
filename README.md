@@ -321,7 +321,7 @@ argument so you can run separate workflows in different subfolders (for example,
   `remediated/` or `unable-to-process/`.
 
 ### Reporting (internal function, part of Validate)
-- `report.py` generates CSV/TXT/HTML report artifacts from veraPDF XML output.
+- `utilities/report.py` generates CSV/TXT/HTML report artifacts from veraPDF XML output.
 - Every Validate and Fix run generates a suite of reports under `reports/<timestamp>`.
 - Report outputs include:
   - `vera_validation_results.csv`: per-file `ua1`/`wcag` pass/fail status and rule counts.

@@ -9,8 +9,8 @@ from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
 from parallelbar import progress_starmap
+from .report import run_report_generation
 from .resources import ROOT_DIR, get_configuration_file
-from ..report import run_report_generation
 
 def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
     """
