@@ -6,13 +6,13 @@ Move processed PDF files back to the active workspace folder.
 import argparse
 from pathlib import Path
 import sys
-from .utilities.resources import get_project_workspace_subfolder_path
+from .utilities.resources import get_project_workspace_path
 from .utilities.resources import move_file_and_delete_source
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description="Move the processed files back to the active workspace folder."
+        description="Move processed files from workspace folders back to active/files."
     )
     parser.add_argument("project_name", help="Project directory name.")
     parser.add_argument(
@@ -26,8 +26,8 @@ if __name__ == '__main__':
         "workspace_folder",
         type=str,
         nargs='?',
-        default='active',
-        help="Workspace subfolder (default: %(default)s)"
+        default='all',
+        help="Workspace subfolder to scan (default: %(default)s)"
     )
     args = parser.parse_args()
 
@@ -37,34 +37,49 @@ if __name__ == '__main__':
         print(f"FOLDER: {args.workspace_folder}")
         print()
 
-        workspace_folder_path = get_project_workspace_subfolder_path(
+        workspace_path = get_project_workspace_path(
             args.project_name,
-            args.workspace_name,
-            args.workspace_folder
+            args.workspace_name
         )
 
-        workspace_folder_path_processed = get_project_workspace_subfolder_path(
-            args.project_name,
-            args.workspace_name,
-            args.workspace_folder,
-            "processed"
-        )
+        workspace_folders = []
+        if args.workspace_folder == "all":
+            workspace_folders = sorted([
+                subfolder_path.name
+                for subfolder_path in workspace_path.iterdir()
+                if subfolder_path.is_dir()
+            ])
+        else:
+            workspace_folders = [args.workspace_folder]
 
-        if len(list(workspace_folder_path_processed.rglob("*.pdf"))) > 0:
+        total_files_moved = 0
+        for workspace_folder in workspace_folders:
+            processed_folder_path = workspace_path / workspace_folder / "processed"
+            if not processed_folder_path.exists():
+                continue
 
-            # clear_workspace_folder(workspace_folder_path)
-            # semaphore = workspace_folder_path / ".remediation.lock"
-            # semaphore.touch(exist_ok=True)
+            processed_file_paths = list(processed_folder_path.rglob("*.pdf"))
+            if len(processed_file_paths) == 0:
+                continue
 
-            for file_path in workspace_folder_path_processed.rglob("*.pdf"):
+            for file_path in processed_file_paths:
                 move_file_and_delete_source(
                     Path(file_path),
-                    workspace_folder_path_processed,
+                    processed_folder_path,
                     args.project_name,
                     args.workspace_name,
-                    args.workspace_folder
+                    "active"
                 )
-            print("Processed files have been moved back to the active folder.")
+
+            total_files_moved += len(processed_file_paths)
+            print(
+                f"Moved {len(processed_file_paths)} files from "
+                f"{workspace_folder}/processed to active/files."
+            )
+
+        if total_files_moved > 0:
+            print()
+            print(f"Total files moved to active/files: {total_files_moved}")
         else:
-            print("No PDF files found in the processed folder.")
+            print("No PDF files found in processed folders.")
             sys.exit()

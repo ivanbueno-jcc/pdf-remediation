@@ -53,7 +53,8 @@ Here's an example walkthrough of remediating the Del Norte trial court.
    ```
 7) Run the fallback remediation on pdf's that were not remediated in #4.
 
-   a. Queue the files for re-processing:
+   a. Queue the files for re-processing (default scans all workspace
+   subfolders that contain a `processed/` directory):
    ```
    uv run -m pdf_remediation.reprocess delnorte
    ```
@@ -71,9 +72,10 @@ Here's an example walkthrough of remediating the Del Norte trial court.
    Use `font-issues-missing-unicode` instead of `font-issues` if you are
    reprocessing the PDFix font pass.
 
-   b. Remediate with the fallback configuration:
+   b. Remediate with the fallback configuration (`reprocess` returns files to
+   `active/files`, so run `fix` on `active`, which is the default):
    ```
-   uv run -m pdf_remediation.fix delnorte default font-issues --config-file=default-fallback.json
+   uv run -m pdf_remediation.fix delnorte --config-file=default-fallback.json
    ```
 
 9) Check the workspace status:
@@ -205,18 +207,26 @@ Options:
 uv run -m pdf_remediation.reprocess <project_name> [workspace] [folder]
 ```
 
-This moves processed PDFs back to `active/files`. Update
+Defaults:
+- `workspace` = `default`
+- `folder` = `all`
+
+`reprocess` scans `<workspace>/<folder>/processed` and moves any PDFs back to
+`active/files`. When `folder` is `all`, it scans every workspace subfolder with
+a `processed/` directory.
+
+Update
 `resources/configuration/default.json` (or swap in a new config),
 then re-run `Fix`.
 
 ```
-uv run -m pdf_remediation.fix <project_name> [workspace] [folder] --config-file [new-config.json]
+uv run -m pdf_remediation.fix <project_name> [workspace] active --config-file [new-config.json]
 ```
 
 `new-config.json` is located in `resources/configuration`
 
 For font-issue retries, run reprocess with `font-issues` as the folder,
-update the config, then re-run `Fix` on that subfolder. Run `FontFix` to
+update the config, then re-run `Fix` on `active` (default folder). Run `FontFix` to
 attempt automatic font remediation with Callas pdfToolbox, then follow with
 `font_fix_pdfix` on `font-issues-missing-unicode`.
 
@@ -344,6 +354,9 @@ argument so you can run separate workflows in different subfolders (for example,
 ### Reprocess
 - `reprocess.py` returns processed PDFs to `active/files` so you can iterate with
   a revised configuration file.
+- Defaults: `workspace=default`, `folder=all`.
+- You can target one source subfolder (for example, `font-issues`) or scan all
+  subfolders with `processed/` and return them to `active/files`.
 
 ### Skip
 - `skip.py` appends a problematic file to `skipped_files.txt` so it is ignored

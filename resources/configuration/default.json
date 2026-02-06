@@ -1,586 +1,621 @@
 {
-    "actions": [
+  "name": "make_accessible",
+  "title": "Default PDF/UA Remediation Preset",
+  "version": "v0.1.0",
+  "desc": "Official default remediation preset for automated PDF/UA-1 compliance using PDFix SDK. The preset performs conservative, non-destructive cleanup, structure repair, tagging completion, and accessibility fixes.",
+  "actions": [
+    {
+      "name": "delete_annot",
+      "title": "Delete Annotations (TrapNet, PrinterMark)",
+      "desc": "Remove non-permitted annotation types that commonly cause PDF/UA compliance failures. TrapNet and PrinterMark annotations are production artifacts and must not be present in accessible documents.",
+      "params": [
         {
-            "comment": "Remove TrapNet and PrinterMark annotations",
-            "name": "delete_annot",
-            "params": [
-                {
-                    "name": "annot_types",
-                    "value": "^TrapNet|PrinterMark$"
-                }
-            ],
-            "title": "Delete Annotations"
-        },
-        {
-            "comment": "AutoTag the document - keep existing tags, no standard attributes, preflight mode",
-            "name": "add_tags",
-            "params": [
-                {
-                    "name": "template",
-                    "value": ""
-                },
-                {
-                    "name": "preflight",
-                    "value": true
-                },
-                {
-                    "name": "standard_attrs",
-                    "value": "false"
-                },
-                {
-                    "name": "sequential_headings",
-                    "value": "false"
-                },
-                {
-                    "name": "overwrite",
-                    "value": false
-                }
-            ],
-            "title": "AutoTag"
-        },
-        {
-            "comment": "Delete empty tags that are not headings or LBody",
-            "name": "delete_tags",
-            "params": [
-                {
-                    "name": "tag_names",
-                    "value": {
-                        "template": {
-                            "tag_update": [
-                                {
-                                    "query": {
-                                        "$and": [
-                                            {
-                                                "$0_tag_type": {
-                                                    "$regex": "^(?!H$|H\\d$|TH$|TD$|TR$|LBody$).*"
-                                                }
-                                            },
-                                            {
-                                                "$0_has_content": "false"
-                                            }
-                                        ],
-                                        "param": [
-                                            "pds_struct_elem"
-                                        ]
-                                    },
-                                    "statement": "$if"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "tag_content",
-                    "value": "none"
-                }
-            ],
-            "title": "Delete Tags"
-        },
-        {
-            "comment": "Delete tags with only whitespace content",
-            "name": "delete_tags",
-            "params": [
-                {
-                    "name": "tag_names",
-                    "value": {
-                        "template": {
-                            "tag_update": [
-                                {
-                                    "query": {
-                                        "$and": [
-                                            {
-                                                "$0_text": {
-                                                    "$regex": "^ *$"
-                                                }
-                                            }
-                                        ],
-                                        "param": [
-                                            "pds_struct_elem"
-                                        ]
-                                    },
-                                    "statement": "$if"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "tag_content",
-                    "value": "artifact"
-                }
-            ],
-            "title": "Delete Tags"
-        },
-        {
-            "comment": "Remove content marks with invalid MCIDs",
-            "name": "remove_content_marks",
-            "params": [
-                {
-                    "name": "object_types",
-                    "value": ".*"
-                },
-                {
-                    "name": "flags",
-                    "value": 8
-                }
-            ],
-            "title": "Remove Content Marks"
-        },        
-        {
-            "comment": "Set artifact content for objects that are not artifacts and without MCIDs",
-            "name": "artifact_content",
-            "params": [
-                {
-                    "name": "object_types",
-                    "value": {
-                        "template": {
-                            "object_update": [
-                                {
-                                    "query": {
-                                        "$and": [
-                                            {
-                                                "$0_artifact": "false"
-                                            },
-                                            {
-                                                "$0_mcid": "-1"
-                                            }
-                                        ],
-                                        "param": [
-                                            "pds_object"
-                                        ]
-                                    },
-                                    "statement": "$if"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "artifact_type",
-                    "value": "0"
-                }
-            ],
-            "title": "Artifact Content"
-        },
-        {
-            "comment": "Add missing Unicode mappings to text elements",
-            "name": "add_missing_unicode",
-            "title": "Add Missing Unicodes"
-        },
-        {
-            "comment": "Fix the display document title to match the actual document title",
-            "name": "set_display_doc_title",
-            "title": "Fix Display Document Title"
-        },
-        {
-            "comment": "Embed all fonts in the document",
-            "name": "embed_font",
-            "title": "Embed Fonts"
-        },
-        {
-            "comment": "Renumber and change heading tags to H",
-            "name": "fix_headings",
-            "params": [
-                {
-                    "name": "renumber_headings",
-                    "value": "2"
-                },
-                {
-                    "name": "change_headings_to",
-                    "value": "H"
-                }
-            ],
-            "title": "Fix Headings"
-        },
-        {
-            "comment": "Fix the parent tree structure",
-            "name": "fix_parent_tree",
-            "title": "Fix Parent Tree"
-        },
-        {
-            "comment": "Fix optional content groups",
-            "name": "fix_oc_name",
-            "title": "Fix Optional Content"
-        },
-        {
-            "comment": "Set suspect value for all objects",
-            "name": "set_suspect_value",
-            "title": "Set Suspect Value"
-        },
-        {
-            "comment": "Fix structure spaces by adding missing spaces and marking unnecessary spaces as artifacts",
-            "name": "fix_structure_spaces",
-            "params": [
-                {
-                    "name": "add_missing_spaces",
-                    "value": "true"
-                },
-                {
-                    "name": "remove_unnecessary_spaces",
-                    "value": "false"
-                },
-                {
-                    "name": "artifact_unnecessary_spaces",
-                    "value": "true"
-                }
-            ],
-            "title": "Fix Spaces"
-        },
-        {
-            "comment": "Set annotation contents to Text from annotation bounding box",
-            "name": "set_annot_contents",
-            "params": [
-                {
-                    "name": "annot_types",
-                    "value": ".*"
-                },
-                {
-                    "name": "alt_type",
-                    "value": "1"
-                },
-                {
-                    "name": "custom_text",
-                    "value": "Decorative"
-                },
-                {
-                    "name": "bbox_padding_x",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_x_right",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_y_top",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_y",
-                    "value": "4"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Annotation Contents"
-        },
-        {
-            "comment": "Set annotation contents to Action destination",
-            "name": "set_annot_contents",
-            "params": [
-                {
-                    "name": "annot_types",
-                    "value": ".*"
-                },
-                {
-                    "name": "alt_type",
-                    "value": "2"
-                },
-                {
-                    "name": "custom_text",
-                    "value": "Decorative"
-                },
-                {
-                    "name": "bbox_padding_x",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_x_right",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_y_top",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_y",
-                    "value": "4"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Annotation Contents"
-        },
-        {
-            "comment": "Set annotation contents to Auto generated text",
-            "name": "set_annot_contents",
-            "params": [
-                {
-                    "name": "annot_types",
-                    "value": ".*"
-                },
-                {
-                    "name": "alt_type",
-                    "value": "3"
-                },
-                {
-                    "name": "custom_text",
-                    "value": "Decorative"
-                },
-                {
-                    "name": "bbox_padding_x",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_x_right",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_y_top",
-                    "value": "4"
-                },
-                {
-                    "name": "bbox_padding_y",
-                    "value": "4"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Annotation Contents"
-        },
-        {
-            "comment": "Set alternate descriptions for Figures and Formulas to Use the associated tag content. If there is an Annotation among the children, its Contents key is used",
-            "name": "set_alt",
-            "params": [
-                {
-                    "name": "tag_names",
-                    "value": "^Figure$|^Formula$"
-                },
-                {
-                    "name": "alt_type",
-                    "value": "4"
-                },
-                {
-                    "name": "custom_text",
-                    "value": "Decorative"
-                },
-                {
-                    "name": "description_tag",
-                    "value": "Caption"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Alternate Description"
-        },
-        {
-            "comment": "Set alternate descriptions for Figures and Formulas to Use the first Description Tag above",
-            "name": "set_alt",
-            "params": [
-                {
-                    "name": "tag_names",
-                    "value": "^Figure$|^Formula$"
-                },
-                {
-                    "name": "alt_type",
-                    "value": "1"
-                },
-                {
-                    "name": "custom_text",
-                    "value": "Decorative"
-                },
-                {
-                    "name": "description_tag",
-                    "value": ""
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Alternate Description"
-        },
-        {
-            "comment": "Set alternate descriptions for Figures and Formulas to Use the first Description Tag below",
-            "name": "set_alt",
-            "params": [
-                {
-                    "name": "tag_names",
-                    "value": "^Figure$|^Formula$"
-                },
-                {
-                    "name": "alt_type",
-                    "value": "2"
-                },
-                {
-                    "name": "custom_text",
-                    "value": "Decorative"
-                },
-                {
-                    "name": "description_tag",
-                    "value": ""
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Alternate Description"
-        },
-        {
-            "comment": "Set alternate descriptions for Figures and Formulas to Define the Custom Alternative text",
-            "name": "set_alt",
-            "params": [
-                {
-                    "name": "tag_names",
-                    "value": "^Figure$|^Formula$"
-                },
-                {
-                    "name": "alt_type",
-                    "value": "0"
-                },
-                {
-                    "name": "custom_text",
-                    "value": "Decorative"
-                },
-                {
-                    "name": "description_tag",
-                    "value": "Caption"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Alternate Description"
-        },
-        {
-            "comment": "Set the PDF/UA standard to PDF/UA-1",
-            "name": "set_pdf_ua_standard",
-            "params": [
-                {
-                    "name": "part_number",
-                    "value": "1"
-                },
-                {
-                    "name": "rev_number",
-                    "value": "2023"
-                }
-            ],
-            "title": "Set PDF/UA Standard"
-        },
-        {
-            "comment": "Set alternate descriptions for Forms to Use the associated tag content. If there is an Annotation among the children, its Contents key is used",
-            "name": "set_alt",
-            "params": [
-                {
-                    "name": "tag_names",
-                    "value": "^Form$"
-                },
-                {
-                    "name": "alt_type",
-                    "value": "4"
-                },
-                {
-                    "name": "custom_text",
-                    "value": "Decorative"
-                },
-                {
-                    "name": "description_tag",
-                    "value": "Caption"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Alternate Description"
-        },
-        {
-            "comment": "Set Tag IDs for Note and TH tags",
-            "name": "set_tag_id",
-            "params": [
-                {
-                    "name": "tag_names",
-                    "value": "^Note$|^TH$"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Tag ID"
-        },
-        {
-            "comment": "Set tab order to Structure",
-            "name": "set_tabs_key",
-            "params": [
-                {
-                    "name": "tabs_key",
-                    "value": "S"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "true"
-                }
-            ],
-            "title": "Set Tab Order"
-        },        
-        {
-            "comment": "Fix media clip content type keys to text/plain",
-            "name": "fix_media_clip_keys",
-            "params": [
-                {
-                    "name": "ct_key",
-                    "value": "text/plain"
-                }
-            ],
-            "title": "Fix Media Clip"
-        },
-        {
-            "comment": "Set document title to Define the Custom text",
-            "name": "set_title",
-            "params": [
-                {
-                    "name": "title_type",
-                    "value": "2"
-                },
-                {
-                    "name": "custom_text",
-                    "value": ""
-                },
-                {
-                    "name": "description_tag",
-                    "value": "Caption"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Title"
-        },
-        {
-            "comment": "Set document language to English (United States)",
-            "name": "set_language",
-            "params": [
-                {
-                    "name": "lang",
-                    "value": "en-US"
-                },
-                {
-                    "name": "overwrite",
-                    "value": "false"
-                }
-            ],
-            "title": "Set Document Language"
+          "name": "annot_types",
+          "value": "^(TrapNet|PrinterMark)$"
         }
-    ],
-    "desc": "",
-    "icon": "commandgroup",
-    "keywords": "",
-    "name": "custom_action_imported",
-    "title": "custom_action_imported",
-    "version": {
-        "major": 1,
-        "minor": 0,
-        "patch": 0
+      ]
+    },
+    {
+      "name": "fix_parent_tree",
+      "title": "Fix Parent Tree (Initial repair)",
+      "desc": "Rebuild and normalize the ParentTree to ensure that all marked content references (MCIDs) correctly point to the structure tree. This establishes a stable structural foundation before tagging and cleanup.",
+      "params": []
+    },
+    {
+      "name": "add_tags",
+      "title": "AutoTag (Preflight, Preserve Existing Tags)",
+      "desc": "Automatically add missing structure tags using preflight-assisted layout analysis while preserving any existing tag structure. The action does not overwrite tags and does not inject standard layout attributes, keeping remediation conservative and predictable.",
+      "params": [
+        {
+          "name": "template",
+          "value": ""
+        },
+        {
+          "name": "preflight",
+          "value": true
+        },
+        {
+          "name": "standard_attrs",
+          "value": false
+        },
+        {
+          "name": "sequential_headings",
+          "value": false
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "delete_tags",
+      "title": "Delete Tags (Empty non-semantic tags)",
+      "desc": "Remove empty structure elements that do not carry semantic meaning and only pollute the tag tree. Headings, table cells, table rows, and list bodies are explicitly preserved to avoid breaking document semantics.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": {
+            "template": {
+              "tag_update": [
+                {
+                  "query": {
+                    "$and": [
+                      {
+                        "$0_tag_type": {
+                          "$regex": "^(?!H$|H\\d$|TH$|TD$|TR$|LBody$).*"
+                        }
+                      },
+                      {
+                        "$0_has_content": "false"
+                      }
+                    ],
+                    "param": [
+                      "pds_struct_elem"
+                    ]
+                  },
+                  "statement": "$if"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "tag_content",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "name": "delete_tags",
+      "title": "Delete Tags (Whitespace-only content)",
+      "desc": "Remove structure elements whose content consists only of whitespace. The associated content is converted to artifacts to prevent screen readers from announcing meaningless text.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": {
+            "template": {
+              "tag_update": [
+                {
+                  "query": {
+                    "$and": [
+                      {
+                        "$0_text": {
+                          "$regex": "^\\s*$"
+                        }
+                      }
+                    ],
+                    "param": [
+                      "pds_struct_elem"
+                    ]
+                  },
+                  "statement": "$if"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "tag_content",
+          "value": "artifact"
+        }
+      ]
+    },
+    {
+      "name": "remove_content_marks",
+      "title": "Remove Content Marks (Invalid MCIDs)",
+      "desc": "Remove marked-content sequences that reference invalid or broken MCIDs. This prevents structure corruption and resolves common ParentTree and content reference errors.",
+      "params": [
+        {
+          "name": "object_types",
+          "value": ".*"
+        },
+        {
+          "name": "flags",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "name": "artifact_content",
+      "title": "Artifact Untagged Content",
+      "desc": "Mark untagged page content without MCIDs as artifacts. This ensures that decorative or non-semantic content is ignored by assistive technologies.",
+      "params": [
+        {
+          "name": "object_types",
+          "value": {
+            "template": {
+              "object_update": [
+                {
+                  "query": {
+                    "$and": [
+                      {
+                        "$0_artifact": "false"
+                      },
+                      {
+                        "$0_mcid": "-1"
+                      }
+                    ],
+                    "param": [
+                      "pds_object"
+                    ]
+                  },
+                  "statement": "$if"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "artifact_type",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "add_missing_unicode",
+      "title": "Add Missing Unicode Mappings",
+      "desc": "Add missing Unicode mappings to text elements to ensure correct text extraction, searchability, and screen reader output.",
+      "params": []
+    },
+    {
+      "name": "set_display_doc_title",
+      "title": "Fix Display Document Title",
+      "desc": "Synchronize the ViewerPreferences DisplayDocTitle setting with the actual document title so that assistive technologies announce the correct title.",
+      "params": []
+    },
+    {
+      "name": "embed_font",
+      "title": "Embed Fonts",
+      "desc": "Embed all fonts used in the document to ensure consistent rendering and reliable text extraction across platforms and assistive technologies.",
+      "params": []
+    },
+    {
+      "name": "fix_headings",
+      "title": "Fix Headings (Renumber, Convert to H)",
+      "desc": "Normalize heading hierarchy by resolving skipped levels and converting headings to a consistent generic H structure. This improves outline quality and screen reader navigation.",
+      "params": [
+        {
+          "name": "renumber_headings",
+          "value": 2
+        },
+        {
+          "name": "change_headings_to",
+          "value": "H"
+        }
+      ]
+    },
+    {
+      "name": "fix_parent_tree",
+      "title": "Fix Parent Tree (Final normalization)",
+      "desc": "Re-run ParentTree repair after tagging and cleanup to ensure all newly created or modified content references are correctly linked.",
+      "params": []
+    },
+    {
+      "name": "fix_oc_name",
+      "title": "Fix Optional Content Configuration",
+      "desc": "Repair Optional Content (OCG) configuration dictionaries to ensure layer definitions are valid and accessible.",
+      "params": []
+    },
+    {
+      "name": "set_suspect_value",
+      "title": "Clear Suspect Flag",
+      "desc": "Fix the MarkInfo dictionary by clearing the Suspects entry, indicating that the document structure is no longer considered unreliable.",
+      "params": []
+    },
+    {
+      "name": "fix_structure_spaces",
+      "title": "Fix Structure Spaces (Add missing, Artifact unnecessary)",
+      "desc": "Insert missing spaces between words and mark unnecessary spaces as artifacts to improve text readability for screen readers.",
+      "params": [
+        {
+          "name": "add_missing_spaces",
+          "value": true
+        },
+        {
+          "name": "remove_unnecessary_spaces",
+          "value": false
+        },
+        {
+          "name": "artifact_unnecessary_spaces",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "tag_annot",
+      "title": "Tag Untagged Annotations",
+      "desc": "Attach untagged annotations to the nearest appropriate structure elements so that interactive content is included in the document structure.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": {
+            "template": {
+              "annot_update": [
+                {
+                  "query": {
+                    "$and": [
+                      {
+                        "$0_tag_type": ""
+                      }
+                    ],
+                    "param": [
+                      "pdf_annot"
+                    ]
+                  },
+                  "statement": "$if"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "set_annot_contents",
+      "title": "Set Annotation Contents (BBox text)",
+      "desc": "Populate annotation Contents using text extracted from the annotation bounding box. Provides meaningful accessible names when available.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": ".*"
+        },
+        {
+          "name": "alt_type",
+          "value": 1
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "bbox_padding_x",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_x_right",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y_top",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y",
+          "value": 4
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_annot_contents",
+      "title": "Set Annotation Contents (Action destination)",
+      "desc": "Populate annotation Contents using the annotation action destination (e.g., link target) when available.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": ".*"
+        },
+        {
+          "name": "alt_type",
+          "value": 2
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "bbox_padding_x",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_x_right",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y_top",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y",
+          "value": 4
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_annot_contents",
+      "title": "Set Annotation Contents (Auto-generated)",
+      "desc": "Populate annotation Contents using auto-generated text as a fallback when no meaningful source text is available.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": ".*"
+        },
+        {
+          "name": "alt_type",
+          "value": 3
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "bbox_padding_x",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_x_right",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y_top",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y",
+          "value": 4
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Figure/Formula: From associated content)",
+      "desc": "Set alternate descriptions for Figure and Formula tags using associated tag content. If an Annotation is present among children, its Contents is used.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$"
+        },
+        {
+          "name": "alt_type",
+          "value": 4
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": "Caption"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Figure/Formula: First description tag above)",
+      "desc": "Set alternate descriptions for Figure and Formula tags using the first suitable description tag found above the element.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$"
+        },
+        {
+          "name": "alt_type",
+          "value": 1
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Figure/Formula: First description tag below)",
+      "desc": "Set alternate descriptions for Figure and Formula tags using the first suitable description tag found below the element.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$"
+        },
+        {
+          "name": "alt_type",
+          "value": 2
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Figure/Formula: Custom text fallback)",
+      "desc": "Set alternate descriptions for Figure and Formula tags using a custom fallback value when no meaningful description is available.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$"
+        },
+        {
+          "name": "alt_type",
+          "value": 0
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": "Caption"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Form: From associated content)",
+      "desc": "Set alternate descriptions for Form tags using associated tag content. If an Annotation is present among children, its Contents is used.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Form$"
+        },
+        {
+          "name": "alt_type",
+          "value": 4
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": "Caption"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "fix_media_clip_keys",
+      "title": "Fix Media Clip (Content-Type to text/plain)",
+      "desc": "Fix media clip content type keys to a safe default (text/plain) to prevent validation failures on embedded media metadata.",
+      "params": [
+        {
+          "name": "ct_key",
+          "value": "text/plain"
+        }
+      ]
+    },
+    {
+      "name": "set_pdf_ua_standard",
+      "title": "Set PDF/UA-1 Identifier",
+      "desc": "Declare PDF/UA-1 conformance by setting the appropriate PDF/UA identifier in the document metadata.",
+      "params": [
+        {
+          "name": "part_number",
+          "value": "1"
+        },
+        {
+          "name": "rev_number",
+          "value": "2023"
+        }
+      ]
+    },
+    {
+      "name": "set_tag_id",
+      "title": "Set Tag IDs (Note, TH)",
+      "desc": "Generate unique ID keys for Note and table header (TH) structure elements as required by PDF/UA.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Note$|^TH$"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_tabs_key",
+      "title": "Set Tab Order (Structure)",
+      "desc": "Set the page Tabs key to Structure so keyboard navigation follows the logical reading order.",
+      "params": [
+        {
+          "name": "tabs_key",
+          "value": "S"
+        },
+        {
+          "name": "overwrite",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "set_title",
+      "title": "Set Document Title (Custom text if provided)",
+      "desc": "Set the document title using a defined method. If custom text is provided it can be applied; otherwise the existing title is preserved unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": 2
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": "Caption"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_language",
+      "title": "Set Document Language (en-US)",
+      "desc": "Define the primary document language to ensure correct pronunciation and processing by assistive technologies.",
+      "params": [
+        {
+          "name": "lang",
+          "value": "en-US"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
     }
+  ]
 }
