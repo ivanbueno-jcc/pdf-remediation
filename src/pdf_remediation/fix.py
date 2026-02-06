@@ -178,24 +178,30 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 is_pdf_secured,
                 security_input_files,
                 total=len(security_input_files),
-                n_cpu=multiprocessing.cpu_count()
+                n_cpu=4
             )
 
-            secured_files_count = 0
+            secured_files_count = unable_to_open = 0
             for d in security_check_results:
-                for file_path, is_secured in d.items():
-                    if is_secured:
-                        secured_files_count += 1
+                for file_path, security_status in d.items():
+                    if not security_status in ["unsecured"]:
                         relative_path = Path(file_path).relative_to(workspace_folder_path)
 
-                        append_to_csv(
-                            workspace_folder_path.parent.parent.parent.parent / "secured-files.csv",
-                            [relative_path]
-                        )
+                        if security_status in ["secured-cannot-process", "secured-needs-approval"]:
+                            secured_files_count += 1
+                            append_to_csv(
+                                workspace_folder_path.parent.parent.parent.parent / "secured-files.csv", # pylint: disable=line-too-long
+                                [relative_path, security_status]
+                            )
+                        elif security_status in ["pdfix-unable-to-open"]:
+                            unable_to_open += 1
+                            append_to_csv(
+                                workspace_folder_path.parent.parent.parent.parent / "pdfix-unable-to-open.csv", # pylint: disable=line-too-long
+                                [relative_path, security_status]
+                            )
 
                         if args.verbose:
                             print(f" Skipping secured file: {relative_path}")
-
                         # remove from remediation list
                         file_paths_for_remediation = [
                             item for item in file_paths_for_remediation
@@ -207,9 +213,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                             workspace_folder_path,
                             args.project_name,
                             args.workspace_name,
-                            "secured-files"
+                            security_status
                         )
             print(f"Total secured files skipped: {secured_files_count}")
+            print(f"Total files unable to open: {unable_to_open}")
             print()
 
             # split the file_paths into batches based on the page count.

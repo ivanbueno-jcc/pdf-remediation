@@ -147,7 +147,10 @@ Tune processing with:
 Steps executed:
 1. Apply the skip lists (`skipped_files.txt` and `pdfix_cannot_process_files.csv`) to exclude problematic files.
 2. Count pages for each PDF (PDFix).
-3. Check for secured PDFs; move secured files into `secured-files/files` and exclude them from remediation.
+3. Check for secured PDFs; classify and route them, then exclude them from remediation.
+   - `secured-cannot-process/files`: secured PDFs with font violations that cannot be remediated.
+   - `secured-needs-approval/files`: secured PDFs without blocking font violations (manual approval needed).
+   - `pdfix-unable-to-open/files`: PDFs that PDFix cannot open.
 4. Split files into size buckets for parallel remediation.
 5. Remediate with PDFix, write to `active/processed/`.
 6. Validate all processed files with veraPDF.
@@ -248,13 +251,15 @@ Use a new `workspace` name here to create a fresh workspace seeded from
 - Callas pdfToolbox runs in Docker for `FontFix` font remediation.
 
 ### External tools and assets
-- `lib/greenfield-apps-1.27.0-SNAPSHOT.jar`: veraPDF validation tool invoked by
+- `lib/greenfield-apps-1.28.0.jar`: veraPDF validation tool invoked by
   `src/pdf_remediation/utilities/verapdf.py`.
 - `resources/configuration/default.json`: PDFix command profile applied
   during remediation.
 - `resources/configuration/WCAG-2-2-Complete.xml`: veraPDF WCAG 2.2 profile used
   alongside `ua1` by default (adjust the `profiles` list in
   `src/pdf_remediation/utilities/verapdf.py` to change this).
+- `resources/configuration/UA1-Font.xml`: optional narrowed veraPDF profile for
+  font-only checks.
 - `resources/font/.env`: Callas pdfToolbox license config for `FontFix`.
 
 ### Directory layout
@@ -287,10 +292,14 @@ resources/projects/<project>/
       files/             # font-related validation failures
     font-issues-missing-unicode/
       files/             # missing-unicode font issues after Callas validation
-    secured-files/
-      files/             # secured PDFs skipped during remediation
     unable-to-process/
       files/             # validation errors or unreadable PDFs
+    secured-cannot-process/
+      files/             # secured PDFs with blocking font violations
+    secured-needs-approval/
+      files/             # secured PDFs without blocking font violations
+    pdfix-unable-to-open/
+      files/             # PDFs that PDFix cannot open
 ```
 Subfolder names are not fixed. `Fix` and `Validate` accept a `workspace_folder`
 argument so you can run separate workflows in different subfolders (for example,
@@ -345,6 +354,14 @@ argument so you can run separate workflows in different subfolders (for example,
 - Files that PDFix cannot open/process are recorded in
   `pdfix_cannot_process_files.csv` at the project root and are skipped on
   subsequent runs.
+
+### Secured and unreadable files
+- Secured PDFs are logged to `secured-files.csv` with a status column
+  (`secured-cannot-process` or `secured-needs-approval`).
+- PDFs that PDFix cannot open are logged to `pdfix-unable-to-open.csv`.
+- Secured classification runs an in-memory veraPDF pass using the WCAG 2.2
+  profile and treats font violations (`7.21.4.1`, `7.21.3.2`, `7.21.4.2`) as
+  blocking.
 
 ### Status
 - `status.py` prints a summary of the source PDF count and per-workspace file

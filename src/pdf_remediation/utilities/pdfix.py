@@ -13,6 +13,7 @@ from parallelbar import progress_map
 from pdfixsdk import * # pylint: disable=wildcard-import, unused-wildcard-import
 from python_on_whales import docker
 from python_on_whales.exceptions import DockerException, NoSuchImage
+from pdf_remediation.utilities.verapdf import in_memory_validation
 from .resources import PDFIX_FONT_IMAGE, stream_to_data, get_configuration_file, append_to_csv
 
 def pull_image(image_name: str, verbose: bool = False) -> None:
@@ -49,13 +50,31 @@ def is_pdf_secured(input_pdf_path: str) -> bool:
     doc = pdfix.OpenDoc(input_pdf_path, "")
     if doc is None:
         # print('Unable to open pdf', pdfix.GetError())
-        return {input_pdf_path: 'Error'}
+        return {input_pdf_path: 'pdfix-unable-to-open'}
 
-    is_secured = doc.IsSecured()
+    security_status = "unsecured"
+
+    if doc.IsSecured():
+        is_compliant, _, rules = in_memory_validation(input_pdf_path, "WCAG-2-2-Complete.xml") # pylint: disable=unbalanced-tuple-unpacking
+        if is_compliant is False:
+
+            font_issue_clauses = [
+                '7.21.4.1',
+                '7.21.3.2',
+                '7.21.4.2'
+            ]
+            has_font_violation = False
+            for violation in rules:
+                if violation['clause'] in font_issue_clauses:
+                    has_font_violation = True
+                    break
+            if has_font_violation:
+                security_status = "secured-cannot-process"
+            else:
+                security_status = "secured-needs-approval"
 
     doc.Close()
-
-    return {input_pdf_path: is_secured}
+    return {input_pdf_path: security_status}
 
 
 def get_page_count(input_pdf_path: str) -> list:

@@ -12,6 +12,51 @@ from parallelbar import progress_starmap
 from .report import run_report_generation
 from .resources import ROOT_DIR, get_configuration_file
 
+def in_memory_validation(pdfPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
+
+    jarPath = ROOT_DIR / "lib/greenfield-apps-1.28.0.jar"
+    try:
+        command = []
+        if profile == "wcag":
+            profile_path = get_configuration_file("WCAG-2-2-Complete.xml")
+            command = ["java", "-jar", jarPath, "--profile", str(profile_path), "--format", format, pdfPath]
+        elif profile == "ua1":
+            command = ["java", "-jar", jarPath, "--flavour", "ua1", "--format", format, pdfPath]
+        else:
+            profile_path = get_configuration_file(profile)
+            command = ["java", "-jar", jarPath, "--profile", str(profile_path), "--format", format, pdfPath]
+
+        result = subprocess.run(
+            command,
+            capture_output=True,  # capture output
+            text=True  # read output as text
+        )
+
+        exitCode = result.returncode
+        output = result.stdout
+        result = []
+
+        if exitCode > 1:
+            result = ['Error', 0, []]
+
+        if exitCode == 0: 
+            #print("Validation successfull.")
+            result = [True, 0, []]
+        elif exitCode == 1:
+            # print("Non-valid PDF/UA document")
+            rules = parseValidationReport(output)
+            result = [False, len(rules), rules]
+        else:
+            result = ['Error', 0, []]
+
+        return result
+
+    except FileNotFoundError:
+        return ['Error', 0, []]
+    except Exception as e:
+        # print(f"Unexpected error: {e}")
+        return ['Error', 0, []]
+
 def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
     """
     Executes a Java-based PDF/UA validation tool on the specified PDF file.
