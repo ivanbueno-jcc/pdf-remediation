@@ -1,4 +1,4 @@
-# pylint: disable=duplicate-code
+# pylint: disable=duplicate-code,too-many-return-statements,too-many-branches,too-many-statements
 '''
 Run remediation modules in sequence.
 '''
