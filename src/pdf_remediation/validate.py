@@ -4,42 +4,12 @@ Validate PDF files in a project workspace folder.
 '''
 import argparse
 from datetime import datetime
-from pathlib import Path
 import sys
 from .utilities.pdfix import get_page_count_multiprocess
 from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import get_project_workspace_subfolder_file_paths
-from .utilities.resources import get_project_workspace_path
 from .utilities.resources import get_project_workspace_subfolder_path
-
-def get_full_workspace_file_paths(
-        project_name: str,
-        workspace_name: str) -> tuple[Path, list[Path], list[Path]]:
-    '''
-    Return all PDF files from every workspace folder's files/ and processed/ subdirectories.
-    '''
-    workspace_path = get_project_workspace_path(project_name, workspace_name)
-    scanned_paths = []
-    file_paths = []
-    seen_paths = set()
-
-    for workspace_subfolder_path in sorted(workspace_path.iterdir()):
-        if not workspace_subfolder_path.is_dir():
-            continue
-
-        for directory_name in ["files", "processed"]:
-            workspace_subfolder_directory_path = workspace_subfolder_path / directory_name
-            if not workspace_subfolder_directory_path.exists():
-                continue
-
-            scanned_paths.append(workspace_subfolder_directory_path)
-            for file_path in sorted(workspace_subfolder_directory_path.rglob("*.pdf")):
-                file_path_str = str(file_path)
-                if file_path_str not in seen_paths:
-                    seen_paths.add(file_path_str)
-                    file_paths.append(file_path)
-
-    return workspace_path, scanned_paths, file_paths
+from .utilities.resources import get_full_workspace_file_paths
 
 if __name__ == '__main__':
 

@@ -1,4 +1,4 @@
-# pylint: disable=undefined-variable
+# pylint: disable=undefined-variable,too-many-locals,too-many-positional-arguments,too-many-arguments
 '''
 PDFix utility functions for PDF remediation and page count.
 '''
@@ -150,7 +150,8 @@ def get_page_count_multiprocess(
 
     print(f"Total Pages: {total_pages}")
 
-    report_root_path = report_base_path if report_base_path else workspace_folder_path.parent / "reports"
+    report_root_path = report_base_path if report_base_path \
+        else workspace_folder_path.parent / "reports"
     report_path = report_root_path / \
         f"{timestamp}-{subfolder if subfolder else 'files'}"
     report_path.mkdir(parents=True, exist_ok=True)

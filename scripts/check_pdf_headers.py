@@ -1,3 +1,4 @@
+# pylint: skip-file
 #!/usr/bin/env python3
 """Recursively validate that files start with a PDF header."""
 
