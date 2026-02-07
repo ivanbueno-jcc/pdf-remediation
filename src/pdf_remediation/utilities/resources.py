@@ -184,6 +184,30 @@ def get_project_workspace_subfolder_file_paths(
 
     return file_paths
 
+def get_relative_report_path(
+        input_pdf_path: str,
+        workspace_folder_path: Path,
+        relative_base_paths: list[Path] = None) -> str:
+    '''
+    Convert an input file path into a report-friendly relative path.
+    '''
+    file_path = Path(input_pdf_path)
+
+    if relative_base_paths:
+        sorted_base_paths = sorted(
+            relative_base_paths,
+            key=lambda path: len(str(path)),
+            reverse=True
+        )
+        for base_path in sorted_base_paths:
+            try:
+                relative_path = file_path.relative_to(base_path)
+                return f"/{relative_path.as_posix()}"
+            except ValueError:
+                continue
+
+    return str(input_pdf_path).replace(str(workspace_folder_path), "")
+
 def move_file_and_delete_source(
         source_path: Path,
         source_folder: Path,
@@ -267,7 +291,10 @@ def append_to_csv(file_path: Path, row: list) -> None:
     #     csv_writer = csv.writer(csvfile)
     #     csv_writer.writerow(row)
 
-def print_workspace_summary(project_name: str, workspace_name: str) -> None:
+def print_workspace_summary(
+        project_name: str,
+        workspace_name: str,
+        ignored_subfolders: list = None) -> None:
     '''
     Print a summary of the workspace folders and file counts.
     
@@ -275,13 +302,20 @@ def print_workspace_summary(project_name: str, workspace_name: str) -> None:
     :type project_name: str
     :param workspace_name: Description
     :type workspace_name: str
+    :param ignored_subfolders: Workspace subfolders to skip in the summary.
+    :type ignored_subfolders: list
     '''
     workspace_path = get_project_workspace_path(project_name, workspace_name)
+    ignored_subfolders = ignored_subfolders or []
+    ignored_subfolder_set = set(ignored_subfolders)
 
     summary_file_total = 0
     workspaces = {}
     for subfolder_path in workspace_path.iterdir():
         if subfolder_path.is_dir():
+            if subfolder_path.name in ignored_subfolder_set:
+                continue
+
             num_of_pdf_files = len(list(subfolder_path.rglob("*.pdf")))
             summary_file_total += num_of_pdf_files
             workspaces[subfolder_path.name] = {

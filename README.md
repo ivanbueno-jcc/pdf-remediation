@@ -83,8 +83,11 @@ Here's an example walkthrough of remediating the Del Norte trial court.
    uv run -m pdf_remediation.status delnorte
    ```
 
-10) Review the reports in various folders:
-   `resources/projects/<project>/workspace/<workspace>/<folder>/reports/<timestamp>`.
+10) Review the reports:
+    - Standard validation/remediation runs:
+      `resources/projects/<project>/workspace/<workspace>/<folder>/reports/<timestamp>-<directory>`
+    - Full workspace validation runs (`validate --full`):
+      `resources/projects/<project>/workspace/<workspace>/reports/<timestamp>-full`
 
 11) Remediated files will be located in:
     `resources/projects/<project>/workspace/remediated/<folder>`
@@ -110,16 +113,23 @@ Copy PDFs into the printed `resources/projects/<project>/source` directory.
 
 #### 2) Validate PDFs
 ```
-uv run -m pdf_remediation.validate <project_name> [workspace] [folder]
+uv run -m pdf_remediation.validate <project_name> [workspace] [folder] [directory] [--full]
 ```
 
 Defaults:
 - `workspace` = `default`
 - `folder` = `active`
-You can target any workspace and subfolder by passing these arguments.
+- `directory` = `files`
+You can target any workspace/subfolder/directory by passing these arguments.
+By default, validation runs against `<workspace>/<folder>/<directory>`.
+
+Use `--full` to validate all PDFs in every workspace subfolder's `files/` and
+`processed/` directories in one pass. This mode writes reports to
+`workspace/<workspace>/reports/<timestamp>-full` and prints the scanned folders.
+
 Validation runs both PDF/UA (veraPDF `ua1`) and WCAG 2.2 profiles by default.
 Results include `ua1` and `wcag` columns in `vera_validation_results.csv`, and
-per-profile report folders under `reports/<timestamp>` (for example,
+per-profile report folders under `reports/<timestamp>-<directory>` (for example,
 `xml/ua1`, `xml/wcag`, `summary/ua1`, `summary/wcag`). To change profiles, edit
 the `profiles` list in `src/pdf_remediation/utilities/verapdf.py`.
 
@@ -291,10 +301,11 @@ The workspace structure is created on demand by `resources.py`:
 resources/projects/<project>/
   source/                # user-provided original PDFs
   workspace/<workspace>/ # defaults to "default"
+    reports/<ts>-full    # optional consolidated reports from "validate --full"
     active/
       files/             # working set copied from source
       processed/         # remediation output
-      reports/<ts>/      # validation reports for a run
+      reports/<ts>-<directory>  # validation reports for a run
       .remediation.lock  # semaphore to avoid repeated copy
     remediated/
       files/             # validated, compliant PDFs
@@ -323,7 +334,11 @@ argument so you can run separate workflows in different subfolders (for example,
 ### Validation
 - `validate.py` runs page counting (PDFix) and veraPDF validation for PDF/UA
   (`ua1`) plus WCAG 2.2.
-- Results feed the reporting pipeline in `reports/<timestamp>`.
+- Default mode validates one directory (`<workspace>/<folder>/<directory>`).
+- `--full` mode validates every `<subfolder>/files` and `<subfolder>/processed`
+  directory in the workspace and writes a consolidated report under
+  `workspace/<workspace>/reports/<timestamp>-full`.
+- Results feed the reporting pipeline in `reports/<timestamp>-<directory>`.
 
 ### Remediation
 - `fix.py` runs the PDFix remediation profile (e.g., `default.json`) with
@@ -341,7 +356,8 @@ argument so you can run separate workflows in different subfolders (for example,
 
 ### Reporting (internal function, part of Validate)
 - `utilities/report.py` generates CSV/TXT/HTML report artifacts from veraPDF XML output.
-- Every Validate and Fix run generates a suite of reports under `reports/<timestamp>`.
+- Every Validate and Fix run generates reports under `reports/<timestamp>-<directory>`
+  (or `workspace/<workspace>/reports/<timestamp>-full` for `validate --full`).
 - Report outputs include:
   - `vera_validation_results.csv`: per-file `ua1`/`wcag` pass/fail status and rule counts.
   - `xml/<profile>/`: raw veraPDF XML reports per file (for example, `xml/ua1`).
@@ -379,7 +395,15 @@ argument so you can run separate workflows in different subfolders (for example,
 ### Status
 - `status.py` prints a summary of the source PDF count and per-workspace file
   counts, including totals plus `files`/`processed` breakdowns.
+- Workspace totals and summaries skip the workspace-level `reports/` folder.
 - Syntax: `uv run -m pdf_remediation.status <project_name>`
+
+### Utility scripts
+- `scripts/check_pdf_headers.py` recursively checks file headers for `%PDF-`.
+- It prints total valid/invalid/unreadable counts plus up to 3 sample valid and
+  3 sample invalid files.
+- Invalid samples include the first 32 bytes (printable + hex) to aid triage.
+- Syntax: `python3 scripts/check_pdf_headers.py <folder_path>`
 
 ### Reset
 - `reset.py` refreshes a workspace from `source/` and resets the copy semaphore.

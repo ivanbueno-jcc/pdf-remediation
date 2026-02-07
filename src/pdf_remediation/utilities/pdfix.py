@@ -15,6 +15,7 @@ from python_on_whales import docker
 from python_on_whales.exceptions import DockerException, NoSuchImage
 from pdf_remediation.utilities.verapdf import in_memory_validation
 from .resources import PDFIX_FONT_IMAGE, stream_to_data, get_configuration_file, append_to_csv
+from .resources import get_relative_report_path
 
 def pull_image(image_name: str, verbose: bool = False) -> None:
     '''
@@ -103,7 +104,9 @@ def get_page_count_multiprocess(
         workspace_folder_path: Path,
         file_paths: list,
         timestamp: str = None,
-        subfolder: str = None) -> dict:
+        subfolder: str = None,
+        report_base_path: Path = None,
+        relative_base_paths: list[Path] = None) -> dict:
     '''
     Multiprocess to get page counts for a list of PDF files.
     
@@ -115,6 +118,10 @@ def get_page_count_multiprocess(
     :type timestamp: str
     :param subfolder: Description
     :type subfolder: str
+    :param report_base_path: Optional folder where reports should be written.
+    :type report_base_path: Path
+    :param relative_base_paths: Optional base paths used to compute relative file paths.
+    :type relative_base_paths: list[Path]
     :return: Description
     :rtype: dict
     '''
@@ -136,11 +143,15 @@ def get_page_count_multiprocess(
         page_count_lookup.update(d)
         for file, count in d.items():
             total_pages += count
-            page_counts_csv.append([file.replace(str(workspace_folder_path), ""), count])
+            page_counts_csv.append([
+                get_relative_report_path(file, workspace_folder_path, relative_base_paths),
+                count
+            ])
 
     print(f"Total Pages: {total_pages}")
 
-    report_path = workspace_folder_path.parent / "reports" / \
+    report_root_path = report_base_path if report_base_path else workspace_folder_path.parent / "reports"
+    report_path = report_root_path / \
         f"{timestamp}-{subfolder if subfolder else 'files'}"
     report_path.mkdir(parents=True, exist_ok=True)
 

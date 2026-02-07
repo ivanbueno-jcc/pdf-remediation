@@ -33,9 +33,17 @@ def main():
         workspace_main_path = source_path.parent / "workspace"
         for workspace_path in workspace_main_path.iterdir():
             if workspace_path.is_dir():
-                total_pdfs = len(list(workspace_path.rglob("*.pdf")))
+                total_pdfs = 0
+                for subfolder_path in workspace_path.iterdir():
+                    if subfolder_path.is_dir() and subfolder_path.name != "reports":
+                        total_pdfs += len(list(subfolder_path.rglob("*.pdf")))
+
                 print(f"  * {workspace_path.name} ({total_pdfs} PDFs)")
-                print_workspace_summary(args.project_name, workspace_path.name)
+                print_workspace_summary(
+                    args.project_name,
+                    workspace_path.name,
+                    ignored_subfolders=["reports"]
+                )
                 print()
 
 if __name__ == '__main__':

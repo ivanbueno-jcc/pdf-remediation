@@ -10,7 +10,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 from parallelbar import progress_starmap
 from .report import run_report_generation
-from .resources import ROOT_DIR, get_configuration_file
+from .resources import ROOT_DIR, get_configuration_file, get_relative_report_path
 
 def in_memory_validation(pdfPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
 
@@ -236,7 +236,9 @@ def validate_pdf_multiprocess(
         workspace_folder_path: Path,
         file_paths: list,
         timestamp: str = None,
-        subfolder: str = None) -> None:
+        subfolder: str = None,
+        report_base_path: Path = None,
+        relative_base_paths: list[Path] = None) -> None:
     '''
     Multiprocess to validate PDF files using VeraPDF.
     
@@ -248,6 +250,10 @@ def validate_pdf_multiprocess(
     :type timestamp: str
     :param subfolder: Description
     :type subfolder: str
+    :param report_base_path: Optional folder where reports should be written.
+    :type report_base_path: Path
+    :param relative_base_paths: Optional base paths used to compute relative file paths.
+    :type relative_base_paths: list[Path]
     '''
     profiles = ["ua1", "wcag"]
     # Prepare the validation file paths, which are tuples of (inputPdfPath, reportPath).
@@ -256,7 +262,8 @@ def validate_pdf_multiprocess(
     # Create a timestamped report folder inside the reports folder.
     if timestamp is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    report_path = workspace_folder_path.parent / "reports" / \
+    report_root_path = report_base_path if report_base_path else workspace_folder_path.parent / "reports"
+    report_path = report_root_path / \
         f"{timestamp}-{subfolder if subfolder else 'files'}"
     report_path_xml = report_path / "xml"
     report_path_xml.mkdir(parents=True, exist_ok=True)
@@ -276,7 +283,11 @@ def validate_pdf_multiprocess(
     csv_results = []
     for result in results:
         csv_result = result[:]
-        csv_result[0] = csv_result[0].replace(str(workspace_folder_path), "")
+        csv_result[0] = get_relative_report_path(
+            csv_result[0],
+            workspace_folder_path,
+            relative_base_paths
+        )
         csv_results.append(csv_result)
         
         # delete columns with rule details to reduce memory usage
