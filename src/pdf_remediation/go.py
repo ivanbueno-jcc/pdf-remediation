@@ -4,6 +4,7 @@ Run remediation modules in sequence.
 '''
 
 import argparse
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -32,6 +33,47 @@ def run_command(command: list[str]) -> int:
     print(f"RUNNING: {' '.join(command)}")
     result = subprocess.run(command, check=False)
     return result.returncode
+
+
+def get_env_path() -> Path:
+    '''
+    Return the project .env file path.
+    '''
+    return Path(__file__).resolve().parents[2] / ".env"
+
+
+def save_env_value(key: str, value: str) -> None:
+    '''
+    Upsert a key/value in the project .env file.
+    '''
+    env_path = get_env_path()
+    env_path.parent.mkdir(parents=True, exist_ok=True)
+    env_lines: list[str] = []
+
+    if env_path.exists():
+        env_lines = env_path.read_text(encoding="utf-8").splitlines()
+
+    escaped_value = value.replace("\\", "\\\\").replace('"', '\\"')
+    new_line = f'{key} = "{escaped_value}"'
+    updated_lines: list[str] = []
+    replaced = False
+
+    for line in env_lines:
+        stripped = line.strip()
+        if stripped and not stripped.startswith("#") and "=" in stripped:
+            line_key = stripped.split("=", 1)[0].strip()
+            if line_key == key:
+                updated_lines.append(new_line)
+                replaced = True
+                continue
+        updated_lines.append(line)
+
+    if not replaced:
+        if updated_lines and updated_lines[-1] != "":
+            updated_lines.append("")
+        updated_lines.append(new_line)
+
+    env_path.write_text("\n".join(updated_lines) + "\n", encoding="utf-8")
 
 
 def move_contents(source_dir: Path, destination_dir: Path) -> None:
@@ -124,7 +166,16 @@ def main() -> int:
         if terminus_path:
             print()
             print(f"Terminus detected: {terminus_path}")
-            pantheon_email = input("Pantheon email for Terminus login: ").strip()
+            pantheon_email = os.getenv("PANTHEON_EMAIL", "").strip()
+            if pantheon_email:
+                print(f"Using saved Pantheon email: {pantheon_email}")
+            else:
+                pantheon_email = input("Pantheon email for Terminus login: ").strip()
+                if pantheon_email:
+                    save_env_value("PANTHEON_EMAIL", pantheon_email)
+                    os.environ["PANTHEON_EMAIL"] = pantheon_email
+                    print(f"Saved Pantheon email to {get_env_path()}")
+
             if not pantheon_email:
                 print("Pipeline stopped: Pantheon email is required when Terminus is installed.")
                 return 1
