@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 import plotext as plot
 from parallelbar import progress_starmap
-from .utilities.callas import font_fix
+from .utilities.callas import Callas
 from .utilities.pdfix import get_page_count_multiprocess, pull_image
 from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import CALLAS_FONT_IMAGE, get_project_workspace_subfolder_file_paths
@@ -211,7 +211,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         print()
 
                     progress_starmap(
-                        font_fix,
+                        Callas.font_fix,
                         chunk_file_paths,
                         total=len(chunk_file_paths),
                         error_behavior="coerce",

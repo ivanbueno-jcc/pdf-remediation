@@ -1,4 +1,4 @@
-# pylint: disable=undefined-variable,too-many-locals,too-many-positional-arguments,too-many-arguments
+# pylint: disable=undefined-variable,too-many-locals,too-many-positional-arguments,too-many-arguments,duplicate-code
 '''
 PDFix utility functions for PDF remediation and page count.
 '''
