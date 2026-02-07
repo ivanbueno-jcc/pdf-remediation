@@ -4,6 +4,7 @@
 import argparse
 import csv
 import multiprocessing
+import queue
 from datetime import datetime
 from pathlib import Path
 import plotext as plot
@@ -14,6 +15,105 @@ from .utilities.resources import append_to_csv, get_project_workspace_subfolder_
 from .utilities.resources import print_workspace_summary
 from .utilities.resources import get_project_path, get_project_workspace_subfolder_path
 from .utilities.resources import get_project_workspace_file_paths, move_file_and_delete_source
+
+FIX_PROCESS_TIMEOUT_SECONDS = 500
+
+def _append_fix_worker_error(
+        input_pdf_path: str,
+        workspace_folder_path: Path,
+        error_message: str) -> None:
+    '''Persist worker failures to the same CSV used by fix().'''
+
+    if workspace_folder_path is None:
+        return
+
+    try:
+        relative_path = Path(input_pdf_path).relative_to(workspace_folder_path)
+    except ValueError:
+        relative_path = Path(input_pdf_path)
+
+    error_file_path = workspace_folder_path.parent.parent.parent.parent \
+        / "pdfix-cannot-process-files.csv"
+    append_to_csv(error_file_path, [relative_path, error_message])
+
+def _fix_process_target( # pylint: disable=too-many-arguments,too-many-positional-arguments
+        input_pdf_path: str,
+        output_pdf_path: str,
+        config_file: str,
+        workspace_folder_path: Path,
+        verbose: bool,
+        result_queue: multiprocessing.Queue) -> None:
+    '''
+    Execute fix in a dedicated child process and return exception details through a queue.
+    '''
+    try:
+        fix(
+            input_pdf_path,
+            output_pdf_path,
+            config_file,
+            workspace_folder_path,
+            verbose
+        )
+        result_queue.put(None)
+    except BaseException as exc: # pylint: disable=broad-exception-caught
+        result_queue.put(f"{type(exc).__name__}: {exc}")
+        # Exit cleanly to avoid child-process traceback noise in the console.
+        raise SystemExit(1) from exc
+
+def fix_with_process_timeout( # pylint: disable=too-many-arguments,too-many-positional-arguments
+        input_pdf_path: str,
+        output_pdf_path: str,
+        config_file: str = "default.json",
+        workspace_folder_path: Path = None,
+        verbose: bool = False,
+        process_timeout: int = FIX_PROCESS_TIMEOUT_SECONDS) -> None:
+    '''
+    Run PDFix fix in an isolated process so hung native calls can be force-terminated.
+    '''
+
+    context = multiprocessing.get_context("spawn")
+    result_queue = context.Queue(maxsize=1)
+    process = context.Process(
+        target=_fix_process_target,
+        args=(
+            input_pdf_path,
+            output_pdf_path,
+            config_file,
+            workspace_folder_path,
+            verbose,
+            result_queue
+        )
+    )
+    process.start()
+    process.join(process_timeout)
+
+    if process.is_alive():
+        process.terminate()
+        process.join(5)
+        if process.is_alive():
+            process.kill()
+            process.join()
+
+        timeout_message = f"TimeoutError: function took longer than {process_timeout} s."
+        _append_fix_worker_error(input_pdf_path, workspace_folder_path, timeout_message)
+        raise TimeoutError(timeout_message)
+
+    process_error = None
+    try:
+        process_error = result_queue.get_nowait()
+    except queue.Empty:
+        pass
+    finally:
+        result_queue.close()
+        result_queue.join_thread()
+
+    if process.exitcode != 0:
+        if process_error:
+            raise RuntimeError(process_error)
+
+        unknown_error = f"Fix worker exited with code {process.exitcode}"
+        _append_fix_worker_error(input_pdf_path, workspace_folder_path, unknown_error)
+        raise RuntimeError(unknown_error)
 
 def get_skipped_files_list(project_name: str) -> list[str]:
     '''
@@ -34,7 +134,7 @@ def get_skipped_files_list(project_name: str) -> list[str]:
     # Use the first column as the relative file path to skip.
     pdfix_cannot_process_files = []
     pdfix_cannot_process_files_path = \
-        get_project_path(project_name) / "pdfix_cannot_process_files.csv"
+        get_project_path(project_name) / "pdfix-cannot-process-files.csv"
     if pdfix_cannot_process_files_path.exists():
         with open(pdfix_cannot_process_files_path, 'r', newline='', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
@@ -319,11 +419,11 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         print()
 
                     progress_starmap(
-                        fix,
+                        fix_with_process_timeout,
                         chunk_file_paths,
                         total=len(chunk_file_paths),
                         error_behavior="coerce",
-                        process_timeout=600,
+                        executor="threads",
                         n_cpu=4
                     )
         else:

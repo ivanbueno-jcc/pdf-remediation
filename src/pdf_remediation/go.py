@@ -97,13 +97,13 @@ def move_contents(source_dir: Path, destination_dir: Path) -> None:
         shutil.move(str(entry), str(destination))
 
 
-def main() -> int:
+def main() -> int: # pylint: disable=too-many-locals
     '''
-    Run fix, font_fix, font_fix_pdfix, and full validation sequentially.
+    Run full validation, fix, font_fix, font_fix_pdfix, then full validation again.
     '''
     parser = argparse.ArgumentParser(
         description=(
-            "Run fix, font_fix, font_fix_pdfix, and validate --full sequentially "
+            "Run validate --full, fix, font_fix, font_fix_pdfix, then validate --full again "
             "for a project workspace."
         )
     )
@@ -148,6 +148,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    project_initialized = False
     project_path = Path(PROJECT_BASE_PATH) / args.project_name
     if not project_path.exists():
         print(f"Project not found. Initializing: {args.project_name}")
@@ -156,6 +157,7 @@ def main() -> int:
             print()
             print(f"Pipeline stopped: init failed with exit code {rc}.")
             return rc
+        project_initialized = True
 
     source_path = get_project_source_path(args.project_name).resolve()
     print(f"SOURCE: {source_path}")
@@ -231,10 +233,11 @@ def main() -> int:
     print(f"WORKSPACE: {args.workspace_name}")
     print()
     print("PIPELINE")
-    print("1) fix (active)")
-    print("2) font_fix (font-issues)")
-    print("3) font_fix_pdfix (font-issues-missing-unicode)")
-    print("4) validate (--full)")
+    print("1) validate [pre-fix, init only]")
+    print("2) fix (active)")
+    print("3) font_fix (font-issues)")
+    print("4) font_fix_pdfix (font-issues-missing-unicode)")
+    print("5) validate (--full --skip-page-count) [final]")
 
     fix_args = [
         args.project_name,
@@ -274,11 +277,22 @@ def main() -> int:
     if args.debug:
         font_fix_pdfix_args.append("--debug")
 
-    validate_args = [
+    pre_validate_args = [
         args.project_name,
         args.workspace_name,
-        "--full"
+        "--skip-page-count"
     ]
+    final_validate_args = [*pre_validate_args, "--full"]
+
+    if project_initialized:
+        rc = run_module("pdf_remediation.validate", pre_validate_args)
+        if rc != 0:
+            print()
+            print(f"Pipeline stopped: pre-fix validate --full failed with exit code {rc}.")
+            return rc
+    else:
+        print()
+        print("Skipping pre-fix validate --full (project already initialized).")
 
     rc = run_module("pdf_remediation.fix", fix_args)
     if rc != 0:
@@ -298,10 +312,10 @@ def main() -> int:
         print(f"Pipeline stopped: font_fix_pdfix failed with exit code {rc}.")
         return rc
 
-    rc = run_module("pdf_remediation.validate", validate_args)
+    rc = run_module("pdf_remediation.validate", final_validate_args)
     if rc != 0:
         print()
-        print(f"Pipeline stopped: validate --full failed with exit code {rc}.")
+        print(f"Pipeline stopped: final validate failed with exit code {rc}.")
         return rc
 
     print()

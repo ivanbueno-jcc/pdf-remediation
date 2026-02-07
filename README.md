@@ -157,7 +157,7 @@ Tune processing with:
 - `--debug` to set `--verbose` and `--chunk-size 1` so you can spot a slow file
 
 Steps executed:
-1. Apply the skip lists (`skipped_files.txt` and `pdfix_cannot_process_files.csv`) to exclude problematic files.
+1. Apply the skip lists (`skipped_files.txt` and `pdfix-cannot-process-files.csv`) to exclude problematic files.
 2. Count pages for each PDF (PDFix).
 3. Check for secured PDFs; classify and route them, then exclude them from remediation.
    - `secured-cannot-process/files`: secured PDFs with font violations that cannot be remediated.
@@ -381,7 +381,7 @@ argument so you can run separate workflows in different subfolders (for example,
   
 ### Auto-skip (PDFix failures)
 - Files that PDFix cannot open/process are recorded in
-  `pdfix_cannot_process_files.csv` at the project root and are skipped on
+  `pdfix-cannot-process-files.csv` at the project root and are skipped on
   subsequent runs.
 
 ### Secured and unreadable files

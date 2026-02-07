@@ -187,7 +187,7 @@ def fix(
         raise Exception('Pdfix Initialization fail') # pylint: disable=broad-exception-raised
 
     error_file_path = workspace_folder_path.parent.parent.parent.parent \
-        / "pdfix_cannot_process_files.csv"
+        / "pdfix-cannot-process-files.csv"
 
     # Load the license and authorize the account.
     load_dotenv()

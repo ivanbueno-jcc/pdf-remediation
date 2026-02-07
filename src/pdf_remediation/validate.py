@@ -43,12 +43,18 @@ if __name__ == '__main__':
         action='store_true',
         help="Validate all PDFs from every workspace folder's files and processed directories."
     )
+    parser.add_argument(
+        "--skip-page-count",
+        action='store_true',
+        help="Skip page counting and only run validation."
+    )
     args = parser.parse_args()
 
     if args.project_name:
         print(f"PROJECT: {args.project_name}")
         print(f"WORKSPACE: {args.workspace_name}")
         print(f"FULL: {args.full}")
+        print(f"SKIP PAGE COUNT: {args.skip_page_count}")
         print()
 
         report_base_path = None
@@ -90,14 +96,15 @@ if __name__ == '__main__':
 
         if len(file_paths) > 0:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            get_page_count_multiprocess(
-                workspace_folder_path,
-                file_paths,
-                timestamp,
-                subfolder,
-                report_base_path,
-                relative_base_paths
-            )
+            if not args.skip_page_count:
+                get_page_count_multiprocess(
+                    workspace_folder_path,
+                    file_paths,
+                    timestamp,
+                    subfolder,
+                    report_base_path,
+                    relative_base_paths
+                )
             validate_pdf_multiprocess(
                 workspace_folder_path,
                 file_paths,
