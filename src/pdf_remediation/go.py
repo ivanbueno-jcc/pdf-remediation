@@ -35,6 +35,18 @@ def run_command(command: list[str]) -> int:
     return result.returncode
 
 
+def print_pipeline_banner(step_number: int, step_name: str) -> None:
+    '''
+    Print a high-visibility banner for each pipeline step.
+    '''
+    title = f"PIPELINE STEP {step_number}: {step_name}"
+    border = "=" * max(72, len(title))
+    print()
+    print(border)
+    print(title)
+    print(border)
+
+
 def get_env_path() -> Path:
     '''
     Return the project .env file path.
@@ -284,6 +296,7 @@ def main() -> int: # pylint: disable=too-many-locals
     ]
     final_validate_args = [*pre_validate_args, "--full"]
 
+    print_pipeline_banner(1, "validate --skip-page-count (pre-fix)")
     if project_initialized:
         rc = run_module("pdf_remediation.validate", pre_validate_args)
         if rc != 0:
@@ -294,24 +307,28 @@ def main() -> int: # pylint: disable=too-many-locals
         print()
         print("Skipping pre-fix validate --full (project already initialized).")
 
+    print_pipeline_banner(2, "fix")
     rc = run_module("pdf_remediation.fix", fix_args)
     if rc != 0:
         print()
         print(f"Pipeline stopped: fix failed with exit code {rc}.")
         return rc
 
+    print_pipeline_banner(3, "font_fix")
     rc = run_module("pdf_remediation.font_fix", font_fix_args)
     if rc != 0:
         print()
         print(f"Pipeline stopped: font_fix failed with exit code {rc}.")
         return rc
 
+    print_pipeline_banner(4, "font_fix_pdfix")
     rc = run_module("pdf_remediation.font_fix_pdfix", font_fix_pdfix_args)
     if rc != 0:
         print()
         print(f"Pipeline stopped: font_fix_pdfix failed with exit code {rc}.")
         return rc
 
+    print_pipeline_banner(5, "validate --full --skip-page-count (final)")
     rc = run_module("pdf_remediation.validate", final_validate_args)
     if rc != 0:
         print()
