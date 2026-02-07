@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+python_files=()
+while IFS= read -r -d '' file_path; do
+  if [[ "$file_path" == *.py ]]; then
+    python_files+=("$file_path")
+  fi
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+if [[ ${#python_files[@]} -eq 0 ]]; then
+  exit 0
+fi
+
+if ! uv run python -m pylint --version >/dev/null 2>&1; then
+  echo "pre-commit: pylint is not available in the project environment."
+  echo "Install it first (example): uv add --dev pylint"
+  exit 1
+fi
+
+echo "pre-commit: running pylint on staged Python files..."
+uv run python -m pylint "${python_files[@]}"
