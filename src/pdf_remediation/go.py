@@ -117,61 +117,63 @@ def main() -> int:
 
     source_path = get_project_source_path(args.project_name).resolve()
     print(f"SOURCE: {source_path}")
+    source_is_empty = not any(source_path.iterdir())
 
-    terminus_path = shutil.which("terminus")
-    if terminus_path:
-        print()
-        print(f"Terminus detected: {terminus_path}")
-        pantheon_email = input("Pantheon email for Terminus login: ").strip()
-        if not pantheon_email:
-            print("Pipeline stopped: Pantheon email is required when Terminus is installed.")
-            return 1
-
-        rc = run_command(["terminus", "auth:login", f"--email={pantheon_email}"])
-        if rc != 0:
+    if source_is_empty:
+        terminus_path = shutil.which("terminus")
+        if terminus_path:
             print()
-            print(f"Pipeline stopped: terminus auth:login failed with exit code {rc}.")
-            return rc
+            print(f"Terminus detected: {terminus_path}")
+            pantheon_email = input("Pantheon email for Terminus login: ").strip()
+            if not pantheon_email:
+                print("Pipeline stopped: Pantheon email is required when Terminus is installed.")
+                return 1
 
-        rc = run_command([
-            "terminus",
-            "backup:get",
-            f"jcc-{args.project_name}.live",
-            "--element=files",
-            f"--to={source_path / 'files_live.tar.gz'}"
-        ])
-        if rc != 0:
+            rc = run_command(["terminus", "auth:login", f"--email={pantheon_email}"])
+            if rc != 0:
+                print()
+                print(f"Pipeline stopped: terminus auth:login failed with exit code {rc}.")
+                return rc
+
+            rc = run_command([
+                "terminus",
+                "backup:get",
+                f"jcc-{args.project_name}.live",
+                "--element=files",
+                f"--to={source_path / 'files_live.tar.gz'}"
+            ])
+            if rc != 0:
+                print()
+                print(f"Pipeline stopped: terminus backup:get failed with exit code {rc}.")
+                return rc
+
+            backup_archive_path = source_path / "files_live.tar.gz"
+            if not backup_archive_path.exists():
+                print()
+                print(f"Pipeline stopped: backup archive not found at {backup_archive_path}.")
+                return 1
+
             print()
-            print(f"Pipeline stopped: terminus backup:get failed with exit code {rc}.")
-            return rc
+            print(f"Extracting backup archive: {backup_archive_path}")
+            with tarfile.open(backup_archive_path, "r:gz") as tar:
+                tar.extractall(path=source_path)
 
-        backup_archive_path = source_path / "files_live.tar.gz"
-        if not backup_archive_path.exists():
-            print()
-            print(f"Pipeline stopped: backup archive not found at {backup_archive_path}.")
-            return 1
+            backup_archive_path.unlink()
+            print(f"Deleted archive: {backup_archive_path}")
 
-        print()
-        print(f"Extracting backup archive: {backup_archive_path}")
-        with tarfile.open(backup_archive_path, "r:gz") as tar:
-            tar.extractall(path=source_path)
+            files_live_path = source_path / "files_live"
+            if not files_live_path.exists() or not files_live_path.is_dir():
+                print()
+                print(
+                    "Pipeline stopped: extracted files_live folder not found at "
+                    f"{files_live_path}."
+                )
+                return 1
 
-        backup_archive_path.unlink()
-        print(f"Deleted archive: {backup_archive_path}")
-
-        files_live_path = source_path / "files_live"
-        if not files_live_path.exists() or not files_live_path.is_dir():
-            print()
-            print(f"Pipeline stopped: extracted files_live folder not found at {files_live_path}.")
-            return 1
-
-        move_contents(files_live_path, source_path)
-        files_live_path.rmdir()
-        print(f"Moved files from {files_live_path} to {source_path}")
-        print(f"Deleted folder: {files_live_path}")
-    else:
-        print()
-        print("Terminus not installed. Skipping Pantheon backup download.")
+            move_contents(files_live_path, source_path)
+            files_live_path.rmdir()
+            print(f"Moved files from {files_live_path} to {source_path}")
+            print(f"Deleted folder: {files_live_path}")
 
     print()
     print(f"PROJECT: {args.project_name}")
