@@ -178,6 +178,7 @@ def main() -> int: # pylint: disable=too-many-locals
     if source_is_empty:
         terminus_path = shutil.which("terminus")
         if terminus_path:
+            print_pipeline_banner(0, "download files")
             print()
             print(f"Terminus detected: {terminus_path}")
             pantheon_email = os.getenv("PANTHEON_EMAIL", "").strip()
@@ -296,7 +297,7 @@ def main() -> int: # pylint: disable=too-many-locals
     ]
     final_validate_args = [*pre_validate_args, "--full"]
 
-    print_pipeline_banner(1, "validate --skip-page-count (pre-fix)")
+    print_pipeline_banner(1, "validate (pre-fix)")
     if project_initialized:
         rc = run_module("pdf_remediation.validate", pre_validate_args)
         if rc != 0:
@@ -328,7 +329,7 @@ def main() -> int: # pylint: disable=too-many-locals
         print(f"Pipeline stopped: font_fix_pdfix failed with exit code {rc}.")
         return rc
 
-    print_pipeline_banner(5, "validate --full --skip-page-count (final)")
+    print_pipeline_banner(5, "validate (final)")
     rc = run_module("pdf_remediation.validate", final_validate_args)
     if rc != 0:
         print()
