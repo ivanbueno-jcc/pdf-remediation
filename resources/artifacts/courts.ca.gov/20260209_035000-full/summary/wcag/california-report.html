@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>PDFix – PDF/UA Report – California – Report</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;            margin: 0; padding: 0; background: #f5f7fb; color: #111; }
+    .page { max-width: 1200px; margin: 0 auto; padding: 24px 32px 40px; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .logo { width: 56px; height: 56px; border-radius: 12px; background: #fff;              border: 1px solid #dde2f0; display: flex; align-items: center;              justify-content: center; font-weight: 700; font-size: 24px; color: #2563eb; }
+    .meta { font-size: 13px; color: #4b5563; }
+    h1 { font-size: 24px; margin: 0 0 4px; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .tag-report { background: #fef3c7; color: #92400e; }
+    .tag-after { background: #dcfce7; color: #166534; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: #fff; border-radius: 12px; padding: 16px 18px; box-shadow: 0 10px 25px rgba(15,23,42,0.04);             border: 1px solid #e5e7eb; }
+    .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 4px; }
+    .card-value { font-size: 22px; font-weight: 600; margin-bottom: 2px; }
+    .card-note { font-size: 12px; color: #6b7280; }
+    .progress-bar { width: 100%; height: 10px; border-radius: 999px; background: #e5e7eb; overflow: hidden; margin-top: 8px; }
+    .progress-fill-ok { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .progress-fill-bad { height: 100%; background: linear-gradient(90deg, #f97316, #dc2626); }
+    h2 { font-size: 18px; margin: 24px 0 8px; }
+    h3 { font-size: 15px; margin: 18px 0 6px; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    th, td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background: #f3f4f6; font-weight: 600; }
+    tbody tr:nth-child(even) { background: #f9fafb; }
+    .pill-ok { display:inline-block; padding: 2px 8px; border-radius:999px; background:#dcfce7; color:#166534; font-size:11px; }
+    .pill-bad { display:inline-block; padding: 2px 8px; border-radius:999px; background:#fee2e2; color:#b91c1c; font-size:11px; }
+    .flex { display:flex; gap:8px; align-items:center; }
+    .muted { color:#6b7280; font-size:12px; }
+    .section { margin-bottom: 28px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="header-left">
+        <img src="data:image/webp;base64,UklGRpgFAABXRUJQVlA4WAoAAAAQAAAANwAANwAAQUxQSN4CAAABkGzbtmk769m2bdRi27Zt23wqxbb5GNu2k2fbZnJ34a69zzr35gMiwoHbSIqU7DEtVXffF+C/08jeKzDQy95ItTgPCrv2La+ipqYi79u1sEHOKsJiZHQhk7AweqSFfKyW/2Ykfy+3kofmZHSPeGeypgy84pgs47zI9E9jMk3rT2R2DZNtzWwSS5uZCmxeSrmPLj/njx1PdVxkrXKRvtuvGu2ANiDHSOWaVfeTwDODoVtdWXT8p1y1DE8h2vEMkWosi34KtG7x2iImKTB/52jIwPQaQygmCbBMZJwNj+ITqMZ/ZZyJljzLmIpdxmGWqGoSzTAjmcodidCIFpKZrxKi0VFzLhKg2GXtHFZDo+RBoogiZyWDmIACOwDo+Y3CrWCwucsEDlISJiIZlT/bo3+lqFqjCwB9FQLClFwTrpg/ICfkinnfnju/BVwDAMNv4lrCFT7f66LM7uTWZSsT8M0QwD6PCX3XAZD6K6swKUOA2/ZKEXn2AF7lTGzFGj1Adnin5KI7IGwOtDAR5V4AgdLH+0YAV4oPsYZlXOi6f5AqVIEkWM5kDVyNw5ZwvWZjNZMEPSB43BGEhuIzRuIBegvFH71FPWBGIZMmzx59EcmGMBOut51jvFJfBNcY0aehAKAxIIWRuIbPb6qrAEArmtEIQ3kiUjBdD/3UjmYSg3B+SdwJBs7BiRzS+dWIJlC9wQAEup6h1gsYKc2HboB0ssVfOj1Xsj4R62HzfhtABLy7wZXawFu0egjLxKSPAey4TMZetgak7poKSv0FS+FNjCcXvEN/USyXcrFs/05U7wn9hVUv4oLXVdAW4r24DXjH9xdKP/vHtVWDTbXCkjyG21/c+mtT+meeNSL4PhPbcthGSVuuf0r2a0Ed1ZhJSOaXHgCwGPdr2nxQ2wrA+YyCNIlEdZ5bhOYD6jzyY/Eq8sTVgucRtc0/apu31DbfqW2eVNf8qq55WU3zuZr+D/xvAlZQOCCUAgAAsA8AnQEqOAA4AD5tLpRGpCKiISgb/ACADYlsDbAE8mlb8A55SafDfx5/Gb5VKX/V/vh+Q3OnV//lft291v9u9mfmAfoB0nfMB+x3+A/sHvL/x3+AewD0AP3Q6wn0AP1m9Kr/qf8r4Dv2G/az2jP/t1gBWkZU0Lx4hQfAOsNGHJ9wwlJxOMAA/v6HwZ6lPUxaOlC2DmHebi7/IJbbENAasWeeHpLnuP2c+eyJeyC3ArDomVTuPWTOQdfnP+AOxO6aLhqdGdMFdfVrLODye5AJL9/errL7CYfTnt3Pq+6p1wOmYz2pS4Nl6toPGmsn+/oSTQOR8k8VAyEL4/++Af//2rTWkUmS0os0LgYgKomhgiOMw05rsbY1NeNWv8+WvLT1NR5//tK3DCLhLKXwHeL1lJXNzGTqqd3D/jNaLnK9Fviduujl1ZUyolWj/PTWyq2/+cXn/5n6oXQcBoy6MJGBDbR1dM8XRv+RaLuGiAyhf1Jt80KMUgB35gBfmOOVzDWBH9pvE7MNKh5ShQWPMDUf3jQFJE/WZH94uNrCmOAGgdIPmvA9y+vB7rA47Z/4ejD0cYsuPmeMXI/ZM7J+hdfMQIabKRndquyrfURC8Rnfg/zEmrVBypJlZpPQQ2IVrixSJ1vC/C+IMQnTY+c3O2MEY2vkeRfm+rEmXiXBnoppa+4E8pOgeeuJ8qARNEndhg/gzfztg43PYIdb9OzReDDbGGk/7ahP2ac+cQJNQ5LrRWK8GN57R9zd//2/cELA304Q1n3ebpbbxpnGjTchzUq7IAmwv0Nvi4cXp9U+a22AtgeXtAtcf0nMKP1The98AEFB591NsUSXp+vc5Rw0Ep3F629AZEpqUlecRc4i/+RnMwAAAAAA" alt="PDFix logo" class="logo" style="object-fit:contain;" />
+        <div>
+          <h1>PDFix – PDF/UA Report</h1>
+          <div class="meta">State: <strong>California</strong> &nbsp;·&nbsp; Phase: <span class="tag tag-report">Validation Report</span></div>
+          <div class="meta">Generated at: 2026-02-09 14:00</div>
+        </div>
+      </div>
+    </header>
+    <section class="section">
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">Total PDFs Validated</div>
+          <div class="card-value">42407</div>
+          <div class="card-note">Based on veraPDF compliance report.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Compliant</div>
+          <div class="card-value">16716</div>
+          <div class="card-note flex">
+            <span class="pill-ok">PDF/UA-1 Pass</span>
+            <span class="muted">39.4% of files</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill-ok" style="width:39.4%"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Non-Compliant</div>
+          <div class="card-value">25691</div>
+          <div class="card-note flex">
+            <span class="pill-bad">Requires Fixes</span>
+            <span class="muted">60.6% of files</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill-bad" style="width:60.6%"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Batch Runtime</div>
+          <div class="card-value">5.4 s</div>
+          <div class="card-note">Sum of all processing steps in this phase.</div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <h2>Processing Steps Overview</h2>
+      <table>
+        <thead>
+          <tr><th>Step</th><th>Operation ID</th><th>Files</th><th>Duration</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>veraPDF Summary</td>
+            <td><code>report-summary</code></td>
+            <td>42407</td>
+            <td>5.40 s</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="section">
+      <h2>Top Clauses Across All Files</h2>
+      <h3>Most Frequent Clauses</h3>
+      <table>
+        <thead><tr><th>Clause</th><th>Description</th><th>Files Affected</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>7.1</code></td>
+            <td>Tagged content should not be present inside content marked as Artifact</td>
+            <td>13005</td>
+          </tr>
+          <tr>
+            <td><code>7.2</code></td>
+            <td>Table rows shall have the same number of columns (taking into account column spans)</td>
+            <td>12332</td>
+          </tr>
+          <tr>
+            <td><code>1.3.4</code></td>
+            <td>Pages shall have the same orientation</td>
+            <td>7254</td>
+          </tr>
+          <tr>
+            <td><code>7.21.4.1</code></td>
+            <td>The font programs for all fonts used for rendering within a conforming file shall be embedded within that file, as defined in ISO 32000-1:2008, 9.9</td>
+            <td>4455</td>
+          </tr>
+          <tr>
+            <td><code>7.21.7</code></td>
+            <td>The Font dictionary of all fonts shall define the map of all used character codes to Unicode values, either via a ToUnicode entry, or other mechanisms as defined in ISO 14289-1, 7.21.7</td>
+            <td>2791</td>
+          </tr>
+          <tr>
+            <td><code>6.2</code></td>
+            <td>The document catalog dictionary shall include a MarkInfo dictionary containing an entry, Marked, whose value shall be true</td>
+            <td>1823</td>
+          </tr>
+          <tr>
+            <td><code>7.18.3</code></td>
+            <td>Every page on which there is an annotation shall contain in its page dictionary the key Tabs, and its value shall be S</td>
+            <td>1805</td>
+          </tr>
+          <tr>
+            <td><code>7.18.1</code></td>
+            <td>A form field shall have a TU key present or all its Widget annotations shall have alternative descriptions (in the form of an Alt entry in the enclosing structure elements)</td>
+            <td>1640</td>
+          </tr>
+          <tr>
+            <td><code>7.10</code></td>
+            <td>Each optional content configuration dictionary that forms the value of the D key, or that is an element in the array that forms the value of the Configs key in the OCProperties dictionary, shall contain the Name key</td>
+            <td>1506</td>
+          </tr>
+          <tr>
+            <td><code>7.18.4</code></td>
+            <td>If the Form element omits a Role attribute (Table 348), it shall have only one child: an object reference (14.7.4.3) identifying the widget annotation per ISO 32000-1:2008, 14.8.4.5, Table 340</td>
+            <td>1035</td>
+          </tr>
+          <tr>
+            <td><code>7.3</code></td>
+            <td>Figure tags shall include an alternative representation or replacement text that represents the contents marked with the Figure tag as noted in ISO 32000-1:2008, 14.7.2, Table 323</td>
+            <td>700</td>
+          </tr>
+          <tr>
+            <td><code>7.18.5</code></td>
+            <td>Links shall be tagged according to ISO 32000-1:2008, 14.8.4.4.2, Link Element</td>
+            <td>472</td>
+          </tr>
+          <tr>
+            <td><code>7.21.8</code></td>
+            <td>A PDF/UA compliant document shall not contain a reference to the .notdef glyph from any of the text showing operators, regardless of text rendering mode, in any content stream</td>
+            <td>390</td>
+          </tr>
+          <tr>
+            <td><code>7.16</code></td>
+            <td>An encrypted conforming file shall contain a P key in its encryption dictionary (ISO 32000-1:2008, 7.6.3.2, Table 21). The 10th bit position of the P key shall be true</td>
+            <td>372</td>
+          </tr>
+          <tr>
+            <td><code>7.21.3.2</code></td>
+            <td>ISO 32000-1:2008, 9.7.4, Table 117 requires that all embedded Type 2 CIDFonts in the CIDFont dictionary shall contain a CIDToGIDMap entry that shall be a stream mapping from CIDs to glyph indices or the name Identity, as described in ISO 32000-1:2008, 9.7.4, Table 117</td>
+            <td>323</td>
+          </tr>
+          <tr>
+            <td><code>1.4.8</code></td>
+            <td>Document should not contain illegible font</td>
+            <td>291</td>
+          </tr>
+          <tr>
+            <td><code>7.5</code></td>
+            <td>If the table's structure is not determinable via Headers and IDs, then structure elements of type TH shall have a Scope attribute</td>
+            <td>260</td>
+          </tr>
+          <tr>
+            <td><code>7.21.5</code></td>
+            <td>For every font embedded in a conforming file and used for rendering, the glyph width information in the font dictionary and in the embedded font program shall be consistent</td>
+            <td>232</td>
+          </tr>
+          <tr>
+            <td><code>7.9</code></td>
+            <td>Note tag shall have ID entry</td>
+            <td>189</td>
+          </tr>
+          <tr>
+            <td><code>7.21.3.3</code></td>
+            <td>All CMaps used within a PDF/UA file, except those listed in ISO 32000-1:2008, 9.7.5.2, Table 118, shall be embedded in that file as described in ISO 32000-1:2008, 9.7.5</td>
+            <td>43</td>
+          </tr>
+          <tr>
+            <td><code>7.21.3.1</code></td>
+            <td>For any given composite (Type 0) font within a conforming file, the CIDSystemInfo entry in its CIDFont dictionary and its Encoding dictionary shall have the following relationship: - If the Encoding key in the Type 0 font dictionary is Identity-H or Identity-V, any values of Registry, Ordering, and Supplement may be used in the CIDSystemInfo entry of the CIDFont. - Otherwise, the corresponding Registry and Ordering strings in both CIDSystemInfo dictionaries shall be identical, and the value of the Supplement key in the CIDSystemInfo dictionary of the CIDFont shall be less than or equal to the Supplement key in the CIDSystemInfo dictionary of the CMap</td>
+            <td>34</td>
+          </tr>
+          <tr>
+            <td><code>7.20</code></td>
+            <td>The content of Form XObjects shall be incorporated into structure elements according to ISO 32000-1:2008, 14.7.2</td>
+            <td>29</td>
+          </tr>
+          <tr>
+            <td><code>7.21.6</code></td>
+            <td>Symbolic TrueType fonts shall not contain an Encoding entry in the font dictionary</td>
+            <td>16</td>
+          </tr>
+          <tr>
+            <td><code>7.11</code></td>
+            <td>The file specification dictionary for an embedded file shall contain the non-empty F and UF keys</td>
+            <td>9</td>
+          </tr>
+          <tr>
+            <td><code>7.15</code></td>
+            <td>Dynamic XFA forms shall not be used</td>
+            <td>7</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top:8px;">File-level details per clause are available for 42407 files (see the CSV summary generated alongside this report).</p>
+    </section>
+    <footer class="section">
+      <p class="muted">Generated by PDFix batch reporting pipeline.</p>
+      <p class="muted"><a href="pdfix.net">pdfix.net</a> | <a href="mailto:support@pdfix.net">support@pdfix.net</a></p>
+    </footer>
+  </div>
+</body>
+</html>
