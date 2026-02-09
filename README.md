@@ -26,6 +26,14 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
 4) Start Docker Desktop (required for Callas Font Fix)
 5) Save the Callas license in `resources/font/.env`
 
+## Run the full workflow with one command
+    ```
+    uv run -m pdf_remediation.go delnorte
+    ```
+    `go.py` orchestrates `fix`, `font_fix`, `font_fix_pdfix`, and a final
+    `validate --full --skip-page-count` run. It also initializes missing
+    projects automatically.
+
 ## Walkthrough
 
 Here's an example walkthrough of remediating the Del Norte trial court.
@@ -327,6 +335,19 @@ argument so you can run separate workflows in different subfolders (for example,
 `active`, `remediated`, or a custom name).
 
 ## Commands
+
+### Pipeline orchestration
+- `go.py` runs the remediation pipeline in sequence:
+  1) pre-fix validate (`--skip-page-count`, init-only)
+  2) `fix` on `active`
+  3) `font_fix` on `font-issues`
+  4) `font_fix_pdfix` on `font-issues-missing-unicode`
+  5) final `validate --full --skip-page-count`
+- Syntax:
+  `uv run -m pdf_remediation.go <project_name> [workspace] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--verbose] [--debug]`
+- If the project does not exist, `go.py` runs `init` automatically.
+- If `source/` is empty and `terminus` is installed, `go.py` can download and
+  extract the live files backup into `source/`.
 
 ### Initialization
 - `init.py` bootstraps a project workspace and prints the source path for ingest.
