@@ -208,38 +208,45 @@ def main() -> int: # pylint: disable=too-many-locals
                 "--element=files",
                 f"--to={source_path / 'files_live.tar.gz'}"
             ])
-            if rc != 0:
+            if rc == 1:
+                print()
+                print(
+                    "WARNING: terminus backup:get failed with exit code 1. "
+                    "Proceeding with the remaining pipeline steps."
+                )
+            elif rc != 0:
                 print()
                 print(f"Pipeline stopped: terminus backup:get failed with exit code {rc}.")
                 return rc
 
-            backup_archive_path = source_path / "files_live.tar.gz"
-            if not backup_archive_path.exists():
+            if rc == 0:
+                backup_archive_path = source_path / "files_live.tar.gz"
+                if not backup_archive_path.exists():
+                    print()
+                    print(f"Pipeline stopped: backup archive not found at {backup_archive_path}.")
+                    return 1
+
                 print()
-                print(f"Pipeline stopped: backup archive not found at {backup_archive_path}.")
-                return 1
+                print(f"Extracting backup archive: {backup_archive_path}")
+                with tarfile.open(backup_archive_path, "r:gz") as tar:
+                    tar.extractall(path=source_path)
 
-            print()
-            print(f"Extracting backup archive: {backup_archive_path}")
-            with tarfile.open(backup_archive_path, "r:gz") as tar:
-                tar.extractall(path=source_path)
+                backup_archive_path.unlink()
+                print(f"Deleted archive: {backup_archive_path}")
 
-            backup_archive_path.unlink()
-            print(f"Deleted archive: {backup_archive_path}")
+                files_live_path = source_path / "files_live"
+                if not files_live_path.exists() or not files_live_path.is_dir():
+                    print()
+                    print(
+                        "Pipeline stopped: extracted files_live folder not found at "
+                        f"{files_live_path}."
+                    )
+                    return 1
 
-            files_live_path = source_path / "files_live"
-            if not files_live_path.exists() or not files_live_path.is_dir():
-                print()
-                print(
-                    "Pipeline stopped: extracted files_live folder not found at "
-                    f"{files_live_path}."
-                )
-                return 1
-
-            move_contents(files_live_path, source_path)
-            files_live_path.rmdir()
-            print(f"Moved files from {files_live_path} to {source_path}")
-            print(f"Deleted folder: {files_live_path}")
+                move_contents(files_live_path, source_path)
+                files_live_path.rmdir()
+                print(f"Moved files from {files_live_path} to {source_path}")
+                print(f"Deleted folder: {files_live_path}")
 
     print()
     print(f"PROJECT: {args.project_name}")
