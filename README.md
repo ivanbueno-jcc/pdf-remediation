@@ -34,6 +34,10 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
     `validate --full --skip-page-count` run. It also initializes missing
     projects automatically.
 
+    If `source/` is empty, `go.py` can automatically download and extract the
+    live files backup from Pantheon into `source/`.
+    Requirement: Terminus must be installed and already configured/authenticated.
+
 ## Walkthrough
 
 Here's an example walkthrough of remediating the Del Norte trial court.
@@ -346,8 +350,8 @@ argument so you can run separate workflows in different subfolders (for example,
 - Syntax:
   `uv run -m pdf_remediation.go <project_name> [workspace] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--verbose] [--debug]`
 - If the project does not exist, `go.py` runs `init` automatically.
-- If `source/` is empty and `terminus` is installed, `go.py` can download and
-  extract the live files backup into `source/`.
+- If `source/` is empty and Terminus is installed/configured, `go.py` can
+  download and extract the live files backup into `source/`.
 
 ### Initialization
 - `init.py` bootstraps a project workspace and prints the source path for ingest.
