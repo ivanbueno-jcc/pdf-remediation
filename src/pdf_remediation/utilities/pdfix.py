@@ -16,6 +16,7 @@ from python_on_whales.exceptions import DockerException, NoSuchImage
 from pdf_remediation.utilities.verapdf import in_memory_validation
 from .resources import PDFIX_FONT_IMAGE, stream_to_data, get_configuration_file, append_to_csv
 from .resources import get_relative_report_path
+from .resources import ensure_docker_desktop_running
 
 def pull_image(image_name: str, verbose: bool = False) -> None:
     '''
@@ -24,6 +25,8 @@ def pull_image(image_name: str, verbose: bool = False) -> None:
     :param image_name: Name of the Docker image to pull.
     :type image_name: str
     '''
+    ensure_docker_desktop_running(verbose=verbose)
+
     try:
         docker.image.inspect(image_name)
         if verbose:
@@ -278,6 +281,7 @@ def font_fix_pdfix(
     output_pdf_path.parent.mkdir(parents=True, exist_ok=True)
     input_relative_path = Path(input_pdf_path).relative_to(workspace_path)
     output_relative_path = Path(output_pdf_path).relative_to(workspace_path)
+    ensure_docker_desktop_running()
 
     try:
         docker.run(

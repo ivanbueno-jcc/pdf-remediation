@@ -23,7 +23,8 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
    uv run -m pdf_remediation.license delnorte
    ```
 
-4) Start Docker Desktop (required for Callas Font Fix)
+4) Install Docker Desktop (required for Callas/PDFix Docker font-fix steps).
+   The tool now attempts to launch Docker Desktop automatically if it is not running.
 5) Save the Callas license in `resources/font/.env`
 
 ## Run the full workflow with one command

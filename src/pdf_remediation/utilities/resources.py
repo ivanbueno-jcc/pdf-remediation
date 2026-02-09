@@ -6,7 +6,10 @@ import csv
 import ctypes
 import json
 import os
+import platform
 import shutil
+import subprocess
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,6 +24,94 @@ PROJECT_BASE_PATH.mkdir(parents=True, exist_ok=True)
 
 CALLAS_FONT_IMAGE = "pdfix/font-fix-callas:v1.0.5"
 PDFIX_FONT_IMAGE = "pdfix/font-fix-pdfix:v1.0.5"
+FIX_PROCESS_TIMEOUT_SECONDS = 500
+_DOCKER_STATE = {"ready": False}
+
+
+def _docker_daemon_is_running() -> bool:
+    '''
+    Return True when Docker daemon is reachable.
+    '''
+    result = subprocess.run(
+        ["docker", "info"],
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+    return result.returncode == 0
+
+
+def _launch_docker_desktop() -> bool:
+    '''
+    Launch Docker Desktop on supported platforms.
+    '''
+    operating_system = platform.system()
+    if operating_system == "Darwin":
+        result = subprocess.run(
+            ["open", "-a", "Docker"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        return result.returncode == 0
+
+    if operating_system == "Windows":
+        docker_desktop_path = Path(
+            os.environ.get("ProgramFiles", r"C:\Program Files")
+        ) / "Docker" / "Docker" / "Docker Desktop.exe"
+        if docker_desktop_path.exists():
+            result = subprocess.run(
+                ["cmd", "/c", "start", "", str(docker_desktop_path)],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            return result.returncode == 0
+
+    return False
+
+
+def ensure_docker_desktop_running(
+        timeout_seconds: int = 120,
+        poll_interval_seconds: int = 2,
+        verbose: bool = False) -> None:
+    '''
+    Ensure Docker daemon is running; launch Docker Desktop when available.
+    '''
+    if _DOCKER_STATE["ready"]:
+        return
+
+    if shutil.which("docker") is None:
+        raise RuntimeError(
+            "Docker CLI was not found. Install Docker Desktop and ensure 'docker' "
+            "is available in PATH."
+        )
+
+    if _docker_daemon_is_running():
+        _DOCKER_STATE["ready"] = True
+        return
+
+    if verbose:
+        print("Docker daemon not detected. Launching Docker Desktop...")
+
+    if not _launch_docker_desktop():
+        raise RuntimeError(
+            "Docker daemon is not running and Docker Desktop could not be launched "
+            "automatically. Start Docker manually and re-run."
+        )
+
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        if _docker_daemon_is_running():
+            _DOCKER_STATE["ready"] = True
+            if verbose:
+                print("Docker is ready.")
+            return
+        time.sleep(poll_interval_seconds)
+
+    raise RuntimeError(
+        f"Docker Desktop did not become ready within {timeout_seconds} seconds."
+    )
 
 def get_configuration_file(config_file: str = "default.json") -> Path:
     '''

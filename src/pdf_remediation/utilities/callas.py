@@ -6,6 +6,7 @@ from pathlib import Path
 from python_on_whales import docker
 from python_on_whales.exceptions import DockerException
 from pdf_remediation.utilities.resources import CALLAS_FONT_IMAGE, append_to_csv
+from pdf_remediation.utilities.resources import ensure_docker_desktop_running
 
 class Callas: # pylint: disable=too-few-public-methods
     '''
@@ -34,6 +35,7 @@ class Callas: # pylint: disable=too-few-public-methods
         output_pdf_path.parent.mkdir(parents=True, exist_ok=True)
         input_relative_path = Path(input_pdf_path).relative_to(workspace_path)
         output_relative_path = Path(output_pdf_path).relative_to(workspace_path)
+        ensure_docker_desktop_running()
 
         try:
             docker.run(

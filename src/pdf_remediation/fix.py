@@ -15,8 +15,7 @@ from .utilities.resources import append_to_csv, get_project_workspace_subfolder_
 from .utilities.resources import print_workspace_summary
 from .utilities.resources import get_project_path, get_project_workspace_subfolder_path
 from .utilities.resources import get_project_workspace_file_paths, move_file_and_delete_source
-
-FIX_PROCESS_TIMEOUT_SECONDS = 500
+from .utilities.resources import FIX_PROCESS_TIMEOUT_SECONDS
 
 def _append_fix_worker_error(
         input_pdf_path: str,
