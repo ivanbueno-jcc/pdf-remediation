@@ -39,6 +39,14 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
     live files backup from Pantheon into `source/`.
     Requirement: Terminus must be installed and already configured/authenticated.
 
+    To run the same pipeline for multiple projects sequentially:
+    ```
+    uv run -m pdf_remediation.readyset delnorte alameda sonoma
+    ```
+    `readyset.py` runs `go.py` once per project in the order provided, prints a
+    high-visibility banner for each project, and stops on the first non-zero
+    exit code.
+
 ## Walkthrough
 
 Here's an example walkthrough of remediating the Del Norte trial court.
@@ -126,7 +134,7 @@ Copy PDFs into the printed `resources/projects/<project>/source` directory.
 
 #### 2) Validate PDFs
 ```
-uv run -m pdf_remediation.validate <project_name> [workspace] [folder] [directory] [--full]
+uv run -m pdf_remediation.validate <project_name> [workspace] [folder] [directory] [--full] [--skip-page-count]
 ```
 
 Defaults:
@@ -139,6 +147,10 @@ By default, validation runs against `<workspace>/<folder>/<directory>`.
 Use `--full` to validate all PDFs in every workspace subfolder's `files/` and
 `processed/` directories in one pass. This mode writes reports to
 `workspace/<workspace>/reports/<timestamp>-full` and prints the scanned folders.
+`--full` skips these operational subfolders: `pdfix-cannot-process`,
+`secured-cannot-process`, `secured-needs-approval`, `reports`,
+`pdfix-unable-to-open`, `unable-to-validate`, and `unable-to-process`.
+Use `--skip-page-count` to skip the PDFix page count pass and run only veraPDF.
 
 Validation runs both PDF/UA (veraPDF `ua1`) and WCAG 2.2 profiles by default.
 Results include `ua1` and `wcag` columns in `vera_validation_results.csv`, and
@@ -354,6 +366,11 @@ argument so you can run separate workflows in different subfolders (for example,
 - If the project does not exist, `go.py` runs `init` automatically.
 - If `source/` is empty and Terminus is installed/configured, `go.py` can
   download and extract the live files backup into `source/`.
+- `readyset.py` runs `go.py` sequentially across multiple projects.
+- Syntax:
+  `uv run -m pdf_remediation.readyset <project_name> [project_name ...]`
+- `readyset.py` exits immediately if any project run fails and returns that
+  same exit code.
 
 ### Initialization
 - `init.py` bootstraps a project workspace and prints the source path for ingest.
@@ -365,6 +382,12 @@ argument so you can run separate workflows in different subfolders (for example,
 - `--full` mode validates every `<subfolder>/files` and `<subfolder>/processed`
   directory in the workspace and writes a consolidated report under
   `workspace/<workspace>/reports/<timestamp>-full`.
+- In `--full` mode, these subfolders are ignored:
+  `pdfix-cannot-process`, `secured-cannot-process`, `secured-needs-approval`,
+  `reports`, `pdfix-unable-to-open`, `unable-to-validate`, and
+  `unable-to-process`.
+- `--full` prints a `FOLDERS SCANNED` list before validation starts.
+- `--skip-page-count` skips PDFix page counting and runs only veraPDF validation.
 - Results feed the reporting pipeline in `reports/<timestamp>-<directory>`.
 
 ### Remediation
