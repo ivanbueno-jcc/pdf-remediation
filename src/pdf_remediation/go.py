@@ -227,12 +227,14 @@ def main() -> int: # pylint: disable=too-many-locals
                     return 1
 
                 print()
-                print(f"Extracting backup archive: {backup_archive_path}")
+                if args.verbose:
+                    print(f"Extracting backup archive: {backup_archive_path}")
                 with tarfile.open(backup_archive_path, "r:gz") as tar:
                     tar.extractall(path=source_path)
 
                 backup_archive_path.unlink()
-                print(f"Deleted archive: {backup_archive_path}")
+                if args.verbose:
+                    print(f"Deleted archive: {backup_archive_path}")
 
                 files_live_path = source_path / "files_live"
                 if not files_live_path.exists() or not files_live_path.is_dir():
@@ -245,8 +247,9 @@ def main() -> int: # pylint: disable=too-many-locals
 
                 move_contents(files_live_path, source_path)
                 files_live_path.rmdir()
-                print(f"Moved files from {files_live_path} to {source_path}")
-                print(f"Deleted folder: {files_live_path}")
+                if args.verbose:
+                    print(f"Moved files from {files_live_path} to {source_path}")
+                    print(f"Deleted folder: {files_live_path}")
 
     print()
     print(f"PROJECT: {args.project_name}")
