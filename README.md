@@ -180,7 +180,8 @@ Steps executed:
 5. Remediate with PDFix, write to `active/processed/`.
 6. Validate all processed files with veraPDF.
 7. Move compliant files into `remediated/files`.
-8. Move error files into `unable-to-process/files`.
+8. Move validation-error files into `unable-to-validate/files` and log them to
+   `unable-to-validate.csv` in the project root.
 9. Move font-violation failures into `font-issues/files`.
 
 If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
@@ -194,7 +195,7 @@ uv run -m pdf_remediation.font_fix <project_name> [workspace] [folder]
 
 `FontFix` targets the `font-issues` folder by default, runs Callas pdfToolbox
 inside Docker on those files, then re-validates and routes results into
-`remediated/` or `unable-to-process/`.
+`remediated/` or `unable-to-validate/`.
 Runs end with a workspace summary showing totals plus `files`/`processed`
 breakdowns.
 Missing-unicode violations detected after validation are moved to
@@ -215,7 +216,7 @@ uv run -m pdf_remediation.font_fix_pdfix <project_name> [workspace] [folder]
 
 Run this after `FontFix` to process files moved into `font-issues-missing-unicode`.
 It uses PDFix font remediation via Docker, re-validates, and routes results into
-`remediated/` or `unable-to-process/`.
+`remediated/` or `unable-to-validate/`.
 
 PDFix file-level failures are logged to `pdfix-font-errors.csv` in the project root.
 
@@ -326,8 +327,8 @@ resources/projects/<project>/
       files/             # font-related validation failures
     font-issues-missing-unicode/
       files/             # missing-unicode font issues after Callas validation
-    unable-to-process/
-      files/             # validation errors or unreadable PDFs
+    unable-to-validate/
+      files/             # PDFs that failed validation after remediation
     secured-cannot-process/
       files/             # secured PDFs with blocking font violations
     secured-needs-approval/
@@ -374,11 +375,11 @@ argument so you can run separate workflows in different subfolders (for example,
 
 ### Font remediation
 - `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, re-validates,
-  then moves results to `remediated/` or `unable-to-process/`. Missing-unicode
+  then moves results to `remediated/` or `unable-to-validate/`. Missing-unicode
   files move to `font-issues-missing-unicode/`.
 - `font_fix_pdfix.py` runs PDFix font remediation via Docker on
   `font-issues-missing-unicode/`, re-validates, then moves results to
-  `remediated/` or `unable-to-process/`.
+  `remediated/` or `unable-to-validate/`.
 
 ### Reporting (internal function, part of Validate)
 - `utilities/report.py` generates CSV/TXT/HTML report artifacts from veraPDF XML output.
@@ -414,6 +415,8 @@ argument so you can run separate workflows in different subfolders (for example,
 - Secured PDFs are logged to `secured-files.csv` with a status column
   (`secured-cannot-process` or `secured-needs-approval`).
 - PDFs that PDFix cannot open are logged to `pdfix-unable-to-open.csv`.
+- PDFs that cannot be validated after remediation are logged to
+  `unable-to-validate.csv` and moved to `unable-to-validate/files`.
 - Secured classification runs an in-memory veraPDF pass using the WCAG 2.2
   profile and treats font violations (`7.21.4.1`, `7.21.3.2`, `7.21.4.2`) as
   blocking.
