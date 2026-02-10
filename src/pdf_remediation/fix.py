@@ -475,6 +475,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
                 if ua1_result == 'Error' or wcag_result == 'Error':
                     validation_iteration_counter += 1
+                    append_to_csv(
+                        workspace_folder_path.parent.parent.parent.parent / "unable-to-validate.csv", # pylint: disable=line-too-long
+                        [relative_path, ua1_result, wcag_result]
+                    )
 
                     if args.verbose:
                         print(f"{file_path}")
@@ -483,7 +487,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         output_pdf_folder,
                         args.project_name,
                         args.workspace_name,
-                        "unable-to-process"
+                        "unable-to-validate"
                     )
                     continue
             print(f"Total error files moved to error folder: {validation_iteration_counter}")
