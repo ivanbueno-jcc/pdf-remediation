@@ -277,17 +277,22 @@ def get_project_workspace_subfolder_file_paths(
 
 def get_full_workspace_file_paths(
         project_name: str,
-        workspace_name: str) -> tuple[Path, list[Path], list[Path]]:
+        workspace_name: str,
+        ignored_subfolders: list[str] = None) -> tuple[Path, list[Path], list[Path]]:
     '''
     Return all PDF files from every workspace folder's files/ and processed/ subdirectories.
     '''
     workspace_path = get_project_workspace_path(project_name, workspace_name)
+    ignored_subfolders = ignored_subfolders or []
+    ignored_subfolder_set = set(ignored_subfolders)
     scanned_paths = []
     file_paths = []
     seen_paths = set()
 
     for workspace_subfolder_path in sorted(workspace_path.iterdir()):
         if not workspace_subfolder_path.is_dir():
+            continue
+        if workspace_subfolder_path.name in ignored_subfolder_set:
             continue
 
         for directory_name in ["files", "processed"]:

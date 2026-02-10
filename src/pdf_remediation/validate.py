@@ -11,6 +11,16 @@ from .utilities.resources import get_project_workspace_subfolder_file_paths
 from .utilities.resources import get_project_workspace_subfolder_path
 from .utilities.resources import get_full_workspace_file_paths
 
+FULL_VALIDATION_IGNORED_SUBFOLDERS = [
+    "pdfix-cannot-process",
+    "secured-cannot-process",
+    "secured-needs-approval",
+    "reports",
+    "pdfix-unable-to-open",
+    "unable-to-validate",
+    "unable-to-process"
+]
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
@@ -66,7 +76,8 @@ if __name__ == '__main__':
         if args.full:
             workspace_folder_path, scanned_paths, file_paths = get_full_workspace_file_paths(
                 args.project_name,
-                args.workspace_name
+                args.workspace_name,
+                ignored_subfolders=FULL_VALIDATION_IGNORED_SUBFOLDERS
             )
             report_base_path = workspace_folder_path / "reports"
             relative_base_paths = scanned_paths
