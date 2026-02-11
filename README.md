@@ -28,24 +28,29 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
 5) Save the Callas license in `resources/font/.env`
 
 ## Run the full workflow with one command
-    ```
-    uv run -m pdf_remediation.go delnorte
-    ```
-    `go.py` orchestrates `fix`, `font_fix`, `font_fix_pdfix`, and a final
-    `validate --full --skip-page-count` run. It also initializes missing
-    projects automatically.
 
-    If `source/` is empty, `go.py` can automatically download and extract the
-    live files backup from Pantheon into `source/`.
-    Requirement: Terminus must be installed and already configured/authenticated.
+```bash
+uv run -m pdf_remediation.go delnorte
+```
 
-    To run the same pipeline for multiple projects sequentially:
-    ```
-    uv run -m pdf_remediation.readyset delnorte alameda sonoma
-    ```
-    `readyset.py` runs `go.py` once per project in the order provided, prints a
-    high-visibility banner for each project, and stops on the first non-zero
-    exit code.
+`go.py` orchestrates `fix`, `font_fix`, `font_fix_pdfix`, and a final
+`validate --full --skip-page-count` run. It also initializes missing
+projects automatically.
+
+If `source/` is empty, `go.py` can automatically download and extract the
+live files backup from Pantheon into `source/`.
+
+Requirement: Terminus must be installed and already configured/authenticated.
+
+### To run the same pipeline for multiple projects sequentially:
+
+```bash
+uv run -m pdf_remediation.readyset delnorte alameda sonoma
+```
+
+`readyset.py` runs `go.py` once per project in the order provided, prints a
+high-visibility banner for each project, and stops on the first non-zero
+exit code.
 
 ## Walkthrough
 
