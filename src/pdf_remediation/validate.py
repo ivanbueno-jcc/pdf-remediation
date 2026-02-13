@@ -18,7 +18,8 @@ FULL_VALIDATION_IGNORED_SUBFOLDERS = [
     "reports",
     "pdfix-unable-to-open",
     "unable-to-validate",
-    "unable-to-process"
+    "unable-to-process",
+    "debug"
 ]
 
 if __name__ == '__main__':

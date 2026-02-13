@@ -348,6 +348,8 @@ resources/projects/<project>/
       files/             # missing-unicode font issues after Callas validation
     unable-to-validate/
       files/             # PDFs that failed validation after remediation
+    debug/
+      <clause>/...       # copies of failed active/files PDFs grouped by clause
     secured-cannot-process/
       files/             # secured PDFs with blocking font violations
     secured-needs-approval/
@@ -396,6 +398,17 @@ argument so you can run separate workflows in different subfolders (for example,
 - `--full` prints a `FOLDERS SCANNED` list before validation starts.
 - `--skip-page-count` skips PDFix page counting and runs only veraPDF validation.
 - Results feed the reporting pipeline in `reports/<timestamp>-<directory>`.
+
+### Debug triage
+- `debug.py` validates `active/files`, then copies every non-compliant file into
+  clause-specific folders under `workspace/<workspace>/debug/<clause>/`.
+- Debug copies are flattened by filename (source relative folders are not preserved).
+- Files with multiple failing clauses are copied into each matching clause folder.
+- Files with validation errors but no clause metadata are copied into
+  `workspace/<workspace>/debug/unknown/`.
+- Existing contents of `workspace/<workspace>/debug/` are cleared before each run.
+- Syntax:
+  `uv run -m pdf_remediation.debug <project_name> [workspace]`
 
 ### Remediation
 - `fix.py` runs the PDFix remediation profile (e.g., `default.json`) with
