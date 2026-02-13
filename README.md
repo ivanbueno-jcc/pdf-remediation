@@ -11,6 +11,8 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
      `curl -LsSf https://astral.sh/uv/install.sh | sh`
    - Windows PowerShell:
      `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+
+     (For Windows, you may need to install VC++ Redistributable: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-supported-redistributable-version)
 2) Install Java (required for veraPDF validation).
 3) Set the PDFix license in `.env`:
    ```
@@ -20,7 +22,7 @@ Think of this as a production line for accessibility: you feed it a sprawling PD
 
    Check if the license is valid:
    ```
-   uv run -m pdf_remediation.license delnorte
+   uv run -m pdf_remediation.license
    ```
 
 4) Install Docker Desktop (required for Callas/PDFix Docker font-fix steps).
