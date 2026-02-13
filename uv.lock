@@ -208,7 +208,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=3.0.0" },
     { name = "parallelbar", specifier = ">=2.5" },
     { name = "pathlib", specifier = ">=1.0.1" },
-    { name = "pdfix-sdk", specifier = ">=8.7.8" },
+    { name = "pdfix-sdk", url = "https://dl.pdfix.net/builds/pdfix-sdk/release/v8.7.11/f34bf1ef0ec8aafc361a1508b6e13c709027ae98/python/pdfix_sdk-8.7.11.tar.gz" },
     { name = "plotext", specifier = ">=5.3.2" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "python-on-whales", specifier = ">=0.80.0" },
@@ -219,15 +219,19 @@ dev = [{ name = "pylint", specifier = ">=4.0.4" }]
 
 [[package]]
 name = "pdfix-sdk"
-version = "8.7.10"
-source = { registry = "https://pypi.org/simple" }
+version = "8.7.11"
+source = { url = "https://dl.pdfix.net/builds/pdfix-sdk/release/v8.7.11/f34bf1ef0ec8aafc361a1508b6e13c709027ae98/python/pdfix_sdk-8.7.11.tar.gz" }
 dependencies = [
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/38/04/c4dd78c529d4e6bbb4f09b0a7476b8db288fc036cf932ed35f0d9bf1936e/pdfix_sdk-8.7.10.tar.gz", hash = "sha256:72645d0574b29b64212649ccf7f47494ff921015aa2d396f3c146ac4f15d7277", size = 91753082, upload-time = "2026-01-10T20:19:29.517Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d3/6a/c224bc93558aa35fd7dc91eee2f28bbd58cf7bba4dcb2190132e6c89be89/pdfix_sdk-8.7.10-py3-none-any.whl", hash = "sha256:a74f7d27bfb5b05bb5b7b5b066303ec7198923dbc86e4d433fb685c9abe2cf7f", size = 92144750, upload-time = "2026-01-10T20:19:16.006Z" },
+sdist = { hash = "sha256:b5ec7f251fe15b4af92ce1a64fcadbe14b4316211ad5cb437dda0aacc32d95ab" }
+
+[package.metadata]
+requires-dist = [
+    { name = "check-manifest", marker = "extra == 'dev'" },
+    { name = "requests" },
 ]
+provides-extras = ["dev"]
 
 [[package]]
 name = "platformdirs"
