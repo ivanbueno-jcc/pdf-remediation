@@ -23,12 +23,24 @@ Purpose
 -------
 Given a directory of veraPDF XML reports, this script:
   - parses all reports
-  - builds the same summary artifacts used by the "report" phase in your pipeline:
+  - builds the same summary artifacts used by the "report-summary" phase in your pipeline:
       * verapdf-compliance-report.txt
       * verapdf-clause-summary.csv
       * verapdf-file-summary.csv
       * output.txt (synthetic log, for HTML step parsing)
   - generates an HTML report file summarizing compliance statistics.
+
+NOTE (change vs previous version)
+---------------------------------
+Each veraPDF issue is now keyed by {clause}-{test_number}, e.g.:
+  - 7.1-1
+  - 7.1.2-10
+instead of using clause only.
+This affects:
+  - parsing/deduplication
+  - clause summary CSV
+  - file summary CSV matrix
+  - sorting in outputs
 
 Inputs
 ------
@@ -57,17 +69,67 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 import xml.etree.ElementTree as ET
-from pathlib import Path
 
 # Inline logo (optimized WEBP 56x56)
 INLINE_LOGO_DATA_URI = "data:image/webp;base64,UklGRpgFAABXRUJQVlA4WAoAAAAQAAAANwAANwAAQUxQSN4CAAABkGzbtmk769m2bdRi27Zt23wqxbb5GNu2k2fbZnJ34a69zzr35gMiwoHbSIqU7DEtVXffF+C/08jeKzDQy95ItTgPCrv2La+ipqYi79u1sEHOKsJiZHQhk7AweqSFfKyW/2Ykfy+3kofmZHSPeGeypgy84pgs47zI9E9jMk3rT2R2DZNtzWwSS5uZCmxeSrmPLj/njx1PdVxkrXKRvtuvGu2ANiDHSOWaVfeTwDODoVtdWXT8p1y1DE8h2vEMkWosi34KtG7x2iImKTB/52jIwPQaQygmCbBMZJwNj+ITqMZ/ZZyJljzLmIpdxmGWqGoSzTAjmcodidCIFpKZrxKi0VFzLhKg2GXtHFZDo+RBoogiZyWDmIACOwDo+Y3CrWCwucsEDlISJiIZlT/bo3+lqFqjCwB9FQLClFwTrpg/ICfkinnfnju/BVwDAMNv4lrCFT7f66LM7uTWZSsT8M0QwD6PCX3XAZD6K6swKUOA2/ZKEXn2AF7lTGzFGj1Adnin5KI7IGwOtDAR5V4AgdLH+0YAV4oPsYZlXOi6f5AqVIEkWM5kDVyNw5ZwvWZjNZMEPSB43BGEhuIzRuIBegvFH71FPWBGIZMmzx59EcmGMBOut51jvFJfBNcY0aehAKAxIIWRuIbPb6qrAEArmtEIQ3kiUjBdD/3UjmYSg3B+SdwJBs7BiRzS+dWIJlC9wQAEup6h1gsYKc2HboB0ssVfOj1Xsj4R62HzfhtABLy7wZXawFu0egjLxKSPAey4TMZetgak7poKSv0FS+FNjCcXvEN/USyXcrFs/05U7wn9hVUv4oLXVdAW4r24DXjH9xdKP/vHtVWDTbXCkjyG21/c+mtT+meeNSL4PhPbcthGSVuuf0r2a0Ed1ZhJSOaXHgCwGPdr2nxQ2wrA+YyCNIlEdZ5bhOYD6jzyY/Eq8sTVgucRtc0/apu31DbfqW2eVNf8qq55WU3zuZr+D/xvAlZQOCCUAgAAsA8AnQEqOAA4AD5tLpRGpCKiISgb/ACADYlsDbAE8mlb8A55SafDfx5/Gb5VKX/V/vh+Q3OnV//lft291v9u9mfmAfoB0nfMB+x3+A/sHvL/x3+AewD0AP3Q6wn0AP1m9Kr/qf8r4Dv2G/az2jP/t1gBWkZU0Lx4hQfAOsNGHJ9wwlJxOMAA/v6HwZ6lPUxaOlC2DmHebi7/IJbbENAasWeeHpLnuP2c+eyJeyC3ArDomVTuPWTOQdfnP+AOxO6aLhqdGdMFdfVrLODye5AJL9/errL7CYfTnt3Pq+6p1wOmYz2pS4Nl6toPGmsn+/oSTQOR8k8VAyEL4/++Af//2rTWkUmS0os0LgYgKomhgiOMw05rsbY1NeNWv8+WvLT1NR5//tK3DCLhLKXwHeL1lJXNzGTqqd3D/jNaLnK9Fviduujl1ZUyolWj/PTWyq2/+cXn/5n6oXQcBoy6MJGBDbR1dM8XRv+RaLuGiAyhf1Jt80KMUgB35gBfmOOVzDWBH9pvE7MNKh5ShQWPMDUf3jQFJE/WZH94uNrCmOAGgdIPmvA9y+vB7rA47Z/4ejD0cYsuPmeMXI/ZM7J+hdfMQIabKRndquyrfURC8Rnfg/zEmrVBypJlZpPQQ2IVrixSJ1vC/C+IMQnTY+c3O2MEY2vkeRfm+rEmXiXBnoppa+4E8pOgeeuJ8qARNEndhg/gzfztg43PYIdb9OzReDDbGGk/7ahP2ac+cQJNQ5LrRWK8GN57R9zd//2/cELA304Q1n3ebpbbxpnGjTchzUq7IAmwv0Nvi4cXp9U+a22AtgeXtAtcf0nMKP1The98AEFB591NsUSXp+vc5Rw0Ep3F629AZEpqUlecRc4i/+RnMwAAAAAA"
-
 
 # ---------------------------------------------------------------------------
 # Parsing veraPDF XML reports -> per-file issues summary
 # ---------------------------------------------------------------------------
 
 SUMMARY_LOCK = threading.Lock()
+
+
+def make_clause_test_id(clause: str, test: str) -> str:
+    clause = (clause or "unknown").strip()
+    test = (test or "").strip()
+    return f"{clause}-{test}" if test else clause
+
+
+def clause_test_sort_key(clause_test_id: str):
+    """
+    Sort like:
+      7.1-1, 7.1-2, 7.1.2-1, 7.2-10, unknown, ...
+    """
+    s = (clause_test_id or "").strip()
+    if "-" in s:
+        clause_part, test_part = s.split("-", 1)
+    else:
+        clause_part, test_part = s, ""
+
+    clause_nums: List[int] = []
+    for p in clause_part.split("."):
+        try:
+            clause_nums.append(int(p))
+        except ValueError:
+            clause_nums.append(10**9)  # push non-numeric to the end
+
+    try:
+        test_num = int(test_part) if test_part else 10**9
+    except ValueError:
+        test_num = 10**9
+
+    return (clause_nums, test_num, clause_part, test_part)
+
+
+def _get_rule_clause(rule: ET.Element) -> str:
+    return (
+        (rule.get("clause") or "").strip()
+        or (rule.get("clauseId") or "").strip()
+        or (rule.get("clauseID") or "").strip()
+        or "unknown"
+    )
+
+
+def _get_rule_test(rule: ET.Element) -> str:
+    # veraPDF variants: test, testNumber, testNo, id, etc.
+    return (
+        (rule.get("test") or "").strip()
+        or (rule.get("testNumber") or "").strip()
+        or (rule.get("testNo") or "").strip()
+        or (rule.get("testno") or "").strip()
+        or ""
+    )
 
 
 def collect_verapdf_issues_from_report(
@@ -78,9 +140,9 @@ def collect_verapdf_issues_from_report(
     """
     Parse a veraPDF XML report and store a per-file summary of issues into `summary`.
 
-    - summary: shared dict {pdf_path: [ {clause, description}, ... ]}
-    - one entry per clause per file (duplicates ignored)
-    - issues are sorted by clause
+    - summary: shared dict {pdf_path: [ {clause_test, clause, test, description}, ... ]}
+    - one entry per clause_test per file (duplicates ignored)
+    - issues are sorted by clause_test
     """
     tree = ET.parse(report_path)
     root = tree.getroot()
@@ -94,30 +156,34 @@ def collect_verapdf_issues_from_report(
         pdf_path = report_path
 
     issues: List[dict] = []
-    seen_clauses = set()
+    seen_ids = set()
 
     # Typical veraPDF structure:
-    #   <rule status="failed" clause="7.1"><description>...</description></rule>
+    #   <rule status="failed" clause="7.1" test="1"><description>...</description></rule>
     for rule in root.findall(".//rule"):
         status = (rule.get("status") or "").lower()
         if status and status != "failed":
             continue
 
-        clause = (
-            rule.get("clause")
-            or rule.get("clauseId")
-            or rule.get("test")
-            or "unknown"
-        )
+        clause = _get_rule_clause(rule)
+        test = _get_rule_test(rule)
+        clause_test = make_clause_test_id(clause, test)
 
-        if clause in seen_clauses:
+        if clause_test in seen_ids:
             continue
 
         desc_el = rule.find("description")
         description = (desc_el.text or "").strip() if desc_el is not None else ""
 
-        seen_clauses.add(clause)
-        issues.append({"clause": clause, "description": description})
+        seen_ids.add(clause_test)
+        issues.append(
+            {
+                "clause_test": clause_test,
+                "clause": clause,
+                "test": test,
+                "description": description,
+            }
+        )
 
     # Fallback: some report variants may use <check> instead of <rule>
     if not issues:
@@ -126,17 +192,31 @@ def collect_verapdf_issues_from_report(
             if status and status != "failed":
                 continue
 
-            clause = check.get("clause") or "unknown"
-            if clause in seen_clauses:
+            clause = (check.get("clause") or check.get("clauseId") or "unknown").strip()
+            test = (
+                (check.get("test") or "").strip()
+                or (check.get("testNumber") or "").strip()
+                or (check.get("testNo") or "").strip()
+            )
+            clause_test = make_clause_test_id(clause, test)
+
+            if clause_test in seen_ids:
                 continue
 
             desc_el = check.find("description")
             description = (desc_el.text or "").strip() if desc_el is not None else ""
 
-            seen_clauses.add(clause)
-            issues.append({"clause": clause, "description": description})
+            seen_ids.add(clause_test)
+            issues.append(
+                {
+                    "clause_test": clause_test,
+                    "clause": clause,
+                    "test": test,
+                    "description": description,
+                }
+            )
 
-    issues.sort(key=lambda x: x["clause"])
+    issues.sort(key=lambda x: clause_test_sort_key(x.get("clause_test", "")))
 
     with lock:
         summary[pdf_path] = issues
@@ -161,7 +241,10 @@ def load_xml_reports(xml_dir: str, max_threads: int = 4) -> Dict[str, List[dict]
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     with ThreadPoolExecutor(max_workers=max_threads) as ex:
-        futs = {ex.submit(collect_verapdf_issues_from_report, p, summary, lock): p for p in files}
+        futs = {
+            ex.submit(collect_verapdf_issues_from_report, p, summary, lock): p
+            for p in files
+        }
         for fut in as_completed(futs):
             # Raise parsing errors early with file context
             try:
@@ -203,66 +286,51 @@ def write_compliance_report(summary: Dict[str, List[dict]], txt_path: str) -> No
         for path in non_compliant_files_sorted:
             f.write(os.path.basename(path) + "\n")
 
+
 def write_clause_summary_csv(summary: Dict[str, List[dict]], csv_path: str) -> None:
-    '''
-    Docstring for write_clause_summary_csv.
-    
-    :param summary: Description
-    :type summary: Dict[str, List[dict]]
-    :param csv_path: Description
-    :type csv_path: str
-    '''
-    # clause -> {"description": str, "count": int}
+    # clause_test -> {"description": str, "count": int}
     clause_stats: Dict[str, dict] = {}
 
     for _pdf_path, issues in summary.items():
         seen_in_this_file = set()
 
         for issue in issues:
-            clause = issue.get("clause")
-            if not clause:
+            clause_test = (issue.get("clause_test") or "").strip()
+            if not clause_test:
                 continue
-            if clause in seen_in_this_file:
+            if clause_test in seen_in_this_file:
                 continue
-            seen_in_this_file.add(clause)
+            seen_in_this_file.add(clause_test)
 
             desc = (issue.get("description") or "").strip()
 
-            if clause not in clause_stats:
-                clause_stats[clause] = {"description": desc, "count": 1}
+            if clause_test not in clause_stats:
+                clause_stats[clause_test] = {"description": desc, "count": 1}
             else:
-                clause_stats[clause]["count"] += 1
-                if not clause_stats[clause]["description"] and desc:
-                    clause_stats[clause]["description"] = desc
+                clause_stats[clause_test]["count"] += 1
+                if not clause_stats[clause_test]["description"] and desc:
+                    clause_stats[clause_test]["description"] = desc
 
-    sorted_clauses = sorted(clause_stats.keys())
+    sorted_clause_tests = sorted(clause_stats.keys(), key=clause_test_sort_key)
 
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["Clause", "Count", "Description"])
-        for clause in sorted_clauses:
-            info = clause_stats[clause]
-            writer.writerow([clause, info["count"], info["description"]])
+        writer.writerow(["Clause-Test", "Count", "Description"])
+        for clause_test in sorted_clause_tests:
+            info = clause_stats[clause_test]
+            writer.writerow([clause_test, info["count"], info["description"]])
 
 
 def write_file_summary_csv(summary: Dict[str, List[dict]], csv_path: str) -> None:
-    '''
-    Docstring for write_file_summary_csv.
-    
-    :param summary: Description
-    :type summary: Dict[str, List[dict]]
-    :param csv_path: Description
-    :type csv_path: str
-    '''
-    all_clauses = {
-        issue["clause"]
+    all_clause_tests = {
+        issue.get("clause_test")
         for issues in summary.values()
         for issue in issues
-        if "clause" in issue
+        if issue.get("clause_test")
     }
-    clauses = sorted(all_clauses)
+    clause_tests = sorted(all_clause_tests, key=clause_test_sort_key)
 
-    fieldnames = ["file"] + clauses
+    fieldnames = ["file"] + clause_tests
 
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -273,10 +341,10 @@ def write_file_summary_csv(summary: Dict[str, List[dict]], csv_path: str) -> Non
             row = {name: "" for name in fieldnames}
             row["file"] = pdf_name
 
-            present_clauses = {issue["clause"] for issue in summary[pdf_path]}
-            for clause in present_clauses:
-                if clause in row:
-                    row[clause] = "O"
+            present = {issue.get("clause_test") for issue in summary[pdf_path] if issue.get("clause_test")}
+            for clause_test in present:
+                if clause_test in row:
+                    row[clause_test] = "O"
             writer.writerow(row)
 
 
@@ -298,14 +366,6 @@ def write_synthetic_before_output_txt(path: str, num_files: int, duration_sec: f
 # ---------------------------------------------------------------------------
 
 def parse_output_txt(path: str) -> List[dict]:
-    '''
-    Docstring for parse_output_txt
-    
-    :param path: Description
-    :type path: str
-    :return: Description
-    :rtype: List[dict]
-    '''
     if not os.path.exists(path):
         return []
 
@@ -350,14 +410,6 @@ def parse_output_txt(path: str) -> List[dict]:
 
 
 def parse_compliance_txt(path: str) -> Tuple[int, int, List[str], List[str]]:
-    '''
-    Docstring for parse_compliance_txt
-    
-    :param path: Description
-    :type path: str
-    :return: Description
-    :rtype: Tuple[int, int, List[str], List[str]]
-    '''
     compliant_count = 0
     non_compliant_count = 0
     compliant_files: List[str] = []
@@ -404,14 +456,6 @@ def parse_compliance_txt(path: str) -> Tuple[int, int, List[str], List[str]]:
 
 
 def parse_clause_summary_csv(path: str) -> List[dict]:
-    '''
-    Docstring for parse_clause_summary_csv
-    
-    :param path: Description
-    :type path: str
-    :return: Description
-    :rtype: List[dict]
-    '''
     clauses: List[dict] = []
     if not os.path.exists(path):
         return []
@@ -423,19 +467,17 @@ def parse_clause_summary_csv(path: str) -> List[dict]:
                 count = int(row.get("Count", "0") or 0)
             except ValueError:
                 count = 0
-            clauses.append({"clause": row.get("Clause", ""), "description": row.get("Description", ""), "count": count})
+            clauses.append(
+                {
+                    "clause_test": row.get("Clause-Test", "") or row.get("Clause", "") or "",
+                    "description": row.get("Description", ""),
+                    "count": count,
+                }
+            )
     return clauses
 
 
 def parse_file_summary_csv(path: str) -> int:
-    '''
-    Docstring for parse_file_summary_csv
-    
-    :param path: Description
-    :type path: str
-    :return: Description
-    :rtype: int
-    '''
     if not os.path.exists(path):
         return 0
 
@@ -450,62 +492,25 @@ def parse_file_summary_csv(path: str) -> int:
 
 
 def format_duration(seconds: Optional[float]) -> str:
-    '''
-    Docstring for format_duration
-    
-    :param seconds: Description
-    :type seconds: Optional[float]
-    :return: Description
-    :rtype: str
-    '''
     if seconds is None:
         return "N/A"
     return f"{seconds:.2f} s"
 
 
 def html_escape(s: str) -> str:
-    '''
-    Docstring for html_escape
-    
-    :param s: Description
-    :type s: str
-    :return: Description
-    :rtype: str
-    '''
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def generate_phase_html(
     state_name: str,
     phase: str,
-    company: str,    steps: List[dict],
+    company: str,
+    steps: List[dict],
     compliant_count: int,
     non_compliant_count: int,
     clause_stats: List[dict],
     file_summary_file_count: int,
 ) -> str:
-    '''
-    Docstring for generate_phase_html
-    
-    :param state_name: Description
-    :type state_name: str
-    :param phase: Description
-    :type phase: str
-    :param company: Description
-    :type company: str
-    :param steps: Description
-    :type steps: List[dict]
-    :param compliant_count: Description
-    :type compliant_count: int
-    :param non_compliant_count: Description
-    :type non_compliant_count: int
-    :param clause_stats: Description
-    :type clause_stats: List[dict]
-    :param file_summary_file_count: Description
-    :type file_summary_file_count: int
-    :return: Description
-    :rtype: str
-    '''
     total_files = compliant_count + non_compliant_count
     total_files_text = str(total_files) if total_files > 0 else "N/A"
 
@@ -518,7 +523,7 @@ def generate_phase_html(
 
     op_labels = {
         "font-fix-callas": "Font Fix (Callas)",
-        "pdfix-make-accessible": "PDFix - Make Accessible",
+        "pdfix-batch": "PDFix - Make Accessible",
         "validation-report": "veraPDF Validation",
         "report-summary": "veraPDF Summary",
     }
@@ -667,19 +672,20 @@ def generate_phase_html(
     html_parts.append("    </section>\n")
 
     html_parts.append("    <section class=\"section\">\n")
-    html_parts.append("      <h2>Top Clauses Across All Files</h2>\n")
+    html_parts.append("      <h2>Top Clause-Tests Across All Files</h2>\n")
     if not clause_stats:
         html_parts.append("      <p class=\"muted\">No clause statistics available.</p>\n")
     else:
-        html_parts.append("      <h3>Most Frequent Clauses</h3>\n")
+        html_parts.append("      <h3>Most Frequent Clause-Tests</h3>\n")
         html_parts.append("      <table>\n")
-        html_parts.append("        <thead><tr><th>Clause</th><th>Description</th><th>Files Affected</th></tr></thead>\n")
+        html_parts.append("        <thead><tr><th>Clause-Test</th><th>Description</th><th>Files Affected</th></tr></thead>\n")
         html_parts.append("        <tbody>\n")
         for c in top_clauses:
+            clause_test = c.get("clause_test") or c.get("clause") or ""
             html_parts.append("          <tr>\n")
-            html_parts.append(f"            <td><code>{html_escape(c['clause'])}</code></td>\n")
-            html_parts.append(f"            <td>{html_escape(c['description'])}</td>\n")
-            html_parts.append(f"            <td>{c['count']}</td>\n")
+            html_parts.append(f"            <td><code>{html_escape(clause_test)}</code></td>\n")
+            html_parts.append(f"            <td>{html_escape(c.get('description', '') or '')}</td>\n")
+            html_parts.append(f"            <td>{c.get('count', 0)}</td>\n")
             html_parts.append("          </tr>\n")
         html_parts.append("        </tbody>\n")
         html_parts.append("      </table>\n")
@@ -687,7 +693,7 @@ def generate_phase_html(
         if file_summary_file_count:
             html_parts.append(
                 "      <p class=\"muted\" style=\"margin-top:8px;\">"
-                f"File-level details per clause are available for {file_summary_file_count} files "
+                f"File-level details per clause-test are available for {file_summary_file_count} files "
                 "(see the CSV summary generated alongside this report).</p>\n"
             )
     html_parts.append("    </section>\n")
@@ -702,9 +708,9 @@ def generate_phase_html(
     return "".join(html_parts)
 
 
-def build_report(output_dir: str, state: str, company: str) -> str:
+def build_report(pipeline_log: str, output_dir: str, state: str, company: str) -> str:
     """
-    Build "report" HTML report from files in output_dir.
+    Build "report-summary" HTML report from files in output_dir.
     Returns generated HTML path.
     """
     output_txt = os.path.join(output_dir, "output.txt")
@@ -712,16 +718,20 @@ def build_report(output_dir: str, state: str, company: str) -> str:
     clause_csv = os.path.join(output_dir, "verapdf-clause-summary.csv")
     file_summary_csv = os.path.join(output_dir, "verapdf-file-summary.csv")
 
-    steps = parse_output_txt(output_txt)
+    if pipeline_log and os.path.exists(pipeline_log):
+        steps = parse_output_txt(pipeline_log)
+    else:
+        steps = parse_output_txt(os.path.join(output_dir, "output.txt"))
+
     compliant_count, non_compliant_count, _, _ = parse_compliance_txt(compliance_txt)
     clause_stats = parse_clause_summary_csv(clause_csv)
     file_summary_file_count = parse_file_summary_csv(file_summary_csv)
 
     html = generate_phase_html(
         state_name=state,
-        phase="report",
+        phase="report-summary",
         company=company,
-                steps=steps,
+        steps=steps,
         compliant_count=compliant_count,
         non_compliant_count=non_compliant_count,
         clause_stats=clause_stats,
@@ -744,12 +754,6 @@ def build_report(output_dir: str, state: str, company: str) -> str:
 # ---------------------------------------------------------------------------
 
 def main() -> int:
-    '''
-    Docstring for main
-    
-    :return: Description
-    :rtype: int
-    '''
     parser = argparse.ArgumentParser(
         description="Generate 'report' report artifacts (CSV/TXT/HTML) from veraPDF XML reports."
     )
@@ -759,6 +763,10 @@ def main() -> int:
     parser.add_argument("--company", default="PDFix", help="Company name shown in the report header.")
     parser.add_argument("--threads", type=int, default=4, help="Number of parsing threads (default: 4).")
 
+    parser.add_argument(
+        "--pipeline-log",
+        help="Path to pipeline output log (before-output.txt or after-output.txt)"
+    )
     args = parser.parse_args()
 
     xml_dir = os.path.abspath(args.xml_dir)
@@ -784,9 +792,11 @@ def main() -> int:
     write_file_summary_csv(summary, file_csv)
     write_clause_summary_csv(summary, clause_csv)
     write_compliance_report(summary, compliance_txt)
-    write_synthetic_before_output_txt(out_txt, num_files=num_files, duration_sec=duration)
 
-    html_path = build_report(out_dir, state=args.state, company=args.company)
+    # Optional: write minimal synthetic log for HTML step parsing (if you want output.txt created)
+    # write_synthetic_before_output_txt(out_txt, num_files=num_files, duration_sec=duration)
+
+    html_path = build_report(args.pipeline_log, out_dir, state=args.state, company=args.company)
 
     print(f"[OK] Parsed XML reports: {num_files}")
     print(f"[OK] Wrote: {file_csv}")
@@ -796,6 +806,11 @@ def main() -> int:
     print(f"[OK] Generated HTML: {html_path}")
 
     return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
 
 def run_report_generation(folder: Path, profiles: list) -> None:
     '''
@@ -833,6 +848,6 @@ def run_report_generation(folder: Path, profiles: list) -> None:
         write_file_summary_csv(summary, file_csv)
         write_clause_summary_csv(summary, clause_csv)
         write_compliance_report(summary, compliance_txt)
-        write_synthetic_before_output_txt(out_txt, num_files=num_files, duration_sec=duration)
+        # write_synthetic_before_output_txt(out_txt, num_files=num_files, duration_sec=duration)
 
-        html_path = build_report(out_dir, state="California", company="PDFix")
+        html_path = build_report(None, out_dir, state="California", company="PDFix")
