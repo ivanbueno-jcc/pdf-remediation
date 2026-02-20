@@ -36,30 +36,38 @@ def sanitize_clause_folder_name(clause: str) -> str:
     return folder_name if folder_name else "unknown"
 
 
-def get_failed_clauses(ua1_violations: list, wcag_violations: list) -> set[str]:
+def get_failed_clause_test_ids(ua1_violations: list, wcag_violations: list) -> set[str]:
     '''
-    Return a unique set of clause ids found in validation violations.
+    Return a unique set of clause-test ids found in validation violations.
     '''
-    clauses = set()
+    clause_test_ids = set()
     for violation in ua1_violations + wcag_violations:
         if not isinstance(violation, dict):
             continue
         clause = str(violation.get("clause", "")).strip()
         if clause:
-            clauses.add(clause)
-    return clauses
+            test_number = str(
+                violation.get("test")
+                or violation.get("testNumber")
+                or violation.get("testNo")
+                or violation.get("testno")
+                or ""
+            ).strip()
+            clause_test_id = f"{clause}-{test_number}" if test_number else clause
+            clause_test_ids.add(clause_test_id)
+    return clause_test_ids
 
 
 def copy_file_to_debug_clause_folders(
         source_file_path: Path,
         debug_root_path: Path,
-        clauses: set[str]) -> int:
+        clause_test_ids: set[str]) -> int:
     '''
-    Copy a PDF into one debug folder per clause using a flat filename layout.
+    Copy a PDF into one debug folder per clause-test id using a flat filename layout.
     '''
     copy_total = 0
-    for clause in clauses:
-        clause_folder = sanitize_clause_folder_name(clause)
+    for clause_test_id in clause_test_ids:
+        clause_folder = sanitize_clause_folder_name(clause_test_id)
         clause_path = debug_root_path / clause_folder
         clause_path.mkdir(parents=True, exist_ok=True)
 
@@ -83,12 +91,12 @@ def copy_file_to_debug_clause_folders(
 
 def main() -> int:
     '''
-    Run validation on active/files and copy failures into debug/<clause>/ folders.
+    Run validation on active/files and copy failures into debug/<clause-test>/ folders.
     '''
     parser = argparse.ArgumentParser(
         description=(
             "Validate PDFs in active/files and copy non-compliant files into "
-            "workspace/<workspace>/debug/<clause>/ folders."
+            "workspace/<workspace>/debug/<clause-test>/ folders."
         )
     )
     parser.add_argument("project_name", help="Project directory name.")
@@ -153,15 +161,15 @@ def main() -> int:
             continue
 
         failed_files_total += 1
-        failed_clauses = get_failed_clauses(ua1_violations, wcag_violations)
-        if len(failed_clauses) == 0:
+        failed_clause_tests = get_failed_clause_test_ids(ua1_violations, wcag_violations)
+        if len(failed_clause_tests) == 0:
             unknown_clause_total += 1
-            failed_clauses = {"unknown"}
+            failed_clause_tests = {"unknown"}
 
         copied_files_total += copy_file_to_debug_clause_folders(
             Path(file_path),
             debug_root_path,
-            failed_clauses
+            failed_clause_tests
         )
 
     print("DEBUG SUMMARY")
