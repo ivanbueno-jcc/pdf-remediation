@@ -233,7 +233,7 @@ def write_validation_report(folder: str, results: list) -> None:
     both_failed_count = total_files - both_passed_count
     both_success_rate = (both_passed_count / total_files) * 100 if total_files > 0 else 0
     append_to_csv(folder / "summary-total.csv", ["processed total", "passed", "fail", "success %"])
-    append_to_csv(folder / "summary-total.csv", [total_files, both_passed_count, both_failed_count, both_success_rate])
+    append_to_csv(folder / "summary-total.csv", [total_files, both_passed_count, both_failed_count, f"{both_success_rate:.0f}%"])
 
     print()
     print("Validation Summary:")
