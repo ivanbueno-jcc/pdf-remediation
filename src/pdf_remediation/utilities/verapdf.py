@@ -244,6 +244,62 @@ def write_validation_report(folder: str, results: list) -> None:
 
     print(f"Reports: {folder}")
 
+def get_recursive_pdf_file_count(folder_path: Path) -> int:
+    '''
+    Return the recursive PDF file total for a folder.
+    '''
+    if not folder_path.exists():
+        return 0
+
+    return sum(1 for _ in folder_path.rglob("*.pdf"))
+
+def get_subfolder_pdf_file_count(
+        folder_path: Path,
+        ignored_subfolders: set[str] = None) -> int:
+    '''
+    Return recursive PDF total across immediate subfolders, excluding ignored names.
+    '''
+    if not folder_path.exists():
+        return 0
+
+    ignored_subfolders = ignored_subfolders or set()
+    pdf_total = 0
+    for subfolder_path in folder_path.iterdir():
+        if not subfolder_path.is_dir():
+            continue
+        if subfolder_path.name in ignored_subfolders:
+            continue
+        pdf_total += get_recursive_pdf_file_count(subfolder_path)
+
+    return pdf_total
+
+def write_workspace_file_count_report(report_path: Path, workspace_folder_path: Path) -> None:
+    '''
+    Write recursive PDF counts to workspace-file-count.csv.
+    '''
+    ignored_subfolders = {"reports", "debug"}
+    workspace_folder_count = get_subfolder_pdf_file_count(
+        workspace_folder_path,
+        ignored_subfolders
+    )
+    count_targets = [("Total Files", workspace_folder_count)]
+    if workspace_folder_path.exists():
+        for subfolder_path in sorted(workspace_folder_path.iterdir(), key=lambda path: path.name):
+            if not subfolder_path.is_dir():
+                continue
+            if subfolder_path.name in ignored_subfolders:
+                continue
+            count_targets.append((subfolder_path.name, subfolder_path))
+
+    with open(report_path / "workspace-file-count.csv", "w", newline="", encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow([folder_name for folder_name, _ in count_targets])
+        writer.writerow([
+            folder_value if isinstance(folder_value, int)
+            else get_recursive_pdf_file_count(folder_value)
+            for _, folder_value in count_targets
+        ])
+
 def validate_pdf_multiprocess(
         workspace_folder_path: Path,
         file_paths: list,
@@ -306,7 +362,7 @@ def validate_pdf_multiprocess(
         del csv_result[5:]
 
     write_validation_report(report_path, csv_results)
-
     run_report_generation(report_path, profiles)
+    write_workspace_file_count_report(report_path, workspace_folder_path)
 
     return results
