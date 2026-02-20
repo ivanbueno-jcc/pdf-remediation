@@ -10,7 +10,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 from parallelbar import progress_starmap
 from .report import run_report_generation
-from .resources import ROOT_DIR, get_configuration_file, get_relative_report_path
+from .resources import ROOT_DIR, get_configuration_file, get_relative_report_path, append_to_csv
 
 def in_memory_validation(pdfPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
 
@@ -95,7 +95,10 @@ def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", forma
         # print("STDERR:\n", result.stderr)
 
         if result.returncode <= 1:
-            filename = Path(pdfPath).stem.split('.')[0] + f".{format}"
+            parent_path = Path(pdfPath).parent.as_posix()
+            parent_path_str = parent_path.replace("/", "-")
+
+            filename = parent_path_str + '-' + Path(pdfPath).stem.split('.')[0] + f".{format}"
             reportPath = Path(reportPath) / profile / filename
             reportPath.parent.mkdir(parents=True, exist_ok=True)
 
@@ -202,6 +205,9 @@ def write_validation_report(folder: str, results: list) -> None:
     '''
 
     df = pd.DataFrame(results, columns=['path', 'ua1', 'ua1_failed_rules_count', 'wcag', 'wcag_failed_rules_count'])
+    df.drop_duplicates(inplace=True, ignore_index=True)
+    df.to_csv(folder / "vera_validation_results.csv", index=False)
+
     total_files = len(df)
     ua1_failed = df['ua1'] == False
     ua1_error = df['ua1'] == 'Error'
@@ -217,18 +223,24 @@ def write_validation_report(folder: str, results: list) -> None:
     wcag_success_rate = (wcag_passed_count / total_files) * 100 if total_files > 0 else 0
     ua1_violation_total = df['ua1_failed_rules_count'].sum()
     wcag_violation_total = df['wcag_failed_rules_count'].sum()
+
+    # Both
+    both_passed = df[
+        (df["ua1"].astype(str).str.upper() == "TRUE") &
+        (df["wcag"].astype(str).str.upper() == "TRUE")
+    ]
+    both_passed_count = len(both_passed)
+    both_failed_count = total_files - both_passed_count
+    both_success_rate = (both_passed_count / total_files) * 100 if total_files > 0 else 0
+    append_to_csv(folder / "summary-total.csv", ["processed total", "passed", "fail", "success %"])
+    append_to_csv(folder / "summary-total.csv", [total_files, both_passed_count, both_failed_count, both_success_rate])
+
     print()
     print("Validation Summary:")
     print(f"  UA1 ({ua1_success_rate:.0f}%) - Passed: {ua1_passed_count}, Failed: {ua1_failed_count}, Error: {ua1_error_count}, Total Violations: {ua1_violation_total}")
     print(f"  WCAG ({wcag_success_rate:.0f}%) - Passed: {wcag_passed_count}, Failed: {wcag_failed_count}, Error: {wcag_error_count}, Total Violations: {wcag_violation_total}")
+    print(f"  Both ({both_success_rate:.0f}%) - Passed: {both_passed_count}, Failed: {both_failed_count}")
     print()
-
-    # Write results to CSV
-    with open(folder / "vera_validation_results.csv",
-              mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(['path', 'ua1', 'ua1_failed_rules_count', 'wcag', 'wcag_failed_rules_count'])
-        writer.writerows(results)
 
     print(f"Reports: {folder}")
 
