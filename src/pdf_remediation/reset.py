@@ -4,7 +4,7 @@ Reset the files in the working directory with the source files.
 
 import argparse
 import sys
-from .utilities.resources import get_project_source_path
+from .utilities.resources import get_pdf_file_paths, get_project_source_path
 from .utilities.resources import get_project_workspace_subfolder_path, clear_workspace_folder
 
 if __name__ == '__main__':
@@ -52,8 +52,9 @@ if __name__ == '__main__':
         clear_workspace_folder(workspace_folder_path_processed)
 
         semaphore = workspace_folder_path / ".remediation.lock"
-        if len(list(source_path.rglob("*.pdf"))) > 0:
-            for file_path in source_path.rglob("*.pdf"):
+        source_file_paths = get_pdf_file_paths(source_path)
+        if len(source_file_paths) > 0:
+            for file_path in source_file_paths:
                 relative_path = file_path.relative_to(source_path)
                 destination_path = workspace_folder_path / relative_path
                 destination_path.parent.mkdir(parents=True, exist_ok=True)

@@ -6,7 +6,7 @@ Move processed PDF files back to the active workspace folder.
 import argparse
 from pathlib import Path
 import sys
-from .utilities.resources import get_project_workspace_path
+from .utilities.resources import get_pdf_file_paths, get_project_workspace_path
 from .utilities.resources import move_file_and_delete_source
 
 if __name__ == '__main__':
@@ -58,7 +58,7 @@ if __name__ == '__main__':
             if not processed_folder_path.exists():
                 continue
 
-            processed_file_paths = list(processed_folder_path.rglob("*.pdf"))
+            processed_file_paths = get_pdf_file_paths(processed_folder_path)
             if len(processed_file_paths) == 0:
                 continue
 

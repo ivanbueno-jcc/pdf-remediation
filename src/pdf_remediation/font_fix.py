@@ -13,7 +13,11 @@ from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import CALLAS_FONT_IMAGE, get_project_workspace_subfolder_file_paths
 from .utilities.resources import get_project_workspace_path, print_workspace_summary
 from .utilities.resources import append_to_csv, get_project_workspace_subfolder_path
-from .utilities.resources import get_project_workspace_file_paths, move_file_and_delete_source
+from .utilities.resources import (
+    get_pdf_file_paths,
+    get_project_workspace_file_paths,
+    move_file_and_delete_source
+)
 
 def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-branches
     '''Main function to remediate PDF files in a project workspace.'''
@@ -99,7 +103,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 file_paths_for_remediation.append([file_path, destination_path])
                 file_paths_for_counting.append(file_path)
 
-            processed_files_count = len(list(output_pdf_folder.rglob('*.pdf')))
+            processed_files_count = len(get_pdf_file_paths(output_pdf_folder))
             print(f"Total files processed: {processed_files_count}")
             print(f"Total files left to remediate: {len(file_paths_for_remediation)}")
             print()

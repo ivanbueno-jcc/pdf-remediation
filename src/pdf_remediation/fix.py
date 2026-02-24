@@ -14,7 +14,11 @@ from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import append_to_csv, get_project_workspace_subfolder_file_paths
 from .utilities.resources import print_workspace_summary
 from .utilities.resources import get_project_path, get_project_workspace_subfolder_path
-from .utilities.resources import get_project_workspace_file_paths, move_file_and_delete_source
+from .utilities.resources import (
+    get_pdf_file_paths,
+    get_project_workspace_file_paths,
+    move_file_and_delete_source
+)
 from .utilities.resources import FIX_PROCESS_TIMEOUT_SECONDS
 
 def _append_fix_worker_error(
@@ -253,7 +257,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             if len(skipped_files) > 0:
                 print(f"Total skipped files: {len(skipped_files)}")
 
-            processed_files_count = len(list(output_pdf_folder.rglob('*.pdf')))
+            processed_files_count = len(get_pdf_file_paths(output_pdf_folder))
             print(f"Total files processed: {processed_files_count}")
             print(f"Total files left to remediate: {len(file_paths_for_remediation)}")
             print()

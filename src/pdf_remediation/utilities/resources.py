@@ -173,6 +173,14 @@ def get_project_workspace_path(project_name: str, workspace_name: str = "default
 
     return workspace_path
 
+def get_pdf_file_paths(folder_path: Path) -> list[Path]:
+    '''
+    Return recursive PDF file paths for any case variant of ".pdf".
+    '''
+    if not folder_path.exists():
+        return []
+    return list(folder_path.rglob("*.[Pp][Dd][Ff]"))
+
 def get_project_workspace_file_paths(
         project_name: str,
         workspace_name: str,
@@ -191,15 +199,16 @@ def get_project_workspace_file_paths(
     '''
     subfolder_path = get_project_workspace_subfolder_path(
         project_name, workspace_name, subfolder_name)
-    file_paths = list(subfolder_path.rglob("*.pdf"))
+    file_paths = get_pdf_file_paths(subfolder_path)
 
     if len(file_paths) == 0 and workspace_name == "default" and subfolder_name == "active":
         # check if workspace folder contains pdf files
         source_path = get_project_source_path(project_name)
         semaphore = subfolder_path / ".remediation.lock"
         if not semaphore.exists():
-            if len(list(source_path.rglob("*.pdf"))) > 0:
-                for file_path in source_path.rglob("*.pdf"):
+            source_file_paths = get_pdf_file_paths(source_path)
+            if len(source_file_paths) > 0:
+                for file_path in source_file_paths:
                     relative_path = file_path.relative_to(source_path)
                     destination_path = subfolder_path / relative_path
                     destination_path.parent.mkdir(parents=True, exist_ok=True)
@@ -271,7 +280,7 @@ def get_project_workspace_subfolder_file_paths(
     else:
         subfolder_path = get_project_workspace_subfolder_path(
             project_name, workspace_name, subfolder_name, directory)
-        file_paths = list(subfolder_path.rglob("*.pdf"))
+        file_paths = get_pdf_file_paths(subfolder_path)
 
     return file_paths
 
@@ -301,7 +310,7 @@ def get_full_workspace_file_paths(
                 continue
 
             scanned_paths.append(workspace_subfolder_directory_path)
-            for file_path in sorted(workspace_subfolder_directory_path.rglob("*.pdf")):
+            for file_path in sorted(get_pdf_file_paths(workspace_subfolder_directory_path)):
                 file_path_str = str(file_path)
                 if file_path_str not in seen_paths:
                     seen_paths.add(file_path_str)
@@ -441,7 +450,7 @@ def print_workspace_summary(
             if subfolder_path.name in ignored_subfolder_set:
                 continue
 
-            num_of_pdf_files = len(list(subfolder_path.rglob("*.pdf")))
+            num_of_pdf_files = len(get_pdf_file_paths(subfolder_path))
             summary_file_total += num_of_pdf_files
             workspaces[subfolder_path.name] = {
                 "total": num_of_pdf_files
@@ -449,13 +458,13 @@ def print_workspace_summary(
 
             if Path(subfolder_path / "files").exists():
                 num_of_pdf_files_in_files = len(
-                    list((subfolder_path / "files").rglob("*.pdf"))
+                    get_pdf_file_paths(subfolder_path / "files")
                 )
                 workspaces[subfolder_path.name]["files"] = num_of_pdf_files_in_files
 
             if Path(subfolder_path / "processed").exists():
                 num_of_pdf_files_in_processed = len(
-                    list((subfolder_path / "processed").rglob("*.pdf"))
+                    get_pdf_file_paths(subfolder_path / "processed")
                 )
                 workspaces[subfolder_path.name]["processed"] = num_of_pdf_files_in_processed
 

@@ -10,7 +10,13 @@ import subprocess
 import xml.etree.ElementTree as ET
 from parallelbar import progress_starmap
 from .report import run_report_generation
-from .resources import ROOT_DIR, get_configuration_file, get_relative_report_path, append_to_csv
+from .resources import (
+    ROOT_DIR,
+    append_to_csv,
+    get_configuration_file,
+    get_pdf_file_paths,
+    get_relative_report_path
+)
 
 def in_memory_validation(pdfPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
 
@@ -251,7 +257,7 @@ def get_recursive_pdf_file_count(folder_path: Path) -> int:
     if not folder_path.exists():
         return 0
 
-    return sum(1 for _ in folder_path.rglob("*.pdf"))
+    return len(get_pdf_file_paths(folder_path))
 
 def get_subfolder_pdf_file_count(
         folder_path: Path,

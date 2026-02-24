@@ -2,7 +2,11 @@
 List the status of the project.
 '''
 import argparse
-from .utilities.resources import get_project_source_path, print_workspace_summary
+from .utilities.resources import (
+    get_pdf_file_paths,
+    get_project_source_path,
+    print_workspace_summary
+)
 
 def main():
     '''Main function to list project status.'''
@@ -17,7 +21,7 @@ def main():
 
         print(f"PROJECT: {args.project_name}")
         source_path = get_project_source_path(args.project_name)
-        file_paths = list(source_path.rglob("*.pdf"))
+        file_paths = get_pdf_file_paths(source_path)
 
         print()
         if len(file_paths) > 0:
@@ -36,7 +40,7 @@ def main():
                 total_pdfs = 0
                 for subfolder_path in workspace_path.iterdir():
                     if subfolder_path.is_dir() and subfolder_path.name != "reports":
-                        total_pdfs += len(list(subfolder_path.rglob("*.pdf")))
+                        total_pdfs += len(get_pdf_file_paths(subfolder_path))
 
                 print(f"  * {workspace_path.name} ({total_pdfs} PDFs)")
                 print_workspace_summary(
