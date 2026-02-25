@@ -58,7 +58,7 @@
         },
         {
           "name": "flatten_table",
-          "value": "false"
+          "value": false
         },
         {
           "name": "fix_table_spans",
@@ -89,11 +89,11 @@
         },
         {
           "name": "fix_table_spans",
-          "value": true
+          "value": false
         },
         {
           "name": "fix_table_headers",
-          "value": "true"
+          "value": false
         },
         {
           "name": "fix_nested",
@@ -153,6 +153,11 @@
                 {
                   "query": {
                     "$and": [
+                      {
+                        "$0_tag_type": {
+                          "$regex": "^(?!H$|H\\d$|TH$|TD$|TR$|LBody$).*"
+                        }
+                      },
                       {
                         "$0_text": {
                           "$regex": "^\\s*$"
