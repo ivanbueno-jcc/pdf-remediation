@@ -1,6 +1,8 @@
+# pylint: disable=too-many-branches, too-many-return-statements
 '''
 Utility functions for managing project resources and paths.
 '''
+from collections.abc import Callable
 from pathlib import Path
 import csv
 import ctypes
@@ -9,6 +11,7 @@ import os
 import platform
 import shutil
 import subprocess
+import tarfile
 import time
 from dotenv import load_dotenv
 
@@ -26,6 +29,170 @@ CALLAS_FONT_IMAGE = "pdfix/font-fix-callas:v1.0.5"
 PDFIX_FONT_IMAGE = "pdfix/font-fix-pdfix:v1.0.5"
 FIX_PROCESS_TIMEOUT_SECONDS = 500
 _DOCKER_STATE = {"ready": False}
+
+
+def _get_project_env_path() -> Path:
+    '''
+    Return the project .env file path.
+    '''
+    return ROOT_DIR / ".env"
+
+
+def _save_env_value(key: str, value: str) -> None:
+    '''
+    Upsert a key/value in the project .env file.
+    '''
+    env_path = _get_project_env_path()
+    env_path.parent.mkdir(parents=True, exist_ok=True)
+    env_lines: list[str] = []
+
+    if env_path.exists():
+        env_lines = env_path.read_text(encoding="utf-8").splitlines()
+
+    escaped_value = value.replace("\\", "\\\\").replace('"', '\\"')
+    new_line = f'{key} = "{escaped_value}"'
+    updated_lines: list[str] = []
+    replaced = False
+
+    for line in env_lines:
+        stripped = line.strip()
+        if stripped and not stripped.startswith("#") and "=" in stripped:
+            line_key = stripped.split("=", 1)[0].strip()
+            if line_key == key:
+                updated_lines.append(new_line)
+                replaced = True
+                continue
+        updated_lines.append(line)
+
+    if not replaced:
+        if updated_lines and updated_lines[-1] != "":
+            updated_lines.append("")
+        updated_lines.append(new_line)
+
+    env_path.write_text("\n".join(updated_lines) + "\n", encoding="utf-8")
+
+
+def _move_contents(source_dir: Path, destination_dir: Path) -> None:
+    '''
+    Move all entries from source_dir into destination_dir.
+    '''
+    for entry in source_dir.iterdir():
+        destination = destination_dir / entry.name
+
+        if destination.exists():
+            if entry.is_dir() and destination.is_dir():
+                _move_contents(entry, destination)
+                entry.rmdir()
+                continue
+
+            if destination.is_dir():
+                shutil.rmtree(destination)
+            else:
+                destination.unlink()
+
+        shutil.move(str(entry), str(destination))
+
+
+def _run_command(command: list[str]) -> int:
+    '''
+    Run a command and return its exit code.
+    '''
+    print()
+    print(f"RUNNING: {' '.join(command)}")
+    result = subprocess.run(command, check=False)
+    return result.returncode
+
+
+def download_source_with_terminus(
+        project_name: str,
+        source_path: Path,
+        verbose: bool = False,
+        print_banner: Callable[[int, str], None] | None = None) -> int:
+    '''
+    Download and extract Pantheon files via Terminus into source_path.
+
+    Returns 0 when skipped or successful. Returns non-zero for fatal errors.
+    '''
+    terminus_path = shutil.which("terminus")
+    if terminus_path is None:
+        return 0
+
+    if print_banner is not None:
+        print_banner(0, "download files")
+
+    print()
+    print(f"Terminus detected: {terminus_path}")
+    pantheon_email = os.getenv("PANTHEON_EMAIL", "").strip()
+    if pantheon_email:
+        print(f"Using saved Pantheon email: {pantheon_email}")
+    else:
+        pantheon_email = input("Pantheon email for Terminus login: ").strip()
+        if pantheon_email:
+            _save_env_value("PANTHEON_EMAIL", pantheon_email)
+            os.environ["PANTHEON_EMAIL"] = pantheon_email
+            print(f"Saved Pantheon email to {_get_project_env_path()}")
+
+    if not pantheon_email:
+        print("Pipeline stopped: Pantheon email is required when Terminus is installed.")
+        return 1
+
+    rc = _run_command(["terminus", "auth:login", f"--email={pantheon_email}"])
+    if rc != 0:
+        print()
+        print(f"Pipeline stopped: terminus auth:login failed with exit code {rc}.")
+        return rc
+
+    backup_archive_path = source_path / "files_live.tar.gz"
+    rc = _run_command([
+        "terminus",
+        "backup:get",
+        f"jcc-{project_name}.live",
+        "--element=files",
+        f"--to={backup_archive_path}"
+    ])
+    if rc == 1:
+        print()
+        print(
+            "WARNING: terminus backup:get failed with exit code 1. "
+            "Proceeding with the remaining pipeline steps."
+        )
+        return 0
+    if rc != 0:
+        print()
+        print(f"Pipeline stopped: terminus backup:get failed with exit code {rc}.")
+        return rc
+
+    if not backup_archive_path.exists():
+        print()
+        print(f"Pipeline stopped: backup archive not found at {backup_archive_path}.")
+        return 1
+
+    print()
+    if verbose:
+        print(f"Extracting backup archive: {backup_archive_path}")
+    with tarfile.open(backup_archive_path, "r:gz") as tar:
+        tar.extractall(path=source_path)
+
+    backup_archive_path.unlink()
+    if verbose:
+        print(f"Deleted archive: {backup_archive_path}")
+
+    files_live_path = source_path / "files_live"
+    if not files_live_path.exists() or not files_live_path.is_dir():
+        print()
+        print(
+            "Pipeline stopped: extracted files_live folder not found at "
+            f"{files_live_path}."
+        )
+        return 1
+
+    _move_contents(files_live_path, source_path)
+    files_live_path.rmdir()
+    if verbose:
+        print(f"Moved files from {files_live_path} to {source_path}")
+        print(f"Deleted folder: {files_live_path}")
+
+    return 0
 
 
 def _docker_daemon_is_running() -> bool:
