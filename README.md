@@ -282,7 +282,20 @@ Use these controls to reset or fork clean workspaces without touching your origi
 
 ![Workspace Control Diagram of PDF Remediation Process](resources/images/slide_3_workspace_control.png)
 
-#### 1) Reset workspace
+#### 1) Get latest source PDFs into `active/files`
+```
+uv run -m pdf_remediation.get_latest_files <project_name> [workspace]
+```
+
+`get_latest_files` does the following:
+- If Terminus is installed, it clears `<project>/source` and downloads the latest live files backup.
+- If Terminus is not installed, it skips download and uses the current `source/` contents.
+- Scans only PDF files from `source/`.
+- Compares by relative path against all workspace `<folder>/files` and `<folder>/processed` PDFs.
+- Ignores workspace `debug/` and `reports/` folders during this comparison.
+- Copies only new PDFs into `<workspace>/active/files`, preserving relative paths.
+
+#### 2) Reset workspace
 ```
 uv run -m pdf_remediation.reset <project_name> [workspace] [folder]
 ```
@@ -479,6 +492,15 @@ argument so you can run separate workflows in different subfolders (for example,
 
 ### Reset
 - `reset.py` refreshes a workspace from `source/` and resets the copy semaphore.
+
+### Latest source sync
+- `get_latest_files.py` refreshes source from Terminus when available, then copies
+  only new PDF files from `source/` into `workspace/<workspace>/active/files`.
+- New-file detection is based on each PDF's path relative to `source/`, compared
+  against all `<workspace>/<folder>/files` and `<workspace>/<folder>/processed` PDFs.
+- Ignores `debug/` and `reports/` workspace folders while checking existing files.
+- Syntax:
+  `uv run -m pdf_remediation.get_latest_files <project_name> [workspace]`
 
 ### Licensing
 - `license.py` reads license state from PDFix.
