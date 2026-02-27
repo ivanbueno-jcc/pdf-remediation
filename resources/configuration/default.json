@@ -3,6 +3,9 @@
   "title": "Default PDF/UA Remediation Preset",
   "version": "v0.1.0",
   "desc": "Official default remediation preset for automated PDF/UA-1 compliance using PDFix SDK. The preset performs conservative, non-destructive cleanup, structure repair, tagging completion, and accessibility fixes.",
+  "settings": {
+    "stop_on_action_failure": false
+  },
   "actions": [
     {
       "name": "delete_annot",
@@ -640,12 +643,11 @@
     },
     {
       "name": "set_title",
-      "title": "Set Document Title (Custom text if provided)",
-      "desc": "Set the document title using a defined method. If custom text is provided it can be applied; otherwise the existing title is preserved unless overwrite is enabled.",
+      "desc": "Set the document Title metadata by picking text from the first matching structure tag (H1). This aligns metadata with the visible main heading for assistive technologies and preserves any existing Title unless overwrite is enabled.",
       "params": [
         {
           "name": "title_type",
-          "value": 2
+          "value": "1"
         },
         {
           "name": "custom_text",
@@ -653,14 +655,61 @@
         },
         {
           "name": "description_tag",
-          "value": "Caption"
+          "value": "H1"
         },
         {
           "name": "overwrite",
           "value": false
         }
-      ]
+      ],
+      "title": "Set Title (From H1 Heading)"
     },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata from the PDF Info dictionary. Use this as a reliable fallback when the tag structure does not contain a suitable heading. Existing Title is preserved unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "3"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From Info Dictionary)"
+    },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata from the input file name. This provides a deterministic fallback title when neither tag-based detection nor existing Info metadata is suitable. Existing Title is preserved unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "2"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From File Name)"
+    }, 
     {
       "name": "set_language",
       "title": "Set Document Language (en-US)",
