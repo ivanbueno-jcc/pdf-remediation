@@ -58,7 +58,7 @@ exit code.
 flowchart LR
 
 %% LANES
-subgraph ORCH[Orchestrator (go.py / CLI)]
+subgraph ORCH["Orchestrator (go.py / CLI)"]
     A[Init Project]
     B[Seed active/files from source]
     C[Baseline Validate]
@@ -71,7 +71,7 @@ end
 subgraph PDFIX[PDFix Engine]
     P1[Page Count]
     P2[Core Remediation<br/>default.json profile]
-    P3[Font Fix Pass (missing unicode)]
+    P3["Font Fix Pass (missing unicode)"]
 end
 
 subgraph VERAPDF[veraPDF Validator]
@@ -82,7 +82,7 @@ subgraph VERAPDF[veraPDF Validator]
     V5[Full Workspace Validation]
 end
 
-subgraph CALLAS[Callas pdfToolbox (Docker)]
+subgraph CALLAS["Callas pdfToolbox (Docker)"]
     C1[Font Remediation]
 end
 
