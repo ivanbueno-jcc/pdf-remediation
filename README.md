@@ -258,6 +258,16 @@ into `active/files` once and creates `.remediation.lock`.
 
 Run remediation, then loop back for another pass when you have a better config.
 
+```mermaid
+flowchart LR
+  A[Non-compliant outputs<br/>active/processed, font-issues/processed, etc.] --> B[Reprocess<br/>reprocess.py moves processed -> active/files]
+  B --> C[Update Config<br/>resources/configuration/*.json]
+  C --> D[Re-run Fix<br/>fix.py --config-file <new-config.json>]
+  D --> E[Validate + Route]
+  E -->|Compliant| F[remediated/files]
+  E -->|Still failing| A
+```
+
 #### 1) Remediate PDFs
 ```
 uv run -m pdf_remediation.fix <project_name> [workspace] [folder]
