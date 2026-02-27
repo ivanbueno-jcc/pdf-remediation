@@ -1,10 +1,31 @@
 # PDF Remediation Tool
 
+```mermaid
+flowchart LR
+  A[Ingest] --> B[Validate] --> C[Fix] --> D[Re-Validate] --> E[Publish + Report]
+```
+
 Think of this as a production line for accessibility: you feed it a sprawling PDF archive, and it spits back a compliant set without wrecking your folder structure. Under the hood it wires veraPDF and PDFix together to validate and remediate thousands of files fast, with the original layout intact.
 
 ![Demo of PDF Remediation](resources/images/pdf_remediation_process_flow_presentation.gif)
 
 ## Quickstart
+
+```mermaid
+flowchart TD
+  A[PDF Archive Input<br/>Preserve folder structure] --> B[Baseline Compliance Check<br/>PDF/UA + WCAG]
+  B --> C[Automated Remediation Pass]
+  C --> D[Re-Validate Compliance]
+  D --> E{Outcome}
+
+  E -->|Pass| F[Compliant Library Output<br/>Ready to publish / distribute]
+  E -->|Font issues| G[Targeted Font Repair]
+  G --> D
+
+  E -->|Cannot validate / blocked| H[Exception Queue<br/>Manual review required]
+
+  D --> I[Reports & Audit Trail<br/>Per-file status + evidence]
+```
 
 1) Install uv
    - macOS/Linux:
@@ -53,6 +74,10 @@ uv run -m pdf_remediation.readyset delnorte alameda sonoma
 `readyset.py` runs `go.py` once per project in the order provided, prints a
 high-visibility banner for each project, and stops on the first non-zero
 exit code.
+
+## Walkthrough
+
+Here's an example walkthrough of remediating the Del Norte trial court.
 
 ```mermaid
 flowchart LR
@@ -143,10 +168,6 @@ V4 -->|Still Failing| W7
 G --> V5
 V5 --> W10
 ```
-
-## Walkthrough
-
-Here's an example walkthrough of remediating the Del Norte trial court.
 
 1) Initialize a project:
    ```
