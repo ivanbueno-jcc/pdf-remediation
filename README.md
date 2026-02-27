@@ -54,6 +54,96 @@ uv run -m pdf_remediation.readyset delnorte alameda sonoma
 high-visibility banner for each project, and stops on the first non-zero
 exit code.
 
+```mermaid
+flowchart LR
+
+%% LANES
+subgraph ORCH[Orchestrator (go.py / CLI)]
+    A[Init Project]
+    B[Seed active/files from source]
+    C[Baseline Validate]
+    D[Run fix.py]
+    E[Run font_fix.py]
+    F[Run font_fix_pdfix.py]
+    G[Final validate --full]
+end
+
+subgraph PDFIX[PDFix Engine]
+    P1[Page Count]
+    P2[Core Remediation<br/>default.json profile]
+    P3[Font Fix Pass (missing unicode)]
+end
+
+subgraph VERAPDF[veraPDF Validator]
+    V1[Validate UA1 + WCAG 2.2]
+    V2[Re-Validate after Fix]
+    V3[Re-Validate after FontFix]
+    V4[Re-Validate after PDFix FontFix]
+    V5[Full Workspace Validation]
+end
+
+subgraph CALLAS[Callas pdfToolbox (Docker)]
+    C1[Font Remediation]
+end
+
+subgraph WORKSPACE[Workspace Routing]
+    W1[source/]
+    W2[active/files]
+    W3[active/processed]
+    W4[remediated/files]
+    W5[font-issues/files]
+    W6[font-issues-missing-unicode/files]
+    W7[unable-to-validate/files]
+    W8[secured-*]
+    W9[pdfix-unable-to-open]
+    W10[reports/<timestamp>-*]
+end
+
+
+%% FLOW
+
+W1 --> B
+B --> W2
+
+C --> V1
+W2 --> V1
+V1 --> W10
+
+D --> P1
+P1 --> P2
+W2 --> P2
+P2 --> W3
+
+W3 --> V2
+V2 --> W10
+
+V2 -->|Compliant| W4
+V2 -->|Font Violations| W5
+V2 -->|Validation Errors| W7
+V2 -->|Secured| W8
+V2 -->|Cannot Open| W9
+
+E --> C1
+W5 --> C1
+C1 --> V3
+V3 --> W10
+
+V3 -->|Compliant| W4
+V3 -->|Missing Unicode| W6
+V3 -->|Still Failing| W7
+
+F --> P3
+W6 --> P3
+P3 --> V4
+V4 --> W10
+
+V4 -->|Compliant| W4
+V4 -->|Still Failing| W7
+
+G --> V5
+V5 --> W10
+```
+
 ## Walkthrough
 
 Here's an example walkthrough of remediating the Del Norte trial court.
@@ -124,13 +214,9 @@ Here's an example walkthrough of remediating the Del Norte trial court.
 
 High-level view of the end-to-end pipeline: initialize, validate, remediate, re-validate, and route results into the right workspace folders.
 
-![Process Flow Diagram of PDF Remediation Process](resources/images/pdf_remediation_process_flow_presentation.png)
-
 ### Initialize and Validate
 
 Bootstrap a project and get a clean baseline before remediation begins.
-
-![Initialize and Validate Diagram of PDF Remediation Process](resources/images/slide_1_init_validate.png)
 
 #### 1) Initialize a project
 ```
@@ -171,8 +257,6 @@ into `active/files` once and creates `.remediation.lock`.
 ### Fix and Reprocess
 
 Run remediation, then loop back for another pass when you have a better config.
-
-![Fix and Reprocess Diagram of PDF Remediation Process](resources/images/slide_2_fix_reprocess.png)
 
 #### 1) Remediate PDFs
 ```
@@ -279,8 +363,6 @@ To skip a blocking file before reprocessing, run:
 ### Workspace Control
 
 Use these controls to reset or fork clean workspaces without touching your originals.
-
-![Workspace Control Diagram of PDF Remediation Process](resources/images/slide_3_workspace_control.png)
 
 #### 1) Get latest source PDFs into `active/files`
 ```
