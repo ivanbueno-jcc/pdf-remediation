@@ -597,6 +597,18 @@ argument so you can run separate workflows in different subfolders (for example,
 - Workspace totals and summaries skip the workspace-level `reports/` folder.
 - Syntax: `uv run -m pdf_remediation.status <project_name>`
 
+### Tally
+- `tally.py` scans all project folders in `resources/projects`, reads each
+  project's latest `workspace/default/reports/<timestamp-*>/summary/ua1/california-report.html`,
+  extracts `Clause-Test` and `Files Affected`, and builds a Clause-Test x
+  Project pivot table with summed file totals.
+- Default output is `resources/artifacts/tally-YYYYMMDDHHMMSS.csv`.
+- It also writes `resources/artifacts/tally-YYYYMMDDHHSS-summary.csv` from each
+  project's latest `workspace/default/reports/<timestamp-*>/summary-total.csv`
+  with columns: `project`, `processed total`, `passed`, `fail`, `success %`.
+- Syntax:
+  `uv run -m pdf_remediation.tally [--projects-path <path>] [--workspace <name>] [--profile <name>] [--report-file <file>] [--output <path>] [--summary-output <path>]`
+
 ### Utility scripts
 - `scripts/check_pdf_headers.py` recursively checks file headers for `%PDF-`.
 - It prints total valid/invalid/unreadable counts plus up to 3 sample valid and
