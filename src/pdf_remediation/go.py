@@ -40,12 +40,12 @@ def print_pipeline_banner(step_number: int, step_name: str) -> None:
 
 def main() -> int: # pylint: disable=too-many-locals
     '''
-    Run full validation, fix, font_fix, font_fix_pdfix, then full validation again.
+    Run optional pre-fix validation, fix, font_fix, font_fix_pdfix, then final full validation.
     '''
     parser = argparse.ArgumentParser(
         description=(
-            "Run validate --full, fix, font_fix, font_fix_pdfix, then validate --full again "
-            "for a project workspace."
+            "Run optional pre-fix validate, fix, font_fix, font_fix_pdfix, then "
+            "validate --full for a project workspace."
         )
     )
     parser.add_argument("project_name", help="Project directory name.")
@@ -76,6 +76,11 @@ def main() -> int: # pylint: disable=too-many-locals
         help="CPU count for font_fix_pdfix.py (--n-cpu)."
     )
     parser.add_argument(
+        "--pre-validate",
+        action='store_true',
+        help="Run pre-fix validate step (disabled by default)."
+    )
+    parser.add_argument(
         "--verbose",
         "-v",
         action='store_true',
@@ -89,7 +94,6 @@ def main() -> int: # pylint: disable=too-many-locals
     )
     args = parser.parse_args()
 
-    project_initialized = False
     project_path = Path(PROJECT_BASE_PATH) / args.project_name
     if not project_path.exists():
         print(f"Project not found. Initializing: {args.project_name}")
@@ -98,7 +102,6 @@ def main() -> int: # pylint: disable=too-many-locals
             print()
             print(f"Pipeline stopped: init failed with exit code {rc}.")
             return rc
-        project_initialized = True
 
     source_path = get_project_source_path(args.project_name).resolve()
     print(f"SOURCE: {source_path}")
@@ -119,7 +122,7 @@ def main() -> int: # pylint: disable=too-many-locals
     print(f"WORKSPACE: {args.workspace_name}")
     print()
     print("PIPELINE")
-    print("1) validate [pre-fix, init only]")
+    print("1) validate (--skip-page-count) [pre-fix, optional via --pre-validate]")
     print("2) fix (active)")
     print("3) font_fix (font-issues)")
     print("4) font_fix_pdfix (font-issues-missing-unicode)")
@@ -170,16 +173,16 @@ def main() -> int: # pylint: disable=too-many-locals
     ]
     final_validate_args = [*pre_validate_args, "--full"]
 
-    print_pipeline_banner(1, "validate (pre-fix)")
-    if project_initialized:
+    if args.pre_validate:
+        print_pipeline_banner(1, "validate (pre-fix)")
         rc = run_module("pdf_remediation.validate", pre_validate_args)
         if rc != 0:
             print()
-            print(f"Pipeline stopped: pre-fix validate --full failed with exit code {rc}.")
+            print(f"Pipeline stopped: pre-fix validate failed with exit code {rc}.")
             return rc
     else:
         print()
-        print("Skipping pre-fix validate --full (project already initialized).")
+        print("Skipping pre-fix validate (pass --pre-validate to enable).")
 
     print_pipeline_banner(2, "fix")
     rc = run_module("pdf_remediation.fix", fix_args)
