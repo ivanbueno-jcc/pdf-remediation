@@ -18,6 +18,7 @@ from .utilities.resources import PROJECT_BASE_PATH
 TIMESTAMP_PATTERN = re.compile(r'(\d{8}_\d{6})')
 CLAUSE_HEADER = 'clausetest'
 FILES_AFFECTED_HEADER = 'filesaffected'
+DEFAULT_OUTPUT_DIR = Path('resources/artifacts/tally')
 
 
 def _normalize_whitespace(value: str) -> str:
@@ -53,7 +54,7 @@ def _default_output_path() -> Path:
     Return a timestamped default CSV path.
     '''
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    return Path(f'resources/artifacts/tally-{timestamp}.csv')
+    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}.csv'
 
 
 def _default_summary_output_path() -> Path:
@@ -61,7 +62,7 @@ def _default_summary_output_path() -> Path:
     Return a timestamped default summary CSV path.
     '''
     timestamp = datetime.now().strftime('%Y%m%d%H%S')
-    return Path(f'resources/artifacts/tally-{timestamp}-summary.csv')
+    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}-summary.csv'
 
 
 def _parse_int(value: str) -> int | None:
@@ -417,6 +418,12 @@ def _build_pivot(rows: list[dict[str, str | int]]) -> pd.DataFrame:
     pivot_table = pivot_table.sort_values(
         by='Clause-Test',
         key=lambda column: column.map(_clause_test_sort_key),
+        kind='mergesort'
+    )
+    pivot_table = pivot_table.sort_values(
+        by='Total',
+        ascending=False,
+        kind='mergesort',
         ignore_index=True
     )
     return pivot_table

@@ -602,8 +602,8 @@ argument so you can run separate workflows in different subfolders (for example,
   project's latest `workspace/default/reports/<timestamp-*>/summary/ua1/california-report.html`,
   extracts `Clause-Test` and `Files Affected`, and builds a Clause-Test x
   Project pivot table with summed file totals.
-- Default output is `resources/artifacts/tally-YYYYMMDDHHMMSS.csv`.
-- It also writes `resources/artifacts/tally-YYYYMMDDHHSS-summary.csv` from each
+- Default output is `resources/artifact/tally/tally-YYYYMMDDHHMMSS.csv`.
+- It also writes `resources/artifact/tally/tally-YYYYMMDDHHSS-summary.csv` from each
   project's latest `workspace/default/reports/<timestamp-*>/summary-total.csv`
   with columns: `project`, `processed total`, `passed`, `fail`, `success %`.
 - Syntax:
