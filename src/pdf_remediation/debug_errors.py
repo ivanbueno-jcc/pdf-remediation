@@ -1,6 +1,6 @@
 # pylint: disable=too-many-locals
 '''
-Copy files with PDFix error code -11 into resources/debug/code -11/<project>.
+Copy files from pdfix-cannot-process-files.csv into error-type debug folders.
 '''
 
 from __future__ import annotations
@@ -14,8 +14,8 @@ import shutil
 
 from .utilities.resources import PROJECT_BASE_PATH
 
-ERROR_CODE = -11
-ERROR_CODE_PATTERN = re.compile(r'\bcode\s*-11\b', re.IGNORECASE)
+ERROR_CODE_PATTERN = re.compile(r'\bcode\s*(-?\d+)\b', re.IGNORECASE)
+MAX_ERROR_FOLDER_NAME_LENGTH = 80
 WORKSPACE_SUBFOLDER_PRIORITY = {
     'active': 0,
     'font-issues': 1,
@@ -31,7 +31,7 @@ class ProjectSummary:
     '''
     project_name: str
     rows_scanned: int = 0
-    error_code_rows: int = 0
+    error_rows: int = 0
     copied: int = 0
     unresolved: int = 0
     renamed_for_collision: int = 0
@@ -47,6 +47,50 @@ def _normalize_csv_path(csv_value: str) -> str:
     while '//' in normalized:
         normalized = normalized.replace('//', '/')
     return normalized
+
+
+def _sanitize_error_folder_name(error_message: str) -> str:
+    '''
+    Convert raw error message text into a filesystem-safe folder name.
+    '''
+    normalized = re.sub(r'\s+', ' ', (error_message or '').strip().lower())
+    if not normalized:
+        return 'unknown-error'
+
+    safe_chars = []
+    for char in normalized:
+        if char.isalnum() or char in {' ', '.', '-', '_'}:
+            safe_chars.append(char)
+        else:
+            safe_chars.append('_')
+
+    folder_name = ''.join(safe_chars).strip(' ._')
+    folder_name = re.sub(r'\s+', ' ', folder_name)
+    if not folder_name:
+        return 'unknown-error'
+
+    if len(folder_name) > MAX_ERROR_FOLDER_NAME_LENGTH:
+        folder_name = folder_name[:MAX_ERROR_FOLDER_NAME_LENGTH].rstrip(' ._-')
+
+    return folder_name or 'unknown-error'
+
+
+def _get_error_type_folder(error_message: str) -> str | None:
+    '''
+    Map a CSV error message to the destination error-type folder name.
+    '''
+    normalized = re.sub(r'\s+', ' ', (error_message or '').strip())
+    if not normalized:
+        return None
+
+    code_match = ERROR_CODE_PATTERN.search(normalized)
+    if code_match:
+        return f'code {code_match.group(1)}'
+
+    if 'timeouterror' in normalized.casefold():
+        return 'timeout'
+
+    return _sanitize_error_folder_name(normalized)
 
 
 def _build_flat_destination_path(
@@ -144,16 +188,6 @@ def _select_workspace_file(
     )[0]
 
 
-def _is_error_code_match(error_message: str, error_code: int = ERROR_CODE) -> bool:
-    '''
-    Return True when the error message indicates the requested worker exit code.
-    '''
-    normalized_message = (error_message or '').strip()
-    if error_code == -11:
-        return ERROR_CODE_PATTERN.search(normalized_message) is not None
-    return f'code {error_code}' in normalized_message.lower()
-
-
 def _process_project(
         project_path: Path,
         workspace_name: str,
@@ -172,11 +206,7 @@ def _process_project(
         return summary
 
     workspace_pdf_index = _build_workspace_pdf_index(workspace_path)
-    project_debug_path = debug_base_path / 'code -11' / project_path.name
-    reserved_destination_paths: set[Path] = set()
-
-    if not dry_run:
-        project_debug_path.mkdir(parents=True, exist_ok=True)
+    reserved_destination_paths: dict[Path, set[Path]] = {}
 
     with open(csv_path, newline='', encoding='utf-8', errors='ignore') as csv_file:
         reader = csv.reader(csv_file)
@@ -188,10 +218,11 @@ def _process_project(
             source_relative_path = row[0].strip() if row else ''
             error_message = ','.join(row[1:]).strip() if len(row) > 1 else ''
 
-            if not _is_error_code_match(error_message):
+            error_type_folder = _get_error_type_folder(error_message)
+            if error_type_folder is None:
                 continue
 
-            summary.error_code_rows += 1
+            summary.error_rows += 1
             normalized_csv_path = _normalize_csv_path(source_relative_path)
             if not normalized_csv_path:
                 summary.unresolved += 1
@@ -208,10 +239,17 @@ def _process_project(
                     print(f"[MISS] {project_path.name}: {normalized_csv_path}")
                 continue
 
+            project_debug_path = debug_base_path / error_type_folder / project_path.name
+            if not dry_run:
+                project_debug_path.mkdir(parents=True, exist_ok=True)
+
+            if project_debug_path not in reserved_destination_paths:
+                reserved_destination_paths[project_debug_path] = set()
+
             destination_path, had_collision = _build_flat_destination_path(
                 destination_folder=project_debug_path,
                 source_file_name=source_file_path.name,
-                reserved_paths=reserved_destination_paths
+                reserved_paths=reserved_destination_paths[project_debug_path]
             )
             if had_collision:
                 summary.renamed_for_collision += 1
@@ -222,7 +260,7 @@ def _process_project(
             summary.copied += 1
             if verbose:
                 print(
-                    f"[COPY] {project_path.name}: "
+                    f"[COPY] {project_path.name} [{error_type_folder}]: "
                     f"{source_file_path} -> {destination_path}"
                 )
 
@@ -251,13 +289,13 @@ def _collect_project_paths(
 
 def main() -> int:
     '''
-    Parse all project CSVs and copy code -11 files into debug folders.
+    Parse all project CSVs and copy failed files into error-type debug folders.
     '''
     parser = argparse.ArgumentParser(
         description=(
             'Parse resources/projects/*/pdfix-cannot-process-files.csv, '
-            'filter error code -11 rows, then copy matched files from '
-            'workspace/default into resources/debug/code -11/<project>.'
+            'parse each error type, then copy matched files from workspace/default '
+            'into resources/debug/<error-type>/<project>.'
         )
     )
     parser.add_argument(
@@ -297,7 +335,7 @@ def main() -> int:
     print()
 
     total_rows = 0
-    total_error_code_rows = 0
+    total_error_rows = 0
     total_copied = 0
     total_unresolved = 0
     total_renamed_for_collision = 0
@@ -318,14 +356,14 @@ def main() -> int:
         print(
             f'{summary.project_name}: '
             f'rows={summary.rows_scanned}, '
-            f'code-{ERROR_CODE}={summary.error_code_rows}, '
+            f'errors={summary.error_rows}, '
             f'copied={summary.copied}, '
             f'unresolved={summary.unresolved}, '
             f'renamed={summary.renamed_for_collision}'
         )
 
         total_rows += summary.rows_scanned
-        total_error_code_rows += summary.error_code_rows
+        total_error_rows += summary.error_rows
         total_copied += summary.copied
         total_unresolved += summary.unresolved
         total_renamed_for_collision += summary.renamed_for_collision
@@ -333,7 +371,7 @@ def main() -> int:
     print()
     print('TOTALS')
     print(f'rows scanned: {total_rows}')
-    print(f'code {ERROR_CODE} rows: {total_error_code_rows}')
+    print(f'error rows: {total_error_rows}')
     print(f'copied: {total_copied}')
     print(f'unresolved: {total_unresolved}')
     print(f'renamed due to collisions: {total_renamed_for_collision}')
