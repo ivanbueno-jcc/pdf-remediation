@@ -9,6 +9,18 @@ import sys
 from .utilities.resources import get_pdf_file_paths, get_project_workspace_path
 from .utilities.resources import move_file_and_delete_source
 
+IGNORED_WORKSPACE_FOLDERS = {
+    "remediated",
+    "pdfix-cannot-process",
+    "secured-cannot-process",
+    "secured-needs-approval",
+    "reports",
+    "pdfix-unable-to-open",
+    "unable-to-validate",
+    "unable-to-process",
+    "debug"
+}
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
@@ -47,39 +59,53 @@ if __name__ == '__main__':
             workspace_folders = sorted([
                 subfolder_path.name
                 for subfolder_path in workspace_path.iterdir()
-                if subfolder_path.is_dir()
+                if (
+                    subfolder_path.is_dir()
+                    and subfolder_path.name not in IGNORED_WORKSPACE_FOLDERS
+                )
             ])
         else:
             workspace_folders = [args.workspace_folder]
 
+        workspace_folders = [
+            workspace_folder
+            for workspace_folder in workspace_folders
+            if workspace_folder not in IGNORED_WORKSPACE_FOLDERS
+        ]
+
         total_files_moved = 0
+        source_directories = ["processed", "files"]
         for workspace_folder in workspace_folders:
-            processed_folder_path = workspace_path / workspace_folder / "processed"
-            if not processed_folder_path.exists():
-                continue
+            for source_directory in source_directories:
+                if workspace_folder == "active" and source_directory == "files":
+                    continue
 
-            processed_file_paths = get_pdf_file_paths(processed_folder_path)
-            if len(processed_file_paths) == 0:
-                continue
+                source_folder_path = workspace_path / workspace_folder / source_directory
+                if not source_folder_path.exists():
+                    continue
 
-            for file_path in processed_file_paths:
-                move_file_and_delete_source(
-                    Path(file_path),
-                    processed_folder_path,
-                    args.project_name,
-                    args.workspace_name,
-                    "active"
+                source_file_paths = get_pdf_file_paths(source_folder_path)
+                if len(source_file_paths) == 0:
+                    continue
+
+                for file_path in source_file_paths:
+                    move_file_and_delete_source(
+                        Path(file_path),
+                        source_folder_path,
+                        args.project_name,
+                        args.workspace_name,
+                        "active"
+                    )
+
+                total_files_moved += len(source_file_paths)
+                print(
+                    f"Moved {len(source_file_paths)} files from "
+                    f"{workspace_folder}/{source_directory} to active/files."
                 )
-
-            total_files_moved += len(processed_file_paths)
-            print(
-                f"Moved {len(processed_file_paths)} files from "
-                f"{workspace_folder}/processed to active/files."
-            )
 
         if total_files_moved > 0:
             print()
             print(f"Total files moved to active/files: {total_files_moved}")
         else:
-            print("No PDF files found in processed folders.")
+            print("No PDF files found in processed or files folders.")
             sys.exit()
