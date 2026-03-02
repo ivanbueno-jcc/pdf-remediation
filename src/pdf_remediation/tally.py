@@ -1,3 +1,4 @@
+# pylint: disable=too-many-branches, too-many-locals
 '''
 Aggregate Clause-Test totals from latest California reports across projects.
 '''
@@ -19,6 +20,7 @@ TIMESTAMP_PATTERN = re.compile(r'(\d{8}_\d{6})')
 CLAUSE_HEADER = 'clausetest'
 FILES_AFFECTED_HEADER = 'filesaffected'
 DEFAULT_OUTPUT_DIR = Path('resources/artifacts/tally')
+PROCESSING_ERRORS_FILENAME = 'pdfix-cannot-process-files.csv'
 
 
 def _normalize_whitespace(value: str) -> str:
@@ -54,7 +56,7 @@ def _default_output_path() -> Path:
     Return a timestamped default CSV path.
     '''
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}.csv'
+    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}-clauses.csv'
 
 
 def _default_summary_output_path() -> Path:
@@ -63,6 +65,14 @@ def _default_summary_output_path() -> Path:
     '''
     timestamp = datetime.now().strftime('%Y%m%d%H%S')
     return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}-summary.csv'
+
+
+def _default_processing_errors_output_path() -> Path:
+    '''
+    Return a timestamped default processing-errors CSV path.
+    '''
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}-processing-errors.csv'
 
 
 def _parse_int(value: str) -> int | None:
@@ -390,6 +400,48 @@ def _collect_rows(
     return rows, skipped_projects, scanned_projects
 
 
+def _collect_processing_error_rows(
+        projects_path: Path) -> tuple[list[dict[str, str | int]], list[tuple[str, str]], int]:
+    '''
+    Collect rows from <project>/pdfix-cannot-process-files.csv for pivoting.
+    '''
+    rows: list[dict[str, str | int]] = []
+    skipped_projects: list[tuple[str, str]] = []
+    scanned_projects = 0
+
+    for project_path in sorted(projects_path.iterdir(), key=lambda path: path.name):
+        if not project_path.is_dir():
+            continue
+
+        scanned_projects += 1
+        processing_error_path = project_path / PROCESSING_ERRORS_FILENAME
+        if not processing_error_path.exists():
+            skipped_projects.append((project_path.name, f'missing {PROCESSING_ERRORS_FILENAME}'))
+            continue
+
+        with open(processing_error_path, newline='', encoding='utf-8', errors='ignore') as csv_file:
+            reader = csv.reader(csv_file)
+            for csv_row in reader:
+                if not csv_row or all(not cell.strip() for cell in csv_row):
+                    continue
+                if len(csv_row) < 2:
+                    continue
+
+                error_value = _normalize_whitespace(','.join(csv_row[1:]).strip())
+                if not error_value:
+                    continue
+
+                rows.append(
+                    {
+                        'Processing Error': error_value,
+                        'Project': project_path.name,
+                        'Count': 1
+                    }
+                )
+
+    return rows, skipped_projects, scanned_projects
+
+
 def _build_pivot(rows: list[dict[str, str | int]]) -> pd.DataFrame:
     '''
     Build Clause-Test x Project pivot table with summed file totals.
@@ -418,6 +470,44 @@ def _build_pivot(rows: list[dict[str, str | int]]) -> pd.DataFrame:
     pivot_table = pivot_table.sort_values(
         by='Clause-Test',
         key=lambda column: column.map(_clause_test_sort_key),
+        kind='mergesort'
+    )
+    pivot_table = pivot_table.sort_values(
+        by='Total',
+        ascending=False,
+        kind='mergesort',
+        ignore_index=True
+    )
+    return pivot_table
+
+
+def _build_processing_errors_pivot(rows: list[dict[str, str | int]]) -> pd.DataFrame:
+    '''
+    Build processing-error x project pivot table with totals.
+    '''
+    if not rows:
+        return pd.DataFrame(columns=['Processing Error', 'Total'])
+
+    data_frame = pd.DataFrame(rows)
+    pivot_table = (
+        data_frame
+        .pivot_table(
+            index='Processing Error',
+            columns='Project',
+            values='Count',
+            aggfunc='sum',
+            fill_value=0
+        )
+        .reset_index()
+    )
+    pivot_table.columns.name = None
+    project_columns = [
+        column_name for column_name in pivot_table.columns
+        if column_name != 'Processing Error'
+    ]
+    pivot_table.insert(1, 'Total', pivot_table[project_columns].sum(axis=1).astype(int))
+    pivot_table = pivot_table.sort_values(
+        by='Processing Error',
         kind='mergesort'
     )
     pivot_table = pivot_table.sort_values(
@@ -465,6 +555,17 @@ def _write_summary_spreadsheet(rows: list[dict[str, str | int]], output_path: Pa
     return output_path
 
 
+def _write_processing_errors_spreadsheet(
+        pivot_table: pd.DataFrame,
+        output_path: Path) -> Path:
+    '''
+    Write processing errors pivot output to CSV.
+    '''
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    pivot_table.to_csv(output_path, index=False)
+    return output_path
+
+
 def main() -> int:
     '''
     Generate a Clause-Test by Project tally spreadsheet.
@@ -508,6 +609,12 @@ def main() -> int:
         default=_default_summary_output_path(),
         help='Output path for project summary totals CSV.'
     )
+    parser.add_argument(
+        '--processing-errors-output',
+        type=Path,
+        default=_default_processing_errors_output_path(),
+        help='Output path for processing errors pivot CSV.'
+    )
     args = parser.parse_args()
 
     projects_path = args.projects_path
@@ -546,6 +653,14 @@ def main() -> int:
         return 1
 
     written_summary_path = _write_summary_spreadsheet(summary_rows, args.summary_output)
+    processing_error_rows, skipped_processing_error_projects, _ = _collect_processing_error_rows(
+        projects_path=projects_path
+    )
+    processing_errors_pivot = _build_processing_errors_pivot(processing_error_rows)
+    written_processing_errors_path = _write_processing_errors_spreadsheet(
+        processing_errors_pivot,
+        args.processing_errors_output
+    )
 
     projects_included = len({row['Project'] for row in rows})
     print(f'Scanned projects: {scanned_projects}')
@@ -559,8 +674,16 @@ def main() -> int:
         print(f'Skipped projects for summary output: {len(skipped_summary_projects)}')
         for project_name, reason in skipped_summary_projects:
             print(f'  - {project_name}: {reason}')
+    if skipped_processing_error_projects:
+        print(
+            f'Skipped projects for processing errors output: '
+            f'{len(skipped_processing_error_projects)}'
+        )
+        for project_name, reason in skipped_processing_error_projects:
+            print(f'  - {project_name}: {reason}')
     print(f'Output: {written_path.resolve()}')
     print(f'Summary output: {written_summary_path.resolve()}')
+    print(f'Processing errors output: {written_processing_errors_path.resolve()}')
     return 0
 
 

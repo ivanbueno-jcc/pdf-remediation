@@ -606,8 +606,11 @@ argument so you can run separate workflows in different subfolders (for example,
 - It also writes `resources/artifact/tally/tally-YYYYMMDDHHSS-summary.csv` from each
   project's latest `workspace/default/reports/<timestamp-*>/summary-total.csv`
   with columns: `project`, `processed total`, `passed`, `fail`, `success %`.
+- It also writes `resources/artifact/tally/tally-YYYYMMDDHHMMSS-processing-errors.csv`
+  from each project's `pdfix-cannot-process-files.csv`, pivoted on the second
+  column (error message) with `Total` and per-project totals.
 - Syntax:
-  `uv run -m pdf_remediation.tally [--projects-path <path>] [--workspace <name>] [--profile <name>] [--report-file <file>] [--output <path>] [--summary-output <path>]`
+  `uv run -m pdf_remediation.tally [--projects-path <path>] [--workspace <name>] [--profile <name>] [--report-file <file>] [--output <path>] [--summary-output <path>] [--processing-errors-output <path>]`
 
 ### Utility scripts
 - `scripts/check_pdf_headers.py` recursively checks file headers for `%PDF-`.
