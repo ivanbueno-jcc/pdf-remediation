@@ -503,7 +503,8 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     '7.21.4.2',
                     '7.21.8',
                     '7.21.7',
-                    '7.21.6'
+                    '7.21.6',
+                    '7.21.5'
                 ]
                 files_with_font_issues_total = 0
                 for file_path, ua1_result, _, wcag_result, _, ua1_violations, \
