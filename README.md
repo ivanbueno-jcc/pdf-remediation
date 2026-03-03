@@ -271,6 +271,9 @@ Copy PDFs into the printed `resources/projects/<project>/source` directory.
 uv run -m pdf_remediation.validate <project_name> [workspace] [folder] [directory] [--full] [--skip-page-count]
 ```
 
+For ad-hoc validation of a single PDF, use [pdfaudit.org](https://www.pdfaudit.org/).
+It explains accessibility issues in plain language and is useful for quick spot checks outside the full pipeline.
+
 Defaults:
 - `workspace` = `default`
 - `folder` = `active`
