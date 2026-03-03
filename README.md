@@ -86,6 +86,15 @@ uv run -m pdf_remediation.reprocess_fleet
 `resources/projects`, prints a high-visibility banner for each project, and
 stops on the first non-zero exit code.
 
+### To run debug triage across all projects and aggregate clause folders:
+
+```bash
+uv run -m pdf_remediation.debug_fleet
+```
+
+`debug_fleet.py` runs `debug.py` for each project and moves each project's
+clause folders into `resources/debug/_files/<clause-test>/<project>/`.
+
 ## Walkthrough
 
 Here's an example walkthrough of remediating the Del Norte trial court.
@@ -523,6 +532,11 @@ argument so you can run separate workflows in different subfolders (for example,
   `uv run -m pdf_remediation.reprocess_fleet [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>]`
 - `reprocess_fleet.py` exits immediately if any project run fails and returns
   that same exit code.
+- `debug_fleet.py` runs `debug.py` across all projects (or selected projects),
+  then moves each project's clause folders into
+  `resources/debug/_files/<clause-test>/<project>/`.
+- Syntax:
+  `uv run -m pdf_remediation.debug_fleet [project_name ...] [--workspace-name <workspace>] [--clause-tests <clause-test> [<clause-test> ...]]`
 
 ### Initialization
 - `init.py` bootstraps a project workspace and prints the source path for ingest.
@@ -552,6 +566,10 @@ argument so you can run separate workflows in different subfolders (for example,
 - Existing contents of `workspace/<workspace>/debug/` are cleared before each run.
 - Syntax:
   `uv run -m pdf_remediation.debug <project_name> [workspace]`
+- `debug_fleet.py` runs `debug.py` for each project and aggregates outputs under
+  `resources/debug/_files/<clause-test>/<project>/`.
+- Syntax:
+  `uv run -m pdf_remediation.debug_fleet [project_name ...] [--workspace-name <workspace>] [--clause-tests <clause-test> [<clause-test> ...]]`
 
 ### Remediation
 - `fix.py` runs the PDFix remediation profile (e.g., `default.json`) with
