@@ -76,6 +76,16 @@ uv run -m pdf_remediation.readyset delnorte alameda sonoma
 high-visibility banner for each project, and stops on the first non-zero
 exit code.
 
+### To run reprocess across all projects sequentially:
+
+```bash
+uv run -m pdf_remediation.reprocess_fleet
+```
+
+`reprocess_fleet.py` runs `reprocess.py` once per project under
+`resources/projects`, prints a high-visibility banner for each project, and
+stops on the first non-zero exit code.
+
 ## Walkthrough
 
 Here's an example walkthrough of remediating the Del Norte trial court.
@@ -507,6 +517,12 @@ argument so you can run separate workflows in different subfolders (for example,
   `uv run -m pdf_remediation.readyset <project_name> [project_name ...]`
 - `readyset.py` exits immediately if any project run fails and returns that
   same exit code.
+- `reprocess_fleet.py` runs `reprocess.py` sequentially across all projects
+  (or selected projects).
+- Syntax:
+  `uv run -m pdf_remediation.reprocess_fleet [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>]`
+- `reprocess_fleet.py` exits immediately if any project run fails and returns
+  that same exit code.
 
 ### Initialization
 - `init.py` bootstraps a project workspace and prints the source path for ingest.
@@ -570,6 +586,10 @@ argument so you can run separate workflows in different subfolders (for example,
 - Defaults: `workspace=default`, `folder=all`.
 - You can target one source subfolder (for example, `font-issues`) or scan all
   subfolders with `processed/` and return them to `active/files`.
+- `reprocess_fleet.py` runs `reprocess.py` across every project in
+  `resources/projects` (or only selected projects).
+- Syntax:
+  `uv run -m pdf_remediation.reprocess_fleet [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>]`
 
 ### Skip
 - `skip.py` appends a problematic file to `skipped_files.txt` so it is ignored

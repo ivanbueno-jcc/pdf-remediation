@@ -1,4 +1,4 @@
-# pylint: disable=duplicate-code, too-many-locals
+# pylint: disable=duplicate-code, too-many-locals, too-many-statements
 '''
 Validate active files and copy failures into clause-based debug folders.
 '''
@@ -58,6 +58,25 @@ def get_failed_clause_test_ids(ua1_violations: list, wcag_violations: list) -> s
     return clause_test_ids
 
 
+def parse_clause_test_filters(clause_tests: list[str] | None) -> set[str]:
+    '''
+    Parse optional CLI clause-test filters, accepting space or comma separated values.
+    '''
+    if not clause_tests:
+        return set()
+
+    parsed_filters = set()
+    for raw_value in clause_tests:
+        if raw_value is None:
+            continue
+        for chunk in str(raw_value).split(","):
+            clause_test = chunk.strip()
+            if clause_test:
+                parsed_filters.add(clause_test)
+
+    return parsed_filters
+
+
 def copy_file_to_debug_clause_folders(
         source_file_path: Path,
         debug_root_path: Path,
@@ -107,10 +126,23 @@ def main() -> int:
         default='default',
         help="Workspace name (default: %(default)s)"
     )
+    parser.add_argument(
+        '--clause-tests',
+        nargs='+',
+        help=(
+            'Optional clause-test ids to copy (space and comma separated values are '
+            'both supported). Example: --clause-tests 6.2.4-1 7.1.3-2'
+        )
+    )
     args = parser.parse_args()
+    selected_clause_tests = parse_clause_test_filters(args.clause_tests)
 
     print(f"PROJECT: {args.project_name}")
     print(f"WORKSPACE: {args.workspace_name}")
+    if selected_clause_tests:
+        print(f"CLAUSE-TEST FILTERS: {', '.join(sorted(selected_clause_tests))}")
+    else:
+        print("CLAUSE-TEST FILTERS: all")
     print()
 
     active_files_path = get_project_workspace_subfolder_path(
@@ -153,6 +185,7 @@ def main() -> int:
     failed_files_total = 0
     copied_files_total = 0
     unknown_clause_total = 0
+    filtered_out_files_total = 0
 
     for result in validation_results:
         file_path, ua1_result, _, wcag_result, _, ua1_violations, wcag_violations = result
@@ -162,9 +195,19 @@ def main() -> int:
 
         failed_files_total += 1
         failed_clause_tests = get_failed_clause_test_ids(ua1_violations, wcag_violations)
+        has_unknown_clause = False
         if len(failed_clause_tests) == 0:
-            unknown_clause_total += 1
+            has_unknown_clause = True
             failed_clause_tests = {"unknown"}
+
+        if selected_clause_tests:
+            failed_clause_tests = failed_clause_tests.intersection(selected_clause_tests)
+            if len(failed_clause_tests) == 0:
+                filtered_out_files_total += 1
+                continue
+
+        if has_unknown_clause and "unknown" in failed_clause_tests:
+            unknown_clause_total += 1
 
         copied_files_total += copy_file_to_debug_clause_folders(
             Path(file_path),
@@ -174,6 +217,8 @@ def main() -> int:
 
     print("DEBUG SUMMARY")
     print(f"  Failed files: {failed_files_total}")
+    if selected_clause_tests:
+        print(f"  Failed files filtered out: {filtered_out_files_total}")
     print(f"  Files copied (including multi-clause copies): {copied_files_total}")
     print(f"  Files routed to unknown clause: {unknown_clause_total}")
     print(f"  Clause folders: {len([p for p in debug_root_path.iterdir() if p.is_dir()])}")
