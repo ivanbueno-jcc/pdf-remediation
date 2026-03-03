@@ -69,30 +69,30 @@ Requirement: Terminus must be installed and already configured/authenticated.
 ### To run the same pipeline for multiple projects sequentially:
 
 ```bash
-uv run -m pdf_remediation.readyset delnorte alameda sonoma
+uv run -m pdf_remediation.fleet go delnorte alameda sonoma
 ```
 
-`readyset.py` runs `go.py` once per project in the order provided, prints a
+`fleet.py go` runs `go.py` once per project in the order provided, prints a
 high-visibility banner for each project, and stops on the first non-zero
 exit code.
 
 ### To run reprocess across all projects sequentially:
 
 ```bash
-uv run -m pdf_remediation.reprocess_fleet
+uv run -m pdf_remediation.fleet reprocess
 ```
 
-`reprocess_fleet.py` runs `reprocess.py` once per project under
+`fleet.py` runs `reprocess.py` once per project under
 `resources/projects`, prints a high-visibility banner for each project, and
 stops on the first non-zero exit code.
 
 ### To run debug triage across all projects and aggregate clause folders:
 
 ```bash
-uv run -m pdf_remediation.debug_fleet
+uv run -m pdf_remediation.fleet debug
 ```
 
-`debug_fleet.py` runs `debug.py` for each project and moves each project's
+`fleet.py` runs `debug.py` for each project and moves each project's
 clause folders into `resources/debug/_files/<clause-test>/<project>/`.
 
 ## Walkthrough
@@ -418,6 +418,7 @@ Use these controls to reset or fork clean workspaces without touching your origi
 #### 1) Get latest source PDFs into `active/files`
 ```
 uv run -m pdf_remediation.get_latest_files <project_name> [workspace]
+uv run -m pdf_remediation.fleet get_latest_files <project_name> [project_name ...] [--workspace-name <workspace>] [--exclude-sites <site> [<site> ...]]
 ```
 
 `get_latest_files` does the following:
@@ -521,22 +522,29 @@ argument so you can run separate workflows in different subfolders (for example,
 - If the project does not exist, `go.py` runs `init` automatically.
 - If `source/` is empty and Terminus is installed/configured, `go.py` can
   download and extract the live files backup into `source/`.
-- `readyset.py` runs `go.py` sequentially across multiple projects.
+- `fleet.py go` runs `go.py` sequentially across multiple projects.
 - Syntax:
-  `uv run -m pdf_remediation.readyset <project_name> [project_name ...]`
-- `readyset.py` exits immediately if any project run fails and returns that
+  `uv run -m pdf_remediation.fleet go <project_name> [project_name ...] [--workspace-name <workspace>] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--pre-validate] [--verbose] [--debug] [--exclude-sites <site> [<site> ...]]`
+- `fleet.py go` exits immediately if any project run fails and returns that
   same exit code.
-- `reprocess_fleet.py` runs `reprocess.py` sequentially across all projects
-  (or selected projects).
+- `fleet.py get_latest_files` runs `get_latest_files.py` sequentially across all
+  projects (or selected projects).
 - Syntax:
-  `uv run -m pdf_remediation.reprocess_fleet [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>]`
-- `reprocess_fleet.py` exits immediately if any project run fails and returns
-  that same exit code.
-- `debug_fleet.py` runs `debug.py` across all projects (or selected projects),
-  then moves each project's clause folders into
+  `uv run -m pdf_remediation.fleet get_latest_files [project_name ...] [--workspace-name <workspace>] [--exclude-sites <site> [<site> ...]]`
+- `fleet.py` runs `get_latest_files.py`, `init.py`, `status.py`, `validate.py`,
+  `reprocess.py`, or `debug.py` sequentially across all projects (or selected
+  projects).
+- Syntax:
+  `uv run -m pdf_remediation.fleet <action> [project_name ...] [action options]`
+- Shared filter:
+  `--exclude-sites <site> [<site> ...]` (alias: `--exclude-projects`; comma-separated values also supported)
+- Actions:
+  `go`, `get_latest_files`, `init`, `status`, `validate`, `reprocess`, `debug`
+- `reprocess` exits immediately if any project run fails and returns that same
+  exit code.
+- `debug` runs across all projects (or selected projects), then moves each
+  project's clause folders into
   `resources/debug/_files/<clause-test>/<project>/`.
-- Syntax:
-  `uv run -m pdf_remediation.debug_fleet [project_name ...] [--workspace-name <workspace>] [--clause-tests <clause-test> [<clause-test> ...]]`
 
 ### Initialization
 - `init.py` bootstraps a project workspace and prints the source path for ingest.
@@ -566,10 +574,10 @@ argument so you can run separate workflows in different subfolders (for example,
 - Existing contents of `workspace/<workspace>/debug/` are cleared before each run.
 - Syntax:
   `uv run -m pdf_remediation.debug <project_name> [workspace]`
-- `debug_fleet.py` runs `debug.py` for each project and aggregates outputs under
+- `fleet.py debug` runs `debug.py` for each project and aggregates outputs under
   `resources/debug/_files/<clause-test>/<project>/`.
 - Syntax:
-  `uv run -m pdf_remediation.debug_fleet [project_name ...] [--workspace-name <workspace>] [--clause-tests <clause-test> [<clause-test> ...]]`
+  `uv run -m pdf_remediation.fleet debug [project_name ...] [--workspace-name <workspace>] [--clause-tests <clause-test> [<clause-test> ...]] [--exclude-sites <site> [<site> ...]]`
 
 ### Remediation
 - `fix.py` runs the PDFix remediation profile (e.g., `default.json`) with
@@ -604,10 +612,10 @@ argument so you can run separate workflows in different subfolders (for example,
 - Defaults: `workspace=default`, `folder=all`.
 - You can target one source subfolder (for example, `font-issues`) or scan all
   subfolders with `processed/` and return them to `active/files`.
-- `reprocess_fleet.py` runs `reprocess.py` across every project in
+- `fleet.py reprocess` runs `reprocess.py` across every project in
   `resources/projects` (or only selected projects).
 - Syntax:
-  `uv run -m pdf_remediation.reprocess_fleet [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>]`
+  `uv run -m pdf_remediation.fleet reprocess [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>] [--exclude-sites <site> [<site> ...]]`
 
 ### Skip
 - `skip.py` appends a problematic file to `skipped_files.txt` so it is ignored
@@ -668,11 +676,13 @@ argument so you can run separate workflows in different subfolders (for example,
 - Ignores `debug/` and `reports/` workspace folders while checking existing files.
 - Syntax:
   `uv run -m pdf_remediation.get_latest_files <project_name> [workspace]`
+- Fleet syntax:
+  `uv run -m pdf_remediation.fleet get_latest_files [project_name ...] [--workspace-name <workspace>] [--exclude-sites <site> [<site> ...]]`
 
 ### Licensing
 - `license.py` reads license state from PDFix.
-- `license_activate.py` activates a license key.
-- `license_deactivate.py` deactivates an active license.
+<!-- - `license_activate.py` activates a license key.
+- `license_deactivate.py` deactivates an active license. -->
 - `.env` supports `PDFIX_LICENSE_NAME` and `PDFIX_LICENSE_KEY` for remediation.
 
 ## Troubleshooting
