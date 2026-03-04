@@ -1,8 +1,13 @@
 {
   "name": "make_accessible",
   "title": "Default PDF/UA Remediation Preset",
-  "version": "v0.1.0",
   "desc": "Official default remediation preset for automated PDF/UA-1 compliance using PDFix SDK. The preset performs conservative, non-destructive cleanup, structure repair, tagging completion, and accessibility fixes.",
+  "version": "0.2.1",
+  "min_sdk_version": "8.7.10",
+  "max_sdk_version": "",
+  "release_date": "21.02.2026",
+  "category": "Accessibility",
+  "icon": "accessibility_new",
   "settings": {
     "stop_on_action_failure": false
   },
@@ -597,21 +602,6 @@
       ]
     },
     {
-      "name": "set_pdf_ua_standard",
-      "title": "Set PDF/UA-1 Identifier",
-      "desc": "Declare PDF/UA-1 conformance by setting the appropriate PDF/UA identifier in the document metadata.",
-      "params": [
-        {
-          "name": "part_number",
-          "value": "1"
-        },
-        {
-          "name": "rev_number",
-          "value": "2023"
-        }
-      ]
-    },
-    {
       "name": "set_tag_id",
       "title": "Set Tag IDs (Note, TH)",
       "desc": "Generate unique ID keys for Note and table header (TH) structure elements as required by PDF/UA.",
@@ -640,6 +630,11 @@
           "value": true
         }
       ]
+    },
+    {
+      "name": "fix_metadata",
+      "desc": "Repair and normalize document XMP metadata to improve standards compliance and consistency",
+      "title": "Fix XMP Metadata"
     },
     {
       "name": "set_title",
@@ -710,6 +705,21 @@
       ],
       "title": "Set Title (From File Name)"
     }, 
+    {
+      "name": "set_pdf_ua_standard",
+      "title": "Set PDF/UA-1 Identifier",
+      "desc": "Declare PDF/UA-1 conformance by setting the appropriate PDF/UA identifier in the document metadata.",
+      "params": [
+        {
+          "name": "part_number",
+          "value": "1"
+        },
+        {
+          "name": "rev_number",
+          "value": "2023"
+        }
+      ]
+    },    
     {
       "name": "set_language",
       "title": "Set Document Language (en-US)",
