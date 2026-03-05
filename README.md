@@ -527,7 +527,7 @@ argument so you can run separate workflows in different subfolders (for example,
   download and extract the live files backup into `source/`.
 - `fleet.py go` runs `go.py` sequentially across multiple projects.
 - Syntax:
-  `uv run -m pdf_remediation.fleet go <project_name> [project_name ...] [--workspace-name <workspace>] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--pre-validate] [--verbose] [--debug] [--exclude-sites <site> [<site> ...]]`
+  `uv run -m pdf_remediation.fleet go <project_name> [project_name ...] [--workspace-name <workspace>] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--pre-validate] [--skip-font-fix] [--verbose] [--debug] [--exclude-sites <site> [<site> ...]]`
 - `fleet.py go` exits immediately if any project run fails and returns that
   same exit code.
 - `fleet.py get_latest_files` runs `get_latest_files.py` sequentially across all

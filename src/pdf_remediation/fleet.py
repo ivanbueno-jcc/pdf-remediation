@@ -100,6 +100,8 @@ def _build_module_args(action: str, args: argparse.Namespace, project_name: str)
             module_args.extend(['--n-cpu', str(args.n_cpu)])
         if args.pre_validate:
             module_args.append('--pre-validate')
+        if args.skip_font_fix:
+            module_args.append('--skip-font-fix')
         if args.verbose:
             module_args.append('--verbose')
         if args.debug:
@@ -280,6 +282,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help='Run pre-fix validate step.'
     )
     go_parser.add_argument(
+        '--skip-font-fix',
+        action='store_true',
+        help='Skip go.py font_fix and font_fix_pdfix steps.'
+    )
+    go_parser.add_argument(
         '--verbose',
         '-v',
         action='store_true',
@@ -404,6 +411,7 @@ def _print_action_context(args: argparse.Namespace, project_names: list[str]) ->
         print(f"CHUNK SIZE: {args.chunk_size}")
         print(f"N CPU: {args.n_cpu}")
         print(f"PRE VALIDATE: {args.pre_validate}")
+        print(f"SKIP FONT FIX: {args.skip_font_fix}")
         print(f"VERBOSE: {args.verbose}")
         print(f"DEBUG: {args.debug}")
     if args.action in {'reprocess', 'validate'}:
