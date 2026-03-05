@@ -13,6 +13,7 @@ from .utilities.resources import (
     get_project_workspace_path,
     get_project_workspace_subfolder_file_paths,
     get_project_workspace_subfolder_path,
+    parse_cli_filters,
 )
 from .utilities.verapdf import validate_pdf_multiprocess
 
@@ -56,25 +57,6 @@ def get_failed_clause_test_ids(ua1_violations: list, wcag_violations: list) -> s
             clause_test_id = f"{clause}-{test_number}" if test_number else clause
             clause_test_ids.add(clause_test_id)
     return clause_test_ids
-
-
-def parse_clause_test_filters(clause_tests: list[str] | None) -> set[str]:
-    '''
-    Parse optional CLI clause-test filters, accepting space or comma separated values.
-    '''
-    if not clause_tests:
-        return set()
-
-    parsed_filters = set()
-    for raw_value in clause_tests:
-        if raw_value is None:
-            continue
-        for chunk in str(raw_value).split(","):
-            clause_test = chunk.strip()
-            if clause_test:
-                parsed_filters.add(clause_test)
-
-    return parsed_filters
 
 
 def copy_file_to_debug_clause_folders(
@@ -135,7 +117,7 @@ def main() -> int:
         )
     )
     args = parser.parse_args()
-    selected_clause_tests = parse_clause_test_filters(args.clause_tests)
+    selected_clause_tests = parse_cli_filters(args.clause_tests)
 
     print(f"PROJECT: {args.project_name}")
     print(f"WORKSPACE: {args.workspace_name}")

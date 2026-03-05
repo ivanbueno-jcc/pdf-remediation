@@ -14,6 +14,7 @@ import subprocess
 import tarfile
 import time
 from dotenv import load_dotenv
+import plotext as plot
 
 load_dotenv()
 
@@ -29,6 +30,136 @@ CALLAS_FONT_IMAGE = "pdfix/font-fix-callas:v1.0.5"
 PDFIX_FONT_IMAGE = "pdfix/font-fix-pdfix:v1.0.5"
 FIX_PROCESS_TIMEOUT_SECONDS = 500
 _DOCKER_STATE = {"ready": False}
+
+def parse_cli_filters(values: list[str] | None) -> set[str]:
+    '''
+    Parse CLI filters, accepting both space-separated and comma-separated values.
+    '''
+    if not values:
+        return set()
+
+    parsed_filters = set()
+    for raw_value in values:
+        if raw_value is None:
+            continue
+        for chunk in str(raw_value).split(","):
+            item = chunk.strip()
+            if item:
+                parsed_filters.add(item)
+
+    return parsed_filters
+
+def _get_page_count_bucket(page_count: int) -> str | None:
+    '''
+    Return the page-count bucket label for a given page count.
+    '''
+    if page_count == 1:
+        return "1"
+    if 1 < page_count <= 5:
+        return "2-5"
+    if 5 < page_count <= 10:
+        return "6-10"
+    if 10 < page_count <= 50:
+        return "11-50"
+    if 50 < page_count <= 100:
+        return "51-100"
+    if 100 < page_count <= 200:
+        return "101-200"
+    if 200 < page_count <= 500:
+        return "201-500"
+    if 500 < page_count <= 1000:
+        return "501-1000"
+    if 1000 < page_count <= 3000:
+        return "1001-3000"
+    if page_count > 3000:
+        return "3001 or more"
+    return None
+
+def _plot_page_count_distribution(chunks: dict[str, list]) -> None:
+    '''
+    Render a terminal chart for the page-count distribution.
+    '''
+
+    page_count_file_num = []
+    page_count_bucket = []
+    for key, value in chunks.items():
+        page_count_bucket.append(key)
+        page_count_file_num.append(len(value))
+
+    min_y = min(page_count_file_num)
+    max_y = max(page_count_file_num)
+    y_ticks = list(range(min_y, max_y + 1, 5))
+    if len(y_ticks) == 0:
+        y_ticks = [min_y]
+
+    plot.yticks(y_ticks)
+    plot.bar(page_count_bucket, page_count_file_num)
+    plot.title("File Distribution by Page Count")
+    plot.xlabel("Range")
+    plot.ylabel("# of Files")
+    plot.plotsize(50, 15)
+    plot.show()
+
+def split_large_page_count_chunks(chunks: dict[str, list], chunk_size: int) -> dict[str, list]:
+    '''
+    Split buckets that exceed chunk_size into numbered sub-buckets.
+    '''
+    if chunk_size <= 0:
+        return chunks
+
+    sub_chunks = {}
+    del_chunks = []
+    for key, value in chunks.items():
+        if len(value) > chunk_size:
+            del_chunks.append(key)
+            chunk_count = len(value) // chunk_size + 1
+            for i in range(chunk_count):
+                chunk_key = f"{key} - part {i+1} of {chunk_count}"
+                sub_chunks[chunk_key] = value[i*chunk_size:(i+1)*chunk_size]
+
+    remaining_chunks = chunks.copy()
+    for key in del_chunks:
+        del remaining_chunks[key]
+    sub_chunks.update(remaining_chunks)
+    return sub_chunks
+
+def get_page_count_chunks(
+        file_paths_for_remediation: list,
+        page_count_lookup: dict,
+        payload_builder: Callable[..., tuple],
+        chunk_size: int | None = None,
+        show_chart: bool = True) -> dict[str, list]:
+    '''
+    Build remediation payload chunks grouped by page-count ranges.
+    '''
+    chunks = {
+        '1': [],
+        '2-5': [],
+        '6-10': [],
+        '11-50': [],
+        '51-100': [],
+        '101-200': [],
+        '201-500': [],
+        '501-1000': [],
+        '1001-3000': [],
+        '3001 or more': []
+    }
+
+    for file_path_tuple in file_paths_for_remediation:
+        input_path = file_path_tuple[0]
+        payload = payload_builder(*file_path_tuple)
+        page_count = page_count_lookup[str(input_path)]
+        page_count_bucket = _get_page_count_bucket(page_count)
+        if page_count_bucket is not None:
+            chunks[page_count_bucket].append(payload)
+
+    if show_chart and len(file_paths_for_remediation) > 0:
+        print()
+        _plot_page_count_distribution(chunks)
+
+    if chunk_size is not None:
+        return split_large_page_count_chunks(chunks, chunk_size)
+    return chunks
 
 
 def _get_project_env_path() -> Path:
@@ -536,6 +667,194 @@ def move_file_and_delete_source(
     destination_path.parent.mkdir(parents=True, exist_ok=True)
     destination_path.write_bytes(source_path.read_bytes())
     source_path.unlink()
+
+def _route_validated_files(
+        validation_results: list,
+        output_pdf_folder: Path,
+        project_name: str,
+        workspace_name: str,
+        verbose: bool = False) -> int:
+    '''
+    Move validation-passing files into the remediated folder.
+    '''
+    moved_count = 0
+    for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
+        if ua1_result is True and wcag_result is True:
+            moved_count += 1
+            if verbose:
+                print(f"{file_path}")
+            move_file_and_delete_source(
+                Path(file_path),
+                output_pdf_folder,
+                project_name,
+                workspace_name,
+                "remediated"
+            )
+    return moved_count
+
+# pylint: disable=too-many-arguments, too-many-positional-arguments
+def _route_error_validations(
+        validation_results: list,
+        output_pdf_folder: Path,
+        workspace_folder_path: Path,
+        project_name: str,
+        workspace_name: str,
+        verbose: bool = False) -> int:
+    '''
+    Move files with validation execution errors into unable-to-validate.
+    '''
+    moved_count = 0
+    unable_to_validate_csv_path = \
+        workspace_folder_path.parent.parent.parent.parent / "unable-to-validate.csv"
+
+    for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
+        if ua1_result == 'Error' or wcag_result == 'Error':
+            moved_count += 1
+            try:
+                relative_path = Path(file_path).relative_to(output_pdf_folder)
+            except ValueError:
+                relative_path = Path(file_path)
+
+            append_to_csv(
+                unable_to_validate_csv_path,
+                [relative_path, ua1_result, wcag_result]
+            )
+
+            if verbose:
+                print(f"{file_path}")
+            move_file_and_delete_source(
+                Path(file_path),
+                output_pdf_folder,
+                project_name,
+                workspace_name,
+                "unable-to-validate"
+            )
+
+    return moved_count
+
+# pylint: disable=too-many-arguments, too-many-locals, too-many-positional-arguments
+def _route_font_issue_validations(
+        validation_results: list,
+        output_pdf_folder: Path,
+        project_name: str,
+        workspace_name: str,
+        font_issue_clauses: list[str],
+        font_issue_subfolder: str,
+        verbose: bool = False) -> int:
+    '''
+    Move files with matching font-related validation violations.
+    '''
+    moved_count = 0
+    font_issue_clause_set = set(font_issue_clauses)
+    for file_path, ua1_result, _, wcag_result, _, ua1_violations, wcag_violations in validation_results: # pylint: disable=line-too-long
+        if ua1_result is False or wcag_result is False:
+            has_font_violation = False
+            for violation in ua1_violations + wcag_violations:
+                if violation['clause'] in font_issue_clause_set:
+                    has_font_violation = True
+                    break
+
+            if has_font_violation:
+                moved_count += 1
+                if verbose:
+                    print(f"{file_path}")
+                move_file_and_delete_source(
+                    Path(file_path),
+                    output_pdf_folder,
+                    project_name,
+                    workspace_name,
+                    font_issue_subfolder
+                )
+
+    return moved_count
+
+# pylint: disable=too-many-arguments, too-many-positional-arguments
+def route_validation_results(
+        validation_results: list,
+        output_pdf_folder: Path,
+        workspace_folder_path: Path,
+        project_name: str,
+        workspace_name: str,
+        verbose: bool = False,
+        font_issue_clauses: list[str] | None = None,
+        font_issue_subfolder: str | None = None,
+        font_issue_summary_message: str | None = None,
+        font_issues_after_errors: bool = False) -> dict[str, int]:
+    '''
+    Route validation results to destination workspace folders and print summary counts.
+    '''
+    print()
+    print("MOVING FILES BASED ON VALIDATION RESULTS...")
+
+    valid_files_total = _route_validated_files(
+        validation_results,
+        output_pdf_folder,
+        project_name,
+        workspace_name,
+        verbose
+    )
+    print(f"Total valid files moved to remediated folder: {valid_files_total}")
+
+    font_issues_enabled = (
+        font_issue_clauses is not None and
+        font_issue_subfolder is not None and
+        len(font_issue_clauses) > 0
+    )
+
+    font_issue_files_total = 0
+    error_files_total = 0
+
+    if font_issues_after_errors:
+        error_files_total = _route_error_validations(
+            validation_results,
+            output_pdf_folder,
+            workspace_folder_path,
+            project_name,
+            workspace_name,
+            verbose
+        )
+        print(f"Total error files moved to error folder: {error_files_total}")
+
+        if font_issues_enabled:
+            font_issue_files_total = _route_font_issue_validations(
+                validation_results,
+                output_pdf_folder,
+                project_name,
+                workspace_name,
+                font_issue_clauses,
+                font_issue_subfolder,
+                verbose
+            )
+    else:
+        if font_issues_enabled:
+            font_issue_files_total = _route_font_issue_validations(
+                validation_results,
+                output_pdf_folder,
+                project_name,
+                workspace_name,
+                font_issue_clauses,
+                font_issue_subfolder,
+                verbose
+            )
+
+        error_files_total = _route_error_validations(
+            validation_results,
+            output_pdf_folder,
+            workspace_folder_path,
+            project_name,
+            workspace_name,
+            verbose
+        )
+        print(f"Total error files moved to error folder: {error_files_total}")
+
+    if font_issue_summary_message is not None and font_issues_enabled:
+        print(font_issue_summary_message.format(count=font_issue_files_total))
+
+    return {
+        "valid": valid_files_total,
+        "errors": error_files_total,
+        "font_issues": font_issue_files_total
+    }
 
 
 def clear_workspace_folder(workspace_folder_path):

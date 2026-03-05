@@ -5,18 +5,18 @@ import argparse
 import multiprocessing
 from datetime import datetime
 from pathlib import Path
-import plotext as plot
 from parallelbar import progress_starmap
 from .utilities.callas import Callas
 from .utilities.pdfix import get_page_count_multiprocess, pull_image
 from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import CALLAS_FONT_IMAGE, get_project_workspace_subfolder_file_paths
 from .utilities.resources import get_project_workspace_path, print_workspace_summary
-from .utilities.resources import append_to_csv, get_project_workspace_subfolder_path
+from .utilities.resources import get_project_workspace_subfolder_path
 from .utilities.resources import (
     get_pdf_file_paths,
+    get_page_count_chunks,
     get_project_workspace_file_paths,
-    move_file_and_delete_source
+    route_validation_results
 )
 
 def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-branches
@@ -118,81 +118,19 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             else:
                 print("No files found for remediation.")
 
-            # split the file_paths into batches based on the page count.
-            chunks = {
-                '1': [],
-                '2-5': [],
-                '6-10': [],
-                '11-50': [],
-                '51-100': [],
-                '101-200': [],
-                '201-500': [],
-                '501-1000': [],
-                '1001-3000': [],
-                '3001 or more': []
-            }
-            for input_path, output_path in file_paths_for_remediation:
-                payload = (input_path, output_path, workspace_path)
-                match page_count_lookup[str(input_path)]:
-                    case 1:
-                        chunks['1'].append(payload)
-                    case x if 1 < x <= 5:
-                        chunks['2-5'].append(payload)
-                    case x if 5 < x <= 10:
-                        chunks['6-10'].append(payload)
-                    case x if 10 < x <= 50:
-                        chunks['11-50'].append(payload)
-                    case x if 50 < x <= 100:
-                        chunks['51-100'].append(payload)
-                    case x if 100 < x <= 200:
-                        chunks['101-200'].append(payload)
-                    case x if 200 < x <= 500:
-                        chunks['201-500'].append(payload)
-                    case x if 500 < x <= 1000:
-                        chunks['501-1000'].append(payload)
-                    case x if 1000 < x <= 3000:
-                        chunks['1001-3000'].append(payload)
-                    case x if x > 3000:
-                        chunks['3001 or more'].append(payload)
-
             if len(file_paths_for_remediation) > 0:
                 pull_image(CALLAS_FONT_IMAGE, verbose=args.verbose)
 
-                print()
-                page_count_file_num = []
-                page_count_bucket = []
-                for key, value in chunks.items():
-                    page_count_bucket.append(key)
-                    page_count_file_num.append(len(value))
-
-                min_y = min(page_count_file_num)
-                max_y = max(page_count_file_num)
-                y_ticks = list(range(min_y, max_y + 1, 5)) # ticks every 5 units
-                plot.yticks(y_ticks)
-
-                plot.bar(page_count_bucket, page_count_file_num)
-                plot.title("File Distribution by Page Count")
-                plot.xlabel("Range")
-                plot.ylabel("# of Files")
-                plot.plotsize(50, 15)
-                plot.show()
-
-            # if value is large, split into sub-chunks.
-            sub_chunks = {}
-            del_chunks = []
-            chunk_size = args.chunk_size
-            for key, value in chunks.items():
-                if len(value) > chunk_size:
-                    del_chunks.append(key)
-                    chunk_count = len(value) // chunk_size + 1
-                    for i in range(chunk_count):
-                        chunk_key = f"{key} - part {i+1} of {chunk_count}"
-                        sub_chunks[chunk_key] = value[i*chunk_size:(i+1)*chunk_size]
-            for key in del_chunks:
-                del chunks[key]
-
-            sub_chunks.update(chunks)
-            chunks = sub_chunks
+            chunks = get_page_count_chunks(
+                file_paths_for_remediation=file_paths_for_remediation,
+                page_count_lookup=page_count_lookup,
+                payload_builder=lambda input_path, output_path: (
+                    input_path,
+                    output_path,
+                    workspace_path
+                ),
+                chunk_size=args.chunk_size
+            )
 
             if len(file_paths_for_remediation) > 0:
                 print()
@@ -244,82 +182,20 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 target_folder
             )
 
-            print()
-            print("MOVING FILES BASED ON VALIDATION RESULTS...")
-            # Loop through the validation results.
-            # Move files that passed to a "remediated" folder in the same workspace.
-            validation_iteration_counter = 0
-            for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
-                if ua1_result is True and wcag_result is True:
-                    validation_iteration_counter += 1
-
-                    if args.verbose:
-                        print(f"{file_path}")
-
-                    move_file_and_delete_source(
-                        Path(file_path),
-                        output_pdf_folder,
-                        args.project_name,
-                        args.workspace_name,
-                        "remediated"
-                    )
-
-                    continue
-
-            print(f"Total valid files moved to remediated folder: {validation_iteration_counter}")
-
-            # Loop through the validation results.
-            # Move files that passed to a "font-issues-missing-unicode"
-            # folder in the same workspace.
-            font_issue_clauses = [
-                '7.21.7'
-            ]
-            files_with_font_issues_total = 0
-            for file_path, ua1_result, _, wcag_result, _, ua1_violations, \
-                wcag_violations in validation_results:
-
-                if ua1_result is False or wcag_result is False:
-                    has_font_violation = False
-                    for violation in ua1_violations + wcag_violations:
-                        if violation['clause'] in font_issue_clauses:
-                            has_font_violation = True
-                            break
-
-                    if has_font_violation:
-                        files_with_font_issues_total += 1
-
-                        if args.verbose:
-                            print(f"{file_path}")
-
-                        move_file_and_delete_source(
-                            Path(file_path),
-                            output_pdf_folder,
-                            args.project_name,
-                            args.workspace_name,
-                            "font-issues-missing-unicode"
-                        )
-            print(f"Total files with font issues moved to font-issues-missing-unicode folder: {files_with_font_issues_total}") # pylint: disable=line-too-long
-
-            validation_iteration_counter = 0
-            for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
-                if ua1_result == 'Error' or wcag_result == 'Error':
-                    validation_iteration_counter += 1
-                    append_to_csv(
-                        workspace_folder_path.parent.parent.parent.parent / "unable-to-validate.csv", # pylint: disable=line-too-long
-                        [relative_path, ua1_result, wcag_result]
-                    )
-
-                    if args.verbose:
-                        print(f"{file_path}")
-                    move_file_and_delete_source(
-                        Path(file_path),
-                        output_pdf_folder,
-                        args.project_name,
-                        args.workspace_name,
-                        "unable-to-validate"
-                    )
-                    continue
-            print(f"Total error files moved to error folder: {validation_iteration_counter}")
+            route_validation_results(
+                validation_results=validation_results,
+                output_pdf_folder=output_pdf_folder,
+                workspace_folder_path=workspace_folder_path,
+                project_name=args.project_name,
+                workspace_name=args.workspace_name,
+                verbose=args.verbose,
+                font_issue_clauses=['7.21.7'],
+                font_issue_subfolder="font-issues-missing-unicode",
+                font_issue_summary_message=(
+                    "Total files with font issues moved to "
+                    "font-issues-missing-unicode folder: {count}"
+                )
+            )
 
         else:
             print("No PDF files found for validation.")

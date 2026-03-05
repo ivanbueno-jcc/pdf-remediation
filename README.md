@@ -57,9 +57,9 @@ uv run -m pdf_remediation.go delnorte
 ```
 
 `go.py` orchestrates an optional pre-fix `validate --skip-page-count`
-(`--pre-validate`), then `fix`, `font_fix`, `font_fix_pdfix`, and a final
-`validate --full --skip-page-count` run. It also initializes missing projects
-automatically.
+(`--pre-validate`), then `fix`, optional `font_fix` + `font_fix_pdfix`
+(`--skip-font-fix`), and a final `validate --full --skip-page-count` run.
+It also initializes missing projects automatically.
 
 If `source/` is empty, `go.py` can automatically download and extract the
 live files backup from Pantheon into `source/`.
@@ -108,8 +108,8 @@ subgraph ORCH["Orchestrator (go.py / CLI)"]
     B[Seed active/files from source]
     C["Optional Pre-Fix Validate (--pre-validate)"]
     D[Run fix.py]
-    E[Run font_fix.py]
-    F[Run font_fix_pdfix.py]
+    E["Run font_fix.py (optional; skipped by --skip-font-fix)"]
+    F["Run font_fix_pdfix.py (optional; skipped by --skip-font-fix)"]
     G[Final validate --full]
 end
 
@@ -517,11 +517,11 @@ argument so you can run separate workflows in different subfolders (for example,
 - `go.py` runs the remediation pipeline in sequence:
   1) optional pre-fix validate (`--skip-page-count`, pass `--pre-validate`)
   2) `fix` on `active`
-  3) `font_fix` on `font-issues`
-  4) `font_fix_pdfix` on `font-issues-missing-unicode`
+  3) optional `font_fix` on `font-issues` (skipped by `--skip-font-fix`)
+  4) optional `font_fix_pdfix` on `font-issues-missing-unicode` (skipped by `--skip-font-fix`)
   5) final `validate --full --skip-page-count`
 - Syntax:
-  `uv run -m pdf_remediation.go <project_name> [workspace] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--pre-validate] [--verbose] [--debug]`
+  `uv run -m pdf_remediation.go <project_name> [workspace] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--pre-validate] [--skip-font-fix] [--verbose] [--debug]`
 - If the project does not exist, `go.py` runs `init` automatically.
 - If `source/` is empty and Terminus is installed/configured, `go.py` can
   download and extract the live files backup into `source/`.

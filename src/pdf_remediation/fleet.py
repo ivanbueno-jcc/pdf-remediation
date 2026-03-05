@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import sys
 
-from .utilities.resources import PROJECT_BASE_PATH
+from .utilities.resources import PROJECT_BASE_PATH, parse_cli_filters
 
 DEBUG_FILES_BASE_PATH = Path('resources/debug/_files')
 
@@ -233,25 +233,6 @@ def _add_exclude_sites_argument(subparser: argparse.ArgumentParser) -> None:
     )
 
 
-def _parse_site_name_filters(site_names: list[str] | None) -> set[str]:
-    '''
-    Parse optional site name filters, accepting space or comma separated values.
-    '''
-    if not site_names:
-        return set()
-
-    parsed_filters = set()
-    for raw_value in site_names:
-        if raw_value is None:
-            continue
-        for chunk in str(raw_value).split(","):
-            site_name = chunk.strip()
-            if site_name:
-                parsed_filters.add(site_name)
-
-    return parsed_filters
-
-
 def _build_parser() -> argparse.ArgumentParser:
     '''
     Build CLI parser for all fleet actions.
@@ -448,7 +429,7 @@ def main(argv: list[str] | None = None) -> int:
     '''
     parser = _build_parser()
     args = parser.parse_args(argv)
-    args.excluded_sites = _parse_site_name_filters(args.exclude_sites)
+    args.excluded_sites = parse_cli_filters(args.exclude_sites)
 
     allow_missing_projects = args.action in {'init', 'go', 'get_latest_files'}
     project_names, missing_project_names = _collect_project_names(

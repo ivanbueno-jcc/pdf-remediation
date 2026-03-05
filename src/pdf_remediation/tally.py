@@ -51,28 +51,14 @@ def _parse_timestamp(folder_name: str) -> datetime | None:
         return None
 
 
-def _default_output_path() -> Path:
+def _build_timestamped_output_path(
+        suffix: str,
+        timestamp_format: str = '%Y%m%d%H%M%S') -> Path:
     '''
-    Return a timestamped default CSV path.
+    Build a default tally artifact path using a timestamped filename.
     '''
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}-clauses.csv'
-
-
-def _default_summary_output_path() -> Path:
-    '''
-    Return a timestamped default summary CSV path.
-    '''
-    timestamp = datetime.now().strftime('%Y%m%d%H%S')
-    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}-summary.csv'
-
-
-def _default_processing_errors_output_path() -> Path:
-    '''
-    Return a timestamped default processing-errors CSV path.
-    '''
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}-processing-errors.csv'
+    timestamp = datetime.now().strftime(timestamp_format)
+    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}{suffix}'
 
 
 def _parse_int(value: str) -> int | None:
@@ -217,6 +203,7 @@ def _find_latest_report_run(
         required_relative_path: Path | None = None) -> Path | None:
     '''
     Return the latest reports run folder for a project.
+    When required_relative_path is provided, return the latest matching artifact path instead.
     '''
     reports_path = project_path / 'workspace' / workspace_name / 'reports'
     if not reports_path.exists():
@@ -227,57 +214,23 @@ def _find_latest_report_run(
         if not report_run_path.is_dir():
             continue
 
+        candidate_path = report_run_path
         if required_relative_path is not None:
             required_path = report_run_path / required_relative_path
             if not required_path.exists():
                 continue
+            candidate_path = required_path
 
         timestamp = _parse_timestamp(report_run_path.name)
         sort_timestamp = timestamp if timestamp is not None else datetime.min
         modified_time = report_run_path.stat().st_mtime
-        candidates.append((sort_timestamp, modified_time, report_run_path.name, report_run_path))
+        candidates.append((sort_timestamp, modified_time, report_run_path.name, candidate_path))
 
     if not candidates:
         return None
 
     candidates.sort(reverse=True)
     return candidates[0][3]
-
-
-def _find_latest_report_path(
-        project_path: Path,
-        workspace_name: str,
-        profile_name: str,
-        report_filename: str) -> Path | None:
-    '''
-    Return the latest california-report path for a project, if present.
-    '''
-    relative_path = Path('summary') / profile_name / report_filename
-    report_run_path = _find_latest_report_run(
-        project_path=project_path,
-        workspace_name=workspace_name,
-        required_relative_path=relative_path
-    )
-    if report_run_path is None:
-        return None
-
-    return report_run_path / relative_path
-
-
-def _find_latest_summary_total_path(project_path: Path, workspace_name: str) -> Path | None:
-    '''
-    Return the latest summary-total.csv path for a project, if present.
-    '''
-    relative_path = Path('summary-total.csv')
-    report_run_path = _find_latest_report_run(
-        project_path=project_path,
-        workspace_name=workspace_name,
-        required_relative_path=relative_path
-    )
-    if report_run_path is None:
-        return None
-
-    return report_run_path / relative_path
 
 
 def _extract_summary_totals(summary_total_path: Path) -> dict[str, str | int]:
@@ -327,9 +280,10 @@ def _collect_summary_rows(
             continue
 
         scanned_projects += 1
-        summary_total_path = _find_latest_summary_total_path(
+        summary_total_path = _find_latest_report_run(
             project_path=project_path,
-            workspace_name=workspace_name
+            workspace_name=workspace_name,
+            required_relative_path=Path('summary-total.csv')
         )
         if summary_total_path is None:
             skipped_projects.append((project_path.name, 'missing summary-total.csv'))
@@ -371,11 +325,10 @@ def _collect_rows(
             continue
 
         scanned_projects += 1
-        report_path = _find_latest_report_path(
-            project_path,
-            workspace_name,
-            profile_name,
-            report_filename
+        report_path = _find_latest_report_run(
+            project_path=project_path,
+            workspace_name=workspace_name,
+            required_relative_path=Path('summary') / profile_name / report_filename
         )
 
         if report_path is None:
@@ -600,19 +553,19 @@ def main() -> int:
     parser.add_argument(
         '--output',
         type=Path,
-        default=_default_output_path(),
+        default=_build_timestamped_output_path('-clauses.csv'),
         help='Output spreadsheet path (.csv or .xlsx).'
     )
     parser.add_argument(
         '--summary-output',
         type=Path,
-        default=_default_summary_output_path(),
+        default=_build_timestamped_output_path('-summary.csv', timestamp_format='%Y%m%d%H%S'),
         help='Output path for project summary totals CSV.'
     )
     parser.add_argument(
         '--processing-errors-output',
         type=Path,
-        default=_default_processing_errors_output_path(),
+        default=_build_timestamped_output_path('-processing-errors.csv'),
         help='Output path for processing errors pivot CSV.'
     )
     args = parser.parse_args()

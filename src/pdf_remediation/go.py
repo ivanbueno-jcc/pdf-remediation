@@ -40,12 +40,13 @@ def print_pipeline_banner(step_number: int, step_name: str) -> None:
 
 def main() -> int: # pylint: disable=too-many-locals
     '''
-    Run optional pre-fix validation, fix, font_fix, font_fix_pdfix, then final full validation.
+    Run optional pre-fix validation, fix, optional font_fix/font_fix_pdfix,
+    then final full validation.
     '''
     parser = argparse.ArgumentParser(
         description=(
-            "Run optional pre-fix validate, fix, font_fix, font_fix_pdfix, then "
-            "validate --full for a project workspace."
+            "Run optional pre-fix validate, fix, optional font_fix/font_fix_pdfix, "
+            "then validate --full for a project workspace."
         )
     )
     parser.add_argument("project_name", help="Project directory name.")
@@ -79,6 +80,11 @@ def main() -> int: # pylint: disable=too-many-locals
         "--pre-validate",
         action='store_true',
         help="Run pre-fix validate step (disabled by default)."
+    )
+    parser.add_argument(
+        "--skip-font-fix",
+        action='store_true',
+        help="Skip both font_fix and font_fix_pdfix steps."
     )
     parser.add_argument(
         "--verbose",
@@ -124,8 +130,8 @@ def main() -> int: # pylint: disable=too-many-locals
     print("PIPELINE")
     print("1) validate (--skip-page-count) [pre-fix, optional via --pre-validate]")
     print("2) fix (active)")
-    print("3) font_fix (font-issues)")
-    print("4) font_fix_pdfix (font-issues-missing-unicode)")
+    print("3) font_fix (font-issues) [optional via --skip-font-fix]")
+    print("4) font_fix_pdfix (font-issues-missing-unicode) [optional via --skip-font-fix]")
     print("5) validate (--full --skip-page-count) [final]")
 
     fix_args = [
@@ -191,19 +197,23 @@ def main() -> int: # pylint: disable=too-many-locals
         print(f"Pipeline stopped: fix failed with exit code {rc}.")
         return rc
 
-    print_pipeline_banner(3, "font_fix")
-    rc = run_module("pdf_remediation.font_fix", font_fix_args)
-    if rc != 0:
+    if args.skip_font_fix:
         print()
-        print(f"Pipeline stopped: font_fix failed with exit code {rc}.")
-        return rc
+        print("Skipping font_fix and font_fix_pdfix (pass without --skip-font-fix to enable).")
+    else:
+        print_pipeline_banner(3, "font_fix")
+        rc = run_module("pdf_remediation.font_fix", font_fix_args)
+        if rc != 0:
+            print()
+            print(f"Pipeline stopped: font_fix failed with exit code {rc}.")
+            return rc
 
-    print_pipeline_banner(4, "font_fix_pdfix")
-    rc = run_module("pdf_remediation.font_fix_pdfix", font_fix_pdfix_args)
-    if rc != 0:
-        print()
-        print(f"Pipeline stopped: font_fix_pdfix failed with exit code {rc}.")
-        return rc
+        print_pipeline_banner(4, "font_fix_pdfix")
+        rc = run_module("pdf_remediation.font_fix_pdfix", font_fix_pdfix_args)
+        if rc != 0:
+            print()
+            print(f"Pipeline stopped: font_fix_pdfix failed with exit code {rc}.")
+            return rc
 
     print_pipeline_banner(5, "validate (final)")
     rc = run_module("pdf_remediation.validate", final_validate_args)
