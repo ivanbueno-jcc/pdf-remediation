@@ -651,15 +651,30 @@ argument so you can run separate workflows in different subfolders (for example,
   project's latest `workspace/default/reports/<timestamp-*>/summary/ua1/california-report.html`,
   extracts `Clause-Test` and `Files Affected`, and builds a Clause-Test x
   Project pivot table with summed file totals.
-- Default output is `resources/artifact/tally/tally-YYYYMMDDHHMMSS.csv`.
-- It also writes `resources/artifact/tally/tally-YYYYMMDDHHSS-summary.csv` from each
+- Default output is `resources/artifacts/tally/YYYY-MM-DD/tally.csv`.
+- It also writes `resources/artifacts/tally/YYYY-MM-DD/tally-summary.csv` from each
   project's latest `workspace/default/reports/<timestamp-*>/summary-total.csv`
   with columns: `project`, `processed total`, `passed`, `fail`, `success %`.
-- It also writes `resources/artifact/tally/tally-YYYYMMDDHHMMSS-processing-errors.csv`
+- It also writes `resources/artifacts/tally/YYYY-MM-DD/tally-processing-errors.csv`
   from each project's `pdfix-cannot-process-files.csv`, pivoted on the second
   column (error message) with `Total` and per-project totals.
+- It also writes `resources/artifacts/tally/YYYY-MM-DD/tally-progress-report.csv`
+  from each project's latest
+  `workspace/default/reports/<timestamp-*>/workspace-file-count.csv`
+  with columns:
+  `project`, `total`, `remediated`, `Remediation %`, `partially remediated`, `broken`.
+  Formulas:
+  `total = Total Files - pdfix-unable-to-open`;
+  `Remediation % = round((remediated / total) * 100)`;
+  `partially remediated = active + font-issues + font-issues-missing-unicode + secured-cannot-process + secured-needs-approval`;
+  `broken = pdfix-unable-to-open + unable-to-validate`.
+- It also writes `resources/artifacts/tally/YYYY-MM-DD/tally-progress-report-pivot.csv`
+  from `tally-progress-report.csv` with projects as columns, metrics as rows,
+  and an `aggregate` second column. Metric labels include aggregation function:
+  `total (sum)`, `remediated (sum)`, `Remediation % (avg)`,
+  `partially remediated (sum)`, `broken (sum)`.
 - Syntax:
-  `uv run -m pdf_remediation.tally [--projects-path <path>] [--workspace <name>] [--profile <name>] [--report-file <file>] [--output <path>] [--summary-output <path>] [--processing-errors-output <path>]`
+  `uv run -m pdf_remediation.tally [--projects-path <path>] [--workspace <name>] [--profile <name>] [--report-file <file>] [--output <path>] [--summary-output <path>] [--processing-errors-output <path>] [--progress-report-output <path>] [--progress-report-pivot-output <path>]`
 
 ### Utility scripts
 - `scripts/check_pdf_headers.py` recursively checks file headers for `%PDF-`.

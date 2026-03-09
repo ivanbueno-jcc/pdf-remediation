@@ -1,4 +1,4 @@
-# pylint: disable=too-many-branches, too-many-locals
+# pylint: disable=too-many-branches, too-many-locals, too-many-statements
 '''
 Aggregate Clause-Test totals from latest California reports across projects.
 '''
@@ -19,8 +19,9 @@ from .utilities.resources import PROJECT_BASE_PATH
 TIMESTAMP_PATTERN = re.compile(r'(\d{8}_\d{6})')
 CLAUSE_HEADER = 'clausetest'
 FILES_AFFECTED_HEADER = 'filesaffected'
-DEFAULT_OUTPUT_DIR = Path('resources/artifacts/tally')
+DEFAULT_OUTPUT_ROOT_DIR = Path('resources/artifacts/tally')
 PROCESSING_ERRORS_FILENAME = 'pdfix-cannot-process-files.csv'
+WORKSPACE_FILE_COUNT_FILENAME = 'workspace-file-count.csv'
 
 
 def _normalize_whitespace(value: str) -> str:
@@ -51,14 +52,13 @@ def _parse_timestamp(folder_name: str) -> datetime | None:
         return None
 
 
-def _build_timestamped_output_path(
-        suffix: str,
-        timestamp_format: str = '%Y%m%d%H%M%S') -> Path:
+def _build_default_output_path(filename: str) -> Path:
     '''
-    Build a default tally artifact path using a timestamped filename.
+    Build a default tally artifact path under a date folder.
     '''
-    timestamp = datetime.now().strftime(timestamp_format)
-    return DEFAULT_OUTPUT_DIR / f'tally-{timestamp}{suffix}'
+    date_folder = datetime.now().strftime('%Y-%m-%d')
+    output_dir = DEFAULT_OUTPUT_ROOT_DIR / date_folder
+    return output_dir / filename
 
 
 def _parse_int(value: str) -> int | None:
@@ -263,6 +263,94 @@ def _extract_summary_totals(summary_total_path: Path) -> dict[str, str | int]:
         'fail': failed_total,
         'success %': success_percent
     }
+
+
+def _extract_workspace_file_counts(workspace_file_count_path: Path) -> dict[str, int]:
+    '''
+    Parse workspace-file-count.csv into {column_name: count}.
+    '''
+    with open(workspace_file_count_path, newline='', encoding='utf-8') as count_file:
+        reader = csv.reader(count_file)
+        header_row = next(reader, None)
+        value_row = next(reader, None)
+
+    if not header_row or not value_row:
+        raise ValueError('workspace-file-count.csv is missing header/data rows')
+
+    counts: dict[str, int] = {}
+    for index, header_name in enumerate(header_row):
+        normalized_header = _normalize_whitespace(header_name.strip())
+        if not normalized_header:
+            continue
+        value = value_row[index] if index < len(value_row) else ''
+        parsed_value = _parse_int(value)
+        counts[normalized_header] = parsed_value if parsed_value is not None else 0
+
+    return counts
+
+
+def _collect_progress_report_rows(
+        projects_path: Path,
+        workspace_name: str) -> tuple[list[dict[str, str | int]], list[tuple[str, str]], int]:
+    '''
+    Collect project progress metrics from workspace-file-count.csv files.
+    '''
+    rows: list[dict[str, str | int]] = []
+    skipped_projects: list[tuple[str, str]] = []
+    scanned_projects = 0
+
+    for project_path in sorted(projects_path.iterdir(), key=lambda path: path.name):
+        if not project_path.is_dir():
+            continue
+
+        scanned_projects += 1
+        workspace_file_count_path = _find_latest_report_run(
+            project_path=project_path,
+            workspace_name=workspace_name,
+            required_relative_path=Path(WORKSPACE_FILE_COUNT_FILENAME)
+        )
+        if workspace_file_count_path is None:
+            skipped_projects.append((project_path.name, f'missing {WORKSPACE_FILE_COUNT_FILENAME}'))
+            continue
+
+        try:
+            counts = _extract_workspace_file_counts(workspace_file_count_path)
+        except ValueError as error:
+            skipped_projects.append((project_path.name, str(error)))
+            continue
+
+        total_files = counts.get('Total Files', 0)
+        pdfix_unable_to_open = counts.get('pdfix-unable-to-open', 0)
+        remediated = counts.get('remediated', 0)
+        active = counts.get('active', 0)
+        font_issues = counts.get('font-issues', 0)
+        font_issues_missing_unicode = counts.get('font-issues-missing-unicode', 0)
+        secured_cannot_process = counts.get('secured-cannot-process', 0)
+        secured_needs_approval = counts.get('secured-needs-approval', 0)
+        unable_to_validate = counts.get('unable-to-validate', 0)
+
+        rows.append(
+            {
+                'project': project_path.name,
+                'total': total_files - pdfix_unable_to_open,
+                'remediated': remediated,
+                'Remediation %': (
+                    round((remediated / (total_files - pdfix_unable_to_open)) * 100)
+                    if (total_files - pdfix_unable_to_open) > 0
+                    else 0
+                ),
+                'partially remediated': (
+                    active
+                    + font_issues
+                    + font_issues_missing_unicode
+                    + secured_cannot_process
+                    + secured_needs_approval
+                ),
+                'broken': pdfix_unable_to_open + unable_to_validate
+            }
+        )
+
+    return rows, skipped_projects, scanned_projects
 
 
 def _collect_summary_rows(
@@ -519,6 +607,89 @@ def _write_processing_errors_spreadsheet(
     return output_path
 
 
+def _write_progress_report_spreadsheet(
+        rows: list[dict[str, str | int]],
+        output_path: Path) -> Path:
+    '''
+    Write per-project progress metrics to CSV.
+    '''
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    progress_frame = pd.DataFrame(
+        rows,
+        columns=[
+            'project',
+            'total',
+            'remediated',
+            'Remediation %',
+            'partially remediated',
+            'broken'
+        ]
+    )
+    progress_frame = progress_frame.sort_values('project', ignore_index=True)
+    progress_frame.to_csv(output_path, index=False)
+    return output_path
+
+
+def _build_progress_report_pivot_frame(rows: list[dict[str, str | int]]) -> pd.DataFrame:
+    '''
+    Build a progress-report pivot with projects as columns and metrics as rows.
+    '''
+    metric_specs: list[tuple[str, str, str]] = [
+        ('total', 'total (sum)', 'sum'),
+        ('remediated', 'remediated (sum)', 'sum'),
+        ('Remediation %', 'Remediation % (avg)', 'avg'),
+        ('partially remediated', 'partially remediated (sum)', 'sum'),
+        ('broken', 'broken (sum)', 'sum')
+    ]
+    source_metrics = [spec[0] for spec in metric_specs]
+
+    if not rows:
+        return pd.DataFrame(
+            {
+                'metric': [spec[1] for spec in metric_specs],
+                'aggregate': [0 for _ in metric_specs]
+            }
+        )
+
+    progress_frame = pd.DataFrame(
+        rows,
+        columns=['project', *source_metrics]
+    )
+    progress_frame = progress_frame.sort_values('project', ignore_index=True)
+    pivot_frame = progress_frame.set_index('project').transpose().reset_index()
+    pivot_frame = pivot_frame.rename(columns={'index': 'metric'})
+
+    aggregate_by_metric: dict[str, int | float] = {}
+    label_by_metric: dict[str, str] = {}
+    for source_metric, metric_label, aggregate_function in metric_specs:
+        metric_series = progress_frame[source_metric]
+        if aggregate_function == 'avg':
+            aggregate_value: int | float = round(float(metric_series.mean()), 2)
+        else:
+            aggregate_value = int(metric_series.sum())
+        aggregate_by_metric[source_metric] = aggregate_value
+        label_by_metric[source_metric] = metric_label
+
+    pivot_frame.insert(
+        1,
+        'aggregate',
+        pivot_frame['metric'].map(aggregate_by_metric)
+    )
+    pivot_frame['metric'] = pivot_frame['metric'].map(label_by_metric).fillna(pivot_frame['metric'])
+    return pivot_frame
+
+
+def _write_progress_report_pivot_spreadsheet(
+        pivot_frame: pd.DataFrame,
+        output_path: Path) -> Path:
+    '''
+    Write aggregated progress-report metrics to CSV.
+    '''
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    pivot_frame.to_csv(output_path, index=False)
+    return output_path
+
+
 def main() -> int:
     '''
     Generate a Clause-Test by Project tally spreadsheet.
@@ -553,20 +724,32 @@ def main() -> int:
     parser.add_argument(
         '--output',
         type=Path,
-        default=_build_timestamped_output_path('-clauses.csv'),
+        default=_build_default_output_path('tally.csv'),
         help='Output spreadsheet path (.csv or .xlsx).'
     )
     parser.add_argument(
         '--summary-output',
         type=Path,
-        default=_build_timestamped_output_path('-summary.csv', timestamp_format='%Y%m%d%H%S'),
+        default=_build_default_output_path('tally-summary.csv'),
         help='Output path for project summary totals CSV.'
     )
     parser.add_argument(
         '--processing-errors-output',
         type=Path,
-        default=_build_timestamped_output_path('-processing-errors.csv'),
+        default=_build_default_output_path('tally-processing-errors.csv'),
         help='Output path for processing errors pivot CSV.'
+    )
+    parser.add_argument(
+        '--progress-report-output',
+        type=Path,
+        default=_build_default_output_path('tally-progress-report.csv'),
+        help='Output path for per-project progress report CSV.'
+    )
+    parser.add_argument(
+        '--progress-report-pivot-output',
+        type=Path,
+        default=_build_default_output_path('tally-progress-report-pivot.csv'),
+        help='Output path for progress report pivot CSV.'
     )
     args = parser.parse_args()
 
@@ -614,6 +797,19 @@ def main() -> int:
         processing_errors_pivot,
         args.processing_errors_output
     )
+    progress_report_rows, skipped_progress_report_projects, _ = _collect_progress_report_rows(
+        projects_path=projects_path,
+        workspace_name=args.workspace
+    )
+    written_progress_report_path = _write_progress_report_spreadsheet(
+        progress_report_rows,
+        args.progress_report_output
+    )
+    progress_report_pivot_frame = _build_progress_report_pivot_frame(progress_report_rows)
+    written_progress_report_pivot_path = _write_progress_report_pivot_spreadsheet(
+        progress_report_pivot_frame,
+        args.progress_report_pivot_output
+    )
 
     projects_included = len({row['Project'] for row in rows})
     print(f'Scanned projects: {scanned_projects}')
@@ -634,9 +830,18 @@ def main() -> int:
         )
         for project_name, reason in skipped_processing_error_projects:
             print(f'  - {project_name}: {reason}')
+    if skipped_progress_report_projects:
+        print(
+            f'Skipped projects for progress report output: '
+            f'{len(skipped_progress_report_projects)}'
+        )
+        for project_name, reason in skipped_progress_report_projects:
+            print(f'  - {project_name}: {reason}')
     print(f'Output: {written_path.resolve()}')
     print(f'Summary output: {written_summary_path.resolve()}')
     print(f'Processing errors output: {written_processing_errors_path.resolve()}')
+    print(f'Progress report output: {written_progress_report_path.resolve()}')
+    print(f'Progress report pivot output: {written_progress_report_pivot_path.resolve()}')
     return 0
 
 
