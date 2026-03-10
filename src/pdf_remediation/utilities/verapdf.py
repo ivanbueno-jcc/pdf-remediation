@@ -63,7 +63,7 @@ def in_memory_validation(pdfPath: str, profile: str = "ua1", format: str = "xml"
         # print(f"Unexpected error: {e}")
         return ['Error', 0, []]
 
-def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
+def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", format: str = "xml") -> tuple[int, str, str]:
     """
     Executes a Java-based PDF/UA validation tool on the specified PDF file.
 
@@ -87,9 +87,9 @@ def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", forma
         command = []
         if profile == "wcag":
             profile_path = get_configuration_file("WCAG-2-2-Complete.xml")
-            command = ["java", "-jar", jarPath, "--profile", str(profile_path), "--format", format, pdfPath]
+            command = ["java", "-jar", str(jarPath), "--profile", str(profile_path), "--format", format, pdfPath]
         else:
-            command = ["java", "-jar", jarPath, "--flavour", "ua1", "--format", format, pdfPath]
+            command = ["java", "-jar", str(jarPath), "--flavour", "ua1", "--format", format, pdfPath]
 
         result = subprocess.run(
             command,
@@ -115,10 +115,10 @@ def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", forma
 
     except FileNotFoundError:
         print("Error: Java not found.")
-        return -1
+        return -1, "", "Java not found."
     except Exception as e:
         # print(f"Unexpected error: {e}")
-        return -1
+        return -1, "", str(e)
 
 def parseValidationReport(xmlReport: str):
     """
@@ -171,7 +171,7 @@ def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, profiles: lis
     results = {}
 
     for profile in profiles:
-        exitCode, output, error = runJavaValidation(pdfPath, reportPath, profile, "xml")
+        exitCode, output, _error = runJavaValidation(pdfPath, reportPath, profile, "xml")
         filename = pdfPath
 
         if exitCode > 1:
@@ -183,7 +183,12 @@ def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, profiles: lis
             results[profile] = [filename, True, 0, []]
         elif exitCode == 1:
             # print("Non-valid PDF/UA document")
-            rules = parseValidationReport(output)
+            try:
+                rules = parseValidationReport(output)
+            except ET.ParseError:
+                rules = []
+                results[profile] = [filename, 'Error', 0, []]
+                continue
             results[profile] = [filename, False, len(rules), rules]
         else:
             results[profile] = [filename, 'Error', 0, []]
