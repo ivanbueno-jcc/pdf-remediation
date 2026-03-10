@@ -678,8 +678,8 @@ def _route_validated_files(
     Move validation-passing files into the remediated folder.
     '''
     moved_count = 0
-    for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
-        if ua1_result is True and wcag_result is True:
+    for file_path, _, _, wcag_result, _, _, _ in validation_results:
+        if wcag_result is True:
             moved_count += 1
             if verbose:
                 print(f"{file_path}")

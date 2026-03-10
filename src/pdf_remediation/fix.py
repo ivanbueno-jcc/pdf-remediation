@@ -288,10 +288,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             secured_files_count = unable_to_open = 0
             for d in security_check_results:
                 for file_path, security_status in d.items():
-                    if not security_status in ["unsecured"]:
+                    if not security_status in ["unsecured", "secured-needs-approval"]:
                         relative_path = Path(file_path).relative_to(workspace_folder_path)
 
-                        if security_status in ["secured-cannot-process", "secured-needs-approval"]:
+                        if security_status in ["secured-cannot-process"]:
                             secured_files_count += 1
                             append_to_csv(
                                 workspace_folder_path.parent.parent.parent.parent / "secured-files.csv", # pylint: disable=line-too-long

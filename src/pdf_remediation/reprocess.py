@@ -13,7 +13,6 @@ IGNORED_WORKSPACE_FOLDERS = {
     "remediated",
     "pdfix-cannot-process",
     "secured-cannot-process",
-    "secured-needs-approval",
     "reports",
     "pdfix-unable-to-open",
     "unable-to-validate",
