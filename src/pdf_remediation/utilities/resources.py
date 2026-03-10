@@ -1,4 +1,4 @@
-# pylint: disable=too-many-branches, too-many-return-statements
+# pylint: disable=too-many-branches, too-many-return-statements, too-many-lines
 '''
 Utility functions for managing project resources and paths.
 '''
@@ -645,7 +645,7 @@ def move_file_and_delete_source(
         source_folder: Path,
         project_name: str,
         workspace_name: str,
-        subfolder_name: str) -> None:
+        subfolder_name: str) -> bool:
     '''
     Move a file from the source folder to the destination subfolder and delete the source file.
     
@@ -659,14 +659,29 @@ def move_file_and_delete_source(
     :type workspace_name: str
     :param subfolder_name: Description
     :type subfolder_name: str
+    :return: True if the file was moved; False when source file is unavailable.
+    :rtype: bool
     '''
+    if not source_path.exists():
+        return False
+
     destination_subfolder_path = get_project_workspace_subfolder_path(
         project_name, workspace_name, subfolder_name)
-    relative_path = source_path.relative_to(source_folder)
+    try:
+        relative_path = source_path.relative_to(source_folder)
+    except ValueError:
+        relative_path = Path(source_path.name)
+
     destination_path = destination_subfolder_path / relative_path
     destination_path.parent.mkdir(parents=True, exist_ok=True)
-    destination_path.write_bytes(source_path.read_bytes())
-    source_path.unlink()
+
+    try:
+        destination_path.write_bytes(source_path.read_bytes())
+        source_path.unlink()
+    except FileNotFoundError:
+        return False
+
+    return True
 
 def _route_validated_files(
         validation_results: list,
@@ -678,18 +693,18 @@ def _route_validated_files(
     Move validation-passing files into the remediated folder.
     '''
     moved_count = 0
-    for file_path, _, _, wcag_result, _, _, _ in validation_results:
-        if wcag_result is True:
-            moved_count += 1
+    for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
+        if ua1_result is True and wcag_result is True:
             if verbose:
                 print(f"{file_path}")
-            move_file_and_delete_source(
+            if move_file_and_delete_source(
                 Path(file_path),
                 output_pdf_folder,
                 project_name,
                 workspace_name,
                 "remediated"
-            )
+            ):
+                moved_count += 1
     return moved_count
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments
@@ -709,7 +724,6 @@ def _route_error_validations(
 
     for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
         if ua1_result == 'Error' or wcag_result == 'Error':
-            moved_count += 1
             try:
                 relative_path = Path(file_path).relative_to(output_pdf_folder)
             except ValueError:
@@ -722,13 +736,14 @@ def _route_error_validations(
 
             if verbose:
                 print(f"{file_path}")
-            move_file_and_delete_source(
+            if move_file_and_delete_source(
                 Path(file_path),
                 output_pdf_folder,
                 project_name,
                 workspace_name,
                 "unable-to-validate"
-            )
+            ):
+                moved_count += 1
 
     return moved_count
 
@@ -747,6 +762,9 @@ def _route_font_issue_validations(
     moved_count = 0
     font_issue_clause_set = set(font_issue_clauses)
     for file_path, ua1_result, _, wcag_result, _, ua1_violations, wcag_violations in validation_results: # pylint: disable=line-too-long
+        if ua1_result == 'Error' or wcag_result == 'Error':
+            continue
+
         if ua1_result is False or wcag_result is False:
             has_font_violation = False
             for violation in ua1_violations + wcag_violations:
@@ -755,16 +773,16 @@ def _route_font_issue_validations(
                     break
 
             if has_font_violation:
-                moved_count += 1
                 if verbose:
                     print(f"{file_path}")
-                move_file_and_delete_source(
+                if move_file_and_delete_source(
                     Path(file_path),
                     output_pdf_folder,
                     project_name,
                     workspace_name,
                     font_issue_subfolder
-                )
+                ):
+                    moved_count += 1
 
     return moved_count
 
