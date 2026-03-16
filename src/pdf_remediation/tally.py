@@ -289,6 +289,28 @@ def _extract_workspace_file_counts(workspace_file_count_path: Path) -> dict[str,
     return counts
 
 
+def _get_total_pages(project_path: Path, workspace_name: str) -> int:
+    '''
+    Merge all page_count.csv files from *-files/ under active/reports/,
+    deduplicate by path, and return the sum of page_count.
+    '''
+    reports_path = project_path / 'workspace' / workspace_name / 'active' / 'reports'
+    if not reports_path.exists():
+        return 0
+
+    seen_paths: dict[str, int] = {}
+    for csv_path in reports_path.glob('*-files/page_count.csv'):
+        with open(csv_path, newline='', encoding='utf-8', errors='ignore') as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                file_path = row.get('path', '').strip()
+                page_count = _parse_int(row.get('page_count', ''))
+                if file_path and page_count is not None:
+                    seen_paths[file_path] = page_count
+
+    return sum(seen_paths.values())
+
+
 def _collect_progress_report_rows(
         projects_path: Path,
         workspace_name: str) -> tuple[list[dict[str, str | int]], list[tuple[str, str]], int]:
@@ -328,6 +350,7 @@ def _collect_progress_report_rows(
         secured_cannot_process = counts.get('secured-cannot-process', 0)
         secured_needs_approval = counts.get('secured-needs-approval', 0)
         unable_to_validate = counts.get('unable-to-validate', 0)
+        total_pages = _get_total_pages(project_path, workspace_name)
 
         rows.append(
             {
@@ -346,7 +369,8 @@ def _collect_progress_report_rows(
                     + secured_cannot_process
                     + secured_needs_approval
                 ),
-                'broken': pdfix_unable_to_open + unable_to_validate
+                'broken': pdfix_unable_to_open + unable_to_validate,
+                'total pages': total_pages
             }
         )
 
@@ -622,7 +646,8 @@ def _write_progress_report_spreadsheet(
             'remediated',
             'Remediation %',
             'partially remediated',
-            'broken'
+            'broken',
+            'total pages'
         ]
     )
     progress_frame = progress_frame.sort_values('project', ignore_index=True)
@@ -639,7 +664,8 @@ def _build_progress_report_pivot_frame(rows: list[dict[str, str | int]]) -> pd.D
         ('remediated', 'remediated (sum)', 'sum'),
         ('Remediation %', 'Remediation % (avg)', 'avg'),
         ('partially remediated', 'partially remediated (sum)', 'sum'),
-        ('broken', 'broken (sum)', 'sum')
+        ('broken', 'broken (sum)', 'sum'),
+        ('total pages', 'total pages (sum)', 'sum')
     ]
     source_metrics = [spec[0] for spec in metric_specs]
 
