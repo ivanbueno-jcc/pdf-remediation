@@ -15,6 +15,11 @@ from .utilities.resources import (
     get_pdf_file_paths,
     get_page_count_chunks,
     get_project_workspace_file_paths,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_list,
+    print_console_message,
+    print_console_section,
     route_validation_results
 )
 
@@ -69,14 +74,20 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
     args = parser.parse_args()
 
     if args.project_name:
-        print(f"PROJECT: {args.project_name}")
-        print(f"WORKSPACE: {args.workspace_name}")
-        print(f"FOLDER: {args.workspace_folder}")
-        print()
-
         if args.debug:
             args.verbose = True
             args.chunk_size = 1
+
+        print_console_banner("FONT FIX PDFIX")
+        print_console_key_value_rows([
+            ("Project", args.project_name),
+            ("Workspace", args.workspace_name),
+            ("Folder", args.workspace_folder),
+            ("Chunk Size", args.chunk_size),
+            ("Workers", args.n_cpu),
+            ("Verbose", args.verbose),
+            ("Debug", args.debug),
+        ])
 
         workspace_path = get_project_workspace_path(
             args.project_name,
@@ -109,9 +120,11 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 file_paths_for_counting.append(file_path)
 
             processed_files_count = len(get_pdf_file_paths(output_pdf_folder))
-            print(f"Total files processed: {processed_files_count}")
-            print(f"Total files left to remediate: {len(file_paths_for_remediation)}")
-            print()
+            print_console_section("WORKLOAD", "info")
+            print_console_key_value_rows([
+                ("Already Processed", processed_files_count),
+                ("Left To Remediate", len(file_paths_for_remediation)),
+            ])
 
             page_count_lookup = {}
             if len(file_paths_for_counting) > 0:
@@ -121,7 +134,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     timestamp
                 )
             else:
-                print("No files found for remediation.")
+                print_console_message("warn", "No files found for remediation.")
 
             chunks = get_page_count_chunks(
                 file_paths_for_remediation=file_paths_for_remediation,
@@ -137,24 +150,21 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             if len(file_paths_for_remediation) > 0:
                 pull_image(PDFIX_FONT_IMAGE, verbose=args.verbose)
 
-                print()
-                print("FIXING MISSING UNICODE FONT WITH PDFIX...")
+                print_console_section("FIXING MISSING UNICODE FONT WITH PDFIX", "info")
                 for key, chunk_file_paths in chunks.items():
                     if len(chunk_file_paths) == 0:
                         continue
 
-                    print()
-                    print(f"Page count of {key}")
+                    print_console_message("log", f"Page bucket: {key}")
 
                     if args.verbose:
-                        print()
-                        print("   Files to process in this chunk:")
-                        for input_path, _, _ in chunk_file_paths:
-                            relative_chunk_path = Path(input_path).relative_to(
-                                workspace_folder_path
-                            )
-                            print(f"    * {relative_chunk_path}")
-                        print()
+                        print_console_list(
+                            [
+                                Path(input_path).relative_to(workspace_folder_path)
+                                for input_path, _, _ in chunk_file_paths
+                            ],
+                            indent=4
+                        )
 
                     progress_starmap(
                         font_fix_pdfix,
@@ -165,10 +175,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         n_cpu=args.n_cpu
                     )
         else:
-            print("No PDF files to process in the active folder.")
+            print_console_section("NO WORK", "warn")
+            print_console_message("warn", "No PDF files to process in the active folder.")
 
-        print()
-        print("VALIDATING PROCESSED FILES...")
+        print_console_section("VALIDATING PROCESSED FILES", "info")
         file_paths_for_validation = []
         target_folder = "processed"
         file_paths_for_validation = get_project_workspace_subfolder_file_paths(
@@ -196,11 +206,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             )
 
         else:
-            print("No PDF files found for validation.")
+            print_console_message("warn", "No PDF files found for validation.")
 
-        print()
-        print("WORKSPACE SUMMARY")
-        print(f"  {args.workspace_name}")
+        print_console_section("WORKSPACE SUMMARY", "log")
+        print_console_key_value_rows([("Workspace", args.workspace_name)])
         print_workspace_summary(args.project_name, args.workspace_name)
 
 if __name__ == '__main__':

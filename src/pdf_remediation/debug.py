@@ -14,6 +14,10 @@ from .utilities.resources import (
     get_project_workspace_subfolder_file_paths,
     get_project_workspace_subfolder_path,
     parse_cli_filters,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
 )
 from .utilities.verapdf import validate_pdf_multiprocess
 
@@ -119,13 +123,15 @@ def main() -> int:
     args = parser.parse_args()
     selected_clause_tests = parse_cli_filters(args.clause_tests)
 
-    print(f"PROJECT: {args.project_name}")
-    print(f"WORKSPACE: {args.workspace_name}")
-    if selected_clause_tests:
-        print(f"CLAUSE-TEST FILTERS: {', '.join(sorted(selected_clause_tests))}")
-    else:
-        print("CLAUSE-TEST FILTERS: all")
-    print()
+    print_console_banner("DEBUG CLAUSE COPIES")
+    print_console_key_value_rows([
+        ("Project", args.project_name),
+        ("Workspace", args.workspace_name),
+        (
+            "Clause-Test Filters",
+            ", ".join(sorted(selected_clause_tests)) if selected_clause_tests else "all"
+        ),
+    ])
 
     active_files_path = get_project_workspace_subfolder_path(
         args.project_name,
@@ -140,12 +146,14 @@ def main() -> int:
         "files"
     )
 
-    print(f"SOURCE: {active_files_path}")
-    print(f"FILES FOUND: {len(file_paths)}")
-    print()
+    print_console_section("SOURCE", "info")
+    print_console_key_value_rows([
+        ("Source", active_files_path),
+        ("Files Found", len(file_paths)),
+    ])
 
     if len(file_paths) == 0:
-        print("No pending PDF files found.")
+        print_console_message("warn", "No pending PDF files found.")
         return 1
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -160,9 +168,8 @@ def main() -> int:
     debug_root_path = workspace_path / "debug"
     clear_workspace_folder(debug_root_path)
 
-    print("COPYING NON-COMPLIANT FILES INTO DEBUG CLAUSE FOLDERS...")
-    print(f"DEBUG TARGET: {debug_root_path}")
-    print()
+    print_console_section("COPYING FAILED FILES", "info")
+    print_console_key_value_rows([("Debug Target", debug_root_path)])
 
     failed_files_total = 0
     copied_files_total = 0
@@ -197,13 +204,16 @@ def main() -> int:
             failed_clause_tests
         )
 
-    print("DEBUG SUMMARY")
-    print(f"  Failed files: {failed_files_total}")
+    summary_rows = [("Failed Files", failed_files_total)]
     if selected_clause_tests:
-        print(f"  Failed files filtered out: {filtered_out_files_total}")
-    print(f"  Files copied (including multi-clause copies): {copied_files_total}")
-    print(f"  Files routed to unknown clause: {unknown_clause_total}")
-    print(f"  Clause folders: {len([p for p in debug_root_path.iterdir() if p.is_dir()])}")
+        summary_rows.append(("Failed Files Filtered Out", filtered_out_files_total))
+    summary_rows.extend([
+        ("Files Copied", copied_files_total),
+        ("Files Routed To Unknown Clause", unknown_clause_total),
+        ("Clause Folders", len([p for p in debug_root_path.iterdir() if p.is_dir()])),
+    ])
+    print_console_section("DEBUG SUMMARY", "success")
+    print_console_key_value_rows(summary_rows)
 
     return 0
 

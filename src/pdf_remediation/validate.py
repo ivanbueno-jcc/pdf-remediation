@@ -10,6 +10,13 @@ from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import get_project_workspace_subfolder_file_paths
 from .utilities.resources import get_project_workspace_subfolder_path
 from .utilities.resources import get_full_workspace_file_paths
+from .utilities.resources import (
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_list,
+    print_console_message,
+    print_console_section,
+)
 
 FULL_VALIDATION_IGNORED_SUBFOLDERS = [
     "pdfix-cannot-process",
@@ -62,11 +69,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.project_name:
-        print(f"PROJECT: {args.project_name}")
-        print(f"WORKSPACE: {args.workspace_name}")
-        print(f"FULL: {args.full}")
-        print(f"SKIP PAGE COUNT: {args.skip_page_count}")
-        print()
+        print_console_banner("VALIDATE")
+        print_console_key_value_rows([
+            ("Project", args.project_name),
+            ("Workspace", args.workspace_name),
+            ("Full", args.full),
+            ("Skip Page Count", args.skip_page_count),
+        ])
 
         report_base_path = None
         relative_base_paths = None
@@ -84,14 +93,17 @@ if __name__ == '__main__':
             relative_base_paths = scanned_paths
             subfolder = "full"
 
-            print("FOLDERS SCANNED:")
-            for path in scanned_paths:
-                print(f"  - {path.relative_to(workspace_folder_path)}")
-            print()
+            print_console_section("FOLDERS SCANNED", "info")
+            print_console_list(
+                [path.relative_to(workspace_folder_path) for path in scanned_paths],
+                indent=2
+            )
         else:
-            print(f"FOLDER: {args.workspace_folder}")
-            print(f"DIRECTORY: {args.directory}")
-            print()
+            print_console_section("TARGET", "info")
+            print_console_key_value_rows([
+                ("Folder", args.workspace_folder),
+                ("Directory", args.directory),
+            ])
 
             workspace_folder_path = get_project_workspace_subfolder_path(
                 args.project_name,
@@ -126,5 +138,6 @@ if __name__ == '__main__':
                 relative_base_paths
             )
         else:
-            print("No pending PDF files found.")
+            print_console_section("NO WORK", "warn")
+            print_console_message("warn", "No pending PDF files found.")
             sys.exit()

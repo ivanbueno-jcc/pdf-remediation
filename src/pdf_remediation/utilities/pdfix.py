@@ -14,9 +14,17 @@ from pdfixsdk import * # pylint: disable=wildcard-import, unused-wildcard-import
 from python_on_whales import docker
 from python_on_whales.exceptions import DockerException, NoSuchImage
 from pdf_remediation.utilities.verapdf import in_memory_validation
-from .resources import PDFIX_FONT_IMAGE, stream_to_data, get_configuration_file, append_to_csv
-from .resources import get_relative_report_path
-from .resources import ensure_docker_desktop_running
+from .resources import (
+    PDFIX_FONT_IMAGE,
+    append_to_csv,
+    ensure_docker_desktop_running,
+    get_configuration_file,
+    get_relative_report_path,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
+    stream_to_data,
+)
 
 def pull_image(image_name: str, verbose: bool = False) -> None:
     '''
@@ -30,13 +38,13 @@ def pull_image(image_name: str, verbose: bool = False) -> None:
     try:
         docker.image.inspect(image_name)
         if verbose:
-            print(f"Docker image '{image_name}' is already present locally.")
+            print_console_message("info", f"Docker image already available: {image_name}")
     except NoSuchImage:
         if verbose:
-            print(f"Pulling Docker image '{image_name}'...")
+            print_console_message("info", f"Pulling Docker image: {image_name}")
         docker.image.pull(image_name)
         if verbose:
-            print(f"Docker image '{image_name}' pulled successfully.")
+            print_console_message("success", f"Docker image pulled successfully: {image_name}")
 
 def is_pdf_secured(input_pdf_path: str) -> bool:
     '''
@@ -49,7 +57,7 @@ def is_pdf_secured(input_pdf_path: str) -> bool:
     '''
     pdfix  = GetPdfix()
     if pdfix is None:
-        print('Pdfix Initialization fail')
+        print_console_message("error", "PDFix initialization failed.")
 
     doc = pdfix.OpenDoc(input_pdf_path, "")
     if doc is None:
@@ -92,7 +100,7 @@ def get_page_count(input_pdf_path: str) -> list:
     '''
     pdfix  = GetPdfix()
     if pdfix is None:
-        print('Pdfix Initialization fail')
+        print_console_message("error", "PDFix initialization failed.")
 
     doc = pdfix.OpenDoc(input_pdf_path, "")
     if doc is None:
@@ -128,8 +136,7 @@ def get_page_count_multiprocess(
     :return: Description
     :rtype: dict
     '''
-
-    print('Counting pages...')
+    print_console_section("COUNTING PAGES", "info")
     input_files = [str(file_path) for file_path in file_paths]
 
     results = []
@@ -151,7 +158,7 @@ def get_page_count_multiprocess(
                 count
             ])
 
-    print(f"Total Pages: {total_pages}")
+    print_console_key_value_rows([("Total Pages", total_pages)])
 
     report_root_path = report_base_path if report_base_path \
         else workspace_folder_path.parent / "reports"
@@ -202,7 +209,7 @@ def fix(
     doc = pdfix.OpenDoc(input_pdf_path, "")
     if doc is None:
         if verbose:
-            print('Unable to open pdf', pdfix.GetError())
+            print_console_message("error", f"Unable to open PDF: {pdfix.GetError()}")
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
@@ -216,7 +223,7 @@ def fix(
     command_statement = pdfix.CreateFileStream(command_path, kPsReadOnly)
     if not command_statement:
         if verbose:
-            print('Error', pdfix.GetError())
+            print_console_message("error", f"PDFix error: {pdfix.GetError()}")
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
@@ -224,7 +231,7 @@ def fix(
         raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
     if not command.LoadParamsFromStream(command_statement, kDataFormatJson):
         if verbose:
-            print('Error', pdfix.GetError())
+            print_console_message("error", f"PDFix error: {pdfix.GetError()}")
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
@@ -236,7 +243,7 @@ def fix(
     if not command.Run():
         # print(input_pdf_path)
         if verbose:
-            print('Error', pdfix.GetError())
+            print_console_message("error", f"PDFix error: {pdfix.GetError()}")
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
@@ -247,7 +254,7 @@ def fix(
 
     if not doc.Save(output_pdf_path, kSaveFull):
         if verbose:
-            print('Unable to save', pdfix.GetError())
+            print_console_message("error", f"Unable to save PDF: {pdfix.GetError()}")
         append_to_csv(
             error_file_path,
             [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
@@ -298,7 +305,7 @@ def font_fix_pdfix(
             remove=True
         )
     except DockerException as e:
-        print(f"DockerException occurred: {e}")
+        print_console_message("error", f"Docker exception occurred: {e}")
         match e.return_code:
             case _:
                 append_to_csv(
@@ -311,7 +318,7 @@ def font_fix_pdfix(
                 input_pdf_path.unlink(missing_ok=True)
                 raise DockerException(0) # pylint: disable=raise-missing-from, no-value-for-parameter
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print_console_message("error", f"Unexpected error: {e}")
         raise e
     finally:
         input_pdf_path.unlink(missing_ok=True)
@@ -325,7 +332,7 @@ def license_status() -> json:
     '''
     pdfix = GetPdfix()
     if pdfix is None:
-        print('Pdfix Initialization fail')
+        print_console_message("error", "PDFix initialization failed.")
         return False
 
     # Load the license and authorize the account.
@@ -354,7 +361,7 @@ def license_activate(license_key: str) -> bool:
     '''
     pdfix = GetPdfix()
     if pdfix is None:
-        print('Pdfix Initialization fail')
+        print_console_message("error", "PDFix initialization failed.")
         return False
 
     if not pdfix.GetStandardAuthorization().Activate(license_key):
@@ -368,7 +375,7 @@ def license_deactivate() -> bool:
     '''
     pdfix = GetPdfix()
     if pdfix is None:
-        print('Pdfix Initialization fail')
+        print_console_message("error", "PDFix initialization failed.")
         return False
 
     if not pdfix.GetStandardAuthorization().Deactivate():

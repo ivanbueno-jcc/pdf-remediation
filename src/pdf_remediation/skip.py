@@ -2,7 +2,12 @@
 Add a file to the skipped files list.
 '''
 import argparse
-from .utilities.resources import get_project_path
+from .utilities.resources import (
+    get_project_path,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_message,
+)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -17,8 +22,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.project_name:
-        print(f"PROJECT: {args.project_name}")
-        print()
+        print_console_banner("SKIP FILE")
+        print_console_key_value_rows([
+            ("Project", args.project_name),
+            ("File", args.file_to_skip),
+        ])
 
         source_path = get_project_path(args.project_name)
         # Open the skipped files list from a text file
@@ -37,6 +45,6 @@ if __name__ == '__main__':
             with open(skipped_files_path, 'w', encoding='utf-8') as f:
                 for skipped_file in skipped_files:
                     f.write(f"{skipped_file}\n")
-            print(f"Added to skipped files: {args.file_to_skip}")
+            print_console_message("success", f"Added to skipped files: {args.file_to_skip}")
         else:
-            print(f"File already in skipped files: {args.file_to_skip}")
+            print_console_message("warn", f"File already in skipped files: {args.file_to_skip}")

@@ -2,7 +2,7 @@
 '''
 Utility functions for managing project resources and paths.
 '''
-from collections.abc import Callable
+from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
 import csv
 import ctypes
@@ -72,13 +72,20 @@ def console_category_prefix(category: str) -> str:
     styles = CONSOLE_CATEGORY_STYLES.get(category, CONSOLE_CATEGORY_STYLES["log"])
     return style_console_text(f"[{category.upper()}]", *styles)
 
+def print_console_spacer(lines: int = 1) -> None:
+    '''
+    Print one or more blank lines between console sections.
+    '''
+    for _ in range(max(0, lines)):
+        print()
+
 def print_console_banner(title: str, category: str = "log") -> None:
     '''
     Print a high-visibility console banner.
     '''
     styles = CONSOLE_CATEGORY_STYLES.get(category, CONSOLE_CATEGORY_STYLES["log"])
     border = "═" * max(72, len(title))
-    print()
+    print_console_spacer()
     print(style_console_text(border, *styles))
     print(f"{console_category_prefix(category)} {style_console_text(title, *styles)}")
     print(style_console_text(border, *styles))
@@ -89,7 +96,7 @@ def print_console_section(title: str, category: str = "info") -> None:
     '''
     styles = CONSOLE_CATEGORY_STYLES.get(category, CONSOLE_CATEGORY_STYLES["info"])
     border = "═" * max(72, len(title))
-    print()
+    print_console_spacer()
     print(style_console_text(border, *styles))
     print(f"{console_category_prefix(category)} {style_console_text(title, *styles)}")
     print(style_console_text(border, *styles))
@@ -98,7 +105,32 @@ def print_console_message(category: str, message: str, indent: int = 0) -> None:
     '''
     Print a categorized status line.
     '''
-    print(f"{' ' * indent}{console_category_prefix(category)} {message}")
+    prefix = console_category_prefix(category)
+    if category == "":
+        prefix = ""
+
+    if prefix:
+        print(f"{' ' * indent}{prefix} {message}")
+        return
+
+    print(f"{' ' * indent}{message}")
+
+def print_console_list(
+        items: Iterable[object],
+        indent: int = 2,
+        bullet: str = "-",
+        empty_message: str | None = None) -> None:
+    '''
+    Print a simple bullet list.
+    '''
+    prefix = " " * indent
+    printed_any = False
+    for item in items:
+        printed_any = True
+        print(f"{prefix}{style_console_text(bullet, ANSI_BOLD)} {item}")
+
+    if not printed_any and empty_message is not None:
+        print_console_message("warn", empty_message, indent=indent)
 
 def print_console_key_value_rows(rows: list[tuple[str, object]], indent: int = 2) -> None:
     '''
@@ -116,6 +148,18 @@ def print_console_key_value_rows(rows: list[tuple[str, object]], indent: int = 2
             f" {style_console_text(':')} "
             f"{value}"
         )
+
+def print_console_json(payload: object) -> None:
+    '''
+    Print JSON payloads with indentation.
+    '''
+    print(json.dumps(payload, indent=2, default=str))
+
+def print_console_command(command: Sequence[object], category: str = "log") -> None:
+    '''
+    Print a formatted command invocation.
+    '''
+    print_console_message(category, f"RUNNING: {' '.join(str(part) for part in command)}")
 
 def parse_cli_filters(values: list[str] | None) -> set[str]:
     '''
@@ -240,7 +284,7 @@ def get_page_count_chunks(
             chunks[page_count_bucket].append(payload)
 
     if show_chart and len(file_paths_for_remediation) > 0:
-        print()
+        print_console_spacer()
         _plot_page_count_distribution(chunks)
 
     if chunk_size is not None:
@@ -314,7 +358,7 @@ def _run_command(command: list[str]) -> int:
     '''
     Run a command and return its exit code.
     '''
-    print_console_message("log", f"RUNNING: {' '.join(command)}")
+    print_console_command(command)
     result = subprocess.run(command, check=False)
     return result.returncode
 
@@ -502,7 +546,7 @@ def ensure_docker_desktop_running(
         return
 
     if verbose:
-        print("Docker daemon not detected. Launching Docker Desktop...")
+        print_console_message("info", "Docker daemon not detected. Launching Docker Desktop...")
 
     if not _launch_docker_desktop():
         raise RuntimeError(
@@ -515,7 +559,7 @@ def ensure_docker_desktop_running(
         if _docker_daemon_is_running():
             _DOCKER_STATE["ready"] = True
             if verbose:
-                print("Docker is ready.")
+                print_console_message("success", "Docker is ready.")
             return
         time.sleep(poll_interval_seconds)
 
@@ -631,12 +675,15 @@ def get_project_workspace_file_paths(
                 file_paths = get_project_workspace_file_paths(
                     project_name, workspace_name, subfolder_name)
             else:
-                print("No PDF files found.")
-                print()
-                print("Please add PDF files to the source folder and re-run the script:")
-                print(f"{source_path.resolve()}")
+                print_console_section("SOURCE REQUIRED", "warn")
+                print_console_message("warn", "No PDF files found in source.")
+                print_console_message(
+                    "info",
+                    f"Add PDF files under: {source_path.resolve()}",
+                    indent=2
+                )
         else:
-            print("All the PDF files have been processed.")
+            print_console_message("success", "All PDF files have been processed.")
 
     return file_paths
 
@@ -808,7 +855,7 @@ def _route_validated_files(
     for file_path, _, _, wcag_result, _, _, _ in validation_results:
         if wcag_result is True:
             if verbose:
-                print(f"{file_path}")
+                print_console_message("debug", str(file_path), indent=2)
             if move_file_and_delete_source(
                 Path(file_path),
                 output_pdf_folder,
@@ -847,7 +894,7 @@ def _route_error_validations(
             )
 
             if verbose:
-                print(f"{file_path}")
+                print_console_message("debug", str(file_path), indent=2)
             if move_file_and_delete_source(
                 Path(file_path),
                 output_pdf_folder,
@@ -886,7 +933,7 @@ def _route_font_issue_validations(
 
             if has_font_violation:
                 if verbose:
-                    print(f"{file_path}")
+                    print_console_message("debug", str(file_path), indent=2)
                 if move_file_and_delete_source(
                     Path(file_path),
                     output_pdf_folder,
@@ -913,8 +960,7 @@ def route_validation_results(
     '''
     Route validation results to destination workspace folders and print summary counts.
     '''
-    print()
-    print("MOVING FILES BASED ON VALIDATION RESULTS...")
+    print_console_section("ROUTING VALIDATED FILES", "info")
 
     valid_files_total = _route_validated_files(
         validation_results,
@@ -923,7 +969,7 @@ def route_validation_results(
         workspace_name,
         verbose
     )
-    print(f"Total valid files moved to remediated folder: {valid_files_total}")
+    print_console_message("success", f"Moved to remediated: {valid_files_total}")
 
     font_issues_enabled = (
         font_issue_clauses is not None and
@@ -943,7 +989,7 @@ def route_validation_results(
             workspace_name,
             verbose
         )
-        print(f"Total error files moved to error folder: {error_files_total}")
+        print_console_message("warn", f"Moved to unable-to-validate: {error_files_total}")
 
         if font_issues_enabled:
             font_issue_files_total = _route_font_issue_validations(
@@ -975,10 +1021,13 @@ def route_validation_results(
             workspace_name,
             verbose
         )
-        print(f"Total error files moved to error folder: {error_files_total}")
+        print_console_message("warn", f"Moved to unable-to-validate: {error_files_total}")
 
     if font_issue_summary_message is not None and font_issues_enabled:
-        print(font_issue_summary_message.format(count=font_issue_files_total))
+        print_console_message(
+            "info",
+            font_issue_summary_message.format(count=font_issue_files_total)
+        )
 
     return {
         "valid": valid_files_total,
@@ -1034,7 +1083,7 @@ def append_to_csv(file_path: Path, row: list) -> None:
             writer.writerow(row)
         return True
     except Exception as e: # pylint: disable=broad-exception-caught
-        print(f"Error writing to CSV file: {e}")
+        print_console_message("error", f"Error writing to CSV file: {e}")
         return False
 
     # with open(file_path, mode='a', newline='', encoding='utf-8') as csvfile:
@@ -1088,13 +1137,17 @@ def print_workspace_summary(
         workspace_percentage = round(100 * (values['total']/summary_file_total)) \
             if summary_file_total > 0 else 0
 
-        print()
-        print(f"    + {folder_name}: {values['total']} files ({workspace_percentage}%)")
-
+        print_console_message(
+            "",
+            f"{folder_name}: {values['total']} files ({workspace_percentage}%)",
+            indent=4
+        )
+        detail_rows = []
         if 'files' in values:
-            print(f"      - files: {values['files']}")
+            detail_rows.append(("files", values['files']))
         if 'processed' in values:
-            print(f"      - processed: {values['processed']}")
+            detail_rows.append(("processed", values['processed']))
+        print_console_key_value_rows(detail_rows, indent=6)
 
 def stream_to_data(stm):
     '''

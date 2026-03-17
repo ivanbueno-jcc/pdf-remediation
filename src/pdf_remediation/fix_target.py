@@ -1,4 +1,4 @@
-# pylint: disable=too-many-branches,too-many-arguments,too-many-locals,too-many-positional-arguments
+# pylint: disable=too-many-branches,too-many-arguments,too-many-locals,too-many-positional-arguments, duplicate-code
 '''
 Validate PDFs in a workspace folder and apply targeted PDFix config files.
 
@@ -26,8 +26,8 @@ from .utilities.resources import (
     print_console_key_value_rows,
     print_console_message,
     print_console_section,
+    print_console_spacer,
     print_workspace_summary,
-    style_console_text,
 )
 from .utilities.verapdf import validate_pdf_multiprocess
 
@@ -236,14 +236,10 @@ def print_verbose_target_match(
     Print one file-level target match in a readable block.
     '''
     print_console_message("debug", str(relative_path), indent=2)
-    print(
-        f"      {style_console_text('clauses')} "
-        f"{style_console_text(':')} {', '.join(matched_clause_tests)}"
-    )
-    print(
-        f"      {style_console_text('actions')} "
-        f"{style_console_text(':')} {', '.join(matched_actions)}"
-    )
+    print_console_key_value_rows([
+        ("clauses", ", ".join(matched_clause_tests)),
+        ("actions", ", ".join(matched_actions)),
+    ], indent=6)
 
 
 def main() -> int: # pylint: disable=too-many-locals,too-many-statements
@@ -416,7 +412,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         ("Files Selected", len(remediation_payloads)),
         ("Files With Multiple Actions", multi_action_file_total),
     ])
-    print()
+    print_console_spacer()
     print_console_message("log", "Per target:", indent=2)
     print_console_key_value_rows([
         (
@@ -455,10 +451,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     for failed_result in failed_results:
         failed_path = Path(failed_result["source"]).relative_to(workspace_folder_path)
         print_console_message("error", f"{failed_path}", indent=2)
-        print(
-            f"      {style_console_text('error')} "
-            f"{style_console_text(':')} {failed_result['error']}"
-        )
+        print_console_key_value_rows([("error", failed_result["error"])], indent=6)
 
     print_console_section("VALIDATING PROCESSED FILES", "info")
     processed_file_paths = get_project_workspace_subfolder_file_paths(

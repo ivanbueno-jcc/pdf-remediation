@@ -15,7 +15,10 @@ from .resources import (
     append_to_csv,
     get_configuration_file,
     get_pdf_file_paths,
-    get_relative_report_path
+    get_relative_report_path,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
 )
 
 def in_memory_validation(pdfPath: str, profile: str = "ua1", format: str = "xml") -> tuple:
@@ -114,7 +117,7 @@ def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", forma
         return result.returncode, result.stdout, result.stderr  # java exit code and output, error
 
     except FileNotFoundError:
-        print("Error: Java not found.")
+        print_console_message("error", "Java not found.")
         return -1, "", "Java not found."
     except Exception as e:
         # print(f"Unexpected error: {e}")
@@ -246,14 +249,30 @@ def write_validation_report(folder: str, results: list) -> None:
     append_to_csv(folder / "summary-total.csv", ["processed total", "passed", "fail", "success %"])
     append_to_csv(folder / "summary-total.csv", [total_files, both_passed_count, both_failed_count, f"{both_success_rate:.0f}%"])
 
-    print()
-    print("Validation Summary:")
-    print(f"  UA1 ({ua1_success_rate:.0f}%) - Passed: {ua1_passed_count}, Failed: {ua1_failed_count}, Error: {ua1_error_count}, Total Violations: {ua1_violation_total}")
-    print(f"  WCAG ({wcag_success_rate:.0f}%) - Passed: {wcag_passed_count}, Failed: {wcag_failed_count}, Error: {wcag_error_count}, Total Violations: {wcag_violation_total}")
-    print(f"  Both ({both_success_rate:.0f}%) - Passed: {both_passed_count}, Failed: {both_failed_count}")
-    print()
-
-    print(f"Reports: {folder}")
+    print_console_section("VALIDATION SUMMARY", "success")
+    print_console_key_value_rows([
+        (
+            "UA1",
+            (
+                f"{ua1_success_rate:.0f}% | Passed: {ua1_passed_count}, "
+                f"Failed: {ua1_failed_count}, Error: {ua1_error_count}, "
+                f"Violations: {ua1_violation_total}"
+            )
+        ),
+        (
+            "WCAG",
+            (
+                f"{wcag_success_rate:.0f}% | Passed: {wcag_passed_count}, "
+                f"Failed: {wcag_failed_count}, Error: {wcag_error_count}, "
+                f"Violations: {wcag_violation_total}"
+            )
+        ),
+        (
+            "Both",
+            f"{both_success_rate:.0f}% | Passed: {both_passed_count}, Failed: {both_failed_count}"
+        ),
+        ("Reports", folder),
+    ])
 
 def get_recursive_pdf_file_count(folder_path: Path) -> int:
     '''
@@ -355,8 +374,7 @@ def validate_pdf_multiprocess(
              profiles)
         )
 
-    print()
-    print("Validating PDFs...")
+    print_console_section("VALIDATING PDFS", "info")
     results = progress_starmap(validatePdf, validation_file_paths, total=len(file_paths))
 
     csv_results = []

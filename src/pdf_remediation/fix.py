@@ -18,6 +18,11 @@ from .utilities.resources import (
     get_page_count_chunks,
     get_project_workspace_file_paths,
     move_file_and_delete_source,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_list,
+    print_console_message,
+    print_console_section,
     route_validation_results
 )
 from .utilities.resources import FIX_PROCESS_TIMEOUT_SECONDS
@@ -209,15 +214,20 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
     args = parser.parse_args()
 
     if args.project_name:
-        print(f"PROJECT: {args.project_name}")
-        print(f"WORKSPACE: {args.workspace_name}")
-        print(f"FOLDER: {args.workspace_folder}")
-        print(f"CONFIG FILE: {args.config_file}")
-        print()
-
         if args.debug:
             args.verbose = True
             args.chunk_size = 1
+
+        print_console_banner("FIX")
+        print_console_key_value_rows([
+            ("Project", args.project_name),
+            ("Workspace", args.workspace_name),
+            ("Folder", args.workspace_folder),
+            ("Config File", args.config_file),
+            ("Chunk Size", args.chunk_size),
+            ("Verbose", args.verbose),
+            ("Debug", args.debug),
+        ])
 
         # workspace_path = get_project_workspace_path(
         #     args.project_name,
@@ -247,7 +257,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
 
                 if str(relative_path) in skipped_files:
                     if args.verbose:
-                        print(f" Skipping: {relative_path}")
+                        print_console_message("debug", f"Skipping: {relative_path}", indent=2)
                     continue
 
                 destination_path = output_pdf_folder / relative_path
@@ -256,12 +266,14 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 file_paths_for_counting.append(file_path)
 
             if len(skipped_files) > 0:
-                print(f"Total skipped files: {len(skipped_files)}")
+                print_console_message("warn", f"Configured skipped files: {len(skipped_files)}")
 
             processed_files_count = len(get_pdf_file_paths(output_pdf_folder))
-            print(f"Total files processed: {processed_files_count}")
-            print(f"Total files left to remediate: {len(file_paths_for_remediation)}")
-            print()
+            print_console_section("WORKLOAD", "info")
+            print_console_key_value_rows([
+                ("Already Processed", processed_files_count),
+                ("Left To Remediate", len(file_paths_for_remediation)),
+            ])
 
             page_count_lookup = {}
             if len(file_paths_for_counting) > 0:
@@ -271,11 +283,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     timestamp
                 )
             else:
-                print("No files found for remediation.")
+                print_console_message("warn", "No files found for remediation.")
 
             # Filter out secured files that cannot be processed.
-            print()
-            print("Checking for secured files...")
+            print_console_section("SECURITY SCREENING", "info")
             security_check_results = []
             security_input_files = [str(file_path) for file_path in file_paths_for_counting]
             security_check_results = progress_map(
@@ -305,7 +316,11 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                             )
 
                         if args.verbose:
-                            print(f" Skipping secured file: {relative_path}")
+                            print_console_message(
+                                "debug",
+                                f"Skipping secured file: {relative_path}",
+                                indent=2
+                            )
                         # remove from remediation list
                         file_paths_for_remediation = [
                             item for item in file_paths_for_remediation
@@ -319,9 +334,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                             args.workspace_name,
                             security_status
                         )
-            print(f"Total secured files skipped: {secured_files_count}")
-            print(f"Total files unable to open: {unable_to_open}")
-            print()
+            print_console_key_value_rows([
+                ("Secured Files Skipped", secured_files_count),
+                ("Files Unable To Open", unable_to_open),
+            ])
 
             chunks = get_page_count_chunks(
                 file_paths_for_remediation=file_paths_for_remediation,
@@ -337,23 +353,21 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             )
 
             if len(file_paths_for_remediation) > 0:
-                print()
-                print("REMEDIATING FILES...")
+                print_console_section("REMEDIATING FILES", "info")
                 for key, chunk_file_paths in chunks.items():
                     if len(chunk_file_paths) == 0:
                         continue
 
-                    print()
-                    print(f"Page count of {key}")
+                    print_console_message("log", f"Page bucket: {key}")
 
                     if args.verbose:
-                        print()
-                        print("   Files to process in this chunk:")
-                        for input_path, _, _, _, _ in chunk_file_paths:
-                            relative_chunk_path = Path(input_path).relative_to(
-                                workspace_folder_path)
-                            print(f"    * {relative_chunk_path}")
-                        print()
+                        print_console_list(
+                            [
+                                Path(input_path).relative_to(workspace_folder_path)
+                                for input_path, _, _, _, _ in chunk_file_paths
+                            ],
+                            indent=4
+                        )
 
                     progress_starmap(
                         fix_with_process_timeout,
@@ -364,10 +378,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                         n_cpu=4
                     )
         else:
-            print("No PDF files to process in the active folder.")
+            print_console_section("NO WORK", "warn")
+            print_console_message("warn", "No PDF files to process in the active folder.")
 
-        print()
-        print("VALIDATING PROCESSED FILES...")
+        print_console_section("VALIDATING PROCESSED FILES", "info")
         file_paths_for_validation = []
         target_folder = "processed"
         file_paths_for_validation = get_project_workspace_subfolder_file_paths(
@@ -415,11 +429,10 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             )
 
         else:
-            print("No PDF files found for validation.")
+            print_console_message("warn", "No PDF files found for validation.")
 
-        print()
-        print("WORKSPACE SUMMARY")
-        print(f"  {args.workspace_name}")
+        print_console_section("WORKSPACE SUMMARY", "log")
+        print_console_key_value_rows([("Workspace", args.workspace_name)])
         print_workspace_summary(args.project_name, args.workspace_name)
 
 if __name__ == '__main__':

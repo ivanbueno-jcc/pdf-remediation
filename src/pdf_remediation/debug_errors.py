@@ -12,7 +12,13 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 
-from .utilities.resources import PROJECT_BASE_PATH
+from .utilities.resources import (
+    PROJECT_BASE_PATH,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
+)
 
 ERROR_CODE_PATTERN = re.compile(r'\bcode\s*(-?\d+)\b', re.IGNORECASE)
 MAX_ERROR_FOLDER_NAME_LENGTH = 80
@@ -236,7 +242,11 @@ def _process_project(
             if source_file_path is None:
                 summary.unresolved += 1
                 if verbose:
-                    print(f"[MISS] {project_path.name}: {normalized_csv_path}")
+                    print_console_message(
+                        "warn",
+                        f"[MISS] {project_path.name}: {normalized_csv_path}",
+                        indent=2
+                    )
                 continue
 
             project_debug_path = debug_base_path / error_type_folder / project_path.name
@@ -259,7 +269,8 @@ def _process_project(
 
             summary.copied += 1
             if verbose:
-                print(
+                print_console_message(
+                    "debug",
                     f"[COPY] {project_path.name} [{error_type_folder}]: "
                     f"{source_file_path} -> {destination_path}"
                 )
@@ -325,14 +336,18 @@ def main() -> int:
     debug_base_path = Path('resources/debug')
     project_paths = _collect_project_paths(projects_path, args.project_names)
     if not project_paths:
-        print(f'No projects found under: {projects_path.resolve()}')
+        print_console_section("NO PROJECTS", "warn")
+        print_console_message("warn", f"No projects found under: {projects_path.resolve()}")
         return 1
 
-    print(f'PROJECTS PATH: {projects_path.resolve()}')
-    print(f'DEBUG PATH: {debug_base_path.resolve()}')
-    print(f'WORKSPACE: {args.workspace_name}')
-    print(f'DRY RUN: {args.dry_run}')
-    print()
+    print_console_banner("DEBUG ERRORS")
+    print_console_key_value_rows([
+        ("Projects Path", projects_path.resolve()),
+        ("Debug Path", debug_base_path.resolve()),
+        ("Workspace", args.workspace_name),
+        ("Dry Run", args.dry_run),
+        ("Projects", len(project_paths)),
+    ])
 
     total_rows = 0
     total_error_rows = 0
@@ -350,10 +365,14 @@ def main() -> int:
         )
 
         if summary.skipped_reason:
-            print(f'{summary.project_name}: skipped ({summary.skipped_reason})')
+            print_console_message(
+                "warn",
+                f"{summary.project_name}: skipped ({summary.skipped_reason})"
+            )
             continue
 
-        print(
+        print_console_message(
+            "log",
             f'{summary.project_name}: '
             f'rows={summary.rows_scanned}, '
             f'errors={summary.error_rows}, '
@@ -368,13 +387,14 @@ def main() -> int:
         total_unresolved += summary.unresolved
         total_renamed_for_collision += summary.renamed_for_collision
 
-    print()
-    print('TOTALS')
-    print(f'rows scanned: {total_rows}')
-    print(f'error rows: {total_error_rows}')
-    print(f'copied: {total_copied}')
-    print(f'unresolved: {total_unresolved}')
-    print(f'renamed due to collisions: {total_renamed_for_collision}')
+    print_console_section("TOTALS", "info")
+    print_console_key_value_rows([
+        ("Rows Scanned", total_rows),
+        ("Error Rows", total_error_rows),
+        ("Copied", total_copied),
+        ("Unresolved", total_unresolved),
+        ("Renamed Due To Collisions", total_renamed_for_collision),
+    ])
 
     return 0
 

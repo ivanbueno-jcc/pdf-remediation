@@ -15,7 +15,11 @@ from .utilities.resources import (
     get_pdf_file_paths,
     get_project_source_path,
     get_project_workspace_path,
-    get_project_workspace_subfolder_path
+    get_project_workspace_subfolder_path,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
 )
 
 IGNORED_WORKSPACE_FOLDERS = {"debug", "reports"}
@@ -68,8 +72,8 @@ def get_latest_files(project_name: str, workspace: str = "default") -> int:
 
     terminus_path = shutil.which("terminus")
     if terminus_path is not None:
-        print(f"Terminus detected: {terminus_path}")
-        print(f"Refreshing source folder: {source_path.resolve()}")
+        print_console_message("info", f"Terminus detected: {terminus_path}")
+        print_console_message("info", f"Refreshing source folder: {source_path.resolve()}")
 
         with TemporaryDirectory(
             prefix=f"{project_name}-source-",
@@ -85,13 +89,17 @@ def get_latest_files(project_name: str, workspace: str = "default") -> int:
             if downloaded:
                 _replace_directory_contents(source_path, staged_source_path)
             else:
-                print("Terminus download was skipped. Keeping existing source folder.")
+                print_console_message(
+                    "warn",
+                    "Terminus download was skipped. Keeping the existing source folder."
+                )
     else:
-        print("Terminus not detected. Skipping source download.")
+        print_console_message("warn", "Terminus not detected. Skipping source download.")
 
     source_file_paths = sorted(get_pdf_file_paths(source_path))
     if len(source_file_paths) == 0:
-        print("No PDF files found in source.")
+        print_console_section("NO SOURCE FILES", "warn")
+        print_console_message("warn", "No PDF files found in source.")
         return 0
 
     existing_workspace_relative_paths = _get_existing_workspace_relative_paths(
@@ -115,12 +123,14 @@ def get_latest_files(project_name: str, workspace: str = "default") -> int:
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source_file_path, destination_path)
         copied_count += 1
-        print(f"Copied: {relative_path_key}")
+        print_console_message("success", f"Copied: {relative_path_key}", indent=2)
 
-    print()
-    print(f"Source files scanned: {len(source_file_paths)}")
-    print(f"New files copied to active/files: {copied_count}")
-    print(f"Destination: {active_files_path.resolve()}")
+    print_console_section("SYNC SUMMARY", "success")
+    print_console_key_value_rows([
+        ("Source Files Scanned", len(source_file_paths)),
+        ("New Files Copied", copied_count),
+        ("Destination", active_files_path.resolve()),
+    ])
     return 0
 
 
@@ -144,9 +154,11 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    print(f"PROJECT: {args.project_name}")
-    print(f"WORKSPACE: {args.workspace}")
-    print()
+    print_console_banner("GET LATEST FILES")
+    print_console_key_value_rows([
+        ("Project", args.project_name),
+        ("Workspace", args.workspace),
+    ])
 
     return get_latest_files(args.project_name, args.workspace)
 

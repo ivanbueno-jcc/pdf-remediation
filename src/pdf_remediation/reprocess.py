@@ -7,7 +7,13 @@ import argparse
 from pathlib import Path
 import sys
 from .utilities.resources import get_pdf_file_paths, get_project_workspace_path
-from .utilities.resources import move_file_and_delete_source
+from .utilities.resources import (
+    move_file_and_delete_source,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
+)
 
 IGNORED_WORKSPACE_FOLDERS = {
     "remediated",
@@ -43,10 +49,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.project_name:
-        print(f"PROJECT: {args.project_name}")
-        print(f"WORKSPACE: {args.workspace_name}")
-        print(f"FOLDER: {args.workspace_folder}")
-        print()
+        print_console_banner("REPROCESS")
+        print_console_key_value_rows([
+            ("Project", args.project_name),
+            ("Workspace", args.workspace_name),
+            ("Folder", args.workspace_folder),
+        ])
 
         workspace_path = get_project_workspace_path(
             args.project_name,
@@ -97,14 +105,18 @@ if __name__ == '__main__':
                     )
 
                 total_files_moved += len(source_file_paths)
-                print(
+                print_console_message(
+                    "success",
                     f"Moved {len(source_file_paths)} files from "
                     f"{workspace_folder}/{source_directory} to active/files."
                 )
 
         if total_files_moved > 0:
-            print()
-            print(f"Total files moved to active/files: {total_files_moved}")
+            print_console_section("REPROCESS SUMMARY", "success")
+            print_console_key_value_rows([
+                ("Total Files Moved", total_files_moved),
+            ])
         else:
-            print("No PDF files found in processed or files folders.")
+            print_console_section("NO WORK", "warn")
+            print_console_message("warn", "No PDF files found in processed or files folders.")
             sys.exit()

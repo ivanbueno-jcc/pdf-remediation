@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 '''
 Reset the files in the working directory with the source files.
 '''
@@ -5,7 +6,14 @@ Reset the files in the working directory with the source files.
 import argparse
 import sys
 from .utilities.resources import get_pdf_file_paths, get_project_source_path
-from .utilities.resources import get_project_workspace_subfolder_path, clear_workspace_folder
+from .utilities.resources import (
+    clear_workspace_folder,
+    get_project_workspace_subfolder_path,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
+)
 
 if __name__ == '__main__':
 
@@ -30,10 +38,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.project_name:
-        print(f"PROJECT: {args.project_name}")
-        print(f"WORKSPACE: {args.workspace_name}")
-        print(f"FOLDER: {args.workspace_folder}")
-        print()
+        print_console_banner("RESET WORKSPACE")
+        print_console_key_value_rows([
+            ("Project", args.project_name),
+            ("Workspace", args.workspace_name),
+            ("Folder", args.workspace_folder),
+        ])
 
         source_path = get_project_source_path(args.project_name)
         workspace_folder_path = get_project_workspace_subfolder_path(
@@ -63,7 +73,12 @@ if __name__ == '__main__':
             # Add a semaphore to only copy over the source once, until reset.
             semaphore.touch(exist_ok=True)
 
-            print("Files are overwritten with originals.")
+            print_console_section("RESET COMPLETE", "success")
+            print_console_key_value_rows([
+                ("Files Restored", len(source_file_paths)),
+                ("Destination", workspace_folder_path.resolve()),
+            ])
         else:
-            print("No PDF files found in the source.")
+            print_console_section("NO SOURCE FILES", "warn")
+            print_console_message("warn", "No PDF files found in the source.")
             sys.exit()

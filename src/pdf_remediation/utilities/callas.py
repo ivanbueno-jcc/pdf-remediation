@@ -5,8 +5,12 @@ PDF Remediation Callas Font Fix Utility
 from pathlib import Path
 from python_on_whales import docker
 from python_on_whales.exceptions import DockerException
-from pdf_remediation.utilities.resources import CALLAS_FONT_IMAGE, append_to_csv
-from pdf_remediation.utilities.resources import ensure_docker_desktop_running
+from pdf_remediation.utilities.resources import (
+    CALLAS_FONT_IMAGE,
+    append_to_csv,
+    ensure_docker_desktop_running,
+    print_console_message,
+)
 
 class Callas: # pylint: disable=too-few-public-methods
     '''
@@ -51,8 +55,13 @@ class Callas: # pylint: disable=too-few-public-methods
                 case value if value >= 5 and value <= 8: # pylint: disable=chained-comparison
                     input_pdf_path.unlink(missing_ok=True)
                 case value if value >= 104 and value <= 107: # pylint: disable=chained-comparison
-                    print(f"{input_relative_path}: \
-                          {Callas.callas_error_codes.get(e.return_code, 'Unknown Error')}")
+                    print_console_message(
+                        "error",
+                        (
+                            f"{input_relative_path}: "
+                            f"{Callas.callas_error_codes.get(e.return_code, 'Unknown Error')}"
+                        )
+                    )
                     append_to_csv(
                         workspace_path.parent.parent / "callas-font-errors.csv",
                         [
@@ -63,10 +72,10 @@ class Callas: # pylint: disable=too-few-public-methods
                     )
                     raise DockerException(0) # pylint: disable=raise-missing-from, no-value-for-parameter
                 case _:
-                    print(f"DockerException occurred: {e}")
+                    print_console_message("error", f"Docker exception occurred: {e}")
                     raise DockerException(0) # pylint: disable=raise-missing-from, no-value-for-parameter
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            print_console_message("error", f"Unexpected error: {e}")
             raise e
 
         return output_pdf_path

@@ -7,6 +7,20 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+import sys
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+SRC_DIR = ROOT_DIR / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from pdf_remediation.utilities.resources import (  # pylint: disable=wrong-import-position
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_list,
+    print_console_message,
+    print_console_section,
+)
 
 PDF_HEADER = b"%PDF-"
 SAMPLE_LIMIT = 3
@@ -45,11 +59,13 @@ def main() -> int:
     args = parser.parse_args()
 
     root = args.folder.expanduser().resolve()
+    print_console_banner("CHECK PDF HEADERS")
+    print_console_key_value_rows([("Folder", root)])
     if not root.exists():
-        print(f"Error: folder not found: {root}")
+        print_console_message("error", f"Folder not found: {root}")
         return 2
     if not root.is_dir():
-        print(f"Error: not a folder: {root}")
+        print_console_message("error", f"Not a folder: {root}")
         return 2
 
     checked = 0
@@ -69,39 +85,48 @@ def main() -> int:
         else:
             invalid_files.append((path, header))
 
-    print(f"Scanned {checked} file(s) in {root}")
-    print(f"Valid files: {len(valid_files)}")
-    print(f"Invalid files: {len(invalid_files)}")
-    print(f"Unreadable files: {len(unreadable_files)}")
+    print_console_section("SCAN SUMMARY", "info")
+    print_console_key_value_rows([
+        ("Scanned Files", checked),
+        ("Valid Files", len(valid_files)),
+        ("Invalid Files", len(invalid_files)),
+        ("Unreadable Files", len(unreadable_files)),
+    ])
 
     if valid_files:
-        print(f"\nSample valid files (up to {SAMPLE_LIMIT}):")
-        for path in valid_files[:SAMPLE_LIMIT]:
-            print(f"- {path}")
+        print_console_section(f"SAMPLE VALID FILES (UP TO {SAMPLE_LIMIT})", "success")
+        print_console_list(valid_files[:SAMPLE_LIMIT], indent=2)
         remaining_valid = len(valid_files) - SAMPLE_LIMIT
         if remaining_valid > 0:
-            print(f"... and {remaining_valid} more valid file(s).")
+            print_console_message("info", f"... and {remaining_valid} more valid file(s).", indent=2)
 
     if invalid_files:
-        print(
-            f"\nSample invalid files (up to {SAMPLE_LIMIT}, showing first "
-            f"{INVALID_SAMPLE_BYTES} bytes):"
+        print_console_section(
+            (
+                f"SAMPLE INVALID FILES (UP TO {SAMPLE_LIMIT}, SHOWING FIRST "
+                f"{INVALID_SAMPLE_BYTES} BYTES)"
+            ),
+            "warn"
         )
-        for path, header in invalid_files[:SAMPLE_LIMIT]:
-            print(f"- {path}: {format_header(header)}")
+        print_console_list(
+            [f"{path}: {format_header(header)}" for path, header in invalid_files[:SAMPLE_LIMIT]],
+            indent=2
+        )
         remaining_invalid = len(invalid_files) - SAMPLE_LIMIT
         if remaining_invalid > 0:
-            print(f"... and {remaining_invalid} more invalid file(s).")
+            print_console_message("warn", f"... and {remaining_invalid} more invalid file(s).", indent=2)
 
     if unreadable_files:
-        print("\nUnreadable files:")
-        for path, reason in unreadable_files:
-            print(f"- {path}: {reason}")
+        print_console_section("UNREADABLE FILES", "warn")
+        print_console_list(
+            [f"{path}: {reason}" for path, reason in unreadable_files],
+            indent=2
+        )
 
     if invalid_files or unreadable_files:
         return 1
 
-    print(f"All files start with {PDF_HEADER!r}.")
+    print_console_message("success", f"All files start with {PDF_HEADER!r}.")
     return 0
 
 

@@ -9,7 +9,16 @@ import shutil
 import subprocess
 import sys
 
-from .utilities.resources import PROJECT_BASE_PATH, parse_cli_filters
+from .utilities.resources import (
+    PROJECT_BASE_PATH,
+    parse_cli_filters,
+    print_console_banner,
+    print_console_command,
+    print_console_key_value_rows,
+    print_console_list,
+    print_console_message,
+    print_console_section,
+)
 
 DEBUG_FILES_BASE_PATH = Path('resources/debug/_files')
 
@@ -18,20 +27,7 @@ def print_processing_banner(project_name: str, position: int, total: int) -> Non
     '''
     Print a large banner to highlight the project currently being processed.
     '''
-    title = f"PROJECT {position}/{total}"
-    argument_line = f"{project_name}"
-    width = max(120, len(title) + 8, len(argument_line) + 8)
-    border = "#" * width
-
-    print()
-    print(border)
-    print(border)
-    print(f"## {title.center(width - 6)} ##")
-    print(f"## {argument_line.center(width - 6)} ##")
-    print(f"## {' '.center(width - 6)} ##")
-    print(border)
-    print(border)
-    print()
+    print_console_banner(f"PROJECT {position}/{total}: {project_name}", "info")
 
 
 def _collect_project_names(
@@ -157,8 +153,7 @@ def _run_action(action: str, args: argparse.Namespace, project_name: str) -> int
         module,
         *_build_module_args(action, args, project_name)
     ]
-    print()
-    print(f"RUNNING: {' '.join(command)}")
+    print_console_command(command)
     result = subprocess.run(command, check=False)
     return result.returncode
 
@@ -462,38 +457,48 @@ def _print_action_context(args: argparse.Namespace, project_names: list[str]) ->
     '''
     Print context details before running fleet action.
     '''
-    print(f"PROJECTS PATH: {Path(PROJECT_BASE_PATH).resolve()}")
-    print(f"ACTION: {args.action}")
+    rows: list[tuple[str, object]] = [
+        ("Projects Path", Path(PROJECT_BASE_PATH).resolve()),
+        ("Action", args.action),
+        ("Projects", len(project_names)),
+    ]
     if args.action in {'go', 'get_latest_files', 'debug', 'fix_target', 'reprocess', 'validate'}:
-        print(f"WORKSPACE: {args.workspace_name}")
+        rows.append(("Workspace", args.workspace_name))
     if args.action == 'go':
-        print(f"CONFIG FILE: {args.config_file}")
-        print(f"CHUNK SIZE: {args.chunk_size}")
-        print(f"N CPU: {args.n_cpu}")
-        print(f"PRE VALIDATE: {args.pre_validate}")
-        print(f"SKIP FONT FIX: {args.skip_font_fix}")
-        print(f"VERBOSE: {args.verbose}")
-        print(f"DEBUG: {args.debug}")
+        rows.extend([
+            ("Config File", args.config_file),
+            ("Chunk Size", args.chunk_size),
+            ("N CPU", args.n_cpu),
+            ("Pre Validate", args.pre_validate),
+            ("Skip Font Fix", args.skip_font_fix),
+            ("Verbose", args.verbose),
+            ("Debug", args.debug),
+        ])
     if args.action in {'fix_target', 'reprocess', 'validate'}:
-        print(f"FOLDER: {args.workspace_folder}")
+        rows.append(("Folder", args.workspace_folder))
     if args.action == 'fix_target':
-        print(f"TARGETS: {', '.join(args.targets)}")
-        print(f"N CPU: {1 if args.debug else args.n_cpu}")
-        print(f"VERBOSE: {args.verbose or args.debug}")
-        print(f"DEBUG: {args.debug}")
+        rows.extend([
+            ("Targets", ', '.join(args.targets)),
+            ("N CPU", 1 if args.debug else args.n_cpu),
+            ("Verbose", args.verbose or args.debug),
+            ("Debug", args.debug),
+        ])
     if args.action == 'validate':
-        print(f"DIRECTORY: {args.directory}")
-        print(f"FULL: {args.full}")
-        print(f"SKIP PAGE COUNT: {args.skip_page_count}")
+        rows.extend([
+            ("Directory", args.directory),
+            ("Full", args.full),
+            ("Skip Page Count", args.skip_page_count),
+        ])
     if args.action == 'debug':
-        print(f"DEBUG AGGREGATE PATH: {DEBUG_FILES_BASE_PATH.resolve()}")
-        if args.clause_tests:
-            print(f"CLAUSE-TEST FILTERS: {', '.join(args.clause_tests)}")
-        else:
-            print('CLAUSE-TEST FILTERS: all')
+        rows.extend([
+            ("Debug Aggregate Path", DEBUG_FILES_BASE_PATH.resolve()),
+            ("Clause-Test Filters", ', '.join(args.clause_tests) if args.clause_tests else 'all'),
+        ])
     if args.excluded_sites:
-        print(f"EXCLUDED SITES: {', '.join(sorted(args.excluded_sites))}")
-    print(f"PROJECTS: {len(project_names)}")
+        rows.append(("Excluded Sites", ', '.join(sorted(args.excluded_sites))))
+
+    print_console_banner("FLEET")
+    print_console_key_value_rows(rows)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -512,13 +517,21 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if not project_names:
-        print(f"No projects found under: {Path(PROJECT_BASE_PATH).resolve()}")
+        print_console_section("NO PROJECTS", "warn")
+        print_console_message("warn", f"No projects found under: {Path(PROJECT_BASE_PATH).resolve()}") # pylint: disable=line-too-long
         if missing_project_names:
-            print(f"Missing project names: {', '.join(missing_project_names)}")
+            print_console_message(
+                "warn",
+                f"Missing project names: {', '.join(missing_project_names)}",
+                indent=2
+            )
         return 1
 
     if missing_project_names:
-        print(f"Skipping missing projects: {', '.join(missing_project_names)}")
+        print_console_message(
+            "warn",
+            f"Skipping missing projects: {', '.join(missing_project_names)}"
+        )
 
     if args.action == 'debug':
         DEBUG_FILES_BASE_PATH.mkdir(parents=True, exist_ok=True)
@@ -535,16 +548,16 @@ def main(argv: list[str] | None = None) -> int:
         rc = _run_action(args.action, args, project_name)
         if rc != 0:
             if args.action == 'debug':
-                print()
-                print(
+                print_console_message(
+                    "warn",
                     f"fleet warning: debug.py failed for '{project_name}' "
                     f"with exit code {rc}."
                 )
                 failed_projects.append((project_name, rc))
                 continue
 
-            print()
-            print(
+            print_console_message(
+                "error",
                 f"fleet stopped: {args.action}.py failed for '{project_name}' "
                 f"with exit code {rc}."
             )
@@ -558,27 +571,30 @@ def main(argv: list[str] | None = None) -> int:
             )
             total_moved_clause_folders += moved_clause_folders
             total_moved_files += moved_files
-            print(
+            print_console_message(
+                "success",
                 f"MOVED: clause folders={moved_clause_folders}, files={moved_files} "
                 f"for project '{project_name}'."
             )
 
     if args.action == 'debug':
-        print()
-        print('fleet debug summary')
-        print(f'  Projects attempted: {total_projects}')
-        print(f'  Projects failed: {len(failed_projects)}')
-        print(f'  Clause folders moved: {total_moved_clause_folders}')
-        print(f'  Files moved: {total_moved_files}')
+        print_console_section("FLEET DEBUG SUMMARY", "info")
+        print_console_key_value_rows([
+            ("Projects Attempted", total_projects),
+            ("Projects Failed", len(failed_projects)),
+            ("Clause Folders Moved", total_moved_clause_folders),
+            ("Files Moved", total_moved_files),
+        ])
 
         if failed_projects:
-            print('  Failed projects:')
-            for project_name, rc in failed_projects:
-                print(f'    - {project_name} (exit code {rc})')
+            print_console_message("error", "Failed projects:", indent=2)
+            print_console_list(
+                [f"{project_name} (exit code {rc})" for project_name, rc in failed_projects],
+                indent=4
+            )
             return 1
 
-    print()
-    print(f"fleet completed successfully ({args.action}).")
+    print_console_message("success", f"Fleet completed successfully ({args.action}).")
     return 0
 
 

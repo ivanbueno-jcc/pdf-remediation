@@ -14,7 +14,14 @@ import re
 
 import pandas as pd
 
-from .utilities.resources import PROJECT_BASE_PATH
+from .utilities.resources import (
+    PROJECT_BASE_PATH,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_list,
+    print_console_message,
+    print_console_section,
+)
 
 TIMESTAMP_PATTERN = re.compile(r'(\d{8}_\d{6})')
 CLAUSE_HEADER = 'clausetest'
@@ -597,8 +604,10 @@ def _write_spreadsheet(pivot_table: pd.DataFrame, output_path: Path) -> Path:
             return output_path
         except (ImportError, ModuleNotFoundError, ValueError) as error:
             fallback_path = output_path.with_suffix('.csv')
-            print()
-            print(f'Unable to write XLSX ({error}). Writing CSV instead: {fallback_path}')
+            print_console_message(
+                "warn",
+                f"Unable to write XLSX ({error}). Writing CSV instead: {fallback_path}"
+            )
             pivot_table.to_csv(fallback_path, index=False)
             return fallback_path
 
@@ -780,8 +789,17 @@ def main() -> int:
     args = parser.parse_args()
 
     projects_path = args.projects_path
+    print_console_banner("TALLY")
+    print_console_key_value_rows([
+        ("Projects Path", projects_path.resolve()),
+        ("Workspace", args.workspace),
+        ("Profile", args.profile),
+        ("Report File", args.report_file),
+    ])
+
     if not projects_path.exists():
-        print(f'Projects path not found: {projects_path}')
+        print_console_section("INVALID PATH", "error")
+        print_console_message("error", f"Projects path not found: {projects_path}")
         return 1
 
     rows, skipped_projects, scanned_projects = _collect_rows(
@@ -792,12 +810,14 @@ def main() -> int:
     )
 
     if not rows:
-        print('No report data found.')
-        print(f'Scanned projects: {scanned_projects}')
+        print_console_section("NO REPORT DATA", "warn")
+        print_console_key_value_rows([("Scanned Projects", scanned_projects)])
         if skipped_projects:
-            print('Skipped projects:')
-            for project_name, reason in skipped_projects:
-                print(f'  - {project_name}: {reason}')
+            print_console_message("warn", "Skipped projects:", indent=2)
+            print_console_list(
+                [f"{project_name}: {reason}" for project_name, reason in skipped_projects],
+                indent=4
+            )
         return 1
 
     pivot_table = _build_pivot(rows)
@@ -807,11 +827,14 @@ def main() -> int:
         workspace_name=args.workspace
     )
     if not summary_rows:
-        print('No summary-total data found.')
+        print_console_section("NO SUMMARY DATA", "warn")
+        print_console_message("warn", "No summary-total data found.")
         if skipped_summary_projects:
-            print('Skipped projects for summary output:')
-            for project_name, reason in skipped_summary_projects:
-                print(f'  - {project_name}: {reason}')
+            print_console_message("warn", "Skipped projects for summary output:", indent=2)
+            print_console_list(
+                [f"{project_name}: {reason}" for project_name, reason in skipped_summary_projects],
+                indent=4
+            )
         return 1
 
     written_summary_path = _write_summary_spreadsheet(summary_rows, args.summary_output)
@@ -838,36 +861,61 @@ def main() -> int:
     )
 
     projects_included = len({row['Project'] for row in rows})
-    print(f'Scanned projects: {scanned_projects}')
-    print(f'Included projects: {projects_included}')
-    print(f'Clause-Test rows: {len(pivot_table)}')
+    print_console_section("TALLY SUMMARY", "success")
+    print_console_key_value_rows([
+        ("Scanned Projects", scanned_projects),
+        ("Included Projects", projects_included),
+        ("Clause-Test Rows", len(pivot_table)),
+    ])
     if skipped_projects:
-        print(f'Skipped projects: {len(skipped_projects)}')
-        for project_name, reason in skipped_projects:
-            print(f'  - {project_name}: {reason}')
+        print_console_message("warn", f"Skipped projects: {len(skipped_projects)}", indent=2)
+        print_console_list(
+            [f"{project_name}: {reason}" for project_name, reason in skipped_projects],
+            indent=4
+        )
     if skipped_summary_projects:
-        print(f'Skipped projects for summary output: {len(skipped_summary_projects)}')
-        for project_name, reason in skipped_summary_projects:
-            print(f'  - {project_name}: {reason}')
+        print_console_message(
+            "warn",
+            f"Skipped projects for summary output: {len(skipped_summary_projects)}",
+            indent=2
+        )
+        print_console_list(
+            [f"{project_name}: {reason}" for project_name, reason in skipped_summary_projects],
+            indent=4
+        )
     if skipped_processing_error_projects:
-        print(
+        print_console_message(
+            "warn",
             f'Skipped projects for processing errors output: '
-            f'{len(skipped_processing_error_projects)}'
+            f'{len(skipped_processing_error_projects)}',
+            indent=2
         )
-        for project_name, reason in skipped_processing_error_projects:
-            print(f'  - {project_name}: {reason}')
+        print_console_list(
+            [
+                f"{project_name}: {reason}"
+                for project_name, reason in skipped_processing_error_projects
+            ],
+            indent=4
+        )
     if skipped_progress_report_projects:
-        print(
+        print_console_message(
+            "warn",
             f'Skipped projects for progress report output: '
-            f'{len(skipped_progress_report_projects)}'
+            f'{len(skipped_progress_report_projects)}',
+            indent=2
         )
-        for project_name, reason in skipped_progress_report_projects:
-            print(f'  - {project_name}: {reason}')
-    print(f'Output: {written_path.resolve()}')
-    print(f'Summary output: {written_summary_path.resolve()}')
-    print(f'Processing errors output: {written_processing_errors_path.resolve()}')
-    print(f'Progress report output: {written_progress_report_path.resolve()}')
-    print(f'Progress report pivot output: {written_progress_report_pivot_path.resolve()}')
+        print_console_list(
+            [f"{project_name}: {reason}" for project_name, reason in skipped_progress_report_projects], # pylint: disable=line-too-long
+            indent=4
+        )
+    print_console_section("OUTPUTS", "info")
+    print_console_key_value_rows([
+        ("Output", written_path.resolve()),
+        ("Summary Output", written_summary_path.resolve()),
+        ("Processing Errors Output", written_processing_errors_path.resolve()),
+        ("Progress Report Output", written_progress_report_path.resolve()),
+        ("Progress Report Pivot Output", written_progress_report_pivot_path.resolve()),
+    ])
     return 0
 
 
