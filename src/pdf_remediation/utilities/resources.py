@@ -11,6 +11,7 @@ import os
 import platform
 import shutil
 import subprocess
+import sys
 import tarfile
 import time
 from dotenv import load_dotenv
@@ -30,6 +31,91 @@ CALLAS_FONT_IMAGE = "pdfix/font-fix-callas:v1.0.5"
 PDFIX_FONT_IMAGE = "pdfix/font-fix-pdfix:v1.0.5"
 FIX_PROCESS_TIMEOUT_SECONDS = 500
 _DOCKER_STATE = {"ready": False}
+
+ANSI_RESET = "\033[0m"
+ANSI_BOLD = "\033[1m"
+ANSI_CYAN = "\033[36m"
+ANSI_BLUE = "\033[34m"
+ANSI_GREEN = "\033[32m"
+ANSI_YELLOW = "\033[33m"
+ANSI_RED = "\033[31m"
+ANSI_MAGENTA = "\033[35m"
+
+CONSOLE_CATEGORY_STYLES = {
+    "log": (ANSI_BLUE, ANSI_BOLD),
+    "info": (ANSI_CYAN, ANSI_BOLD),
+    "debug": (ANSI_MAGENTA, ANSI_BOLD),
+    "warn": (ANSI_YELLOW, ANSI_BOLD),
+    "error": (ANSI_RED, ANSI_BOLD),
+    "success": (ANSI_GREEN, ANSI_BOLD),
+}
+
+def console_supports_color() -> bool:
+    '''
+    Return True when ANSI color output is appropriate.
+    '''
+    return sys.stdout.isatty() and os.getenv("NO_COLOR") is None
+
+def style_console_text(text: object, *styles: str) -> str:
+    '''
+    Apply ANSI styles when color output is enabled.
+    '''
+    rendered = str(text)
+    if not console_supports_color() or len(styles) == 0:
+        return rendered
+    return f"{''.join(styles)}{rendered}{ANSI_RESET}"
+
+def console_category_prefix(category: str) -> str:
+    '''
+    Return a styled category prefix.
+    '''
+    styles = CONSOLE_CATEGORY_STYLES.get(category, CONSOLE_CATEGORY_STYLES["log"])
+    return style_console_text(f"[{category.upper()}]", *styles)
+
+def print_console_banner(title: str, category: str = "log") -> None:
+    '''
+    Print a high-visibility console banner.
+    '''
+    styles = CONSOLE_CATEGORY_STYLES.get(category, CONSOLE_CATEGORY_STYLES["log"])
+    border = "═" * max(72, len(title))
+    print()
+    print(style_console_text(border, *styles))
+    print(f"{console_category_prefix(category)} {style_console_text(title, *styles)}")
+    print(style_console_text(border, *styles))
+
+def print_console_section(title: str, category: str = "info") -> None:
+    '''
+    Print a section header.
+    '''
+    styles = CONSOLE_CATEGORY_STYLES.get(category, CONSOLE_CATEGORY_STYLES["info"])
+    border = "═" * max(72, len(title))
+    print()
+    print(style_console_text(border, *styles))
+    print(f"{console_category_prefix(category)} {style_console_text(title, *styles)}")
+    print(style_console_text(border, *styles))
+
+def print_console_message(category: str, message: str, indent: int = 0) -> None:
+    '''
+    Print a categorized status line.
+    '''
+    print(f"{' ' * indent}{console_category_prefix(category)} {message}")
+
+def print_console_key_value_rows(rows: list[tuple[str, object]], indent: int = 2) -> None:
+    '''
+    Print aligned key/value rows.
+    '''
+    if len(rows) == 0:
+        return
+
+    label_width = max(len(label) for label, _ in rows)
+    prefix = " " * indent
+    for label, value in rows:
+        print(
+            f"{prefix}"
+            f"{style_console_text(label.ljust(label_width), ANSI_BOLD)}"
+            f" {style_console_text(':')} "
+            f"{value}"
+        )
 
 def parse_cli_filters(values: list[str] | None) -> set[str]:
     '''
@@ -228,8 +314,7 @@ def _run_command(command: list[str]) -> int:
     '''
     Run a command and return its exit code.
     '''
-    print()
-    print(f"RUNNING: {' '.join(command)}")
+    print_console_message("log", f"RUNNING: {' '.join(command)}")
     result = subprocess.run(command, check=False)
     return result.returncode
 
@@ -252,26 +337,30 @@ def download_source_with_terminus_result(
     if print_banner is not None:
         print_banner(0, "download files")
 
-    print()
-    print(f"Terminus detected: {terminus_path}")
+    print_console_message("info", f"Terminus detected: {terminus_path}")
     pantheon_email = os.getenv("PANTHEON_EMAIL", "").strip()
     if pantheon_email:
-        print(f"Using saved Pantheon email: {pantheon_email}")
+        print_console_message("info", f"Using saved Pantheon email: {pantheon_email}")
     else:
         pantheon_email = input("Pantheon email for Terminus login: ").strip()
         if pantheon_email:
             _save_env_value("PANTHEON_EMAIL", pantheon_email)
             os.environ["PANTHEON_EMAIL"] = pantheon_email
-            print(f"Saved Pantheon email to {_get_project_env_path()}")
+            print_console_message("success", f"Saved Pantheon email to {_get_project_env_path()}")
 
     if not pantheon_email:
-        print("Pipeline stopped: Pantheon email is required when Terminus is installed.")
+        print_console_message(
+            "error",
+            "Pipeline stopped: Pantheon email is required when Terminus is installed."
+        )
         return 1, False
 
     rc = _run_command(["terminus", "auth:login", f"--email={pantheon_email}"])
     if rc != 0:
-        print()
-        print(f"Pipeline stopped: terminus auth:login failed with exit code {rc}.")
+        print_console_message(
+            "error",
+            f"Pipeline stopped: terminus auth:login failed with exit code {rc}."
+        )
         return rc, False
 
     backup_archive_path = source_path / "files_live.tar.gz"
@@ -283,36 +372,39 @@ def download_source_with_terminus_result(
         f"--to={backup_archive_path}"
     ])
     if rc == 1:
-        print()
-        print(
+        print_console_message(
+            "warn",
             "WARNING: terminus backup:get failed with exit code 1. "
             "Proceeding with the remaining pipeline steps."
         )
         return 0, False
     if rc != 0:
-        print()
-        print(f"Pipeline stopped: terminus backup:get failed with exit code {rc}.")
+        print_console_message(
+            "error",
+            f"Pipeline stopped: terminus backup:get failed with exit code {rc}."
+        )
         return rc, False
 
     if not backup_archive_path.exists():
-        print()
-        print(f"Pipeline stopped: backup archive not found at {backup_archive_path}.")
+        print_console_message(
+            "error",
+            f"Pipeline stopped: backup archive not found at {backup_archive_path}."
+        )
         return 1, False
 
-    print()
     if verbose:
-        print(f"Extracting backup archive: {backup_archive_path}")
+        print_console_message("debug", f"Extracting backup archive: {backup_archive_path}")
     with tarfile.open(backup_archive_path, "r:gz") as tar:
         tar.extractall(path=source_path)
 
     backup_archive_path.unlink()
     if verbose:
-        print(f"Deleted archive: {backup_archive_path}")
+        print_console_message("debug", f"Deleted archive: {backup_archive_path}")
 
     files_live_path = source_path / "files_live"
     if not files_live_path.exists() or not files_live_path.is_dir():
-        print()
-        print(
+        print_console_message(
+            "error",
             "Pipeline stopped: extracted files_live folder not found at "
             f"{files_live_path}."
         )
@@ -321,8 +413,8 @@ def download_source_with_terminus_result(
     _move_contents(files_live_path, source_path)
     files_live_path.rmdir()
     if verbose:
-        print(f"Moved files from {files_live_path} to {source_path}")
-        print(f"Deleted folder: {files_live_path}")
+        print_console_message("debug", f"Moved files from {files_live_path} to {source_path}")
+        print_console_message("debug", f"Deleted folder: {files_live_path}")
 
     return 0, True
 

@@ -75,7 +75,7 @@ def _collect_project_names(
     ])
     return project_names, []
 
-
+# pylint: disable=too-many-return-statements
 def _build_module_args(action: str, args: argparse.Namespace, project_name: str) -> list[str]:
     '''
     Build module args per action.
@@ -102,6 +102,22 @@ def _build_module_args(action: str, args: argparse.Namespace, project_name: str)
             module_args.append('--pre-validate')
         if args.skip_font_fix:
             module_args.append('--skip-font-fix')
+        if args.verbose:
+            module_args.append('--verbose')
+        if args.debug:
+            module_args.append('--debug')
+        return module_args
+
+    if action == 'fix_target':
+        module_args = [
+            project_name,
+            args.workspace_name,
+            args.workspace_folder,
+            '--targets',
+            *args.targets,
+            '--n-cpu',
+            str(args.n_cpu)
+        ]
         if args.verbose:
             module_args.append('--verbose')
         if args.debug:
@@ -332,6 +348,50 @@ def _build_parser() -> argparse.ArgumentParser:
         )
     )
 
+    fix_target_parser = subparsers.add_parser(
+        'fix_target',
+        help='Run fix_target.py sequentially across all projects.'
+    )
+    _add_project_names_argument(fix_target_parser)
+    _add_exclude_sites_argument(fix_target_parser)
+    fix_target_parser.add_argument(
+        '--workspace-name',
+        default='default',
+        help='Workspace name to pass to fix_target.py (default: %(default)s).'
+    )
+    fix_target_parser.add_argument(
+        '--workspace-folder',
+        default='active',
+        help='Workspace folder to pass to fix_target.py (default: %(default)s).'
+    )
+    fix_target_parser.add_argument(
+        '--targets',
+        nargs='+',
+        required=True,
+        help=(
+            'Clause-test to action.json mappings for fix_target.py. '
+            'Example: --targets 7.1-9:action1.json 5.2-3:action2.json'
+        )
+    )
+    fix_target_parser.add_argument(
+        '--n-cpu',
+        type=int,
+        default=4,
+        help='Worker count to pass to fix_target.py (default: %(default)s).'
+    )
+    fix_target_parser.add_argument(
+        '--verbose',
+        '-v',
+        action='store_true',
+        help='Enable verbose output in fix_target.py.'
+    )
+    fix_target_parser.add_argument(
+        '--debug',
+        '-d',
+        action='store_true',
+        help='Enable debug output in fix_target.py.'
+    )
+
     reprocess_parser = subparsers.add_parser(
         'reprocess',
         help='Run reprocess.py sequentially across all projects.'
@@ -404,7 +464,7 @@ def _print_action_context(args: argparse.Namespace, project_names: list[str]) ->
     '''
     print(f"PROJECTS PATH: {Path(PROJECT_BASE_PATH).resolve()}")
     print(f"ACTION: {args.action}")
-    if args.action in {'go', 'get_latest_files', 'debug', 'reprocess', 'validate'}:
+    if args.action in {'go', 'get_latest_files', 'debug', 'fix_target', 'reprocess', 'validate'}:
         print(f"WORKSPACE: {args.workspace_name}")
     if args.action == 'go':
         print(f"CONFIG FILE: {args.config_file}")
@@ -414,8 +474,13 @@ def _print_action_context(args: argparse.Namespace, project_names: list[str]) ->
         print(f"SKIP FONT FIX: {args.skip_font_fix}")
         print(f"VERBOSE: {args.verbose}")
         print(f"DEBUG: {args.debug}")
-    if args.action in {'reprocess', 'validate'}:
+    if args.action in {'fix_target', 'reprocess', 'validate'}:
         print(f"FOLDER: {args.workspace_folder}")
+    if args.action == 'fix_target':
+        print(f"TARGETS: {', '.join(args.targets)}")
+        print(f"N CPU: {1 if args.debug else args.n_cpu}")
+        print(f"VERBOSE: {args.verbose or args.debug}")
+        print(f"DEBUG: {args.debug}")
     if args.action == 'validate':
         print(f"DIRECTORY: {args.directory}")
         print(f"FULL: {args.full}")

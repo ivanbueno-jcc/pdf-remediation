@@ -12,6 +12,10 @@ from .utilities.resources import (
     PROJECT_BASE_PATH,
     download_source_with_terminus,
     get_project_source_path,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
 )
 
 
@@ -20,8 +24,7 @@ def run_module(module: str, module_args: list[str]) -> int:
     Run a package module with the current Python interpreter.
     '''
     command = [sys.executable, "-m", module, *module_args]
-    print()
-    print(f"RUNNING: {' '.join(command)}")
+    print_console_message("log", f"RUNNING: {' '.join(command)}")
     result = subprocess.run(command, check=False)
     return result.returncode
 
@@ -30,12 +33,7 @@ def print_pipeline_banner(step_number: int, step_name: str) -> None:
     '''
     Print a high-visibility banner for each pipeline step.
     '''
-    title = f"PIPELINE STEP {step_number}: {step_name}"
-    border = "=" * max(72, len(title))
-    print()
-    print(border)
-    print(title)
-    print(border)
+    print_console_banner(f"PIPELINE STEP {step_number}: {step_name}", "info")
 
 
 def main() -> int: # pylint: disable=too-many-locals
@@ -102,15 +100,13 @@ def main() -> int: # pylint: disable=too-many-locals
 
     project_path = Path(PROJECT_BASE_PATH) / args.project_name
     if not project_path.exists():
-        print(f"Project not found. Initializing: {args.project_name}")
+        print_console_message("warn", f"Project not found. Initializing: {args.project_name}")
         rc = run_module("pdf_remediation.init", [args.project_name])
         if rc != 0:
-            print()
-            print(f"Pipeline stopped: init failed with exit code {rc}.")
+            print_console_message("error", f"Pipeline stopped: init failed with exit code {rc}.")
             return rc
 
     source_path = get_project_source_path(args.project_name).resolve()
-    print(f"SOURCE: {source_path}")
     source_is_empty = not any(source_path.iterdir())
 
     if source_is_empty:
@@ -123,16 +119,37 @@ def main() -> int: # pylint: disable=too-many-locals
         if rc != 0:
             return rc
 
-    print()
-    print(f"PROJECT: {args.project_name}")
-    print(f"WORKSPACE: {args.workspace_name}")
-    print()
-    print("PIPELINE")
-    print("1) validate (--skip-page-count) [pre-fix, optional via --pre-validate]")
-    print("2) fix (active)")
-    print("3) font_fix (font-issues) [optional via --skip-font-fix]")
-    print("4) font_fix_pdfix (font-issues-missing-unicode) [optional via --skip-font-fix]")
-    print("5) validate (--full --skip-page-count) [final]")
+    print_console_banner("GO PIPELINE", "log")
+    print_console_key_value_rows([
+        ("Project", args.project_name),
+        ("Workspace", args.workspace_name),
+        ("Source", source_path),
+        ("Config File", args.config_file),
+        ("Chunk Size", args.chunk_size),
+        ("N CPU", args.n_cpu if args.n_cpu is not None else "default"),
+        ("Pre Validate", args.pre_validate),
+        ("Skip Font Fix", args.skip_font_fix),
+        ("Verbose", args.verbose),
+        ("Debug", args.debug),
+    ])
+    print_console_section("PIPELINE OVERVIEW", "info")
+    print_console_message(
+        "log",
+        "1) validate (--skip-page-count) [pre-fix, optional via --pre-validate]",
+        indent=2
+    )
+    print_console_message("log", "2) fix (active)", indent=2)
+    print_console_message(
+        "log",
+        "3) font_fix (font-issues) [optional via --skip-font-fix]",
+        indent=2
+    )
+    print_console_message(
+        "log",
+        "4) font_fix_pdfix (font-issues-missing-unicode) [optional via --skip-font-fix]",
+        indent=2
+    )
+    print_console_message("log", "5) validate (--full --skip-page-count) [final]", indent=2)
 
     fix_args = [
         args.project_name,
@@ -183,47 +200,57 @@ def main() -> int: # pylint: disable=too-many-locals
         print_pipeline_banner(1, "validate (pre-fix)")
         rc = run_module("pdf_remediation.validate", pre_validate_args)
         if rc != 0:
-            print()
-            print(f"Pipeline stopped: pre-fix validate failed with exit code {rc}.")
+            print_console_message(
+                "error",
+                f"Pipeline stopped: pre-fix validate failed with exit code {rc}."
+            )
             return rc
     else:
-        print()
-        print("Skipping pre-fix validate (pass --pre-validate to enable).")
+        print_console_message(
+            "warn",
+            "Skipping pre-fix validate (pass --pre-validate to enable)."
+        )
 
     print_pipeline_banner(2, "fix")
     rc = run_module("pdf_remediation.fix", fix_args)
     if rc != 0:
-        print()
-        print(f"Pipeline stopped: fix failed with exit code {rc}.")
+        print_console_message("error", f"Pipeline stopped: fix failed with exit code {rc}.")
         return rc
 
     if args.skip_font_fix:
-        print()
-        print("Skipping font_fix and font_fix_pdfix (pass without --skip-font-fix to enable).")
+        print_console_message(
+            "warn",
+            "Skipping font_fix and font_fix_pdfix (pass without --skip-font-fix to enable)."
+        )
     else:
         print_pipeline_banner(3, "font_fix")
         rc = run_module("pdf_remediation.font_fix", font_fix_args)
         if rc != 0:
-            print()
-            print(f"Pipeline stopped: font_fix failed with exit code {rc}.")
+            print_console_message(
+                "error",
+                f"Pipeline stopped: font_fix failed with exit code {rc}."
+            )
             return rc
 
         print_pipeline_banner(4, "font_fix_pdfix")
         rc = run_module("pdf_remediation.font_fix_pdfix", font_fix_pdfix_args)
         if rc != 0:
-            print()
-            print(f"Pipeline stopped: font_fix_pdfix failed with exit code {rc}.")
+            print_console_message(
+                "error",
+                f"Pipeline stopped: font_fix_pdfix failed with exit code {rc}."
+            )
             return rc
 
     print_pipeline_banner(5, "validate (final)")
     rc = run_module("pdf_remediation.validate", final_validate_args)
     if rc != 0:
-        print()
-        print(f"Pipeline stopped: final validate failed with exit code {rc}.")
+        print_console_message(
+            "error",
+            f"Pipeline stopped: final validate failed with exit code {rc}."
+        )
         return rc
 
-    print()
-    print("Pipeline completed successfully.")
+    print_console_message("success", "Pipeline completed successfully.")
     return 0
 
 

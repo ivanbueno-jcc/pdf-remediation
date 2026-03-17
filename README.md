@@ -555,15 +555,19 @@ argument so you can run separate workflows in different subfolders (for example,
   projects (or selected projects).
 - Syntax:
   `uv run -m pdf_remediation.fleet get_latest_files [project_name ...] [--workspace-name <workspace>] [--exclude-sites <site> [<site> ...]]`
+- `fleet.py fix_target` runs `fix_target.py` sequentially across all projects
+  (or selected projects).
+- Syntax:
+  `uv run -m pdf_remediation.fleet fix_target [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>] --targets <clause-test:action.json> [<clause-test:action.json> ...] [--n-cpu <n>] [--verbose] [--debug] [--exclude-sites <site> [<site> ...]]`
 - `fleet.py` runs `get_latest_files.py`, `init.py`, `status.py`, `validate.py`,
-  `reprocess.py`, or `debug.py` sequentially across all projects (or selected
-  projects).
+  `reprocess.py`, `debug.py`, or `fix_target.py` sequentially across all
+  projects (or selected projects).
 - Syntax:
   `uv run -m pdf_remediation.fleet <action> [project_name ...] [action options]`
 - Shared filter:
   `--exclude-sites <site> [<site> ...]` (alias: `--exclude-projects`; comma-separated values also supported)
 - Actions:
-  `go`, `get_latest_files`, `init`, `status`, `validate`, `reprocess`, `debug`
+  `go`, `get_latest_files`, `init`, `status`, `validate`, `reprocess`, `debug`, `fix_target`
 - `reprocess` exits immediately if any project run fails and returns that same
   exit code.
 - `debug` runs across all projects (or selected projects), then moves each
@@ -613,6 +617,8 @@ argument so you can run separate workflows in different subfolders (for example,
   then moves WCAG-passing files to `remediated/`.
 - If multiple matched clause-tests use the same action JSON, `fix_target.py`
   runs that action once per PDF.
+- `fleet.py fix_target` runs that workflow sequentially across every selected
+  project and exits immediately if any project fails.
 
 ### Font remediation
 - `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, re-validates,

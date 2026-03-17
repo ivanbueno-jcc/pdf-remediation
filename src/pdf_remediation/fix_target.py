@@ -22,7 +22,12 @@ from .utilities.resources import (
     clear_workspace_folder,
     get_project_workspace_subfolder_file_paths,
     get_project_workspace_subfolder_path,
+    print_console_banner,
+    print_console_key_value_rows,
+    print_console_message,
+    print_console_section,
     print_workspace_summary,
+    style_console_text,
 )
 from .utilities.verapdf import validate_pdf_multiprocess
 
@@ -215,6 +220,31 @@ def cleanup_staging_root(staging_root_path: Path) -> None:
     except OSError:
         pass
 
+def print_target_pairs(target_pairs: list[tuple[str, str]]) -> None:
+    '''
+    Print configured clause-test to action mappings.
+    '''
+    print_console_section("TARGET ACTIONS")
+    print_console_key_value_rows(list(target_pairs))
+
+
+def print_verbose_target_match(
+        relative_path: Path,
+        matched_clause_tests: list[str],
+        matched_actions: list[str]) -> None:
+    '''
+    Print one file-level target match in a readable block.
+    '''
+    print_console_message("debug", str(relative_path), indent=2)
+    print(
+        f"      {style_console_text('clauses')} "
+        f"{style_console_text(':')} {', '.join(matched_clause_tests)}"
+    )
+    print(
+        f"      {style_console_text('actions')} "
+        f"{style_console_text(':')} {', '.join(matched_actions)}"
+    )
+
 
 def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     '''
@@ -285,14 +315,6 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         args.verbose = True
         args.n_cpu = 1
 
-    print(f"PROJECT: {args.project_name}")
-    print(f"WORKSPACE: {args.workspace_name}")
-    print(f"FOLDER: {args.workspace_folder}")
-    print("TARGETS:")
-    for clause_test, action_name in target_pairs:
-        print(f"  {clause_test} -> {action_name}")
-    print()
-
     workspace_folder_path = get_project_workspace_subfolder_path(
         args.project_name,
         args.workspace_name,
@@ -314,16 +336,26 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         args.workspace_folder,
         "files"
     )
-    print(f"SOURCE: {workspace_folder_path}")
-    print(f"OUTPUT: {output_pdf_folder}")
-    print(f"FILES FOUND: {len(file_paths)}")
-    print()
+
+    print_console_banner("FIX TARGET")
+    print_console_key_value_rows([
+        ("Project", args.project_name),
+        ("Workspace", args.workspace_name),
+        ("Folder", args.workspace_folder),
+        ("Source", workspace_folder_path),
+        ("Output", output_pdf_folder),
+        ("Files Found", len(file_paths)),
+        ("Workers", args.n_cpu),
+    ])
+    print_target_pairs(target_pairs)
 
     if len(file_paths) == 0:
-        print("No pending PDF files found.")
+        print_console_section("NO WORK", "warn")
+        print_console_message("warn", "No pending PDF files found.")
         return 0
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    print_console_section("VALIDATING SOURCE FILES", "info")
     validation_results = validate_pdf_multiprocess(
         workspace_folder_path,
         file_paths,
@@ -335,6 +367,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     matched_clause_counter: Counter[str] = Counter()
     multi_action_file_total = 0
     validation_error_total = 0
+    printed_match_detail_header = False
 
     for result in validation_results:
         file_path, ua1_result, _, wcag_result, _, ua1_violations, wcag_violations = result
@@ -372,28 +405,31 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         )
 
         if args.verbose:
-            matched_clause_text = ", ".join(matched_clause_tests)
-            matched_action_text = ", ".join(matched_actions)
-            print(
-                f"TARGET MATCH: {relative_path} | "
-                f"clauses=[{matched_clause_text}] | actions=[{matched_action_text}]"
-            )
+            if not printed_match_detail_header:
+                print_console_section("MATCHED FILE DETAILS", "debug")
+                printed_match_detail_header = True
+            print_verbose_target_match(relative_path, matched_clause_tests, matched_actions)
 
-    print("TARGET MATCH SUMMARY")
-    print(f"  Validation errors: {validation_error_total}")
-    print(f"  Files selected for remediation: {len(remediation_payloads)}")
-    print(f"  Files with multiple actions: {multi_action_file_total}")
-    for clause_test, action_name in target_pairs:
-        print(
-            f"  {clause_test} -> {action_name}: "
+    print_console_section("TARGET MATCH SUMMARY", "info")
+    print_console_key_value_rows([
+        ("Validation Errors", validation_error_total),
+        ("Files Selected", len(remediation_payloads)),
+        ("Files With Multiple Actions", multi_action_file_total),
+    ])
+    print()
+    print_console_message("log", "Per target:", indent=2)
+    print_console_key_value_rows([
+        (
+            f"{clause_test} -> {action_name}",
             f"{matched_clause_counter.get(clause_test, 0)} files"
         )
+        for clause_test, action_name in target_pairs
+    ], indent=4)
 
     remediation_results = []
     if len(remediation_payloads) > 0:
         clear_workspace_folder(staging_root_path)
-        print()
-        print("REMEDIATING TARGETED FILES...")
+        print_console_section("REMEDIATING TARGETED FILES", "info")
         remediation_results = progress_starmap(
             remediate_target_file,
             remediation_payloads,
@@ -402,30 +438,36 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
             n_cpu=args.n_cpu
         )
     else:
-        print()
-        print("No files matched the requested clause-test targets.")
+        print_console_section("REMEDIATING TARGETED FILES", "warn")
+        print_console_message("warn", "No files matched the requested clause-test targets.")
 
     success_total = sum(1 for result in remediation_results if result.get("success"))
     failed_results = [result for result in remediation_results if not result.get("success")]
 
     cleanup_staging_root(staging_root_path)
 
-    print()
-    print("REMEDIATION SUMMARY")
-    print(f"  Successful files: {success_total}")
-    print(f"  Failed files: {len(failed_results)}")
+    print_console_section("REMEDIATION SUMMARY", "info")
+    print_console_message("success", f"Successful files: {success_total}")
+    if len(failed_results) > 0:
+        print_console_message("error", f"Failed files: {len(failed_results)}")
+    else:
+        print_console_message("success", "Failed files: 0")
     for failed_result in failed_results:
         failed_path = Path(failed_result["source"]).relative_to(workspace_folder_path)
-        print(f"  FAILED: {failed_path} | {failed_result['error']}")
+        print_console_message("error", f"{failed_path}", indent=2)
+        print(
+            f"      {style_console_text('error')} "
+            f"{style_console_text(':')} {failed_result['error']}"
+        )
 
-    print()
-    print("VALIDATING PROCESSED FILES...")
+    print_console_section("VALIDATING PROCESSED FILES", "info")
     processed_file_paths = get_project_workspace_subfolder_file_paths(
         args.project_name,
         args.workspace_name,
         args.workspace_folder,
         "processed"
     )
+    print_console_key_value_rows([("Processed Files Found", len(processed_file_paths))])
 
     if len(processed_file_paths) > 0:
         processed_validation_results = validate_pdf_multiprocess(
@@ -435,8 +477,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
             "processed"
         )
 
-        print()
-        print("MOVING VALIDATED FILES...")
+        print_console_section("ROUTING VALIDATED FILES", "success")
         valid_files_total = _route_validated_files(
             processed_validation_results,
             output_pdf_folder,
@@ -444,13 +485,12 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
             args.workspace_name,
             args.verbose
         )
-        print(f"Total valid files moved to remediated folder: {valid_files_total}")
+        print_console_message("success", f"Moved to remediated: {valid_files_total}")
     else:
-        print("No PDF files found for validation.")
+        print_console_message("warn", "No PDF files found for validation.")
 
-    print()
-    print("WORKSPACE SUMMARY")
-    print(f"  {args.workspace_name}")
+    print_console_section("WORKSPACE SUMMARY", "log")
+    print_console_key_value_rows([("Workspace", args.workspace_name)])
     print_workspace_summary(args.project_name, args.workspace_name)
 
     return 0 if len(failed_results) == 0 else 1
