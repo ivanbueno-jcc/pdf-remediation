@@ -7,10 +7,11 @@ into active/files for a workspace.
 import argparse
 from pathlib import Path
 import shutil
+from tempfile import TemporaryDirectory
 
 from .utilities.resources import (
     clear_workspace_folder,
-    download_source_with_terminus,
+    download_source_with_terminus_result,
     get_pdf_file_paths,
     get_project_source_path,
     get_project_workspace_path,
@@ -19,6 +20,16 @@ from .utilities.resources import (
 
 IGNORED_WORKSPACE_FOLDERS = {"debug", "reports"}
 TRACKED_WORKSPACE_DIRECTORIES = ("files", "processed")
+
+
+def _replace_directory_contents(destination_path: Path, staged_path: Path) -> None:
+    '''
+    Replace destination_path contents with the staged contents.
+    '''
+    clear_workspace_folder(destination_path)
+
+    for entry in sorted(staged_path.iterdir()):
+        shutil.move(str(entry), str(destination_path / entry.name))
 
 
 def _get_existing_workspace_relative_paths(workspace_path: Path) -> set[str]:
@@ -44,7 +55,7 @@ def _get_existing_workspace_relative_paths(workspace_path: Path) -> set[str]:
 
     return existing_paths
 
-
+# pylint: disable=too-many-locals
 def get_latest_files(project_name: str, workspace: str = "default") -> int:
     '''
     Refresh source from Terminus when available, then copy only new files into
@@ -59,14 +70,22 @@ def get_latest_files(project_name: str, workspace: str = "default") -> int:
     if terminus_path is not None:
         print(f"Terminus detected: {terminus_path}")
         print(f"Refreshing source folder: {source_path.resolve()}")
-        clear_workspace_folder(source_path)
 
-        rc = download_source_with_terminus(
-            project_name=project_name,
-            source_path=source_path
-        )
-        if rc != 0:
-            return rc
+        with TemporaryDirectory(
+            prefix=f"{project_name}-source-",
+            dir=source_path.parent
+        ) as staged_source_root:
+            staged_source_path = Path(staged_source_root)
+            rc, downloaded = download_source_with_terminus_result(
+                project_name=project_name,
+                source_path=staged_source_path
+            )
+            if rc != 0:
+                return rc
+            if downloaded:
+                _replace_directory_contents(source_path, staged_source_path)
+            else:
+                print("Terminus download was skipped. Keeping existing source folder.")
     else:
         print("Terminus not detected. Skipping source download.")
 

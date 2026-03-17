@@ -234,19 +234,20 @@ def _run_command(command: list[str]) -> int:
     return result.returncode
 
 
-def download_source_with_terminus(
+def download_source_with_terminus_result(
         project_name: str,
         source_path: Path,
         verbose: bool = False,
-        print_banner: Callable[[int, str], None] | None = None) -> int:
+        print_banner: Callable[[int, str], None] | None = None) -> tuple[int, bool]:
     '''
     Download and extract Pantheon files via Terminus into source_path.
 
-    Returns 0 when skipped or successful. Returns non-zero for fatal errors.
+    Returns a tuple of (exit_code, downloaded). The downloaded flag is True only
+    when Terminus fetched and extracted a backup into source_path.
     '''
     terminus_path = shutil.which("terminus")
     if terminus_path is None:
-        return 0
+        return 0, False
 
     if print_banner is not None:
         print_banner(0, "download files")
@@ -265,13 +266,13 @@ def download_source_with_terminus(
 
     if not pantheon_email:
         print("Pipeline stopped: Pantheon email is required when Terminus is installed.")
-        return 1
+        return 1, False
 
     rc = _run_command(["terminus", "auth:login", f"--email={pantheon_email}"])
     if rc != 0:
         print()
         print(f"Pipeline stopped: terminus auth:login failed with exit code {rc}.")
-        return rc
+        return rc, False
 
     backup_archive_path = source_path / "files_live.tar.gz"
     rc = _run_command([
@@ -287,16 +288,16 @@ def download_source_with_terminus(
             "WARNING: terminus backup:get failed with exit code 1. "
             "Proceeding with the remaining pipeline steps."
         )
-        return 0
+        return 0, False
     if rc != 0:
         print()
         print(f"Pipeline stopped: terminus backup:get failed with exit code {rc}.")
-        return rc
+        return rc, False
 
     if not backup_archive_path.exists():
         print()
         print(f"Pipeline stopped: backup archive not found at {backup_archive_path}.")
-        return 1
+        return 1, False
 
     print()
     if verbose:
@@ -315,7 +316,7 @@ def download_source_with_terminus(
             "Pipeline stopped: extracted files_live folder not found at "
             f"{files_live_path}."
         )
-        return 1
+        return 1, False
 
     _move_contents(files_live_path, source_path)
     files_live_path.rmdir()
@@ -323,7 +324,26 @@ def download_source_with_terminus(
         print(f"Moved files from {files_live_path} to {source_path}")
         print(f"Deleted folder: {files_live_path}")
 
-    return 0
+    return 0, True
+
+
+def download_source_with_terminus(
+        project_name: str,
+        source_path: Path,
+        verbose: bool = False,
+        print_banner: Callable[[int, str], None] | None = None) -> int:
+    '''
+    Download and extract Pantheon files via Terminus into source_path.
+
+    Returns 0 when skipped or successful. Returns non-zero for fatal errors.
+    '''
+    rc, _downloaded = download_source_with_terminus_result(
+        project_name=project_name,
+        source_path=source_path,
+        verbose=verbose,
+        print_banner=print_banner
+    )
+    return rc
 
 
 def _docker_daemon_is_running() -> bool:
