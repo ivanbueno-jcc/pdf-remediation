@@ -345,6 +345,27 @@ If remediation is interrupted, rerunning `Fix` resumes from the remaining files.
 Runs end with a workspace summary showing totals plus `files`/`processed`
 breakdowns.
 
+For clause-test-specific remediation, use `fix_target`:
+```
+uv run -m pdf_remediation.fix_target <project_name> [workspace] [folder] --targets <clause-test:action.json> [<clause-test:action.json> ...]
+```
+
+Example:
+```
+uv run -m pdf_remediation.fix_target delnorte --targets 3.1-42:action1.json 4.2-2:action1.json 7.1-9:action2.json
+```
+
+`fix_target` does the following:
+1. Validate every PDF in `<workspace>/<folder>/files`.
+2. Match each file's failing VERA clause-test IDs against `--targets`.
+3. Run the matching PDFix action JSONs in CLI order.
+4. If multiple matched clause-tests point to the same action JSON, run that action once for that PDF.
+5. Write remediation output to `<workspace>/<folder>/processed`.
+6. Validate every PDF currently in `<workspace>/<folder>/processed`.
+7. Move WCAG-passing files to `remediated/files`; files that still fail remain in `processed`.
+
+Target action files must exist under `resources/configuration/`.
+
 #### 2) Fix font issues (Callas)
 ```
 uv run -m pdf_remediation.font_fix <project_name> [workspace] [folder]
@@ -587,6 +608,11 @@ argument so you can run separate workflows in different subfolders (for example,
   multiprocessing and preserves folder structure.
 - Post-validation routes outputs to `remediated/` and moves font-issue files to
   `font-issues/`.
+- `fix_target.py` validates `<workspace>/<folder>/files`, applies clause-test-
+  specific PDFix action JSONs from `--targets`, validates `<workspace>/<folder>/processed`,
+  then moves WCAG-passing files to `remediated/`.
+- If multiple matched clause-tests use the same action JSON, `fix_target.py`
+  runs that action once per PDF.
 
 ### Font remediation
 - `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, re-validates,
