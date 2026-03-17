@@ -87,7 +87,7 @@ def print_console_banner(title: str, category: str = "log") -> None:
     border = "═" * max(72, len(title))
     print_console_spacer()
     print(style_console_text(border, *styles))
-    print(f"{console_category_prefix(category)} {style_console_text(title, *styles)}")
+    print(f"{style_console_text(title, *styles)}")
     print(style_console_text(border, *styles))
 
 def print_console_section(title: str, category: str = "info") -> None:
@@ -98,7 +98,7 @@ def print_console_section(title: str, category: str = "info") -> None:
     border = "═" * max(72, len(title))
     print_console_spacer()
     print(style_console_text(border, *styles))
-    print(f"{console_category_prefix(category)} {style_console_text(title, *styles)}")
+    print(f"{style_console_text(title, *styles)}")
     print(style_console_text(border, *styles))
 
 def print_console_message(category: str, message: str, indent: int = 0) -> None:
