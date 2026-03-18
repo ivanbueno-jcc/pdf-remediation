@@ -95,9 +95,8 @@ def print_console_section(title: str, category: str = "info") -> None:
     Print a section header.
     '''
     styles = CONSOLE_CATEGORY_STYLES.get(category, CONSOLE_CATEGORY_STYLES["info"])
-    border = "═" * max(72, len(title))
+    border = "─" * max(72, len(title))
     print_console_spacer()
-    print(style_console_text(border, *styles))
     print(f"{style_console_text(title, *styles)}")
     print(style_console_text(border, *styles))
 
