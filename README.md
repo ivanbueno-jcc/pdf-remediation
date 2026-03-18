@@ -363,6 +363,7 @@ uv run -m pdf_remediation.fix_target delnorte --targets 3.1-42:action1.json 4.2-
 5. Write remediation output to `<workspace>/<folder>/processed`.
 6. Validate every PDF currently in `<workspace>/<folder>/processed`.
 7. Move WCAG-passing files to `remediated/files`; files that still fail remain in `processed`.
+8. Run a final `validate --full --skip-page-count` pass for the workspace.
 
 Target action files must exist under `resources/configuration/`.
 
@@ -614,7 +615,7 @@ argument so you can run separate workflows in different subfolders (for example,
   `font-issues/`.
 - `fix_target.py` validates `<workspace>/<folder>/files`, applies clause-test-
   specific PDFix action JSONs from `--targets`, validates `<workspace>/<folder>/processed`,
-  then moves WCAG-passing files to `remediated/`.
+  moves WCAG-passing files to `remediated/`, then runs `validate --full --skip-page-count`.
 - If multiple matched clause-tests use the same action JSON, `fix_target.py`
   runs that action once per PDF.
 - `fleet.py fix_target` runs that workflow sequentially across every selected

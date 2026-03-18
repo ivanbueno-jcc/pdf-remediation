@@ -182,6 +182,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             args.workspace_folder,
             "processed"
         )
+        print_console_key_value_rows([("Processed Files Found", len(file_paths_for_validation))])
 
         if len(file_paths_for_validation) > 0:
             validation_results = validate_pdf_multiprocess(

@@ -1,6 +1,7 @@
 # pylint: disable=too-many-branches,too-many-arguments,too-many-locals,too-many-positional-arguments, duplicate-code
 '''
-Validate PDFs in a workspace folder and apply targeted PDFix config files.
+Validate PDFs in a workspace folder, apply targeted PDFix config files, then
+run a final full workspace validation.
 
 When multiple matching clause-tests map to the same action JSON, that action
 is only executed once per file.
@@ -12,6 +13,8 @@ from datetime import datetime
 import multiprocessing
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 
 from parallelbar import progress_starmap
 
@@ -242,9 +245,20 @@ def print_verbose_target_match(
     ], indent=6)
 
 
+def run_module(module: str, module_args: list[str]) -> int:
+    '''
+    Run a package module with the current Python interpreter.
+    '''
+    command = [sys.executable, "-m", module, *module_args]
+    print_console_message("log", f"RUNNING: {' '.join(command)}")
+    result = subprocess.run(command, check=False)
+    return result.returncode
+
+
 def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     '''
-    Validate workspace files and apply targeted PDFix actions by clause-test id.
+    Validate workspace files, apply targeted PDFix actions by clause-test id,
+    then run a final full workspace validation.
     '''
     multiprocessing.freeze_support()
     multiprocessing.set_start_method("spawn", force=True)
@@ -254,7 +268,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
             "Validate PDFs in a workspace folder and apply PDFix config files to "
             "documents with matching VERA clause-test violations. If multiple "
             "matched clause-tests use the same action JSON, that action runs "
-            "once per file."
+            "once per file. Finish with validate --full --skip-page-count."
         )
     )
     parser.add_argument("project_name", help="Project directory name.")
@@ -351,7 +365,6 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         return 0
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print_console_section("VALIDATING SOURCE FILES", "info")
     validation_results = validate_pdf_multiprocess(
         workspace_folder_path,
         file_paths,
@@ -481,6 +494,21 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         print_console_message("success", f"Moved to remediated: {valid_files_total}")
     else:
         print_console_message("warn", "No PDF files found for validation.")
+
+    print_console_section("FINAL FULL VALIDATION", "info")
+    final_validate_args = [
+        args.project_name,
+        args.workspace_name,
+        "--full",
+        "--skip-page-count"
+    ]
+    rc = run_module("pdf_remediation.validate", final_validate_args)
+    if rc != 0:
+        print_console_message(
+            "error",
+            f"Final full validation failed with exit code {rc}."
+        )
+        return rc
 
     print_console_section("WORKSPACE SUMMARY", "log")
     print_console_key_value_rows([("Workspace", args.workspace_name)])
