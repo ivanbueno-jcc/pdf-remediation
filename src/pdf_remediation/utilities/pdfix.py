@@ -178,7 +178,8 @@ def fix(
         output_pdf_path: str,
         config_file: str = "default.json",
         workspace_folder_path: Path = None,
-        verbose: bool = False) -> None:
+        verbose: bool = False,
+        reported_input_pdf_path: str | None = None) -> None:
     '''
     Wrapper for PDFix remediation command.
     
@@ -198,6 +199,14 @@ def fix(
 
     error_file_path = workspace_folder_path.parent.parent.parent.parent \
         / "pdfix-cannot-process-files.csv"
+    logged_input_path = Path(reported_input_pdf_path or input_pdf_path)
+
+    def append_fix_error(error_message: str) -> None:
+        try:
+            relative_path = logged_input_path.relative_to(workspace_folder_path)
+        except ValueError:
+            relative_path = logged_input_path
+        append_to_csv(error_file_path, [relative_path, error_message])
 
     # Load the license and authorize the account.
     load_dotenv()
@@ -210,10 +219,7 @@ def fix(
     if doc is None:
         if verbose:
             print_console_message("error", f"Unable to open PDF: {pdfix.GetError()}")
-        append_to_csv(
-            error_file_path,
-            [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
-        )
+        append_fix_error(pdfix.GetError())
         raise Exception('Unable to open pdf : ' + pdfix.GetError()) # pylint: disable=broad-exception-raised
 
     command = doc.GetCommand()
@@ -224,18 +230,12 @@ def fix(
     if not command_statement:
         if verbose:
             print_console_message("error", f"PDFix error: {pdfix.GetError()}")
-        append_to_csv(
-            error_file_path,
-            [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
-        )
+        append_fix_error(pdfix.GetError())
         raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
     if not command.LoadParamsFromStream(command_statement, kDataFormatJson):
         if verbose:
             print_console_message("error", f"PDFix error: {pdfix.GetError()}")
-        append_to_csv(
-            error_file_path,
-            [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
-        )
+        append_fix_error(pdfix.GetError())
         raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
     command_statement.Destroy()
 
@@ -244,10 +244,7 @@ def fix(
         # print(input_pdf_path)
         if verbose:
             print_console_message("error", f"PDFix error: {pdfix.GetError()}")
-        append_to_csv(
-            error_file_path,
-            [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
-        )
+        append_fix_error(pdfix.GetError())
         raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
 
     # print(f"Remediation completed: {output_pdf_path}")
@@ -255,10 +252,7 @@ def fix(
     if not doc.Save(output_pdf_path, kSaveFull):
         if verbose:
             print_console_message("error", f"Unable to save PDF: {pdfix.GetError()}")
-        append_to_csv(
-            error_file_path,
-            [Path(input_pdf_path).relative_to(workspace_folder_path), pdfix.GetError()]
-        )
+        append_fix_error(pdfix.GetError())
         raise Exception(pdfix.GetError()) # pylint: disable=broad-exception-raised
     doc.Close()
 

@@ -618,8 +618,11 @@ argument so you can run separate workflows in different subfolders (for example,
   moves WCAG-passing files to `remediated/`, then runs `validate --full --skip-page-count`.
 - If multiple matched clause-tests use the same action JSON, `fix_target.py`
   runs that action once per PDF.
+- File-level remediation failures in `fix_target.py` are logged to
+  `pdfix-cannot-process-files.csv` and reported in the console, but they do not
+  make the whole workflow exit non-zero.
 - `fleet.py fix_target` runs that workflow sequentially across every selected
-  project and exits immediately if any project fails.
+  project and exits immediately only when a project has a fatal workflow error.
 
 ### Font remediation
 - `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, re-validates,

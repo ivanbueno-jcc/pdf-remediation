@@ -183,7 +183,8 @@ def remediate_target_file(
                 str(next_output_path),
                 action_name,
                 workspace_folder_path,
-                verbose
+                verbose,
+                reported_input_pdf_path=str(source_path)
             )
             current_input_path = next_output_path
 
@@ -458,12 +459,12 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     print_console_section("REMEDIATION SUMMARY", "info")
     print_console_message("success", f"Successful files: {success_total}")
     if len(failed_results) > 0:
-        print_console_message("error", f"Failed files: {len(failed_results)}")
+        print_console_message("warn", f"Failed files: {len(failed_results)}")
     else:
         print_console_message("success", "Failed files: 0")
     for failed_result in failed_results:
         failed_path = Path(failed_result["source"]).relative_to(workspace_folder_path)
-        print_console_message("error", f"{failed_path}", indent=2)
+        print_console_message("warn", f"{failed_path}", indent=2)
         print_console_key_value_rows([("error", failed_result["error"])], indent=6)
 
     print_console_section("VALIDATING PROCESSED FILES", "info")
@@ -514,7 +515,13 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     print_console_key_value_rows([("Workspace", args.workspace_name)])
     print_workspace_summary(args.project_name, args.workspace_name)
 
-    return 0 if len(failed_results) == 0 else 1
+    if len(failed_results) > 0:
+        print_console_message(
+            "warn",
+            "Per-file remediation failures were recorded in pdfix-cannot-process-files.csv."
+        )
+
+    return 0
 
 
 if __name__ == '__main__':

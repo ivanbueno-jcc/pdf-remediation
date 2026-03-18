@@ -51,6 +51,7 @@ def _fix_process_target( # pylint: disable=too-many-arguments,too-many-positiona
         config_file: str,
         workspace_folder_path: Path,
         verbose: bool,
+        reported_input_pdf_path: str | None,
         result_queue: multiprocessing.Queue) -> None:
     '''
     Execute fix in a dedicated child process and return exception details through a queue.
@@ -61,7 +62,8 @@ def _fix_process_target( # pylint: disable=too-many-arguments,too-many-positiona
             output_pdf_path,
             config_file,
             workspace_folder_path,
-            verbose
+            verbose,
+            reported_input_pdf_path=reported_input_pdf_path
         )
         result_queue.put(None)
     except BaseException as exc: # pylint: disable=broad-exception-caught
@@ -75,6 +77,7 @@ def fix_with_process_timeout( # pylint: disable=too-many-arguments,too-many-posi
         config_file: str = "default.json",
         workspace_folder_path: Path = None,
         verbose: bool = False,
+        reported_input_pdf_path: str | None = None,
         process_timeout: int = FIX_PROCESS_TIMEOUT_SECONDS) -> None:
     '''
     Run PDFix fix in an isolated process so hung native calls can be force-terminated.
@@ -90,6 +93,7 @@ def fix_with_process_timeout( # pylint: disable=too-many-arguments,too-many-posi
             config_file,
             workspace_folder_path,
             verbose,
+            reported_input_pdf_path,
             result_queue
         )
     )
@@ -104,7 +108,11 @@ def fix_with_process_timeout( # pylint: disable=too-many-arguments,too-many-posi
             process.join()
 
         timeout_message = f"TimeoutError: function took longer than {process_timeout} s."
-        _append_fix_worker_error(input_pdf_path, workspace_folder_path, timeout_message)
+        _append_fix_worker_error(
+            reported_input_pdf_path or input_pdf_path,
+            workspace_folder_path,
+            timeout_message
+        )
         raise TimeoutError(timeout_message)
 
     process_error = None
@@ -121,7 +129,11 @@ def fix_with_process_timeout( # pylint: disable=too-many-arguments,too-many-posi
             raise RuntimeError(process_error)
 
         unknown_error = f"Fix worker exited with code {process.exitcode}"
-        _append_fix_worker_error(input_pdf_path, workspace_folder_path, unknown_error)
+        _append_fix_worker_error(
+            reported_input_pdf_path or input_pdf_path,
+            workspace_folder_path,
+            unknown_error
+        )
         raise RuntimeError(unknown_error)
 
 def get_skipped_files_list(project_name: str) -> list[str]:
