@@ -476,6 +476,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     )
     print_console_key_value_rows([("Processed Files Found", len(processed_file_paths))])
 
+    valid_files_total = 0
     if len(processed_file_paths) > 0:
         processed_validation_results = validate_pdf_multiprocess(
             output_pdf_folder,
@@ -496,20 +497,23 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     else:
         print_console_message("warn", "No PDF files found for validation.")
 
-    print_console_section("FINAL FULL VALIDATION", "info")
-    final_validate_args = [
-        args.project_name,
-        args.workspace_name,
-        "--full",
-        "--skip-page-count"
-    ]
-    rc = run_module("pdf_remediation.validate", final_validate_args)
-    if rc != 0:
-        print_console_message(
-            "error",
-            f"Final full validation failed with exit code {rc}."
-        )
-        return rc
+    if valid_files_total > 0:
+        print_console_section("FINAL FULL VALIDATION", "info")
+        final_validate_args = [
+            args.project_name,
+            args.workspace_name,
+            "--full",
+            "--skip-page-count"
+        ]
+        rc = run_module("pdf_remediation.validate", final_validate_args)
+        if rc != 0:
+            print_console_message(
+                "error",
+                f"Final full validation failed with exit code {rc}."
+            )
+            return rc
+    else:
+        print_console_message("warn", "No valid remediated files to affect overall score.")
 
     print_console_section("WORKSPACE SUMMARY", "log")
     print_console_key_value_rows([("Workspace", args.workspace_name)])
