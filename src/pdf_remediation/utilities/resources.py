@@ -243,7 +243,7 @@ def split_large_page_count_chunks(chunks: dict[str, list], chunk_size: int) -> d
             del_chunks.append(key)
             chunk_count = len(value) // chunk_size + 1
             for i in range(chunk_count):
-                chunk_key = f"{key} - part {i+1} of {chunk_count}"
+                chunk_key = f"{key} - ({i+1}/{chunk_count})"
                 sub_chunks[chunk_key] = value[i*chunk_size:(i+1)*chunk_size]
 
     remaining_chunks = chunks.copy()
