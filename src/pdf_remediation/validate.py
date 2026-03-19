@@ -66,6 +66,12 @@ if __name__ == '__main__':
         action='store_true',
         help="Skip page counting and only run validation."
     )
+    parser.add_argument(
+        "--xml-only",
+        action='store_true',
+        help="Reuse existing XML reports instead of running Java validation. " \
+             "Falls back to Java if no XML is found."
+    )
     args = parser.parse_args()
 
     if args.project_name:
@@ -75,6 +81,7 @@ if __name__ == '__main__':
             ("Workspace", args.workspace_name),
             ("Full", args.full),
             ("Skip Page Count", args.skip_page_count),
+            ("XML Only", args.xml_only),
         ])
 
         report_base_path = None
@@ -135,7 +142,8 @@ if __name__ == '__main__':
                 timestamp,
                 subfolder,
                 report_base_path,
-                relative_base_paths
+                relative_base_paths,
+                args.xml_only
             )
         else:
             print_console_section("NO WORK", "warn")

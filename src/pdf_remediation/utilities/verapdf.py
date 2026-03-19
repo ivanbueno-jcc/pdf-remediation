@@ -157,7 +157,30 @@ def parseValidationReport(xmlReport: str):
 
     return rules
 
-def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, profiles: list = ["ua1", "wcag"], format: str = "xml") -> list:
+def find_existing_xml_report(pdfPath: str, subfolderPath: str, profile: str) -> str | None:
+    """
+    Search for the most recently written XML validation report for the given PDF and profile.
+    Returns the XML content string, or None if not found.
+    """
+    parent_path = Path(pdfPath).parent.as_posix()
+    parent_path_str = parent_path.replace("/", "-")
+    expected_filename = parent_path_str + "-" + Path(pdfPath).stem.split(".")[0] + ".xml"
+
+    search_root = Path(subfolderPath).parent
+    if not search_root.exists():
+        return None
+
+    matches = list(search_root.glob(f"reports/*/xml/{profile}/{expected_filename}"))
+    matches += list(search_root.glob(f"*/reports/*/xml/{profile}/{expected_filename}"))
+    if not matches:
+        return None
+
+    most_recent = max(matches, key=lambda p: p.stat().st_mtime)
+    return most_recent.read_text(encoding="utf-8")
+
+def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str,
+                profiles: list = ["ua1", "wcag"], format: str = "xml",
+                xml_only: bool = False) -> list:
     """
     Validates a PDF document against PDF/UA standards using a Java validation tool.
 
@@ -172,20 +195,27 @@ def validatePdf(pdfPath: str, reportPath: str, subfolderPath: str, profiles: lis
         Exception: If the document cannot be saved or if validation fails unexpectedly.
     """
     results = {}
+    filename = pdfPath
 
     for profile in profiles:
+        if xml_only:
+            xml_content = find_existing_xml_report(pdfPath, subfolderPath, profile)
+            if xml_content is not None:
+                try:
+                    rules = parseValidationReport(xml_content)
+                    if rules:
+                        results[profile] = [filename, False, len(rules), rules]
+                    else:
+                        results[profile] = [filename, True, 0, []]
+                except ET.ParseError:
+                    results[profile] = [filename, 'Error', 0, []]
+                continue
+
         exitCode, output, _error = runJavaValidation(pdfPath, reportPath, profile, "xml")
-        filename = pdfPath
 
-        if exitCode > 1:
-            results[profile] = [filename, 'Error', 0, []]
-
-        rules = []
-        if exitCode == 0: 
-            #print("Validation successfull.")
+        if exitCode == 0:
             results[profile] = [filename, True, 0, []]
         elif exitCode == 1:
-            # print("Non-valid PDF/UA document")
             try:
                 rules = parseValidationReport(output)
             except ET.ParseError:
@@ -336,7 +366,8 @@ def validate_pdf_multiprocess(
         timestamp: str = None,
         subfolder: str = None,
         report_base_path: Path = None,
-        relative_base_paths: list[Path] = None) -> None:
+        relative_base_paths: list[Path] = None,
+        xml_only: bool = False) -> None:
     '''
     Multiprocess to validate PDF files using VeraPDF.
     
@@ -371,7 +402,9 @@ def validate_pdf_multiprocess(
             (str(file_path),
              str(report_path_xml),
              str(workspace_folder_path),
-             profiles)
+             profiles,
+             "xml",
+             xml_only)
         )
 
     print_console_section("VALIDATING PDFS", "info")

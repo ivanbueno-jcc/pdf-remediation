@@ -503,7 +503,8 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
             args.project_name,
             args.workspace_name,
             "--full",
-            "--skip-page-count"
+            "--skip-page-count",
+            "--xml-only"
         ]
         rc = run_module("pdf_remediation.validate", final_validate_args)
         if rc != 0:
