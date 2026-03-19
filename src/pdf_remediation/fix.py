@@ -431,8 +431,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     '7.21.8',
                     '7.21.7',
                     '7.21.6',
-                    '7.21.5',
-                    '1.4.8'
+                    '7.21.5'
                 ]
                 font_issue_subfolder = "font-issues"
                 font_issue_summary_message = "Total files with font issues: {count}"
