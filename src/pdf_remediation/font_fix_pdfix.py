@@ -155,7 +155,15 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                     if len(chunk_file_paths) == 0:
                         continue
 
-                    print_console_message("log", f"Page bucket: {key}")
+                    # Rewrite key for better readability in the console.
+                    # For example, from "2-5 - (3/6)" to "2-5 pages (3/6)"
+                    key_parts = key.split(" - ")
+                    if len(key_parts) == 2:
+                        page_range = key_parts[0].replace("pages", "").strip()
+                        chunk_index = key_parts[1].strip()
+                        key = f"{page_range} pages {chunk_index}"
+
+                    print_console_message("log", f"{key}")
 
                     if args.verbose:
                         print_console_list(
