@@ -98,6 +98,8 @@ def _build_module_args(action: str, args: argparse.Namespace, project_name: str)
             module_args.append('--pre-validate')
         if args.skip_font_fix:
             module_args.append('--skip-font-fix')
+        if args.wcag_and_ua1_must_pass:
+            module_args.append('--wcag-and-ua1-must-pass')
         if args.verbose:
             module_args.append('--verbose')
         if args.debug:
@@ -296,6 +298,11 @@ def _build_parser() -> argparse.ArgumentParser:
         '--skip-font-fix',
         action='store_true',
         help='Skip go.py font_fix and font_fix_pdfix steps.'
+    )
+    go_parser.add_argument(
+        '--wcag-and-ua1-must-pass',
+        action='store_true',
+        help='Require go.py to pass --wcag-and-ua1-must-pass through to fix.py.'
     )
     go_parser.add_argument(
         '--verbose',

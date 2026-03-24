@@ -841,18 +841,27 @@ def move_file_and_delete_source(
 
     return True
 
+# pylint: disable=too-many-arguments, too-many-positional-arguments
 def _route_validated_files(
         validation_results: list,
         output_pdf_folder: Path,
         project_name: str,
         workspace_name: str,
-        verbose: bool = False) -> int:
+        verbose: bool = False,
+        wcag_and_ua1_must_pass: bool = False) -> int:
     '''
     Move validation-passing files into the remediated folder.
+
+    By default, only a passing WCAG result is required. Set
+    wcag_and_ua1_must_pass to also require a passing UA1 result.
     '''
     moved_count = 0
-    for file_path, _, _, wcag_result, _, _, _ in validation_results:
-        if wcag_result is True:
+    for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
+        passed_validation = wcag_result is True
+        if wcag_and_ua1_must_pass:
+            passed_validation = passed_validation and ua1_result is True
+
+        if passed_validation:
             if verbose:
                 print_console_message("debug", str(file_path), indent=2)
             if move_file_and_delete_source(
@@ -955,7 +964,8 @@ def route_validation_results(
         font_issue_clauses: list[str] | None = None,
         font_issue_subfolder: str | None = None,
         font_issue_summary_message: str | None = None,
-        font_issues_after_errors: bool = False) -> dict[str, int]:
+        font_issues_after_errors: bool = False,
+        wcag_and_ua1_must_pass: bool = False) -> dict[str, int]:
     '''
     Route validation results to destination workspace folders and print summary counts.
     '''
@@ -966,7 +976,8 @@ def route_validation_results(
         output_pdf_folder,
         project_name,
         workspace_name,
-        verbose
+        verbose=verbose,
+        wcag_and_ua1_must_pass=wcag_and_ua1_must_pass
     )
     print_console_message("success", f"Moved to remediated: {valid_files_total}")
 

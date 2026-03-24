@@ -491,7 +491,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
             output_pdf_folder,
             args.project_name,
             args.workspace_name,
-            args.verbose
+            verbose=args.verbose
         )
         print_console_message("success", f"Moved to remediated: {valid_files_total}")
     else:

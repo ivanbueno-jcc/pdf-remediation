@@ -96,6 +96,11 @@ def main() -> int: # pylint: disable=too-many-locals
         action='store_true',
         help="Enable debug mode in each step."
     )
+    parser.add_argument(
+        "--wcag-and-ua1-must-pass",
+        action='store_true',
+        help="Require both WCAG and UA1 validation to move files to remediated in fix.py."
+    )
     args = parser.parse_args()
 
     project_path = Path(PROJECT_BASE_PATH) / args.project_name
@@ -129,6 +134,7 @@ def main() -> int: # pylint: disable=too-many-locals
         ("N CPU", args.n_cpu if args.n_cpu is not None else "default"),
         ("Pre Validate", args.pre_validate),
         ("Skip Font Fix", args.skip_font_fix),
+        ("WCAG And UA1 Must Pass", args.wcag_and_ua1_must_pass),
         ("Verbose", args.verbose),
         ("Debug", args.debug),
     ])
@@ -162,6 +168,8 @@ def main() -> int: # pylint: disable=too-many-locals
         fix_args.append("--verbose")
     if args.debug:
         fix_args.append("--debug")
+    if args.wcag_and_ua1_must_pass:
+        fix_args.append("--wcag-and-ua1-must-pass")
 
     font_fix_args = [
         args.project_name,
