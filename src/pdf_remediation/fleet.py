@@ -120,6 +120,8 @@ def _build_module_args(action: str, args: argparse.Namespace, project_name: str)
             module_args.append('--verbose')
         if args.debug:
             module_args.append('--debug')
+        if args.skip_final_full_validation:
+            module_args.append('--skip-final-full-validation')
         return module_args
 
     if action == 'get_latest_files':
@@ -393,6 +395,11 @@ def _build_parser() -> argparse.ArgumentParser:
         action='store_true',
         help='Enable debug output in fix_target.py.'
     )
+    fix_target_parser.add_argument(
+        '--skip-final-full-validation',
+        action='store_true',
+        help='Skip the final validate --full --skip-page-count step in fix_target.py.'
+    )
 
     reprocess_parser = subparsers.add_parser(
         'reprocess',
@@ -489,6 +496,7 @@ def _print_action_context(args: argparse.Namespace, project_names: list[str]) ->
             ("N CPU", 1 if args.debug else args.n_cpu),
             ("Verbose", args.verbose or args.debug),
             ("Debug", args.debug),
+            ("Skip Final Full Validation", args.skip_final_full_validation),
         ])
     if args.action == 'validate':
         rows.extend([

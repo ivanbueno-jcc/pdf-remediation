@@ -39,12 +39,14 @@ def print_pipeline_banner(step_number: int, step_name: str) -> None:
 def main() -> int: # pylint: disable=too-many-locals
     '''
     Run optional pre-fix validation, fix, optional font_fix/font_fix_pdfix,
+    reprocess all workspace folders, run restore-metadata fix_target actions,
     then final full validation.
     '''
     parser = argparse.ArgumentParser(
         description=(
             "Run optional pre-fix validate, fix, optional font_fix/font_fix_pdfix, "
-            "then validate --full for a project workspace."
+            "reprocess all workspace folders, run restore-metadata fix_target "
+            "actions, then validate --full for a project workspace."
         )
     )
     parser.add_argument("project_name", help="Project directory name.")
@@ -155,7 +157,17 @@ def main() -> int: # pylint: disable=too-many-locals
         "4) font_fix_pdfix (font-issues-missing-unicode) [optional via --skip-font-fix]",
         indent=2
     )
-    print_console_message("log", "5) validate (--full --skip-page-count) [final]", indent=2)
+    print_console_message(
+        "log",
+        "5) reprocess (all folders -> active/files)",
+        indent=2
+    )
+    print_console_message(
+        "log",
+        "6) fix_target (active, targets: 5-1 + 7.1-9 -> restore_metadata.json)",
+        indent=2
+    )
+    print_console_message("log", "7) validate (--full --skip-page-count) [final]", indent=2)
 
     fix_args = [
         args.project_name,
@@ -196,6 +208,25 @@ def main() -> int: # pylint: disable=too-many-locals
         font_fix_pdfix_args.append("--verbose")
     if args.debug:
         font_fix_pdfix_args.append("--debug")
+
+    reprocess_args = [
+        args.project_name,
+        args.workspace_name,
+        "all"
+    ]
+    fix_target_args = [
+        args.project_name,
+        args.workspace_name,
+        "active",
+        "--targets",
+        "5-1:restore_metadata.json",
+        "7.1-9:restore_metadata.json",
+        "--skip-final-full-validation"
+    ]
+    if args.verbose:
+        fix_target_args.append("--verbose")
+    if args.debug:
+        fix_target_args.append("--debug")
 
     pre_validate_args = [
         args.project_name,
@@ -249,7 +280,25 @@ def main() -> int: # pylint: disable=too-many-locals
             )
             return rc
 
-    print_pipeline_banner(5, "validate (final)")
+    print_pipeline_banner(5, "reprocess")
+    rc = run_module("pdf_remediation.reprocess", reprocess_args)
+    if rc != 0:
+        print_console_message(
+            "error",
+            f"Pipeline stopped: reprocess failed with exit code {rc}."
+        )
+        return rc
+
+    print_pipeline_banner(6, "fix_target")
+    rc = run_module("pdf_remediation.fix_target", fix_target_args)
+    if rc != 0:
+        print_console_message(
+            "error",
+            f"Pipeline stopped: fix_target failed with exit code {rc}."
+        )
+        return rc
+
+    print_pipeline_banner(7, "validate (final)")
     rc = run_module("pdf_remediation.validate", final_validate_args)
     if rc != 0:
         print_console_message(

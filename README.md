@@ -58,7 +58,10 @@ uv run -m pdf_remediation.go delnorte
 
 `go.py` orchestrates an optional pre-fix `validate --skip-page-count`
 (`--pre-validate`), then `fix`, optional `font_fix` + `font_fix_pdfix`
-(`--skip-font-fix`), and a final `validate --full --skip-page-count` run.
+(`--skip-font-fix`), reprocesses all workspace folders back into
+`active/files`, runs `fix_target` on `active` with
+`5-1:restore_metadata.json` and `7.1-9:restore_metadata.json`, and finishes
+with `validate --full --skip-page-count`.
 It also initializes missing projects automatically. Pass
 `--wcag-and-ua1-must-pass` to make the `fix` stage move files to
 `remediated/` only when both veraPDF `wcag` and `ua1` pass. By default,
@@ -356,7 +359,7 @@ breakdowns.
 
 For clause-test-specific remediation, use `fix_target`:
 ```
-uv run -m pdf_remediation.fix_target <project_name> [workspace] [folder] --targets <clause-test:action.json> [<clause-test:action.json> ...]
+uv run -m pdf_remediation.fix_target <project_name> [workspace] [folder] --targets <clause-test:action.json> [<clause-test:action.json> ...] [--skip-final-full-validation]
 ```
 
 Example:
@@ -372,7 +375,7 @@ uv run -m pdf_remediation.fix_target delnorte --targets 3.1-42:action1.json 4.2-
 5. Write remediation output to `<workspace>/<folder>/processed`.
 6. Validate every PDF currently in `<workspace>/<folder>/processed`.
 7. Move WCAG-passing files to `remediated/files`; files that still fail remain in `processed`.
-8. Run a final `validate --full --skip-page-count` pass for the workspace.
+8. Unless `--skip-final-full-validation` is passed, run a final `validate --full --skip-page-count` pass for the workspace.
 
 Target action files must exist under `resources/configuration/`.
 
@@ -560,7 +563,9 @@ argument so you can run separate workflows in different subfolders (for example,
   2) `fix` on `active`
   3) optional `font_fix` on `font-issues` (skipped by `--skip-font-fix`)
   4) optional `font_fix_pdfix` on `font-issues-missing-unicode` (skipped by `--skip-font-fix`)
-  5) final `validate --full --skip-page-count`
+  5) `reprocess` on all folders back to `active/files`
+  6) `fix_target` on `active` with `--targets 5-1:restore_metadata.json 7.1-9:restore_metadata.json`
+  7) final `validate --full --skip-page-count`
 - Syntax:
   `uv run -m pdf_remediation.go <project_name> [workspace] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--pre-validate] [--skip-font-fix] [--wcag-and-ua1-must-pass] [--verbose] [--debug]`
 - If the project does not exist, `go.py` runs `init` automatically.
@@ -581,7 +586,7 @@ argument so you can run separate workflows in different subfolders (for example,
 - `fleet.py fix_target` runs `fix_target.py` sequentially across all projects
   (or selected projects).
 - Syntax:
-  `uv run -m pdf_remediation.fleet fix_target [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>] --targets <clause-test:action.json> [<clause-test:action.json> ...] [--n-cpu <n>] [--verbose] [--debug] [--exclude-sites <site> [<site> ...]]`
+  `uv run -m pdf_remediation.fleet fix_target [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>] --targets <clause-test:action.json> [<clause-test:action.json> ...] [--n-cpu <n>] [--verbose] [--debug] [--skip-final-full-validation] [--exclude-sites <site> [<site> ...]]`
 - `fleet.py` runs `get_latest_files.py`, `init.py`, `status.py`, `validate.py`,
   `reprocess.py`, `debug.py`, or `fix_target.py` sequentially across all
   projects (or selected projects).
@@ -641,7 +646,7 @@ argument so you can run separate workflows in different subfolders (for example,
   file is moved to `remediated/`.
 - `fix_target.py` validates `<workspace>/<folder>/files`, applies clause-test-
   specific PDFix action JSONs from `--targets`, validates `<workspace>/<folder>/processed`,
-  moves WCAG-passing files to `remediated/`, then runs `validate --full --skip-page-count`.
+  moves WCAG-passing files to `remediated/`, then optionally runs `validate --full --skip-page-count`.
 - If multiple matched clause-tests use the same action JSON, `fix_target.py`
   runs that action once per PDF.
 - File-level remediation failures in `fix_target.py` are logged to

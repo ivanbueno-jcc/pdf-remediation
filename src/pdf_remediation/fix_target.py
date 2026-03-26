@@ -259,7 +259,7 @@ def run_module(module: str, module_args: list[str]) -> int:
 def main() -> int: # pylint: disable=too-many-locals,too-many-statements
     '''
     Validate workspace files, apply targeted PDFix actions by clause-test id,
-    then run a final full workspace validation.
+    then optionally run a final full workspace validation.
     '''
     multiprocessing.freeze_support()
     multiprocessing.set_start_method("spawn", force=True)
@@ -269,7 +269,8 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
             "Validate PDFs in a workspace folder and apply PDFix config files to "
             "documents with matching VERA clause-test violations. If multiple "
             "matched clause-tests use the same action JSON, that action runs "
-            "once per file. Finish with validate --full --skip-page-count."
+            "once per file. Optionally finish with validate --full "
+            "--skip-page-count."
         )
     )
     parser.add_argument("project_name", help="Project directory name.")
@@ -315,6 +316,11 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         action='store_true',
         help="Enable debug output."
     )
+    parser.add_argument(
+        "--skip-final-full-validation",
+        action='store_true',
+        help="Skip the final validate --full --skip-page-count step."
+    )
     args = parser.parse_args()
 
     try:
@@ -357,6 +363,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         ("Output", output_pdf_folder),
         ("Files Found", len(file_paths)),
         ("Workers", args.n_cpu),
+        ("Skip Final Full Validation", args.skip_final_full_validation),
     ])
     print_target_pairs(target_pairs)
 
@@ -498,21 +505,28 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         print_console_message("warn", "No PDF files found for validation.")
 
     if valid_files_total > 0:
-        print_console_section("FINAL FULL VALIDATION", "info")
-        final_validate_args = [
-            args.project_name,
-            args.workspace_name,
-            "--full",
-            "--skip-page-count",
-            "--xml-only"
-        ]
-        rc = run_module("pdf_remediation.validate", final_validate_args)
-        if rc != 0:
+        if args.skip_final_full_validation:
+            print_console_section("FINAL FULL VALIDATION", "warn")
             print_console_message(
-                "error",
-                f"Final full validation failed with exit code {rc}."
+                "warn",
+                "Skipping final full validation (--skip-final-full-validation)."
             )
-            return rc
+        else:
+            print_console_section("FINAL FULL VALIDATION", "info")
+            final_validate_args = [
+                args.project_name,
+                args.workspace_name,
+                "--full",
+                "--skip-page-count",
+                "--xml-only"
+            ]
+            rc = run_module("pdf_remediation.validate", final_validate_args)
+            if rc != 0:
+                print_console_message(
+                    "error",
+                    f"Final full validation failed with exit code {rc}."
+                )
+                return rc
     else:
         print_console_message("warn", "No valid remediated files to affect overall score.")
 
