@@ -293,7 +293,8 @@ Use `--full` to validate all PDFs in every workspace subfolder's `files/` and
 `pdfix-unable-to-open`, `unable-to-validate`, and `unable-to-process`.
 Use `--skip-page-count` to skip the PDFix page count pass and run only veraPDF.
 
-Validation runs both PDF/UA (veraPDF `ua1`) and WCAG 2.2 profiles by default.
+Validation runs both PDF/UA (veraPDF `ua1`) and the modified WCAG 2.2
+profile `WCAG-2-2-Complete-JCC.xml` by default.
 Results include `ua1` and `wcag` columns in `vera_validation_results.csv`, and
 per-profile report folders under `reports/<timestamp>-<directory>` (for example,
 `xml/ua1`, `xml/wcag`, `summary/ua1`, `summary/wcag`). To change profiles, edit
@@ -488,12 +489,22 @@ Use a new `workspace` name here to create a fresh workspace seeded from
   `src/pdf_remediation/utilities/verapdf.py`.
 - `resources/configuration/default.json`: PDFix command profile applied
   during remediation.
-- `resources/configuration/WCAG-2-2-Complete.xml`: veraPDF WCAG 2.2 profile used
-  alongside `ua1` by default (adjust the `profiles` list in
+- `resources/configuration/WCAG-2-2-Complete-JCC.xml`: default veraPDF WCAG
+  profile used alongside `ua1` (see the section below for the JCC-specific
+  rule changes; adjust the `profiles` list in
   `src/pdf_remediation/utilities/verapdf.py` to change this).
 - `resources/configuration/UA1-Font.xml`: optional narrowed veraPDF profile for
   font-only checks.
 - `resources/font/.env`: Callas pdfToolbox license config for `FontFix`.
+
+### WCAG-2-2-Complete-JCC.xml
+`resources/configuration/WCAG-2-2-Complete-JCC.xml` is a modified version of
+the veraPDF WCAG Validation profile. This repository uses it as the default
+`wcag` profile in `src/pdf_remediation/utilities/verapdf.py`.
+
+Compared with the base WCAG Validation profile, this JCC variant removes:
+- `1.3.4-1`: Pages shall have the same orientation.
+- `1.4.8-1`: Document should not contain illegible font.
 
 ### Directory layout
 - `src/pdf_remediation/`: CLI entry points and orchestration scripts.
@@ -591,7 +602,8 @@ argument so you can run separate workflows in different subfolders (for example,
 
 ### Validation
 - `validate.py` runs page counting (PDFix) and veraPDF validation for PDF/UA
-  (`ua1`) plus WCAG 2.2.
+  (`ua1`) plus the modified WCAG 2.2 JCC profile
+  (`WCAG-2-2-Complete-JCC.xml`).
 - Default mode validates one directory (`<workspace>/<folder>/<directory>`).
 - `--full` mode validates every `<subfolder>/files` and `<subfolder>/processed`
   directory in the workspace and writes a consolidated report under

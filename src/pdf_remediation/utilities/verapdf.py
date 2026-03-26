@@ -27,7 +27,7 @@ def in_memory_validation(pdfPath: str, profile: str = "ua1", format: str = "xml"
     try:
         command = []
         if profile == "wcag":
-            profile_path = get_configuration_file("WCAG-2-2-Complete.xml")
+            profile_path = get_configuration_file("WCAG-2-2-Complete-JCC.xml")
             command = ["java", "-jar", jarPath, "--profile", str(profile_path), "--format", format, pdfPath]
         elif profile == "ua1":
             command = ["java", "-jar", jarPath, "--flavour", "ua1", "--format", format, pdfPath]
@@ -89,7 +89,7 @@ def runJavaValidation(pdfPath: str, reportPath: str, profile: str = "ua1", forma
     try:
         command = []
         if profile == "wcag":
-            profile_path = get_configuration_file("WCAG-2-2-Complete.xml")
+            profile_path = get_configuration_file("WCAG-2-2-Complete-JCC.xml")
             command = ["java", "-jar", str(jarPath), "--profile", str(profile_path), "--format", format, pdfPath]
         else:
             command = ["java", "-jar", str(jarPath), "--flavour", "ua1", "--format", format, pdfPath]

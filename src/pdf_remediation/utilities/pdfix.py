@@ -67,7 +67,7 @@ def is_pdf_secured(input_pdf_path: str) -> bool:
     security_status = "unsecured"
 
     if doc.IsSecured():
-        is_compliant, _, rules = in_memory_validation(input_pdf_path, "WCAG-2-2-Complete.xml") # pylint: disable=unbalanced-tuple-unpacking
+        is_compliant, _, rules = in_memory_validation(input_pdf_path, "WCAG-2-2-Complete-JCC.xml") # pylint: disable=unbalanced-tuple-unpacking
         if is_compliant is False:
 
             font_issue_clauses = [
