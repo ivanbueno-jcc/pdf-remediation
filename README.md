@@ -63,9 +63,9 @@ uv run -m pdf_remediation.go delnorte
 `5-1:restore_metadata.json` and `7.1-9:restore_metadata.json`, and finishes
 with `validate --full --skip-page-count`.
 It also initializes missing projects automatically. Pass
-`--wcag-and-ua1-must-pass` to make the `fix` stage move files to
+`--wcag-and-ua1-must-pass` to make the remediation stages move files to
 `remediated/` only when both veraPDF `wcag` and `ua1` pass. By default,
-`fix` still routes files based on `wcag` only.
+those stages still route files based on `wcag` only.
 
 If `source/` is empty, `go.py` can automatically download and extract the
 live files backup from Pantheon into `source/`.
@@ -359,7 +359,7 @@ breakdowns.
 
 For clause-test-specific remediation, use `fix_target`:
 ```
-uv run -m pdf_remediation.fix_target <project_name> [workspace] [folder] --targets <clause-test:action.json> [<clause-test:action.json> ...] [--skip-final-full-validation]
+uv run -m pdf_remediation.fix_target <project_name> [workspace] [folder] --targets <clause-test:action.json> [<clause-test:action.json> ...] [--skip-final-full-validation] [--wcag-and-ua1-must-pass]
 ```
 
 Example:
@@ -374,7 +374,8 @@ uv run -m pdf_remediation.fix_target delnorte --targets 3.1-42:action1.json 4.2-
 4. If multiple matched clause-tests point to the same action JSON, run that action once for that PDF.
 5. Write remediation output to `<workspace>/<folder>/processed`.
 6. Validate every PDF currently in `<workspace>/<folder>/processed`.
-7. Move WCAG-passing files to `remediated/files`; files that still fail remain in `processed`.
+7. Move validation-passing files to `remediated/files`; files that still fail remain in `processed`.
+   By default, `wcag` passing is enough. Pass `--wcag-and-ua1-must-pass` to require both `wcag` and `ua1`.
 8. Unless `--skip-final-full-validation` is passed, run a final `validate --full --skip-page-count` pass for the workspace.
 
 Target action files must exist under `resources/configuration/`.
@@ -391,6 +392,8 @@ Runs end with a workspace summary showing totals plus `files`/`processed`
 breakdowns.
 Missing-unicode violations detected after validation are moved to
 `font-issues-missing-unicode/` for the PDFix pass.
+By default, `wcag` passing is enough to move files to `remediated/`. Pass
+`--wcag-and-ua1-must-pass` to require both `wcag` and `ua1`.
 
 Callas file-level failures (error codes 104-107) are logged to
 `callas_font_fix_errors.csv` in the project root.
@@ -399,6 +402,8 @@ Options:
 - `--chunk-size <n>` to control batch size (default: 500)
 - `--verbose` to list files in each chunk
 - `--debug` to set `--verbose` and `--chunk-size 1` so you can spot a slow file
+- `--wcag-and-ua1-must-pass` to move files to `remediated/` only when both
+  `wcag` and `ua1` pass
 
 #### 3) Fix missing-unicode font issues (PDFix)
 ```
@@ -408,6 +413,8 @@ uv run -m pdf_remediation.font_fix_pdfix <project_name> [workspace] [folder]
 Run this after `FontFix` to process files moved into `font-issues-missing-unicode`.
 It uses PDFix font remediation via Docker, re-validates, and routes results into
 `remediated/` or `unable-to-validate/`.
+By default, `wcag` passing is enough to move files to `remediated/`. Pass
+`--wcag-and-ua1-must-pass` to require both `wcag` and `ua1`.
 
 PDFix file-level failures are logged to `pdfix-font-errors.csv` in the project root.
 
@@ -416,6 +423,8 @@ Options:
 - `--n-cpu <n>` to control parallel workers (default: all cores)
 - `--verbose` to list files in each chunk
 - `--debug` to set `--verbose` and `--chunk-size 1` so you can spot a slow file
+- `--wcag-and-ua1-must-pass` to move files to `remediated/` only when both
+  `wcag` and `ua1` pass
 
 #### 4) Reprocess with a new configuration
 ```
@@ -571,9 +580,10 @@ argument so you can run separate workflows in different subfolders (for example,
 - If the project does not exist, `go.py` runs `init` automatically.
 - If `source/` is empty and Terminus is installed/configured, `go.py` can
   download and extract the live files backup into `source/`.
-- `--wcag-and-ua1-must-pass` is forwarded to `fix.py` and changes only the
-  remediated routing rule: by default `fix.py` moves files when `wcag` passes;
-  with the flag it requires both `wcag` and `ua1`.
+- `--wcag-and-ua1-must-pass` is forwarded to `fix.py`, `font_fix.py`,
+  `font_fix_pdfix.py`, and the `go.py` `fix_target` stage, changing only the
+  remediated routing rule: by default those stages move files when `wcag`
+  passes; with the flag they require both `wcag` and `ua1`.
 - `fleet.py go` runs `go.py` sequentially across multiple projects.
 - Syntax:
   `uv run -m pdf_remediation.fleet go <project_name> [project_name ...] [--workspace-name <workspace>] [--config-file <file>] [--chunk-size <n>] [--n-cpu <n>] [--pre-validate] [--skip-font-fix] [--wcag-and-ua1-must-pass] [--verbose] [--debug] [--exclude-sites <site> [<site> ...]]`
@@ -586,7 +596,7 @@ argument so you can run separate workflows in different subfolders (for example,
 - `fleet.py fix_target` runs `fix_target.py` sequentially across all projects
   (or selected projects).
 - Syntax:
-  `uv run -m pdf_remediation.fleet fix_target [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>] --targets <clause-test:action.json> [<clause-test:action.json> ...] [--n-cpu <n>] [--verbose] [--debug] [--skip-final-full-validation] [--exclude-sites <site> [<site> ...]]`
+  `uv run -m pdf_remediation.fleet fix_target [project_name ...] [--workspace-name <workspace>] [--workspace-folder <folder>] --targets <clause-test:action.json> [<clause-test:action.json> ...] [--n-cpu <n>] [--verbose] [--debug] [--skip-final-full-validation] [--wcag-and-ua1-must-pass] [--exclude-sites <site> [<site> ...]]`
 - `fleet.py` runs `get_latest_files.py`, `init.py`, `status.py`, `validate.py`,
   `reprocess.py`, `debug.py`, or `fix_target.py` sequentially across all
   projects (or selected projects).
@@ -646,7 +656,10 @@ argument so you can run separate workflows in different subfolders (for example,
   file is moved to `remediated/`.
 - `fix_target.py` validates `<workspace>/<folder>/files`, applies clause-test-
   specific PDFix action JSONs from `--targets`, validates `<workspace>/<folder>/processed`,
-  moves WCAG-passing files to `remediated/`, then optionally runs `validate --full --skip-page-count`.
+  moves validation-passing files to `remediated/`, then optionally runs `validate --full --skip-page-count`.
+- By default, `fix_target.py` moves files to `remediated/` when `wcag` passes.
+- Pass `--wcag-and-ua1-must-pass` to require both `wcag` and `ua1` before a
+  file is moved to `remediated/`.
 - If multiple matched clause-tests use the same action JSON, `fix_target.py`
   runs that action once per PDF.
 - File-level remediation failures in `fix_target.py` are logged to
@@ -658,10 +671,14 @@ argument so you can run separate workflows in different subfolders (for example,
 ### Font remediation
 - `font_fix.py` runs Callas pdfToolbox via Docker on `font-issues/`, re-validates,
   then moves results to `remediated/` or `unable-to-validate/`. Missing-unicode
-  files move to `font-issues-missing-unicode/`.
+  files move to `font-issues-missing-unicode/`. By default, `wcag` passing is
+  enough to move files to `remediated/`; `--wcag-and-ua1-must-pass` requires
+  both `wcag` and `ua1`.
 - `font_fix_pdfix.py` runs PDFix font remediation via Docker on
   `font-issues-missing-unicode/`, re-validates, then moves results to
-  `remediated/` or `unable-to-validate/`.
+  `remediated/` or `unable-to-validate/`. By default, `wcag` passing is enough
+  to move files to `remediated/`; `--wcag-and-ua1-must-pass` requires both
+  `wcag` and `ua1`.
 
 ### Reporting (internal function, part of Validate)
 - `utilities/report.py` generates CSV/TXT/HTML report artifacts from veraPDF XML output.

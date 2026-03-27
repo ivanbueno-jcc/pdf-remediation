@@ -101,7 +101,10 @@ def main() -> int: # pylint: disable=too-many-locals
     parser.add_argument(
         "--wcag-and-ua1-must-pass",
         action='store_true',
-        help="Require both WCAG and UA1 validation to move files to remediated in fix.py."
+        help=(
+            "Require remediation stages to move files to remediated only when "
+            "both WCAG and UA1 pass."
+        )
     )
     args = parser.parse_args()
 
@@ -142,7 +145,7 @@ def main() -> int: # pylint: disable=too-many-locals
     ])
     print_console_section("PIPELINE OVERVIEW", "info")
     print_console_message(
-        "log",
+        "",
         "1) validate (--skip-page-count) [pre-fix, optional via --pre-validate]",
         indent=2
     )
@@ -190,6 +193,8 @@ def main() -> int: # pylint: disable=too-many-locals
         "--chunk-size",
         str(args.chunk_size)
     ]
+    if args.wcag_and_ua1_must_pass:
+        font_fix_args.append("--wcag-and-ua1-must-pass")
     if args.verbose:
         font_fix_args.append("--verbose")
     if args.debug:
@@ -204,6 +209,8 @@ def main() -> int: # pylint: disable=too-many-locals
     ]
     if args.n_cpu is not None:
         font_fix_pdfix_args.extend(["--n-cpu", str(args.n_cpu)])
+    if args.wcag_and_ua1_must_pass:
+        font_fix_pdfix_args.append("--wcag-and-ua1-must-pass")
     if args.verbose:
         font_fix_pdfix_args.append("--verbose")
     if args.debug:
@@ -223,6 +230,8 @@ def main() -> int: # pylint: disable=too-many-locals
         "7.1-9:restore_metadata.json",
         "--skip-final-full-validation"
     ]
+    if args.wcag_and_ua1_must_pass:
+        fix_target_args.append("--wcag-and-ua1-must-pass")
     if args.verbose:
         fix_target_args.append("--verbose")
     if args.debug:

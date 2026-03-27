@@ -122,6 +122,8 @@ def _build_module_args(action: str, args: argparse.Namespace, project_name: str)
             module_args.append('--debug')
         if args.skip_final_full_validation:
             module_args.append('--skip-final-full-validation')
+        if args.wcag_and_ua1_must_pass:
+            module_args.append('--wcag-and-ua1-must-pass')
         return module_args
 
     if action == 'get_latest_files':
@@ -304,7 +306,8 @@ def _build_parser() -> argparse.ArgumentParser:
     go_parser.add_argument(
         '--wcag-and-ua1-must-pass',
         action='store_true',
-        help='Require go.py to pass --wcag-and-ua1-must-pass through to fix.py.'
+        help='Require go.py remediation stages to move files to ' \
+            'remediated only when both WCAG and UA1 pass.'
     )
     go_parser.add_argument(
         '--verbose',
@@ -399,6 +402,11 @@ def _build_parser() -> argparse.ArgumentParser:
         '--skip-final-full-validation',
         action='store_true',
         help='Skip the final validate --full --skip-page-count step in fix_target.py.'
+    )
+    fix_target_parser.add_argument(
+        '--wcag-and-ua1-must-pass',
+        action='store_true',
+        help='Require fix_target.py to move files to remediated only when both WCAG and UA1 pass.'
     )
 
     reprocess_parser = subparsers.add_parser(
@@ -497,6 +505,7 @@ def _print_action_context(args: argparse.Namespace, project_names: list[str]) ->
             ("Verbose", args.verbose or args.debug),
             ("Debug", args.debug),
             ("Skip Final Full Validation", args.skip_final_full_validation),
+            ("WCAG And UA1 Must Pass", args.wcag_and_ua1_must_pass),
         ])
     if args.action == 'validate':
         rows.extend([

@@ -321,6 +321,11 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         action='store_true',
         help="Skip the final validate --full --skip-page-count step."
     )
+    parser.add_argument(
+        "--wcag-and-ua1-must-pass",
+        action='store_true',
+        help="Require both WCAG and UA1 validation to move files to remediated."
+    )
     args = parser.parse_args()
 
     try:
@@ -364,6 +369,7 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
         ("Files Found", len(file_paths)),
         ("Workers", args.n_cpu),
         ("Skip Final Full Validation", args.skip_final_full_validation),
+        ("WCAG And UA1 Must Pass", args.wcag_and_ua1_must_pass),
     ])
     print_target_pairs(target_pairs)
 
@@ -498,7 +504,8 @@ def main() -> int: # pylint: disable=too-many-locals,too-many-statements
             output_pdf_folder,
             args.project_name,
             args.workspace_name,
-            verbose=args.verbose
+            verbose=args.verbose,
+            wcag_and_ua1_must_pass=args.wcag_and_ua1_must_pass
         )
         print_console_message("success", f"Moved to remediated: {valid_files_total}")
     else:

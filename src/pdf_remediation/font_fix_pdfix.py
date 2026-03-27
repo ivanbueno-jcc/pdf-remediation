@@ -71,6 +71,11 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
         action='store_true',
         help="Enable debug output."
     )
+    parser.add_argument(
+        "--wcag-and-ua1-must-pass",
+        action='store_true',
+        help="Require both WCAG and UA1 validation to move files to remediated."
+    )
     args = parser.parse_args()
 
     if args.project_name:
@@ -85,6 +90,7 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             ("Folder", args.workspace_folder),
             ("Chunk Size", args.chunk_size),
             ("Workers", args.n_cpu),
+            ("WCAG And UA1 Must Pass", args.wcag_and_ua1_must_pass),
             ("Verbose", args.verbose),
             ("Debug", args.debug),
         ])
@@ -211,7 +217,8 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
                 workspace_folder_path=workspace_folder_path,
                 project_name=args.project_name,
                 workspace_name=args.workspace_name,
-                verbose=args.verbose
+                verbose=args.verbose,
+                wcag_and_ua1_must_pass=args.wcag_and_ua1_must_pass
             )
 
         else:
