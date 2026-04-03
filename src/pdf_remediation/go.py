@@ -228,6 +228,8 @@ def main() -> int: # pylint: disable=too-many-locals
         "--targets",
         "5-1:restore_metadata.json",
         "7.1-9:restore_metadata.json",
+        "7.1-5:role_mapping_fix-7.1-5.json",
+        "7.2-29:language_fix-7.2-29.json",
         "--skip-final-full-validation"
     ]
     if args.wcag_and_ua1_must_pass:
