@@ -1,0 +1,262 @@
+{
+  "name": "make_accessible",
+  "title": "Default PDF/UA Remediation Preset",
+  "desc": "Official default remediation preset for automated PDF/UA-1 compliance using PDFix SDK. The preset performs conservative, non-destructive cleanup, structure repair, tagging completion, and accessibility fixes.",
+  "version": "0.2.1",
+  "min_sdk_version": "8.7.10",
+  "max_sdk_version": "",
+  "release_date": "21.02.2026",
+  "category": "Accessibility",
+  "icon": "accessibility_new",
+  "settings": {
+    "stop_on_action_failure": false
+  },
+  "actions": [
+    {
+      "name": "fix_parent_tree",
+      "title": "Fix Parent Tree (Initial repair)",
+      "desc": "Rebuild and normalize the ParentTree to ensure that all marked content references (MCIDs) correctly point to the structure tree. This establishes a stable structural foundation before tagging and cleanup.",
+      "params": []
+    },
+    {
+      "name": "artifact_content",
+      "title": "Artifact Untagged Content",
+      "desc": "Mark untagged page content without MCIDs as artifacts. This ensures that decorative or non-semantic content is ignored by assistive technologies.",
+      "params": [
+        {
+          "name": "object_types",
+          "value": {
+            "template": {
+              "object_update": [
+                {
+                  "query": {
+                    "$and": [
+                      {
+                        "$0_artifact": "false"
+                      },
+                      {
+                        "$0_mcid": "-1"
+                      }
+                    ],
+                    "param": [
+                      "pds_object"
+                    ]
+                  },
+                  "statement": "$if"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "artifact_type",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "add_missing_unicode",
+      "title": "Add Missing Unicode Mappings",
+      "desc": "Add missing Unicode mappings to text elements to ensure correct text extraction, searchability, and screen reader output.",
+      "params": []
+    },
+    {
+      "name": "set_display_doc_title",
+      "title": "Fix Display Document Title",
+      "desc": "Synchronize the ViewerPreferences DisplayDocTitle setting with the actual document title so that assistive technologies announce the correct title.",
+      "params": []
+    },
+    {
+      "name": "embed_font",
+      "title": "Embed Fonts",
+      "desc": "Embed all fonts used in the document to ensure consistent rendering and reliable text extraction across platforms and assistive technologies.",
+      "params": []
+    },
+    {
+      "name": "fix_headings",
+      "title": "Fix Headings (Renumber, Convert to H)",
+      "desc": "Normalize heading hierarchy by resolving skipped levels and converting headings to a consistent generic H structure. This improves outline quality and screen reader navigation.",
+      "params": [
+        {
+          "name": "renumber_headings",
+          "value": 2
+        },
+        {
+          "name": "change_headings_to",
+          "value": "H"
+        }
+      ]
+    },
+    {
+      "name": "fix_parent_tree",
+      "title": "Fix Parent Tree (Final normalization)",
+      "desc": "Re-run ParentTree repair after tagging and cleanup to ensure all newly created or modified content references are correctly linked.",
+      "params": []
+    },
+    {
+      "name": "fix_oc_name",
+      "title": "Fix Optional Content Configuration",
+      "desc": "Repair Optional Content (OCG) configuration dictionaries to ensure layer definitions are valid and accessible.",
+      "params": []
+    },
+    {
+      "name": "set_suspect_value",
+      "title": "Clear Suspect Flag",
+      "desc": "Fix the MarkInfo dictionary by clearing the Suspects entry, indicating that the document structure is no longer considered unreliable.",
+      "params": []
+    },
+    {
+      "name": "fix_structure_spaces",
+      "title": "Fix Structure Spaces (Add missing, Artifact unnecessary)",
+      "desc": "Insert missing spaces between words and mark unnecessary spaces as artifacts to improve text readability for screen readers.",
+      "params": [
+        {
+          "name": "add_missing_spaces",
+          "value": true
+        },
+        {
+          "name": "remove_unnecessary_spaces",
+          "value": false
+        },
+        {
+          "name": "artifact_unnecessary_spaces",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "set_tag_id",
+      "title": "Set Tag IDs (Note, TH)",
+      "desc": "Generate unique ID keys for Note and table header (TH) structure elements as required by PDF/UA.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Note$|^TH$"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_tabs_key",
+      "title": "Set Tab Order (Structure)",
+      "desc": "Set the page Tabs key to Structure so keyboard navigation follows the logical reading order.",
+      "params": [
+        {
+          "name": "tabs_key",
+          "value": "S"
+        },
+        {
+          "name": "overwrite",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "fix_metadata",
+      "desc": "Repair and normalize document XMP metadata to improve standards compliance and consistency",
+      "title": "Fix XMP Metadata"
+    },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata by picking text from the first matching structure tag (H1). This aligns metadata with the visible main heading for assistive technologies and preserves any existing Title unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "1"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": "H1"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From H1 Heading)"
+    },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata from the PDF Info dictionary. Use this as a reliable fallback when the tag structure does not contain a suitable heading. Existing Title is preserved unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "3"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From Info Dictionary)"
+    },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata from the input file name. This provides a deterministic fallback title when neither tag-based detection nor existing Info metadata is suitable. Existing Title is preserved unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "2"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From File Name)"
+    }, 
+    {
+      "name": "set_pdf_ua_standard",
+      "title": "Set PDF/UA-1 Identifier",
+      "desc": "Declare PDF/UA-1 conformance by setting the appropriate PDF/UA identifier in the document metadata.",
+      "params": [
+        {
+          "name": "part_number",
+          "value": "1"
+        },
+        {
+          "name": "rev_number",
+          "value": "2023"
+        }
+      ]
+    },    
+    {
+      "name": "set_language",
+      "title": "Set Document Language (en-US)",
+      "desc": "Define the primary document language to ensure correct pronunciation and processing by assistive technologies.",
+      "params": [
+        {
+          "name": "lang",
+          "value": "en-US"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    }
+  ]
+}
