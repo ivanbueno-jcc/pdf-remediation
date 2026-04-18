@@ -1,0 +1,280 @@
+{
+  "name": "strip_and_autotag",
+  "title": "Strip and AutoTag",
+  "desc": "Clears existing document structure and re-tags from scratch using AutoTag. Suitable for documents whose tag tree is too malformed to repair incrementally.",
+  "version": "1.0.0",
+  "min_sdk_version": "8.7.10",
+  "max_sdk_version": "",
+  "release_date": "18.04.2026",
+  "category": "Accessibility",
+  "icon": "accessibility_new",
+  "settings": {
+    "stop_on_action_failure": false
+  },
+  "actions": [
+    {
+      "name": "clear_structure",
+      "title": "Clear Document Structure",
+      "desc": "Remove all existing tags, structure tree, and bookmarks to allow a clean re-tagging pass.",
+      "params": [
+        {
+          "name": "clear_tags",
+          "value": true
+        },
+        {
+          "name": "clear_struct_tree",
+          "value": true
+        },
+        {
+          "name": "clear_bookmarks",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "flatten_xobject",
+      "title": "Flatten Form XObjects",
+      "desc": "Inline Form XObjects into page content so AutoTag can process all content elements directly.",
+      "params": [
+        {
+          "name": "object_types",
+          "value": "^pds_form$"
+        }
+      ]
+    },
+    {
+      "name": "embed_font",
+      "title": "Embed Fonts",
+      "desc": "Embed all fonts used in the document to ensure consistent rendering and reliable text extraction.",
+      "params": []
+    },
+    {
+      "name": "add_missing_unicode",
+      "title": "Add Missing Unicode Mappings",
+      "desc": "Add missing Unicode mappings to text elements to ensure correct text extraction and screen reader output.",
+      "params": []
+    },
+    {
+      "name": "add_tags",
+      "title": "AutoTag (Full, Overwrite)",
+      "desc": "Automatically tag the entire document from scratch. Overwrite is enabled because the structure was cleared; preflight and standard attributes are disabled for a conservative pass.",
+      "params": [
+        {
+          "name": "template",
+          "value": ""
+        },
+        {
+          "name": "preflight",
+          "value": false
+        },
+        {
+          "name": "standard_attrs",
+          "value": false
+        },
+        {
+          "name": "sequential_headings",
+          "value": false
+        },
+        {
+          "name": "overwrite",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "set_language",
+      "title": "Set Document Language (en-US)",
+      "desc": "Define the primary document language to ensure correct pronunciation and processing by assistive technologies.",
+      "params": [
+        {
+          "name": "lang",
+          "value": "en-US"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_title",
+      "title": "Set Title (From File Name)",
+      "desc": "Set the document Title metadata from the input file name as a deterministic fallback.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "2"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": "Caption"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_display_doc_title",
+      "title": "Fix Display Document Title",
+      "desc": "Synchronize the ViewerPreferences DisplayDocTitle setting with the actual document title.",
+      "params": []
+    },
+    {
+      "name": "set_pdf_ua_standard",
+      "title": "Set PDF/UA-1 Identifier",
+      "desc": "Declare PDF/UA-1 conformance by setting the appropriate PDF/UA identifier in the document metadata.",
+      "params": [
+        {
+          "name": "part_number",
+          "value": "1"
+        },
+        {
+          "name": "rev_number",
+          "value": "2023"
+        }
+      ]
+    },
+    {
+      "name": "set_suspect_value",
+      "title": "Clear Suspect Flag",
+      "desc": "Fix the MarkInfo dictionary by clearing the Suspects entry, indicating the document structure is no longer considered unreliable.",
+      "params": []
+    },
+    {
+      "name": "fix_oc_name",
+      "title": "Fix Optional Content Configuration",
+      "desc": "Repair Optional Content (OCG) configuration dictionaries to ensure layer definitions are valid and accessible.",
+      "params": []
+    },
+    {
+      "name": "fix_media_clip_keys",
+      "title": "Fix Media Clip (Content-Type to text/plain)",
+      "desc": "Fix media clip content type keys to a safe default to prevent validation failures on embedded media metadata.",
+      "params": [
+        {
+          "name": "ct_key",
+          "value": "text/plain"
+        }
+      ]
+    },
+    {
+      "name": "set_annot_contents",
+      "title": "Set Annotation Contents (BBox text, Link/Highlight/Markup)",
+      "desc": "Populate Contents for Link, Highlight, Underline, Squiggly, and StrikeOut annotations using text extracted from the annotation bounding box.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": "^Link$|^Highlight$|^Underline$|^Squiggly$|^StrikeOut$"
+        },
+        {
+          "name": "alt_type",
+          "value": 1
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "bbox_padding_x",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_x_right",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y_top",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y",
+          "value": 4
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_annot_contents",
+      "title": "Set Annotation Contents (Auto-generated fallback, All)",
+      "desc": "Populate annotation Contents for all annotation types using auto-generated text as a fallback when no meaningful source text is available.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": "^.*$"
+        },
+        {
+          "name": "alt_type",
+          "value": 3
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "bbox_padding_x",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_x_right",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y_top",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y",
+          "value": 4
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "create_bookmarks",
+      "title": "Create Bookmarks (H1–H6)",
+      "desc": "Generate a bookmark outline from heading tags H1 through H6 to support document navigation.",
+      "params": [
+        {
+          "name": "tag_1",
+          "value": "^H1$"
+        },
+        {
+          "name": "tag_2",
+          "value": "^H2$"
+        },
+        {
+          "name": "tag_3",
+          "value": "^H3$"
+        },
+        {
+          "name": "tag_4",
+          "value": "^H4$"
+        },
+        {
+          "name": "tag_5",
+          "value": "^H5$"
+        },
+        {
+          "name": "tag_6",
+          "value": "^H6$"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    }
+  ]
+}

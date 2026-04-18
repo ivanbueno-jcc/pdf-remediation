@@ -1,0 +1,301 @@
+{
+    "actions": [
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "fix_parent_tree",
+            "params": [],
+            "title": "Fix Parent Tree (Initial repair)"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "artifact_content",
+            "params": [
+                {
+                    "name": "object_types",
+                    "value": {
+                        "template": {
+                            "object_update": [
+                                {
+                                    "query": {
+                                        "$and": [
+                                            {
+                                                "$0_artifact": "false"
+                                            },
+                                            {
+                                                "$0_mcid": "-1"
+                                            }
+                                        ],
+                                        "param": [
+                                            "pds_object"
+                                        ]
+                                    },
+                                    "statement": "$if"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "artifact_type",
+                    "value": "0"
+                }
+            ],
+            "title": "Artifact Untagged Content"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "add_missing_unicode",
+            "params": [],
+            "title": "Add Missing Unicode Mappings"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_display_doc_title",
+            "params": [],
+            "title": "Fix Display Document Title"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "embed_font",
+            "params": [],
+            "title": "Embed Fonts"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "fix_headings",
+            "params": [
+                {
+                    "name": "renumber_headings",
+                    "value": "2"
+                },
+                {
+                    "name": "change_headings_to",
+                    "value": "H"
+                }
+            ],
+            "title": "Fix Headings (Renumber, Convert to H)"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "fix_parent_tree",
+            "params": [],
+            "title": "Fix Parent Tree (Final normalization)"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "fix_oc_name",
+            "params": [],
+            "title": "Fix Optional Content Configuration"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_suspect_value",
+            "params": [],
+            "title": "Clear Suspect Flag"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_tag_id",
+            "params": [
+                {
+                    "name": "tag_names",
+                    "value": "^Note$|^TH$"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Tag IDs (Note, TH)"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_tabs_key",
+            "params": [
+                {
+                    "name": "tabs_key",
+                    "value": "S"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "true"
+                }
+            ],
+            "title": "Set Tab Order (Structure)"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_title",
+            "params": [
+                {
+                    "name": "title_type",
+                    "value": "1"
+                },
+                {
+                    "name": "custom_text",
+                    "value": ""
+                },
+                {
+                    "name": "description_tag",
+                    "value": "H1"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Title (From H1 Heading)"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_title",
+            "params": [
+                {
+                    "name": "title_type",
+                    "value": "3"
+                },
+                {
+                    "name": "custom_text",
+                    "value": ""
+                },
+                {
+                    "name": "description_tag",
+                    "value": ""
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Title (From Info Dictionary)"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_title",
+            "params": [
+                {
+                    "name": "title_type",
+                    "value": "2"
+                },
+                {
+                    "name": "custom_text",
+                    "value": ""
+                },
+                {
+                    "name": "description_tag",
+                    "value": ""
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Title (From File Name)"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_pdf_ua_standard",
+            "params": [
+                {
+                    "name": "part_number",
+                    "value": "1"
+                },
+                {
+                    "name": "rev_number",
+                    "value": "2023"
+                }
+            ],
+            "title": "Set PDF/UA-1 Identifier"
+        },
+        {
+            "args": [
+                {"name": "input_pdf", "value": ""},
+                {"name": "output_pdf", "value": ""},
+                {"name": "config_json", "value": ""}
+            ],
+            "name": "set_language",
+            "params": [
+                {
+                    "name": "lang",
+                    "value": "en-US"
+                },
+                {
+                    "name": "overwrite",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Document Language (en-US)"
+        }
+    ],
+    "category": "Accessibility",
+    "desc": "Slim PDF/UA remediation preset. Conservative cleanup, structure repair, and metadata fixes without AutoTag or destructive edits.",
+    "icon": "accessibility_new",
+    "keywords": "",
+    "name": "jcc_default_slim",
+    "title": "JCC Forms (No AutoTag)",
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    }
+}
