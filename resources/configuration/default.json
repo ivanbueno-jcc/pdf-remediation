@@ -1,11 +1,11 @@
 {
   "name": "make_accessible",
-  "title": "Default PDF/UA Remediation Preset",
+  "title": "Make Accessible",
   "desc": "Official default remediation preset for automated PDF/UA-1 compliance using PDFix SDK. The preset performs conservative, non-destructive cleanup, structure repair, tagging completion, and accessibility fixes.",
-  "version": "0.2.1",
-  "min_sdk_version": "8.7.10",
+  "version": "0.6.0",
+  "min_sdk_version": "8.8.0",
   "max_sdk_version": "",
-  "release_date": "21.02.2026",
+  "release_date": "2026/04/17",
   "category": "Accessibility",
   "icon": "accessibility_new",
   "settings": {
@@ -240,12 +240,6 @@
       ]
     },
     {
-      "name": "add_missing_unicode",
-      "title": "Add Missing Unicode Mappings",
-      "desc": "Add missing Unicode mappings to text elements to ensure correct text extraction, searchability, and screen reader output.",
-      "params": []
-    },
-    {
       "name": "set_display_doc_title",
       "title": "Fix Display Document Title",
       "desc": "Synchronize the ViewerPreferences DisplayDocTitle setting with the actual document title so that assistive technologies announce the correct title.",
@@ -259,16 +253,12 @@
     },
     {
       "name": "fix_headings",
-      "title": "Fix Headings (Renumber, Convert to H)",
-      "desc": "Normalize heading hierarchy by resolving skipped levels and converting headings to a consistent generic H structure. This improves outline quality and screen reader navigation.",
+      "title": "Fix Headings (Add missing headings)",
+      "desc": "Normalize heading hierarchy by resolving skipped levels and converting headings to a consistent generic H* structure. This improves outline quality and screen reader navigation.",
       "params": [
         {
           "name": "renumber_headings",
           "value": 2
-        },
-        {
-          "name": "change_headings_to",
-          "value": "H"
         }
       ]
     },
@@ -292,7 +282,7 @@
     },
     {
       "name": "fix_structure_spaces",
-      "title": "Fix Structure Spaces (Add missing, Artifact unnecessary)",
+      "title": "Fix Spaces (Add missing, Artifact unnecessary)",
       "desc": "Insert missing spaces between words and mark unnecessary spaces as artifacts to improve text readability for screen readers.",
       "params": [
         {
@@ -704,7 +694,7 @@
         }
       ],
       "title": "Set Title (From File Name)"
-    }, 
+    },
     {
       "name": "set_pdf_ua_standard",
       "title": "Set PDF/UA-1 Identifier",
@@ -719,7 +709,7 @@
           "value": "2023"
         }
       ]
-    },    
+    },
     {
       "name": "set_language",
       "title": "Set Document Language (en-US)",
@@ -728,6 +718,29 @@
         {
           "name": "lang",
           "value": "en-US"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "create_bookmarks",
+      "title": "Create Bookmarks",
+      "desc": "Create bookmarks for the document to improve navigation and accessibility.",
+      "params": [
+        {
+          "name": "tag_1",
+          "value": "^H1$"
+        },
+        {
+          "name": "tag_2",
+          "value": "^H2$"
+        },
+        {
+          "name": "tag_3",
+          "value": "^H3$"
         },
         {
           "name": "overwrite",
