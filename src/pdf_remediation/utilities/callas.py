@@ -7,6 +7,7 @@ from python_on_whales import docker
 from python_on_whales.exceptions import DockerException
 from pdf_remediation.utilities.resources import (
     CALLAS_FONT_IMAGE,
+    ROOT_DIR,
     append_to_csv,
     ensure_docker_desktop_running,
     print_console_message,
@@ -34,8 +35,7 @@ class Callas: # pylint: disable=too-few-public-methods
         if workspace_path is None:
             raise ValueError("workspace_path is required.")
 
-        project_path = workspace_path.parent.parent.parent.parent.parent
-        env_file = str(project_path / "resources" / "font" / ".env")
+        env_file = str(ROOT_DIR / "resources" / "font" / ".env")
         output_pdf_path.parent.mkdir(parents=True, exist_ok=True)
         input_relative_path = Path(input_pdf_path).relative_to(workspace_path)
         output_relative_path = Path(output_pdf_path).relative_to(workspace_path)
