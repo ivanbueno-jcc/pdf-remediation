@@ -2,24 +2,50 @@
     "actions": [
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Fix the parent tree",
             "name": "fix_parent_tree",
-            "params": [],
             "title": "Fix Parent Tree (Initial repair)"
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Mark defined content as an artifact",
             "name": "artifact_content",
             "params": [
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "object_types",
+                    "type": "object",
                     "value": {
                         "template": {
                             "object_update": [
@@ -44,7 +70,10 @@
                     }
                 },
                 {
+                    "ext": "",
+                    "flags": 1,
                     "name": "artifact_type",
+                    "type": "int",
                     "value": "0"
                 }
             ],
@@ -52,97 +81,222 @@
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
-            "name": "add_missing_unicode",
-            "params": [],
-            "title": "Add Missing Unicode Mappings"
-        },
-        {
-            "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
-            ],
+            "desc": "Fix the ViewerPreferences dictionary",
             "name": "set_display_doc_title",
-            "params": [],
             "title": "Fix Display Document Title"
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Embed and fix all fonts used in the document to ensure consistent rendering and reliable text extraction across platforms and assistive technologies.",
             "name": "embed_font",
-            "params": [],
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "embed_font",
+                    "type": "bool",
+                    "value": "false"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "add_missing_unicode",
+                    "type": "bool",
+                    "value": "true"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "type0_cid_system_info",
+                    "type": "bool",
+                    "value": "true"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "type2_cid_to_gid_map",
+                    "type": "bool",
+                    "value": "true"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "glyph_widths",
+                    "type": "bool",
+                    "value": "true"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "notdef_glyph",
+                    "type": "bool",
+                    "value": "true"
+                }
+            ],
             "title": "Embed Fonts"
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Repair logical heading structure for accessibility (PDF/UA): optional H1–H6 from style, then fix invalid level sequence (no skipped levels).",
             "name": "fix_headings",
             "params": [
                 {
-                    "name": "renumber_headings",
-                    "value": "2"
+                    "ext": "",
+                    "flags": 0,
+                    "name": "fix_heading_levels",
+                    "type": "bool",
+                    "value": "true"
                 },
                 {
-                    "name": "change_headings_to",
-                    "value": "H"
+                    "ext": "",
+                    "flags": 1,
+                    "name": "renumber_headings",
+                    "type": "int",
+                    "value": "2"
                 }
             ],
             "title": "Fix Headings (Renumber, Convert to H)"
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Fix the parent tree",
             "name": "fix_parent_tree",
-            "params": [],
             "title": "Fix Parent Tree (Final normalization)"
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Fix the optional content configuration dictionary",
             "name": "fix_oc_name",
-            "params": [],
             "title": "Fix Optional Content Configuration"
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Fix the document MarkInfo dictionary and Suspects entry",
             "name": "set_suspect_value",
-            "params": [],
             "title": "Clear Suspect Flag"
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Generate a unique ID key for specific tags, such as Note tags required in PDF/UA-1",
             "name": "set_tag_id",
             "params": [
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "tag_names",
+                    "type": "tag",
                     "value": "^Note$|^TH$"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "overwrite",
+                    "type": "bool",
                     "value": "false"
                 }
             ],
@@ -150,18 +304,36 @@
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Set the tab order key for every page. Every page containing an annotation must have the Tabs key set to S",
             "name": "set_tabs_key",
             "params": [
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "tabs_key",
+                    "type": "string",
                     "value": "S"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "overwrite",
+                    "type": "bool",
                     "value": "true"
                 }
             ],
@@ -169,26 +341,50 @@
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
-            ],
-            "name": "set_title",
-            "params": [
                 {
-                    "name": "title_type",
-                    "value": "1"
-                },
-                {
-                    "name": "custom_text",
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
                     "value": ""
                 },
                 {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Set the document title",
+            "name": "set_title",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "title_type",
+                    "type": "int",
+                    "value": "1"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "custom_text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
                     "name": "description_tag",
+                    "type": "string",
                     "value": "H1"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "overwrite",
+                    "type": "bool",
                     "value": "false"
                 }
             ],
@@ -196,26 +392,50 @@
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Set the document title",
             "name": "set_title",
             "params": [
                 {
+                    "ext": "",
+                    "flags": 1,
                     "name": "title_type",
+                    "type": "int",
                     "value": "3"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "custom_text",
+                    "type": "string",
                     "value": ""
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "description_tag",
+                    "type": "string",
                     "value": ""
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "overwrite",
+                    "type": "bool",
                     "value": "false"
                 }
             ],
@@ -223,26 +443,50 @@
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Set the document title",
             "name": "set_title",
             "params": [
                 {
+                    "ext": "",
+                    "flags": 1,
                     "name": "title_type",
+                    "type": "int",
                     "value": "2"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "custom_text",
+                    "type": "string",
                     "value": ""
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "description_tag",
+                    "type": "string",
                     "value": ""
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "overwrite",
+                    "type": "bool",
                     "value": "false"
                 }
             ],
@@ -250,18 +494,36 @@
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Set the PDF/UA identifier",
             "name": "set_pdf_ua_standard",
             "params": [
                 {
+                    "ext": "",
+                    "flags": 1,
                     "name": "part_number",
+                    "type": "string",
                     "value": "1"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "rev_number",
+                    "type": "string",
                     "value": "2023"
                 }
             ],
@@ -269,18 +531,36 @@
         },
         {
             "args": [
-                {"name": "input_pdf", "value": ""},
-                {"name": "output_pdf", "value": ""},
-                {"name": "config_json", "value": ""}
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
             ],
+            "desc": "Set the document language",
             "name": "set_language",
             "params": [
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "lang",
+                    "type": "lang",
                     "value": "en-US"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "overwrite",
+                    "type": "bool",
                     "value": "false"
                 }
             ],
@@ -289,43 +569,71 @@
         {
             "args": [
                 {
+                    "ext": "pdf",
+                    "flags": 2,
                     "name": "input_pdf",
+                    "type": "file_path",
                     "value": ""
                 },
                 {
+                    "ext": "pdf",
+                    "flags": 4,
                     "name": "output_pdf",
-                    "value": ""
-                },
-                {
-                    "name": "config_json",
+                    "type": "file_path",
                     "value": ""
                 }
             ],
+            "desc": "Create bookmarks from the tag tree hierarchy",
             "name": "create_bookmarks",
             "params": [
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "tag_1",
+                    "type": "tag",
                     "value": "^H1$"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "tag_2",
+                    "type": "tag",
                     "value": "^H2$"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "tag_3",
+                    "type": "tag",
                     "value": "^H3$"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "tag_4",
+                    "type": "tag",
                     "value": "^H4$"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "tag_5",
+                    "type": "tag",
                     "value": "^H5$"
                 },
                 {
+                    "ext": "",
+                    "flags": 0,
                     "name": "tag_6",
+                    "type": "tag",
                     "value": "^H6$"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "overwrite",
+                    "type": "bool",
+                    "value": "false"
                 }
             ],
             "title": "Create Bookmarks"
@@ -335,11 +643,11 @@
     "desc": "Slim PDF/UA remediation preset. Conservative cleanup, structure repair, and metadata fixes without AutoTag or destructive edits.",
     "icon": "accessibility_new",
     "keywords": "",
-    "name": "jcc_default_slim",
+    "max_sdk_version": "",
+    "min_sdk_version": "",
+    "name": "jcc_default_slim_imported",
+    "progress_regex": "",
+    "release_date": "",
     "title": "JCC Forms (No AutoTag)",
-    "version": {
-        "major": 1,
-        "minor": 0,
-        "patch": 0
-    }
+    "version": ".."
 }
