@@ -5,7 +5,6 @@ Move processed PDF files back to the active workspace folder.
 
 import argparse
 from pathlib import Path
-import sys
 from .utilities.resources import get_pdf_file_paths, get_project_workspace_path
 from .utilities.resources import (
     move_file_and_delete_source,
@@ -26,8 +25,11 @@ IGNORED_WORKSPACE_FOLDERS = {
     "debug"
 }
 
-if __name__ == '__main__':
 
+def main() -> int:
+    '''
+    Main function to move processed PDFs back to the active workspace folder.
+    '''
     parser = argparse.ArgumentParser(
         description="Move processed files from workspace folders back to active/files."
     )
@@ -119,4 +121,10 @@ if __name__ == '__main__':
         else:
             print_console_section("NO WORK", "warn")
             print_console_message("warn", "No PDF files found in processed or files folders.")
-            sys.exit()
+            return 0
+
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

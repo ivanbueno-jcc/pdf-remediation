@@ -4,7 +4,6 @@ Reset the files in the working directory with the source files.
 '''
 
 import argparse
-import sys
 from .utilities.resources import get_pdf_file_paths, get_project_source_path
 from .utilities.resources import (
     clear_workspace_folder,
@@ -15,8 +14,11 @@ from .utilities.resources import (
     print_console_section,
 )
 
-if __name__ == '__main__':
 
+def main() -> int:
+    '''
+    Main function to reset the workspace folder from source PDFs.
+    '''
     parser = argparse.ArgumentParser(
         description="Reset the files in the working directory with the source files."
     )
@@ -81,4 +83,10 @@ if __name__ == '__main__':
         else:
             print_console_section("NO SOURCE FILES", "warn")
             print_console_message("warn", "No PDF files found in the source.")
-            sys.exit()
+            return 0
+
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
