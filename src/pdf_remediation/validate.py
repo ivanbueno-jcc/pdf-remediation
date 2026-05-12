@@ -4,7 +4,6 @@ Validate PDF files in a project workspace folder.
 '''
 import argparse
 from datetime import datetime
-import sys
 from .utilities.pdfix import get_page_count_multiprocess
 from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import get_project_workspace_subfolder_file_paths
@@ -29,8 +28,11 @@ FULL_VALIDATION_IGNORED_SUBFOLDERS = [
     "debug"
 ]
 
-if __name__ == '__main__':
 
+def main() -> int:
+    '''
+    Main function to validate PDF files in a project workspace.
+    '''
     parser = argparse.ArgumentParser(
         description="Validate PDF files in a project workspace."
     )
@@ -148,4 +150,10 @@ if __name__ == '__main__':
         else:
             print_console_section("NO WORK", "warn")
             print_console_message("warn", "No pending PDF files found.")
-            sys.exit()
+            return 0
+
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

@@ -43,7 +43,7 @@ flowchart TD
 
    Check if the license is valid:
    ```
-   uv run -m pdf_remediation.license
+   uv run license
    ```
 
 4) Install Docker Desktop (required for Callas/PDFix Docker font-fix steps).
@@ -198,24 +198,24 @@ V5 --> W10
 
 1) Initialize a project:
    ```
-   uv run -m pdf_remediation.init delnorte
+   uv run init delnorte
    ```
 2) Copy PDFs into `resources/projects/delnorte/source`.
 3) Validate the PDFs to establish a baseline.
    ```
-   uv run -m pdf_remediation.validate delnorte
+   uv run validate delnorte
    ```
 4) Remediate PDFs:
    ```
-   uv run -m pdf_remediation.fix delnorte
+   uv run fix delnorte
    ```
 5) If font issues are flagged, run Callas font remediation:
    ```
-   uv run -m pdf_remediation.font_fix delnorte
+   uv run font_fix delnorte
    ```
 6) After Callas, run the PDFix missing-unicode font fix on any remaining font issues:
    ```
-   uv run -m pdf_remediation.font_fix_pdfix delnorte
+   uv run font_fix_pdfix delnorte
    ```
 7) Run the fallback remediation on pdf's that were not remediated in #4.
 
@@ -227,7 +227,7 @@ V5 --> W10
 
    b. Remediate with the fallback configuration.
    ```
-   uv run -m pdf_remediation.fix delnorte --config-file=default-fallback.json
+   uv run fix delnorte --config-file=default-fallback.json
    ```
 8) Run the fallback remediation on the files with remaining font issues.
    
@@ -241,7 +241,7 @@ V5 --> W10
    b. Remediate with the fallback configuration (`reprocess` returns files to
    `active/files`, so run `fix` on `active`, which is the default):
    ```
-   uv run -m pdf_remediation.fix delnorte --config-file=default-fallback.json
+   uv run fix delnorte --config-file=default-fallback.json
    ```
 
 9) Check the workspace status:
@@ -268,14 +268,14 @@ Bootstrap a project and get a clean baseline before remediation begins.
 
 #### 1) Initialize a project
 ```
-uv run -m pdf_remediation.init <project_name>
+uv run init <project_name>
 ```
 
 Copy PDFs into the printed `resources/projects/<project>/source` directory.
 
 #### 2) Validate PDFs
 ```
-uv run -m pdf_remediation.validate <project_name> [workspace] [folder] [directory] [--full] [--skip-page-count]
+uv run validate <project_name> [workspace] [folder] [directory] [--full] [--skip-page-count]
 ```
 
 For ad-hoc validation of a single PDF, use [pdfaudit.org](https://www.pdfaudit.org/).
@@ -322,13 +322,13 @@ flowchart LR
 
 #### 1) Remediate PDFs
 ```
-uv run -m pdf_remediation.fix <project_name> [workspace] [folder]
+uv run fix <project_name> [workspace] [folder]
 ```
 
 Use `workspace` and `folder` to remediate a specific subfolder in the project.
 
 For verbose progress and file-level visibility (useful for spotting blocking files), run:
-`uv run -m pdf_remediation.fix <project_name> [workspace] [folder] --verbose`
+`uv run fix <project_name> [workspace] [folder] --verbose`
 Tune processing with:
 - `--chunk-size <n>` to control batch size (default: 500)
 - `--n-cpu <n>` to control parallel workers (default: 4)
@@ -382,7 +382,7 @@ Target action files must exist under `resources/configuration/`.
 
 #### 2) Fix font issues (Callas)
 ```
-uv run -m pdf_remediation.font_fix <project_name> [workspace] [folder]
+uv run font_fix <project_name> [workspace] [folder]
 ```
 
 `FontFix` targets the `font-issues` folder by default, runs Callas pdfToolbox
@@ -407,7 +407,7 @@ Options:
 
 #### 3) Fix missing-unicode font issues (PDFix)
 ```
-uv run -m pdf_remediation.font_fix_pdfix <project_name> [workspace] [folder]
+uv run font_fix_pdfix <project_name> [workspace] [folder]
 ```
 
 Run this after `FontFix` to process files moved into `font-issues-missing-unicode`.
@@ -444,7 +444,7 @@ Update
 then re-run `Fix`.
 
 ```
-uv run -m pdf_remediation.fix <project_name> [workspace] active --config-file [new-config.json]
+uv run fix <project_name> [workspace] active --config-file [new-config.json]
 ```
 
 `new-config.json` is located in `resources/configuration`
@@ -567,6 +567,12 @@ argument so you can run separate workflows in different subfolders (for example,
 ## Commands
 
 Project scripts can be run directly with `uv run <script>`:
+- `uv run license`
+- `uv run init ...`
+- `uv run validate ...`
+- `uv run fix ...`
+- `uv run font_fix ...`
+- `uv run font_fix_pdfix ...`
 - `uv run go ...`
 - `uv run readyset ...`
 - `uv run fleet ...`

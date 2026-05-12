@@ -1,6 +1,7 @@
 '''
 Check and display license information.
 '''
+import argparse
 from .utilities.pdfix import license_status
 from .utilities.resources import (
     print_console_banner,
@@ -9,7 +10,16 @@ from .utilities.resources import (
     print_console_section,
 )
 
-if __name__ == "__main__":
+
+def main() -> int:
+    '''
+    Main function to display PDFix license information.
+    '''
+    parser = argparse.ArgumentParser(
+        description="Check and display PDFix license information."
+    )
+    parser.parse_args()
+
     pdfix_license = license_status()
 
     print_console_banner("PDFIX LICENSE")
@@ -20,3 +30,9 @@ if __name__ == "__main__":
 
     print_console_section("LICENSE DETAILS", "info")
     print_console_json(pdfix_license)
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -11,7 +11,11 @@ from .utilities.resources import (
     print_console_message,
 )
 
-if __name__ == '__main__':
+
+def main() -> int:
+    '''
+    Main function to initialize project structure.
+    '''
     parser = argparse.ArgumentParser(
         description="Initialize project structure."
     )
@@ -28,3 +32,9 @@ if __name__ == '__main__':
             ("Workspace", workspace_path.resolve()),
         ])
         print_console_message("info", f"Copy PDF files to: {source_path.resolve()}")
+
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
