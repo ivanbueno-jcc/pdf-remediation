@@ -56,16 +56,19 @@ flowchart TD
 uv run go delnorte
 ```
 
-`go.py` orchestrates an optional pre-fix `validate --skip-page-count`
-(`--pre-validate`), then `fix`, optional `font_fix` + `font_fix_pdfix`
-(`--skip-font-fix`), reprocesses all workspace folders back into
-`active/files`, runs `fix_target` on `active` with
+`go.py` orchestrates a required pre-fix `validate --skip-page-count` on
+`active/files`, immediately moves files that meet the configured compliance
+gate to `remediated/files`, then runs `fix`, optional `font_fix` +
+`font_fix_pdfix` (`--skip-font-fix`), reprocesses all workspace folders back
+into `active/files`, runs `fix_target` on `active` with
 `5-1:restore_metadata.json` and `7.1-9:restore_metadata.json`, and finishes
 with `validate --full --skip-page-count`.
 It also initializes missing projects automatically. Pass
-`--wcag-and-ua1-must-pass` to make the remediation stages move files to
-`remediated/` only when both veraPDF `wcag` and `ua1` pass. By default,
-those stages still route files based on `wcag` only.
+`--wcag-and-ua1-must-pass` to make the pre-fix gate and remediation stages
+move files to `remediated/` only when both veraPDF `wcag` and `ua1` pass. By
+default, those stages still route files based on `wcag` only. The
+`--pre-validate` flag is accepted only for backwards compatibility because
+pre-fix validation now always runs.
 
 If `source/` is empty, `go.py` can automatically download and extract the
 live files backup from Pantheon into `source/`.
@@ -81,7 +84,7 @@ uv run readyset delnorte alameda sonoma
 `readyset` runs `fleet.py go`, which runs `go.py` once per project in the
 order provided, prints a high-visibility banner for each project, and stops on
 the first non-zero exit code. It also accepts `--wcag-and-ua1-must-pass` and
-forwards that strict remediated-file requirement to each project run.
+forwards that strict pre-fix and remediated-file requirement to each project run.
 
 ### To run reprocess across all projects sequentially:
 
@@ -113,7 +116,7 @@ flowchart LR
 subgraph ORCH["Orchestrator (go.py / CLI)"]
     A[Init Project]
     B[Seed active/files from source]
-    C["Optional Pre-Fix Validate (--pre-validate)"]
+    C["Required Pre-Fix Validate"]
     D[Run fix.py]
     E["Run font_fix.py (optional; skipped by --skip-font-fix)"]
     F["Run font_fix_pdfix.py (optional; skipped by --skip-font-fix)"]
@@ -160,6 +163,8 @@ B --> W2
 C --> V1
 W2 --> V1
 V1 --> W10
+V1 -->|Already compliant| W4
+V1 -->|Needs remediation| D
 
 D --> P1
 P1 --> P2
@@ -582,7 +587,8 @@ Project scripts can be run directly with `uv run <script>`:
 
 ### Pipeline orchestration
 - `go.py` runs the remediation pipeline in sequence:
-  1) optional pre-fix validate (`--skip-page-count`, pass `--pre-validate`)
+  1) required pre-fix validate (`--skip-page-count`) on `active/files`; files
+     that meet the configured compliance gate move immediately to `remediated/files`
   2) `fix` on `active`
   3) optional `font_fix` on `font-issues` (skipped by `--skip-font-fix`)
   4) optional `font_fix_pdfix` on `font-issues-missing-unicode` (skipped by `--skip-font-fix`)
@@ -595,9 +601,12 @@ Project scripts can be run directly with `uv run <script>`:
 - If `source/` is empty and Terminus is installed/configured, `go.py` can
   download and extract the live files backup into `source/`.
 - `--wcag-and-ua1-must-pass` is forwarded to `fix.py`, `font_fix.py`,
-  `font_fix_pdfix.py`, and the `go.py` `fix_target` stage, changing only the
-  remediated routing rule: by default those stages move files when `wcag`
-  passes; with the flag they require both `wcag` and `ua1`.
+  `font_fix_pdfix.py`, and the `go.py` `fix_target` stage. It also controls
+  the required pre-fix validation gate. By default, files move to
+  `remediated/files` when `wcag` passes; with the flag they require both
+  `wcag` and `ua1`.
+- `--pre-validate` is deprecated and has no effect; pre-fix validation is
+  required and always runs.
 - `readyset` runs `fleet.py go`, which runs `go.py` sequentially across
   multiple projects.
 - Syntax:

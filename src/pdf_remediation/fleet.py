@@ -296,7 +296,7 @@ def _build_parser() -> argparse.ArgumentParser:
     go_parser.add_argument(
         '--pre-validate',
         action='store_true',
-        help='Run pre-fix validate step.'
+        help='Deprecated compatibility flag. go.py pre-fix validation always runs.'
     )
     go_parser.add_argument(
         '--skip-font-fix',
@@ -306,8 +306,8 @@ def _build_parser() -> argparse.ArgumentParser:
     go_parser.add_argument(
         '--wcag-and-ua1-must-pass',
         action='store_true',
-        help='Require go.py remediation stages to move files to ' \
-            'remediated only when both WCAG and UA1 pass.'
+        help='Require go.py pre-fix validation and remediation stages to move ' \
+            'files to remediated only when both WCAG and UA1 pass.'
     )
     go_parser.add_argument(
         '--verbose',

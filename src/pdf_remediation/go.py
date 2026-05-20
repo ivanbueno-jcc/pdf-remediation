@@ -4,14 +4,19 @@ Run remediation modules in sequence.
 '''
 
 import argparse
+from datetime import datetime
 from pathlib import Path
 import subprocess
 import sys
 
+from .utilities.verapdf import validate_pdf_multiprocess
 from .utilities.resources import (
     PROJECT_BASE_PATH,
     download_source_with_terminus,
+    get_project_workspace_subfolder_file_paths,
+    get_project_workspace_subfolder_path,
     get_project_source_path,
+    move_file_and_delete_source,
     print_console_banner,
     print_console_key_value_rows,
     print_console_message,
@@ -36,15 +41,127 @@ def print_pipeline_banner(step_number: int, step_name: str) -> None:
     print_console_banner(f"PIPELINE STEP {step_number}: {step_name}", "info")
 
 
+def validation_passed_required_compliance(
+        ua1_result: bool | str,
+        wcag_result: bool | str,
+        wcag_and_ua1_must_pass: bool) -> bool:
+    '''
+    Return whether a validation result satisfies the configured compliance gate.
+    '''
+    if wcag_and_ua1_must_pass:
+        return ua1_result is True and wcag_result is True
+    return wcag_result is True
+
+
+def route_pre_fix_valid_files( # pylint: disable=too-many-arguments,too-many-positional-arguments
+        validation_results: list,
+        active_files_path: Path,
+        project_name: str,
+        workspace_name: str,
+        wcag_and_ua1_must_pass: bool,
+        verbose: bool) -> int:
+    '''
+    Move pre-fix validation-passing files directly to remediated/files.
+    '''
+    moved_count = 0
+    print_console_section("ROUTING PRE-FIX VALID FILES", "info")
+    print_console_key_value_rows([
+        (
+            "Required Compliance",
+            "WCAG + UA1" if wcag_and_ua1_must_pass else "WCAG"
+        )
+    ])
+
+    for file_path, ua1_result, _, wcag_result, _, _, _ in validation_results:
+        if not validation_passed_required_compliance(
+            ua1_result,
+            wcag_result,
+            wcag_and_ua1_must_pass
+        ):
+            continue
+
+        source_path = Path(file_path)
+        if verbose:
+            try:
+                reported_path = source_path.relative_to(active_files_path)
+            except ValueError:
+                reported_path = source_path
+            print_console_message("debug", f"Pre-fix compliant: {reported_path}", indent=2)
+
+        if move_file_and_delete_source(
+            source_path,
+            active_files_path,
+            project_name,
+            workspace_name,
+            "remediated"
+        ):
+            moved_count += 1
+
+    print_console_message(
+        "success",
+        f"Moved pre-fix compliant files to remediated: {moved_count}"
+    )
+    return moved_count
+
+
+def run_required_pre_fix_validation(
+        project_name: str,
+        workspace_name: str,
+        wcag_and_ua1_must_pass: bool,
+        verbose: bool) -> int:
+    '''
+    Validate active/files before remediation and route files that already pass.
+    '''
+    active_files_path = get_project_workspace_subfolder_path(
+        project_name,
+        workspace_name,
+        "active"
+    )
+    file_paths = get_project_workspace_subfolder_file_paths(
+        project_name,
+        workspace_name,
+        "active",
+        "files"
+    )
+
+    print_console_key_value_rows([
+        ("Folder", "active"),
+        ("Directory", "files"),
+        ("PDFs Found", len(file_paths)),
+    ])
+
+    if len(file_paths) == 0:
+        print_console_section("NO WORK", "warn")
+        print_console_message("warn", "No active PDF files found for pre-fix validation.")
+        return 0
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    validation_results = validate_pdf_multiprocess(
+        active_files_path,
+        file_paths,
+        timestamp,
+        "pre-fix"
+    )
+    route_pre_fix_valid_files(
+        validation_results,
+        active_files_path,
+        project_name,
+        workspace_name,
+        wcag_and_ua1_must_pass,
+        verbose
+    )
+    return 0
+
+
 def main() -> int: # pylint: disable=too-many-locals
     '''
-    Run optional pre-fix validation, fix, optional font_fix/font_fix_pdfix,
+    Run required pre-fix validation, fix, optional font_fix/font_fix_pdfix,
     reprocess all workspace folders, run restore-metadata fix_target actions,
     then final full validation.
     '''
     parser = argparse.ArgumentParser(
         description=(
-            "Run optional pre-fix validate, fix, optional font_fix/font_fix_pdfix, "
+            "Run required pre-fix validate, fix, optional font_fix/font_fix_pdfix, "
             "reprocess all workspace folders, run restore-metadata fix_target "
             "actions, then validate --full for a project workspace."
         )
@@ -79,7 +196,7 @@ def main() -> int: # pylint: disable=too-many-locals
     parser.add_argument(
         "--pre-validate",
         action='store_true',
-        help="Run pre-fix validate step (disabled by default)."
+        help="Deprecated compatibility flag. Pre-fix validation now always runs."
     )
     parser.add_argument(
         "--skip-font-fix",
@@ -102,8 +219,8 @@ def main() -> int: # pylint: disable=too-many-locals
         "--wcag-and-ua1-must-pass",
         action='store_true',
         help=(
-            "Require remediation stages to move files to remediated only when "
-            "both WCAG and UA1 pass."
+            "Require pre-fix validation and remediation stages to move files "
+            "to remediated only when both WCAG and UA1 pass."
         )
     )
     args = parser.parse_args()
@@ -137,7 +254,7 @@ def main() -> int: # pylint: disable=too-many-locals
         ("Config File", args.config_file),
         ("Chunk Size", args.chunk_size),
         ("N CPU", args.n_cpu if args.n_cpu is not None else "default"),
-        ("Pre Validate", args.pre_validate),
+        ("Pre Validate", "required"),
         ("Skip Font Fix", args.skip_font_fix),
         ("WCAG And UA1 Must Pass", args.wcag_and_ua1_must_pass),
         ("Verbose", args.verbose),
@@ -146,31 +263,31 @@ def main() -> int: # pylint: disable=too-many-locals
     print_console_section("PIPELINE OVERVIEW", "info")
     print_console_message(
         "",
-        "1) validate (--skip-page-count) [pre-fix, optional via --pre-validate]",
+        "1) validate (--skip-page-count) [pre-fix, required; passing files -> remediated]",
         indent=2
     )
-    print_console_message("log", "2) fix (active)", indent=2)
+    print_console_message("", "2) fix (active)", indent=2)
     print_console_message(
-        "log",
+        "",
         "3) font_fix (font-issues) [optional via --skip-font-fix]",
         indent=2
     )
     print_console_message(
-        "log",
+        "",
         "4) font_fix_pdfix (font-issues-missing-unicode) [optional via --skip-font-fix]",
         indent=2
     )
     print_console_message(
-        "log",
+        "",
         "5) reprocess (all folders -> active/files)",
         indent=2
     )
     print_console_message(
-        "log",
+        "",
         "6) fix_target (active, targets: 5-1 + 7.1-9 -> restore_metadata.json)",
         indent=2
     )
-    print_console_message("log", "7) validate (--full --skip-page-count) [final]", indent=2)
+    print_console_message("", "7) validate (--full --skip-page-count) [final]", indent=2)
 
     fix_args = [
         args.project_name,
@@ -239,27 +356,26 @@ def main() -> int: # pylint: disable=too-many-locals
     if args.debug:
         fix_target_args.append("--debug")
 
-    pre_validate_args = [
+    final_validate_args = [
         args.project_name,
         args.workspace_name,
-        "--skip-page-count"
+        "--skip-page-count",
+        "--full"
     ]
-    final_validate_args = [*pre_validate_args, "--full"]
 
-    if args.pre_validate:
-        print_pipeline_banner(1, "validate (pre-fix)")
-        rc = run_module("pdf_remediation.validate", pre_validate_args)
-        if rc != 0:
-            print_console_message(
-                "error",
-                f"Pipeline stopped: pre-fix validate failed with exit code {rc}."
-            )
-            return rc
-    else:
+    print_pipeline_banner(1, "validate (pre-fix)")
+    rc = run_required_pre_fix_validation(
+        args.project_name,
+        args.workspace_name,
+        args.wcag_and_ua1_must_pass,
+        args.verbose
+    )
+    if rc != 0:
         print_console_message(
-            "warn",
-            "Skipping pre-fix validate (pass --pre-validate to enable)."
+            "error",
+            f"Pipeline stopped: pre-fix validate failed with exit code {rc}."
         )
+        return rc
 
     print_pipeline_banner(2, "fix")
     rc = run_module("pdf_remediation.fix", fix_args)
