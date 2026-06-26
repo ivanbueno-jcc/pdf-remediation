@@ -26,8 +26,8 @@ CONFIG_FILE = CONFIG_DIR / "default.json"
 
 PROJECT_BASE_PATH = Path(os.getenv('PROJECT_BASE_PATH', './resources/projects'))
 
-CALLAS_FONT_IMAGE = "pdfix/font-fix-callas:v1.0.5"
-PDFIX_FONT_IMAGE = "pdfix/font-fix-pdfix:v1.0.5"
+CALLAS_FONT_IMAGE = "pdfix/font-fix-callas:v1.0.11"
+PDFIX_FONT_IMAGE = "pdfix/font-fix-pdfix:v1.0.9"
 FIX_PROCESS_TIMEOUT_SECONDS = 500
 _DOCKER_STATE = {"ready": False}
 
@@ -581,7 +581,7 @@ def get_configuration_file(config_file: str = "default.json") -> Path:
 def get_project_path(project_name: str) -> Path:
     '''
     Get the project path.
-    
+
     :param project_name: Description
     :type project_name: str
     :return: Description
@@ -594,7 +594,7 @@ def get_project_path(project_name: str) -> Path:
 def get_project_source_path(project_name: str) -> Path:
     '''
     Get the project source path.
-    
+
     :param project_name: Description
     :type project_name: str
     :return: Description
@@ -607,7 +607,7 @@ def get_project_source_path(project_name: str) -> Path:
 def get_project_workspace_path(project_name: str, workspace_name: str = "default") -> Path:
     '''
     Get the project workspace path.
-    
+
     :param project_name: Description
     :type project_name: str
     :param workspace_name: Description
@@ -639,7 +639,7 @@ def get_project_workspace_file_paths(
         subfolder_name: str) -> list:
     '''
     Get the PDF file paths in the project workspace subfolder.
-    
+
     :param project_name: Description
     :type project_name: str
     :param workspace_name: Description
@@ -692,7 +692,7 @@ def get_project_workspace_subfolder_path(
         directory: str = "files") -> Path:
     '''
     Get the project workspace subfolder path.
-    
+
     :param project_name: Description
     :type project_name: str
     :param workspace_name: Description
@@ -716,7 +716,7 @@ def get_project_workspace_subfolder_file_paths(
         directory: str = "files") -> list:
     '''
     Get the PDF file paths in the project workspace subfolder and directory.
-    
+
     :param project_name: Description
     :type project_name: str
     :param workspace_name: Description
@@ -805,7 +805,7 @@ def move_file_and_delete_source(
         subfolder_name: str) -> bool:
     '''
     Move a file from the source folder to the destination subfolder and delete the source file.
-    
+
     :param source_path: Description
     :type source_path: Path
     :param source_folder: Description
@@ -1048,7 +1048,7 @@ def route_validation_results(
 def clear_workspace_folder(workspace_folder_path):
     '''
     Clear the workspace folder.
-    
+
     :param workspace_folder_path: Description
     '''
     if not workspace_folder_path.exists():
@@ -1064,7 +1064,7 @@ def clear_workspace_folder(workspace_folder_path):
 def append_to_csv(file_path: Path, row: list) -> None:
     '''
     Append a row to a CSV file.
-    
+
     :param file_path: Description
     :type file_path: Path
     :param row: Description
@@ -1105,7 +1105,7 @@ def print_workspace_summary(
         ignored_subfolders: list = None) -> None:
     '''
     Print a summary of the workspace folders and file counts.
-    
+
     :param project_name: Description
     :type project_name: str
     :param workspace_name: Description
@@ -1172,7 +1172,7 @@ def stream_to_data(stm):
 def bytearray_to_data(byte_array):
     '''
     Convert bytearray to c_ubyte array.
-    
+
     :param byte_array: Description
     '''
     size = len(byte_array)
@@ -1181,7 +1181,7 @@ def bytearray_to_data(byte_array):
 def json_to_raw_data(json_dict):
     '''
     Convert JSON dictionary to raw data.
-    
+
     :param json_dict: Description
     '''
     json_str = json.dumps(json_dict)
