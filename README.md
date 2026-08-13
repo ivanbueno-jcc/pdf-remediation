@@ -585,6 +585,21 @@ Project scripts can be run directly with `uv run <script>`:
 - `uv run reset ...`
 - `uv run status ...`
 
+### Single-PDF security removal
+
+Use `solo-remove-security` to save an unsecured copy of one PDF that PDFix can
+open with an empty password:
+
+```bash
+uv run solo-remove-security input.pdf output.pdf
+```
+
+The command never changes the input file and emits a JSON result. It does not
+accept or recover non-empty passwords. Already-unsecured PDFs are copied
+unchanged. When a secured PDF contains digital signature fields, the command
+removes security and warns that saving the output invalidates those signatures.
+Pass `--compact` for one-line JSON.
+
 ### Pipeline orchestration
 - `go.py` runs the remediation pipeline in sequence:
   1) required pre-fix validate (`--skip-page-count`) on `active/files`; files
