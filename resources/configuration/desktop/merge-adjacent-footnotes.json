@@ -1,0 +1,105 @@
+{
+    "actions": [
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Merge neighboring Note elements in reading order when the second element contains footnote text rather than a footnote number. The first element remains as the merge target.",
+            "name": "merge_tags",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_names",
+                    "type": "tag",
+                    "value": {
+                        "template": {
+                            "tag_neighbours": [
+                                {
+                                    "query": {
+                                        "$and": [
+                                            {
+                                                "$0_role_mapped_tag_type": "Note"
+                                            },
+                                            {
+                                                "$1_role_mapped_tag_type": "Note"
+                                            },
+                                            {
+                                                "$0_text": {
+                                                    "$regex": "^\\s*\\d"
+                                                }
+                                            },
+                                            {
+                                                "$1_text": {
+                                                    "$regex": "^(?!\\s*[0-9*]).+"
+                                                }
+                                            }
+                                        ],
+                                        "param": [
+                                            "pds_struct_elem",
+                                            "pds_struct_elem"
+                                        ]
+                                    },
+                                    "statement": "$if"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "adjacent_type",
+                    "type": "string",
+                    "value": "Note"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "skip_tags",
+                    "type": "string",
+                    "value": "^(Document|Part|Art|Sect|Div|BlockQuote|Caption|TOC|TOCI|Index|NonStruct|Private)$"
+                },
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "merge_target",
+                    "type": "string",
+                    "value": "first"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_name",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "title": "Merge Adjacent Footnotes"
+        }
+    ],
+    "category": "Tags",
+    "desc": "Merge neighboring Note elements in reading order when the second element contains footnote text rather than a footnote number. The first element remains as the merge target.",
+    "icon": "join_full",
+    "keywords": "merge tags, join tags, combine tags, neighbouring tags, reading order, cross-page, split paragraph, List, Table, structure tree",
+    "max_sdk_version": "",
+    "min_sdk_version": "",
+    "name": "merge_tags",
+    "progress_regex": "",
+    "release_date": "",
+    "title": "Merge Adjacent Footnotes",
+    "version": "v0.0.0"
+}
