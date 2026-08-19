@@ -1,0 +1,279 @@
+{
+    "actions": [
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Synchronize the ViewerPreferences DisplayDocTitle setting with the actual document title so that assistive technologies announce the correct title.",
+            "name": "set_display_doc_title",
+            "title": "Fix Display Document Title"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Set the document Title metadata by picking text from the first matching structure tag (H1). This aligns metadata with the visible main heading for assistive technologies and preserves any existing Title unless overwrite is enabled.",
+            "name": "set_title",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "title_type",
+                    "type": "int",
+                    "value": "1"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "custom_text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "description_tag",
+                    "type": "string",
+                    "value": "H1"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "overwrite",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "title": "Set Title (From H1 Heading)"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Set the document Title metadata from the PDF Info dictionary. Use this as a reliable fallback when the tag structure does not contain a suitable heading. Existing Title is preserved unless overwrite is enabled.",
+            "name": "set_title",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "title_type",
+                    "type": "int",
+                    "value": "3"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "custom_text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "description_tag",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "overwrite",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "title": "Set Title (From Info Dictionary)"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Set the document Title metadata from the input file name. This provides a deterministic fallback title when neither tag-based detection nor existing Info metadata is suitable. Existing Title is preserved unless overwrite is enabled.",
+            "name": "set_title",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "title_type",
+                    "type": "int",
+                    "value": "2"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "custom_text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "description_tag",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "overwrite",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "title": "Set Title (From File Name)"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Merge neighboring Note elements in reading order when the second element contains footnote text rather than a footnote number. The first element remains as the merge target.",
+            "name": "merge_tags",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_names",
+                    "type": "tag",
+                    "value": {
+                        "template": {
+                            "tag_neighbours": [
+                                {
+                                    "query": {
+                                        "$and": [
+                                            {
+                                                "$0_role_mapped_tag_type": "Note"
+                                            },
+                                            {
+                                                "$1_role_mapped_tag_type": "Note"
+                                            },
+                                            {
+                                                "$0_text": {
+                                                    "$regex": "^\\s*\\d"
+                                                }
+                                            },
+                                            {
+                                                "$1_text": {
+                                                    "$regex": "^(?!\\s*[0-9*]).+"
+                                                }
+                                            }
+                                        ],
+                                        "param": [
+                                            "pds_struct_elem",
+                                            "pds_struct_elem"
+                                        ]
+                                    },
+                                    "statement": "$if"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "adjacent_type",
+                    "type": "string",
+                    "value": "Note"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "skip_tags",
+                    "type": "string",
+                    "value": "^(Document|Part|Art|Sect|Div|BlockQuote|Caption|TOC|TOCI|Index|NonStruct|Private)$"
+                },
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "merge_target",
+                    "type": "string",
+                    "value": "first"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_name",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "title": "Merge Adjacent Footnotes"
+        }
+    ],
+    "category": "Accessibility",
+    "desc": "Remediate opinions by merging adjacent split footnote structure elements and ensuring proper document structure.",
+    "icon": "merge_type",
+    "keywords": "",
+    "max_sdk_version": "",
+    "min_sdk_version": "9.2.0",
+    "name": "jcc_remediate_opinions",
+    "progress_regex": "",
+    "release_date": "2026-08-18",
+    "title": "JCC Remediate Opinions",
+    "version": "0.1.0"
+}
