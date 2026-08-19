@@ -88,9 +88,9 @@
         "title": "Set Title (From File Name)"
     },
     {
+      "desc": "Merge neighbouring structure tags in reading order ($0 above $1) by moving children from one tag into another",
+      "expanded": true,
       "name": "merge_tags",
-      "title": "Merge Adjacent Footnotes",
-      "desc": "Merge neighboring Note elements in reading order when the second element contains footnote text rather than a footnote number. The first element remains as the merge target.",
       "params": [
         {
           "name": "tag_names",
@@ -107,13 +107,8 @@
                         "$1_role_mapped_tag_type": "Note"
                       },
                       {
-                        "$0_text": {
-                          "$regex": "^\\s*\\d"
-                        }
-                      },
-                      {
                         "$1_text": {
-                          "$regex": "^(?!\\s*[0-9*]).+"
+                          "$regex": "^(?!\\s*\\d).+"
                         }
                       }
                     ],
@@ -126,7 +121,8 @@
                 }
               ]
             }
-          }
+          },
+          "value_name": "Note chains"
         },
         {
           "name": "adjacent_type",
@@ -144,7 +140,8 @@
           "name": "tag_name",
           "value": ""
         }
-      ]
+      ],
+      "title": "Merge Tags"
     }
   ]
 }
