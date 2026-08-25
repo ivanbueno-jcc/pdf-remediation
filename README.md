@@ -598,7 +598,9 @@ The command never changes the input file and emits a JSON result. It does not
 accept or recover non-empty passwords. Already-unsecured PDFs are copied
 unchanged. When a secured PDF contains digital signature fields, the command
 removes security and warns that saving the output invalidates those signatures.
-Pass `--compact` for one-line JSON.
+Before opening the PDF, the command passes the `PDFIX_LICENSE_NAME` and
+`PDFIX_LICENSE_KEY` values from `.env` to PDFix account authorization. Pass
+`--compact` for one-line JSON.
 
 ### Pipeline orchestration
 - `go.py` runs the remediation pipeline in sequence:

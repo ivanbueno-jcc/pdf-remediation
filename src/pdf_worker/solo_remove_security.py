@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 from datetime import datetime
@@ -11,6 +12,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from pdfixsdk import GetPdfix, kFieldSignature, kSaveFull
 
 
@@ -29,6 +31,15 @@ def get_pdfix_error(pdfix: Any) -> str:
     if error and error != "No error.":
         return error
     return "Unknown PDFix error"
+
+
+def authorize_pdfix(pdfix: Any) -> None:
+    '''Authorize PDFix with the account license configured in the environment.'''
+    load_dotenv()
+    license_name = os.getenv("PDFIX_LICENSE_NAME")
+    license_key = os.getenv("PDFIX_LICENSE_KEY")
+    if license_name and license_key:
+        pdfix.GetAccountAuthorization().Authorize(license_name, license_key)
 
 
 # pylint: disable=too-many-positional-arguments,too-many-arguments
@@ -137,6 +148,7 @@ def remove_security(pdf_input_path: str, pdf_output_path: str) -> dict[str, Any]
         pdfix = GetPdfix()
         if pdfix is None:
             raise SoloRemoveSecurityError("PDFix initialization failed.")
+        authorize_pdfix(pdfix)
 
         doc = pdfix.OpenDoc(str(input_path), "")
         if doc is None:

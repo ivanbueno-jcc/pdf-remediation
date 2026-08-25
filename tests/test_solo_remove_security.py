@@ -114,6 +114,38 @@ class SoloRemoveSecurityTests(unittest.TestCase):
             self.assertIn("empty password", result["error"])
             self.assertFalse(output_path.exists())
 
+    @mock.patch.object(solo_remove_security, "load_dotenv")
+    @mock.patch.object(solo_remove_security, "GetPdfix")
+    def test_passes_configured_license_to_pdfix(
+            self,
+            get_pdfix: mock.Mock,
+            load_dotenv: mock.Mock) -> None:
+        '''Configured account credentials are passed before the PDF is opened.'''
+        with tempfile.TemporaryDirectory() as temp_dir, mock.patch.dict(
+                solo_remove_security.os.environ,
+                {
+                    "PDFIX_LICENSE_NAME": "test-license-name",
+                    "PDFIX_LICENSE_KEY": "test-license-key",
+                }):
+            root = Path(temp_dir)
+            input_path = root / "input.pdf"
+            output_path = root / "output.pdf"
+            input_path.write_bytes(b"unsecured")
+            doc = mock.Mock()
+            doc.IsSecured.return_value = False
+            pdfix = mock.Mock()
+            pdfix.OpenDoc.return_value = doc
+            get_pdfix.return_value = pdfix
+
+            result = solo_remove_security.remove_security(str(input_path), str(output_path))
+
+            load_dotenv.assert_called_once_with()
+            pdfix.GetAccountAuthorization.return_value.Authorize.assert_called_once_with(
+                "test-license-name", "test-license-key"
+            )
+            pdfix.OpenDoc.assert_called_once_with(str(input_path.resolve()), "")
+            self.assertEqual(result["status"], "already_unsecured")
+
     @mock.patch.object(solo_remove_security, "GetPdfix")
     def test_returns_error_when_save_fails(self, get_pdfix: mock.Mock) -> None:
         '''A failed PDFix save leaves no output file behind.'''
