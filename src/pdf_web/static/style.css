@@ -72,7 +72,11 @@ section {
 .chip.ok { border-color: var(--ok); color: var(--ok); background: var(--ok-bg); }
 .chip.bad { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
 .chip.warn { border-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
-.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.status-icon {
+  width: 14px; height: 14px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
 #drop {
   border: 2px dashed var(--line); border-radius: var(--radius);
   color: var(--muted);
@@ -147,7 +151,6 @@ button.small { padding: var(--space-2) var(--space-3); font-size: 13px; min-heig
   font-size: 14px; font-weight: 650; white-space: nowrap;
   padding: var(--space-1) var(--space-3); border-radius: 999px;
 }
-.batch-status .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .batch-status.accepted { color: var(--ok); background: var(--ok-bg); }
 .batch-status.uploading, .batch-status.queued { color: var(--accent); background: var(--accent-bg); }
 .batch-status.error { color: var(--bad); background: var(--bad-bg); }
@@ -285,6 +288,12 @@ tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
     0% { background-position: right; }
     100% { background-position: left; }
   }
+  @keyframes cancel-progress-spin {
+    to { transform: rotate(360deg); }
+  }
+  .cancel-action.is-cancelling .dl-icon {
+    animation: cancel-progress-spin .8s linear infinite;
+  }
 }
 .file-label { display: flex; align-items: flex-start; gap: var(--space-1); }
 .file-info { min-width: 0; }
@@ -302,7 +311,7 @@ button.disclosure .caret { font-size: 20px; line-height: 1; transition: transfor
 button.disclosure[aria-expanded="true"] .caret { transform: rotate(90deg); }
 .processing { min-width: 100px; }
 .processing-state {
-  display: inline-flex; align-items: center;
+  display: inline-flex; align-items: center; gap: var(--space-1);
   color: var(--muted); font-size: 12px; font-weight: 650; white-space: nowrap;
   padding: var(--space-1) var(--space-3); border-radius: 999px; background: rgba(127,127,127,.1);
   transition: background-color .25s ease, color .25s ease;
@@ -311,7 +320,7 @@ button.disclosure[aria-expanded="true"] .caret { transform: rotate(90deg); }
 .processing-state.failed { color: var(--bad); background: var(--bad-bg); }
 .processing-state.cancelled { color: var(--warn); background: var(--warn-bg); }
 .outcome {
-  display: inline-flex; align-items: center; min-height: 26px;
+  display: inline-flex; align-items: center; gap: var(--space-1); min-height: 26px;
   border: 1px solid var(--line); border-radius: 999px;
   padding: 2px 10px; font-size: 12px; font-weight: 650; white-space: nowrap;
 }
@@ -390,7 +399,9 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
 }
 .file-actions button:hover:not(:disabled) { border-color: transparent; color: var(--ink); }
 .file-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.file-actions .delete-action { color: var(--bad); }
+.file-actions .cancel-action, .file-actions .delete-action { color: var(--bad); }
+.file-actions .cancel-action.is-cancelling { opacity: .75; }
+.file-actions .cancel-action:hover:not(:disabled),
 .file-actions .delete-action:hover:not(:disabled) { color: var(--ink); }
 .file-actions .dl-icon { width: 14px; height: 14px; }
 .confirm-dialog {

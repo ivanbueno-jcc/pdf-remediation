@@ -17,6 +17,7 @@ const state = {
   pollTimer: null,
   jobs: [],
   jobRows: new Map(),
+  cancellingJobs: new Set(),
   jobStatusSnapshot: null,
   jobSearch: '',
   jobOutcomeFilter: 'all',
@@ -89,7 +90,7 @@ function renderHealth() {
   missing.forEach((check) => {
     const chip = document.createElement('span');
     chip.className = 'chip ' + (check.required ? 'bad' : 'warn');
-    chip.innerHTML = '<span class="dot"></span>';
+    chip.appendChild(statusIcon(check.required ? 'alert' : 'warning'));
     chip.append(check.name + ' — ' + check.detail);
     chip.title = check.detail;
     container.appendChild(chip);
@@ -215,6 +216,11 @@ function batchStatusLabel(status) {
            queued: 'Queued' }[status] || status;
 }
 
+function batchStatusIcon(status) {
+  return { accepted: 'check', error: 'alert', uploading: 'upload',
+           queued: 'clock' }[status] || 'info';
+}
+
 function renderStaged() {
   const body = el('staged-body');
   body.innerHTML = '';
@@ -243,10 +249,7 @@ function renderStaged() {
     status.className = 'batch-state';
     const label = document.createElement('span');
     label.className = 'batch-status ' + item.status;
-    const dot = document.createElement('span');
-    dot.className = 'dot';
-    dot.setAttribute('aria-hidden', 'true');
-    label.append(dot, batchStatusLabel(item.status));
+    label.append(statusIcon(batchStatusIcon(item.status)), batchStatusLabel(item.status));
     const reason = document.createElement('div');
     reason.className = 'batch-reason';
     reason.textContent = item.reason || '';
@@ -443,6 +446,10 @@ async function refreshQueue() {
   } catch (error) { return; }
 
   const jobs = payload.jobs || [];
+  const activeJobIds = new Set(jobs.filter(canCancelJob).map((job) => job.job_id));
+  state.cancellingJobs.forEach((jobId) => {
+    if (!activeJobIds.has(jobId)) state.cancellingJobs.delete(jobId);
+  });
   announceJobChanges(jobs);
   state.jobs = jobs;
   const jobsSection = el('jobs-section');
@@ -666,12 +673,16 @@ function updateJobRow(entry, job) {
   const label = processingLabel(job.status);
   entry.processingState.className = 'processing-state ' + job.status;
   entry.processingState.textContent = '';
-  entry.processingState.append(detailNote || label);
+  entry.processingState.append(statusIcon(processingStatusIcon(job.status)), detailNote || label);
   if (detailNote) entry.processingState.setAttribute('aria-label', label + ': ' + detailNote);
   else entry.processingState.removeAttribute('aria-label');
 
   entry.outcome.className = 'outcome ' + (job.outcome ? outcomeTone(job.outcome) : 'pending');
-  entry.outcome.textContent = job.outcome_label || 'Pending result';
+  entry.outcome.textContent = '';
+  entry.outcome.append(
+    statusIcon(outcomeStatusIcon(job.outcome)),
+    job.outcome_label || 'Pending result'
+  );
   entry.status.querySelectorAll('.muted').forEach((note) => note.remove());
   if (job.error) {
     const note = document.createElement('div');
@@ -681,6 +692,22 @@ function updateJobRow(entry, job) {
   }
 
   entry.fileActions.innerHTML = '';
+  if (canCancelJob(job)) {
+    const isCancelling = state.cancellingJobs.has(job.job_id);
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'cancel-action' + (isCancelling ? ' is-cancelling' : '');
+    cancel.append(downloadIcon(isCancelling ? 'spinner' : 'cancel'),
+      isCancelling ? 'Cancelling' : 'Cancel');
+    cancel.disabled = isCancelling;
+    if (isCancelling) cancel.setAttribute('aria-busy', 'true');
+    cancel.setAttribute('aria-label', (isCancelling ? 'Cancelling ' : 'Cancel ') + job.name);
+    cancel.addEventListener('click', async () => {
+      if (!await confirmCancel(job)) return;
+      await cancelJob(job, cancel);
+    });
+    entry.fileActions.appendChild(cancel);
+  }
   if (canDeleteJob(job)) {
     const remove = document.createElement('button');
     remove.type = 'button';
@@ -775,6 +802,11 @@ function processingLabel(status) {
            failed: 'Failed', cancelled: 'Cancelled' }[status] || status;
 }
 
+function processingStatusIcon(status) {
+  return { queued: 'clock', running: 'activity', completed: 'check',
+           failed: 'failed', cancelled: 'cancelled' }[status] || 'info';
+}
+
 function processingDetail(job) {
   if (job.status === 'queued') {
     if (job.jobs_ahead === 0 || job.jobs_ahead === null) return 'Next to run';
@@ -793,9 +825,18 @@ function outcomeTone(outcome) {
   return 'bad';
 }
 
+function outcomeStatusIcon(outcome) {
+  return { remediated: 'check', already_compliant: 'check', improved: 'improved',
+           unchanged: 'unchanged', cancelled: 'cancelled', failed: 'failed' }[outcome] || 'clock';
+}
+
 function canRetryJob(job) {
   return Boolean(job && job.has_pdf && job.status !== 'queued' && job.status !== 'running' &&
     job.outcome && job.outcome !== 'remediated' && job.outcome !== 'already_compliant');
+}
+
+function canCancelJob(job) {
+  return Boolean(job && (job.status === 'queued' || job.status === 'running'));
 }
 
 function canDeleteJob(job) {
@@ -838,6 +879,35 @@ async function retryProcessedPdf(job, button) {
   }
 }
 
+async function cancelJob(job, button) {
+  if (button.disabled || !canCancelJob(job)) return;
+  state.cancellingJobs.add(job.job_id);
+  button.classList.add('is-cancelling');
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  button.setAttribute('aria-label', 'Cancelling ' + job.name);
+  button.replaceChildren(downloadIcon('spinner'), 'Cancelling');
+  try {
+    const response = await fetch('/api/jobs/' + encodeURIComponent(job.job_id) + '/cancel', {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(describeError(payload) || 'The job could not be cancelled.');
+    }
+    await refreshQueue();
+    announceStatus('Cancellation requested for ' + job.name + '.');
+  } catch (error) {
+    state.cancellingJobs.delete(job.job_id);
+    button.classList.remove('is-cancelling');
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+    button.setAttribute('aria-label', 'Cancel ' + job.name);
+    button.replaceChildren(downloadIcon('cancel'), 'Cancel');
+    showSubmissionResult('Could not cancel the job: ' + String(error.message || error), 'bad');
+  }
+}
+
 async function deleteJob(job, button) {
   if (button.disabled || state.submitting) return;
   if (!await confirmDelete(job)) return;
@@ -862,7 +932,7 @@ async function deleteJob(job, button) {
 }
 
 function confirmDelete(job) {
-  return confirmDeletion(
+  return confirmAction(
     'Delete ' + job.name + '?',
     'This permanently removes the job and all of its artifacts. This action cannot be undone.',
     'Delete job'
@@ -871,14 +941,21 @@ function confirmDelete(job) {
 
 function confirmDeleteAll(count) {
   const noun = count === 1 ? 'job' : 'jobs';
-  return confirmDeletion(
+  return confirmAction(
     'Delete all jobs?',
     'This permanently removes all ' + count + ' ' + noun + ' and their artifacts. Jobs still running will be skipped until they finish. This action cannot be undone.',
     'Delete all'
   );
 }
 
-function confirmDeletion(titleText, copyText, confirmText) {
+function confirmCancel(job) {
+  const copy = job.status === 'running'
+    ? 'Processing will stop at the next safe point. Incomplete results will not be available.'
+    : 'This removes the job from the queue before processing begins.';
+  return confirmAction('Cancel ' + job.name + '?', copy, 'Cancel job');
+}
+
+function confirmAction(titleText, copyText, confirmText) {
   const dialog = el('delete-dialog');
   const title = el('delete-dialog-title');
   const copy = el('delete-dialog-copy');
@@ -983,6 +1060,72 @@ function validationComparison(before, after) {
   }).join('') + '</div>';
 }
 
+function statusIcon(name) {
+  const namespace = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(namespace, 'svg');
+  svg.classList.add('status-icon');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+
+  const shapes = {
+    check: [
+      ['circle', { cx: '12', cy: '12', r: '9' }],
+      ['path', { d: 'm8 12 2.5 2.5L16 9' }],
+    ],
+    alert: [
+      ['circle', { cx: '12', cy: '12', r: '9' }],
+      ['path', { d: 'M12 7v6' }],
+      ['path', { d: 'M12 17h.01' }],
+    ],
+    warning: [
+      ['path', { d: 'M10.3 4.1 2.7 17.4A1.8 1.8 0 0 0 4.3 20h15.4a1.8 1.8 0 0 0 1.6-2.6L13.7 4.1a2 2 0 0 0-3.4 0Z' }],
+      ['path', { d: 'M12 9v4' }],
+      ['path', { d: 'M12 17h.01' }],
+    ],
+    upload: [
+      ['path', { d: 'M12 16V4' }],
+      ['path', { d: 'm7 9 5-5 5 5' }],
+      ['path', { d: 'M5 20h14' }],
+    ],
+    clock: [
+      ['circle', { cx: '12', cy: '12', r: '9' }],
+      ['path', { d: 'M12 7v5l3 2' }],
+    ],
+    activity: [
+      ['path', { d: 'M3 12h4l2.2-5 4.2 10 2.2-5H21' }],
+    ],
+    failed: [
+      ['circle', { cx: '12', cy: '12', r: '9' }],
+      ['path', { d: 'm9 9 6 6M15 9l-6 6' }],
+    ],
+    cancelled: [
+      ['circle', { cx: '12', cy: '12', r: '9' }],
+      ['path', { d: 'm6 6 12 12' }],
+    ],
+    improved: [
+      ['path', { d: 'M4 17 10 11l4 4 6-7' }],
+      ['path', { d: 'M15 8h5v5' }],
+    ],
+    unchanged: [
+      ['circle', { cx: '12', cy: '12', r: '9' }],
+      ['path', { d: 'M8 12h8' }],
+    ],
+    info: [
+      ['circle', { cx: '12', cy: '12', r: '9' }],
+      ['path', { d: 'M12 11v6' }],
+      ['path', { d: 'M12 7h.01' }],
+    ],
+  };
+
+  (shapes[name] || shapes.info).forEach(([tag, attributes]) => {
+    const shape = document.createElementNS(namespace, tag);
+    Object.entries(attributes).forEach(([key, value]) => shape.setAttribute(key, value));
+    svg.appendChild(shape);
+  });
+  return svg;
+}
+
 function downloadIcon(name) {
   const namespace = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(namespace, 'svg');
@@ -1022,6 +1165,14 @@ function downloadIcon(name) {
       ['path', { d: 'M10 11v6M14 11v6' }],
       ['path', { d: 'M6 7l1 14h10l1-14' }],
       ['path', { d: 'M9 7V4h6v3' }],
+    ],
+    cancel: [
+      ['circle', { cx: '12', cy: '12', r: '9' }],
+      ['path', { d: 'm9 9 6 6M15 9l-6 6' }],
+    ],
+    spinner: [
+      ['path', { d: 'M21 12a9 9 0 1 1-6.2-8.6' }],
+      ['path', { d: 'M21 3v6h-6' }],
     ],
   };
 
@@ -1121,19 +1272,6 @@ function renderDetail(cell, job) {
   });
 
   appendViolationSection(wrap, job);
-
-  if (job.status === 'queued' || job.status === 'running') {
-    const cancel = document.createElement('button');
-    cancel.className = 'small';
-    cancel.textContent = 'Cancel job';
-    cancel.addEventListener('click', async (event) => {
-      event.stopPropagation();
-      cancel.disabled = true;
-      await fetch('/api/jobs/' + job.job_id + '/cancel', { method: 'POST' });
-      refreshQueue();
-    });
-    wrap.appendChild(cancel);
-  }
 
   cell.appendChild(wrap);
 }
