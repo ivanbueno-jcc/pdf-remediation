@@ -26,6 +26,7 @@ tree, which is why the constructor asserts it.
 from __future__ import annotations
 
 import csv
+import os
 import shutil
 import tempfile
 from contextlib import contextmanager
@@ -128,7 +129,12 @@ def scratch_workspace(prefix: str = "pdf-api-") -> Iterator[Scratch]:
     '''
     Create the workspace shape for one run and remove it afterwards.
     '''
-    root = Path(tempfile.mkdtemp(prefix=prefix))
+    configured_root = os.getenv("PDF_SCRATCH_ROOT", "").strip()
+    scratch_parent = None
+    if configured_root:
+        scratch_parent = Path(configured_root).expanduser().resolve()
+        scratch_parent.mkdir(parents=True, exist_ok=True)
+    root = Path(tempfile.mkdtemp(prefix=prefix, dir=scratch_parent))
     workspace = root / "proj" / "ws"
     files = workspace / "active" / "files"
     processed = workspace / "active" / "processed"

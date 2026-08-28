@@ -1,0 +1,101 @@
+name: pdf-remediation
+
+services:
+  caddy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    depends_on:
+      oauth2-proxy:
+        condition: service_healthy
+      pdf-web:
+        condition: service_healthy
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:?required}
+      PDF_WEB_PROXY_SECRET: ${PDF_WEB_PROXY_SECRET:?required}
+      WEB_HOSTNAME: ${WEB_HOSTNAME:?required}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - /mnt/pdf-data/caddy/data:/data
+      - /mnt/pdf-data/caddy/config:/config
+    networks:
+      - edge
+      - private
+
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.14.0
+    restart: unless-stopped
+    command:
+      - --provider=oidc
+      - --oidc-issuer-url=https://login.microsoftonline.com/${ENTRA_TENANT_ID}/v2.0
+      - --client-id=${ENTRA_CLIENT_ID}
+      - --client-secret=${ENTRA_CLIENT_SECRET}
+      - --redirect-url=https://${WEB_HOSTNAME}/oauth2/callback
+      - --scope=openid profile email
+      - --email-domain=*
+      - --skip-provider-button=true
+      - --reverse-proxy=true
+      - --pass-user-headers=true
+      - --skip-auth-strip-headers=true
+      - --cookie-secure=true
+      - --cookie-httponly=true
+      - --cookie-samesite=lax
+      - --cookie-expire=8h
+      - --cookie-refresh=1h
+      - --cookie-secret=${OAUTH2_PROXY_COOKIE_SECRET}
+      - --upstream=http://caddy:8080
+      - --http-address=0.0.0.0:4180
+      - --skip-auth-route=^/(healthz|readyz)$$
+      - --silence-ping-logging=true
+      - --flush-interval=1s
+      - --upstream-timeout=4h
+    healthcheck:
+      test: ["CMD", "/bin/oauth2-proxy", "--version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - edge
+
+  pdf-web:
+    image: ${APP_IMAGE:?required}
+    restart: unless-stopped
+    init: true
+    environment:
+      ENV_CALLAS_LICENSE: ${ENV_CALLAS_LICENSE:?required}
+      ENV_CALLAS_SECRET: ${ENV_CALLAS_SECRET:?required}
+      PDFIX_LICENSE_KEY: ${PDFIX_LICENSE_KEY:?required}
+      PDFIX_LICENSE_NAME: ${PDFIX_LICENSE_NAME:?required}
+      PDF_CALLAS_FONT_IMAGE: ${PDF_CALLAS_FONT_IMAGE:-pdfix/font-fix-callas:v1.0.11}
+      PDF_PDFIX_FONT_IMAGE: ${PDF_PDFIX_FONT_IMAGE:-pdfix/font-fix-pdfix:v1.0.9}
+      PDF_SCRATCH_ROOT: /srv/pdf-remediation/scratch
+      PDF_WEB_IDENTITY_HEADER: x-forwarded-email
+      PDF_WEB_JOB_TTL_HOURS: ${PDF_WEB_JOB_TTL_HOURS:-168}
+      PDF_WEB_JOBS_ROOT: /mnt/pdf-data/web
+      PDF_WEB_MAX_CONCURRENT_JOBS: ${PDF_WEB_MAX_CONCURRENT_JOBS:-4}
+      PDF_WEB_MAX_RUNNING_JOBS_PER_USER: ${PDF_WEB_MAX_RUNNING_JOBS_PER_USER:-4}
+      PDF_WEB_PROXY_SECRET: ${PDF_WEB_PROXY_SECRET:?required}
+    group_add:
+      - ${DOCKER_GID:?required}
+    volumes:
+      - /mnt/pdf-data/web:/mnt/pdf-data/web
+      - /srv/pdf-remediation/scratch:/srv/pdf-remediation/scratch
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - private
+
+networks:
+  edge:
+  private:

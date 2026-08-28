@@ -3,6 +3,7 @@
 PDF Remediation Callas Font Fix Utility
 '''
 from pathlib import Path
+import os
 from python_on_whales import docker
 from python_on_whales.exceptions import DockerException
 from pdf_remediation.utilities.resources import (
@@ -35,20 +36,37 @@ class Callas: # pylint: disable=too-few-public-methods
         if workspace_path is None:
             raise ValueError("workspace_path is required.")
 
-        env_file = str(ROOT_DIR / "resources" / "font" / ".env")
+        license_name = os.getenv("ENV_CALLAS_LICENSE", "").strip()
+        license_secret = os.getenv("ENV_CALLAS_SECRET", "").strip()
+        env_file = ROOT_DIR / "resources" / "font" / ".env"
+        if not (license_name and license_secret) and not env_file.is_file():
+            raise RuntimeError(
+                "Callas credentials are not configured. Set "
+                "ENV_CALLAS_LICENSE and ENV_CALLAS_SECRET."
+            )
         output_pdf_path.parent.mkdir(parents=True, exist_ok=True)
         input_relative_path = Path(input_pdf_path).relative_to(workspace_path)
         output_relative_path = Path(output_pdf_path).relative_to(workspace_path)
         ensure_docker_desktop_running()
 
         try:
+            run_options = {
+                "volumes": [(workspace_path.resolve(), '/data')],
+                "workdir": "/data",
+                "remove": True,
+            }
+            if license_name and license_secret:
+                run_options["envs"] = {
+                    "ENV_CALLAS_LICENSE": license_name,
+                    "ENV_CALLAS_SECRET": license_secret,
+                }
+            else:
+                # Retain the ignored local env-file workflow for developers.
+                run_options["env_files"] = [str(env_file)]
             docker.run(
                 CALLAS_FONT_IMAGE,
                 ["fix", "-i", str(input_relative_path), "-o", str(output_relative_path)],
-                volumes=[(workspace_path.resolve(), '/data')],
-                env_files=[env_file],
-                workdir="/data",
-                remove=True
+                **run_options,
             )
         except DockerException as e:
             match e.return_code:

@@ -152,9 +152,15 @@ offers its remediated PDF, both validation reports, and a ZIP.
 
 It runs the `pdf_api` pipeline in-process rather than shelling out, so progress
 is the pipeline's own stage list rather than text scraped from console output.
-Jobs run on a worker pool: `PDF_WEB_MAX_CONCURRENT_JOBS` (default 2) bounds the
-machine, and `PDF_WEB_MAX_RUNNING_JOBS_PER_USER` (default 1) stops one person
+Jobs run on a worker pool: `PDF_WEB_MAX_CONCURRENT_JOBS` (default 4) bounds the
+machine, and `PDF_WEB_MAX_RUNNING_JOBS_PER_USER` (default 4) stops one person
 holding all of it. Queueing is unlimited; only running is capped.
+
+For the production Azure VM deployment, including Entra authentication,
+Azure Files persistence, Bicep infrastructure, and GitHub Actions delivery,
+see [Deploy `pdf_web` to Azure](docs/azure-web-deployment.md). The deployment
+does not run the `pdf_api` HTTP service; `pdf_web` uses its pipeline package as
+an in-process library.
 
 ```bash
 uv run web
@@ -194,7 +200,8 @@ uv run web --host 0.0.0.0 --allow-remote
 | `PDF_WEB_DEV_USER` | `local` | Identity used in single-user mode. |
 | `PDF_WEB_LEGACY_JOB_OWNER` | unset | Owner assigned to job directories created before ownership existed. |
 | `PDF_WEB_HEADER_DIAGNOSTIC` | unset | Exposes `/api/proxy-headers` for diagnosing a deployment. Leave off in normal use. |
-| `PDF_WEB_MAX_JOBS_PER_USER` | `1` | Jobs one user may have queued or running at once. |
+| `PDF_WEB_MAX_CONCURRENT_JOBS` | `4` | Jobs the host may run concurrently. |
+| `PDF_WEB_MAX_RUNNING_JOBS_PER_USER` | `4` | Running jobs one user may occupy concurrently. |
 
 **Proof of origin is the entire security model.** The app decides who you are by
 reading a header, and a header is only trustworthy if clients cannot set it
@@ -261,7 +268,7 @@ activates its licence per process. Running two pipelines on one machine would
 thrash rather than go faster.
 
 So the queue is fair rather than parallel. Each user may have
-`PDF_WEB_MAX_JOBS_PER_USER` jobs in flight (one by default); a further
+`PDF_WEB_MAX_RUNNING_JOBS_PER_USER` running jobs (four by default); a further
 submission is refused with 409 rather than queued behind their own work. A
 waiting job shows how many jobs will run before it, and is told when that
 number changes. Only the count is exposed, never whose jobs they are.

@@ -26,8 +26,12 @@ CONFIG_FILE = CONFIG_DIR / "default.json"
 
 PROJECT_BASE_PATH = Path(os.getenv('PROJECT_BASE_PATH', './resources/projects'))
 
-CALLAS_FONT_IMAGE = "pdfix/font-fix-callas:v1.0.11"
-PDFIX_FONT_IMAGE = "pdfix/font-fix-pdfix:v1.0.9"
+CALLAS_FONT_IMAGE = os.getenv(
+    "PDF_CALLAS_FONT_IMAGE", "pdfix/font-fix-callas:v1.0.11"
+).strip()
+PDFIX_FONT_IMAGE = os.getenv(
+    "PDF_PDFIX_FONT_IMAGE", "pdfix/font-fix-pdfix:v1.0.9"
+).strip()
 FIX_PROCESS_TIMEOUT_SECONDS = 500
 _DOCKER_STATE = {"ready": False}
 

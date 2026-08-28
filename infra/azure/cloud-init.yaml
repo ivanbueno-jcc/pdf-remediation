@@ -1,0 +1,28 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - ca-certificates
+  - cifs-utils
+  - curl
+  - docker.io
+  - docker-compose-v2
+  - jq
+
+write_files:
+  - path: /etc/docker/daemon.json
+    permissions: "0644"
+    content: |
+      {
+        "log-driver": "journald",
+        "live-restore": true
+      }
+
+runcmd:
+  - [systemctl, enable, --now, docker]
+  - [bash, -lc, "curl -sL https://aka.ms/InstallAzureCLIDeb | bash"]
+  - [install, -d, -m, "0755", /opt/pdf-remediation]
+  - [install, -d, -o, "10001", -g, "10001", -m, "0770", /srv/pdf-remediation/scratch]
+
+final_message: "PDF remediation Azure VM prerequisites are installed."

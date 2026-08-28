@@ -6,7 +6,22 @@ import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-JOBS_ROOT = REPO_ROOT / "resources" / "web-jobs"
+
+
+def _read_path_env(name: str, default: Path) -> Path:
+    '''Return an absolute path from the environment, or the repository default.'''
+    configured = os.getenv(name, "").strip()
+    if not configured:
+        return default
+    return Path(configured).expanduser().resolve()
+
+
+JOBS_ROOT = _read_path_env(
+    "PDF_WEB_JOBS_ROOT", REPO_ROOT / "resources" / "web-jobs"
+)
+SCRATCH_ROOT = _read_path_env(
+    "PDF_SCRATCH_ROOT", Path(os.getenv("TMPDIR", "/tmp"))
+)
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 CONFIG_DIR = REPO_ROOT / "resources" / "configuration"
 VERAPDF_JAR = REPO_ROOT / "lib" / "greenfield-apps-1.28.0.jar"

@@ -109,8 +109,13 @@ def _docker_available() -> tuple[bool, str]:
 
 def _callas_license_status() -> tuple[bool, str]:
     '''Return whether the Callas env file contains both active credentials.'''
+    if all(os.getenv(key, "").strip() for key in CALLAS_ENV_KEYS):
+        return True, "configured in environment"
     if not CALLAS_ENV_PATH.is_file():
-        return False, f"missing {CALLAS_ENV_PATH}"
+        return False, (
+            "ENV_CALLAS_LICENSE/ENV_CALLAS_SECRET not set and missing "
+            f"{CALLAS_ENV_PATH}"
+        )
     try:
         lines = CALLAS_ENV_PATH.read_text(encoding="utf-8").splitlines()
     except OSError as error:

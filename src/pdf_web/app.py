@@ -36,7 +36,7 @@ from .config import (
     SSE_POLL_SECONDS,
     STATIC_DIR,
 )
-from .environment import cached_health
+from .environment import cached_health, collect_readiness
 from .identity import (
     describe_mode,
     diagnose_request,
@@ -175,6 +175,17 @@ async def liveness() -> JSONResponse:
     )
 
 
+@app.get("/readyz")
+async def readiness() -> JSONResponse:
+    '''Report deployment readiness without exposing dependency details.'''
+    result = await asyncio.to_thread(collect_readiness)
+    ready = bool(result["ready"])
+    return JSONResponse(
+        status_code=200 if ready else 503,
+        content={"status": "ready" if ready else "not-ready", "version": APP_VERSION},
+    )
+
+
 @app.get("/api/proxy-headers")
 async def proxy_headers(request: Request) -> dict[str, Any]:
     '''
@@ -195,9 +206,13 @@ async def health(user: str = CURRENT_USER) -> dict[str, Any]:
     '''
     Report on the external tools the pipeline needs.
     '''
-    payload = await asyncio.to_thread(cached_health)
+    payload, readiness_payload = await asyncio.gather(
+        asyncio.to_thread(cached_health),
+        asyncio.to_thread(collect_readiness),
+    )
     return {
         **payload,
+        "deployment_readiness": readiness_payload,
         "queue_depth": RUNNER.queue_depth(),
         "user": user,
         "auth": describe_mode(),

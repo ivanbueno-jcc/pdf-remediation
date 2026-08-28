@@ -1,0 +1,139 @@
+name: Deploy pdf_web to Azure
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: pdf-web-azure-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 90
+    env:
+      AZURE_DNS_ZONE_RESOURCE_ID: ${{ vars.AZURE_DNS_ZONE_RESOURCE_ID }}
+      AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      NAME_PREFIX: ${{ vars.NAME_PREFIX }}
+      PDF_CALLAS_FONT_IMAGE: ${{ vars.PDF_CALLAS_FONT_IMAGE }}
+      PDF_PDFIX_FONT_IMAGE: ${{ vars.PDF_PDFIX_FONT_IMAGE }}
+      WEB_DNS_LABEL: ${{ vars.WEB_DNS_LABEL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version-file: pyproject.toml
+
+      - uses: astral-sh/setup-uv@v7
+
+      - name: Test and lint
+        run: |
+          uv sync --frozen --dev
+          uv run python -m unittest discover -s tests -t . -v
+          uv run pylint $(git ls-files '*.py')
+
+      - name: Sign in to Azure with workload identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate and deploy infrastructure
+        run: |
+          az bicep build --file infra/azure/main.bicep
+          az deployment group validate \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --template-file infra/azure/main.bicep \
+            --parameters \
+              location="$AZURE_LOCATION" \
+              namePrefix="$NAME_PREFIX" \
+              dnsZoneResourceId="$AZURE_DNS_ZONE_RESOURCE_ID" \
+              webDnsLabel="$WEB_DNS_LABEL" \
+              adminSshPublicKey="${{ secrets.ADMIN_SSH_PUBLIC_KEY }}" \
+            --output none
+          az deployment group what-if \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --template-file infra/azure/main.bicep \
+            --parameters \
+              location="$AZURE_LOCATION" \
+              namePrefix="$NAME_PREFIX" \
+              dnsZoneResourceId="$AZURE_DNS_ZONE_RESOURCE_ID" \
+              webDnsLabel="$WEB_DNS_LABEL" \
+              adminSshPublicKey="${{ secrets.ADMIN_SSH_PUBLIC_KEY }}" \
+            --result-format ResourceIdOnly \
+            --no-pretty-print
+          az deployment group create \
+            --name "pdf-remediation-${GITHUB_RUN_ID}" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --template-file infra/azure/main.bicep \
+            --parameters \
+              location="$AZURE_LOCATION" \
+              namePrefix="$NAME_PREFIX" \
+              dnsZoneResourceId="$AZURE_DNS_ZONE_RESOURCE_ID" \
+              webDnsLabel="$WEB_DNS_LABEL" \
+              adminSshPublicKey="${{ secrets.ADMIN_SSH_PUBLIC_KEY }}" \
+            --output none
+
+      - name: Read infrastructure outputs
+        id: infra
+        run: |
+          deployment="pdf-remediation-${GITHUB_RUN_ID}"
+          output() {
+            az deployment group show --name "$deployment" \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --query "properties.outputs.$1.value" --output tsv
+          }
+          echo "acr_name=$(output acrName)" >> "$GITHUB_OUTPUT"
+          echo "acr_server=$(output acrLoginServer)" >> "$GITHUB_OUTPUT"
+          echo "key_vault=$(output keyVaultName)" >> "$GITHUB_OUTPUT"
+          echo "storage=$(output storageAccountName)" >> "$GITHUB_OUTPUT"
+          echo "share=$(output storageShareName)" >> "$GITHUB_OUTPUT"
+          echo "vm=$(output vmName)" >> "$GITHUB_OUTPUT"
+          echo "hostname=$(output webHostname)" >> "$GITHUB_OUTPUT"
+
+      - name: Build immutable application image in ACR
+        run: |
+          az acr build \
+            --registry "${{ steps.infra.outputs.acr_name }}" \
+            --image "pdf-remediation:${GITHUB_SHA}" \
+            --platform linux/amd64 \
+            --file Dockerfile .
+
+      - name: Deploy on the VM
+        run: |
+          image="${{ steps.infra.outputs.acr_server }}/pdf-remediation:${GITHUB_SHA}"
+          az vm run-command invoke \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "${{ steps.infra.outputs.vm }}" \
+            --command-id RunShellScript \
+            --scripts @deploy/azure/deploy.sh \
+            --parameters \
+              "APP_IMAGE=$image" \
+              "KEY_VAULT_NAME=${{ steps.infra.outputs.key_vault }}" \
+              "STORAGE_ACCOUNT=${{ steps.infra.outputs.storage }}" \
+              "STORAGE_SHARE=${{ steps.infra.outputs.share }}" \
+              "PDF_CALLAS_FONT_IMAGE=$PDF_CALLAS_FONT_IMAGE" \
+              "PDF_PDFIX_FONT_IMAGE=$PDF_PDFIX_FONT_IMAGE" \
+              "WEB_HOSTNAME=${{ steps.infra.outputs.hostname }}" \
+            --output json
+
+      - name: Public edge smoke tests
+        run: |
+          base="https://${{ steps.infra.outputs.hostname }}"
+          curl --fail --silent --show-error --retry 12 --retry-delay 10 \
+            "$base/healthz" >/dev/null
+          curl --fail --silent --show-error --retry 12 --retry-delay 10 \
+            "$base/readyz" >/dev/null
+          status="$(curl --silent --output /dev/null --write-out '%{http_code}' "$base/")"
+          test "$status" = 302
