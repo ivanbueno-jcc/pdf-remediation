@@ -482,9 +482,6 @@ function renderJobs() {
   const active = visible.filter(isActiveJob);
   const recent = visible.filter((job) => !isActiveJob(job));
   const total = state.jobs.length;
-  el('job-count-summary').textContent = visible.length === total
-    ? total + ' job' + (total === 1 ? '' : 's')
-    : visible.length + ' of ' + total + ' jobs';
   const empty = el('job-empty');
   empty.classList.toggle('hidden', visible.length > 0);
   empty.textContent = total
@@ -919,15 +916,6 @@ function violationDiff(jobId) {
       return;
     }
 
-    const summary = document.createElement('p');
-    summary.className = 'violation-summary-line';
-    summary.textContent = [
-      persisting.length ? persisting.length + ' still failing' : '',
-      introduced.length ? introduced.length + ' new' : '',
-      resolved.length ? resolved.length + ' resolved' : '',
-    ].filter(Boolean).join(' · ');
-    container.appendChild(summary);
-
     if (persisting.length) {
       const label = document.createElement('p');
       label.className = 'violation-group-label violation-group-label-bad';
@@ -980,14 +968,32 @@ function mergeViolations(report) {
 /* ---------- wiring ---------- */
 
 const drop = el('drop');
-['dragenter', 'dragover'].forEach((type) => {
-  drop.addEventListener(type, (event) => { event.preventDefault(); drop.classList.add('over'); });
+// The whole page is a drop target, not just the drop zone box: dragging over
+// nested elements fires dragenter/dragleave pairs constantly, so a depth
+// counter is needed to avoid the highlight flickering as the cursor crosses
+// child element boundaries.
+let dragDepth = 0;
+document.addEventListener('dragenter', (event) => {
+  if (!event.dataTransfer || !event.dataTransfer.types.includes('Files')) return;
+  event.preventDefault();
+  dragDepth += 1;
+  drop.classList.add('over');
 });
-['dragleave', 'drop'].forEach((type) => {
-  drop.addEventListener(type, (event) => { event.preventDefault(); drop.classList.remove('over'); });
+document.addEventListener('dragover', (event) => {
+  if (!event.dataTransfer || !event.dataTransfer.types.includes('Files')) return;
+  event.preventDefault();
 });
-drop.addEventListener('drop', (event) => {
-  if (event.dataTransfer && event.dataTransfer.files) addFiles(event.dataTransfer.files);
+document.addEventListener('dragleave', (event) => {
+  if (!event.dataTransfer || !event.dataTransfer.types.includes('Files')) return;
+  dragDepth = Math.max(0, dragDepth - 1);
+  if (dragDepth === 0) drop.classList.remove('over');
+});
+document.addEventListener('drop', (event) => {
+  if (!event.dataTransfer || !event.dataTransfer.types.includes('Files')) return;
+  event.preventDefault();
+  dragDepth = 0;
+  drop.classList.remove('over');
+  addFiles(event.dataTransfer.files);
 });
 el('file-input').addEventListener('change', (event) => {
   addFiles(event.target.files);
