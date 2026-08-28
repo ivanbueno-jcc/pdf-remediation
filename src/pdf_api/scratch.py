@@ -77,6 +77,30 @@ class Scratch:
         self.processed.mkdir(parents=True, exist_ok=True)
         return self.processed / name
 
+    @contextmanager
+    def prepare_output(self, name: str, backup_source: Path) -> Iterator[Path]:
+        '''
+        Yield the processed/name path, clean, for a stage to write into.
+
+        Every stage writes to the same processed/name path in turn, so for
+        stage two onward that path is also the caller's current file. Clearing
+        it up front is required (the underlying tools expect a fresh target),
+        but if the stage then raises, the pipeline falls back to the file at
+        that same path expecting it still to be there. Restoring from a backup
+        on failure keeps that fallback true instead of a dangling path.
+        '''
+        output_path = self.output_path(name)
+        backup_path = self.staging / f".backup-{name}"
+        shutil.copy2(backup_source, backup_path)
+        output_path.unlink(missing_ok=True)
+        try:
+            yield output_path
+        except BaseException:
+            shutil.copy2(backup_path, output_path)
+            raise
+        finally:
+            backup_path.unlink(missing_ok=True)
+
     def collect_diagnostics(self) -> list[dict[str, str]]:
         '''
         Read back whatever the batch utilities recorded about this run.

@@ -122,22 +122,20 @@ def run_fix(
     The input is staged first because PDFix deletes the file it is given.
     '''
     staged_input = scratch.stage_input(pdf_path, name=reported_name)
-    output_path = scratch.output_path(reported_name)
-    output_path.unlink(missing_ok=True)
+    with scratch.prepare_output(reported_name, backup_source=staged_input) as output_path:
+        with quiet():
+            fix_with_process_timeout(
+                str(staged_input),
+                str(output_path),
+                config_file,
+                scratch.files,
+                False,
+                reported_input_pdf_path=reported_name,
+                process_timeout=options.fix_timeout_seconds,
+            )
 
-    with quiet():
-        fix_with_process_timeout(
-            str(staged_input),
-            str(output_path),
-            config_file,
-            scratch.files,
-            False,
-            reported_input_pdf_path=reported_name,
-            process_timeout=options.fix_timeout_seconds,
-        )
-
-    if not output_path.is_file():
-        raise RuntimeError(f"PDFix produced no output for {reported_name}.")
+        if not output_path.is_file():
+            raise RuntimeError(f"PDFix produced no output for {reported_name}.")
     return output_path
 
 
@@ -146,14 +144,12 @@ def run_callas_font_fix(scratch: Scratch, pdf_path: Path, reported_name: str) ->
     Run the Callas font fix in Docker, returning the repaired PDF.
     '''
     staged_input = scratch.stage_input(pdf_path, name=reported_name)
-    output_path = scratch.output_path(reported_name)
-    output_path.unlink(missing_ok=True)
+    with scratch.prepare_output(reported_name, backup_source=staged_input) as output_path:
+        with quiet():
+            Callas.font_fix(staged_input, output_path, scratch.workspace)
 
-    with quiet():
-        Callas.font_fix(staged_input, output_path, scratch.workspace)
-
-    if not output_path.is_file():
-        raise RuntimeError(f"Callas produced no output for {reported_name}.")
+        if not output_path.is_file():
+            raise RuntimeError(f"Callas produced no output for {reported_name}.")
     return output_path
 
 
@@ -165,14 +161,12 @@ def run_pdfix_font_fix(scratch: Scratch, pdf_path: Path, reported_name: str) -> 
     because the input is a staged copy.
     '''
     staged_input = scratch.stage_input(pdf_path, name=reported_name)
-    output_path = scratch.output_path(reported_name)
-    output_path.unlink(missing_ok=True)
+    with scratch.prepare_output(reported_name, backup_source=staged_input) as output_path:
+        with quiet():
+            font_fix_pdfix(staged_input, output_path, scratch.workspace)
 
-    with quiet():
-        font_fix_pdfix(staged_input, output_path, scratch.workspace)
-
-    if not output_path.is_file():
-        raise RuntimeError(f"PDFix font fix produced no output for {reported_name}.")
+        if not output_path.is_file():
+            raise RuntimeError(f"PDFix font fix produced no output for {reported_name}.")
     return output_path
 
 
@@ -200,21 +194,19 @@ def run_targeted_fixes(
     Apply a chain of targeted configs, each feeding the next.
     '''
     staged_input = scratch.stage_input(pdf_path, name=reported_name)
-    output_path = scratch.output_path(reported_name)
-    output_path.unlink(missing_ok=True)
+    with scratch.prepare_output(reported_name, backup_source=staged_input) as output_path:
+        with quiet():
+            result = remediate_target_file(
+                str(staged_input),
+                str(output_path),
+                tuple(action_names),
+                scratch.files,
+                scratch.staging,
+                False,
+            )
 
-    with quiet():
-        result = remediate_target_file(
-            str(staged_input),
-            str(output_path),
-            tuple(action_names),
-            scratch.files,
-            scratch.staging,
-            False,
-        )
-
-    if not result.get("success"):
-        raise RuntimeError(result.get("error") or "Targeted remediation failed.")
-    if not output_path.is_file():
-        raise RuntimeError(f"Targeted remediation produced no output for {reported_name}.")
+        if not result.get("success"):
+            raise RuntimeError(result.get("error") or "Targeted remediation failed.")
+        if not output_path.is_file():
+            raise RuntimeError(f"Targeted remediation produced no output for {reported_name}.")
     return output_path

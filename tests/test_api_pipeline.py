@@ -113,6 +113,53 @@ class ScratchWorkspaceTests(unittest.TestCase):
         self.assertEqual(diagnostics[0]["source"], "pdfix-cannot-process-files.csv")
         self.assertIn("Unable to open", diagnostics[0]["detail"])
 
+    def test_prepare_output_clears_a_prior_stage_result_up_front(self) -> None:
+        '''The underlying tools require a clean target before they run.'''
+        with scratch_workspace() as scratch:
+            output_path = scratch.output_path("a.pdf")
+            output_path.write_bytes(b"%PDF-stage-one")
+            backup_source = scratch.staging / "input.pdf"
+            backup_source.write_bytes(b"%PDF-stage-one")
+
+            with scratch.prepare_output("a.pdf", backup_source=backup_source) as yielded:
+                self.assertEqual(yielded, output_path)
+                self.assertFalse(output_path.exists())
+
+    def test_prepare_output_restores_the_prior_result_on_failure(self) -> None:
+        '''A failed stage must not delete the file its caller falls back to.
+
+        Every stage writes to the same processed/name path, so from the
+        second stage onward that path is also the caller's current file. If a
+        stage fails after clearing it, the caller silently keeps a Path to a
+        file that no longer exists.
+        '''
+        with scratch_workspace() as scratch:
+            output_path = scratch.output_path("a.pdf")
+            output_path.write_bytes(b"%PDF-previous-stage-output")
+            backup_source = scratch.staging / "input.pdf"
+            backup_source.write_bytes(b"%PDF-previous-stage-output")
+
+            with self.assertRaises(RuntimeError):
+                with scratch.prepare_output("a.pdf", backup_source=backup_source):
+                    raise RuntimeError("stage failed")
+
+            self.assertTrue(output_path.is_file())
+            self.assertEqual(output_path.read_bytes(), b"%PDF-previous-stage-output")
+
+    def test_prepare_output_leaves_no_backup_file_behind(self) -> None:
+        '''The restoration copy is scratch-internal and must not leak.'''
+        with scratch_workspace() as scratch:
+            backup_source = scratch.staging / "input.pdf"
+            backup_source.write_bytes(b"%PDF-1.7\n")
+
+            with scratch.prepare_output("a.pdf", backup_source=backup_source) as output_path:
+                output_path.write_bytes(b"%PDF-fixed")
+
+            self.assertEqual(
+                [entry.name for entry in scratch.staging.iterdir()],
+                ["input.pdf"],
+            )
+
 
 class ComplianceGateTests(unittest.TestCase):
     '''The gate decides whether a file is returned untouched.'''
