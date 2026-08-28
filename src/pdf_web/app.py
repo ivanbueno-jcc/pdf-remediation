@@ -124,6 +124,27 @@ async def index() -> HTMLResponse:
     )
 
 
+@app.get("/healthz")
+async def liveness() -> JSONResponse:
+    '''
+    Report whether the service can do work, for supervisors and load balancers.
+
+    Deliberately unauthenticated and deliberately uninformative: a probe needs
+    to know the process is alive and the worker is running, and nothing about
+    licences, tooling, or the identity configuration. That detail stays behind
+    authentication on /api/health.
+    '''
+    worker_alive = RUNNER.is_running()
+    return JSONResponse(
+        status_code=200 if worker_alive else 503,
+        content={
+            "status": "ok" if worker_alive else "degraded",
+            "worker": "running" if worker_alive else "stopped",
+            "version": APP_VERSION,
+        }
+    )
+
+
 @app.get("/api/proxy-headers")
 async def proxy_headers(request: Request) -> dict[str, Any]:
     '''
@@ -405,6 +426,32 @@ async def download_bundle(
         media_type="application/zip",
         filename=f"{job.job_id}-remediation.zip"
     )
+
+
+@app.post("/api/jobs/{job_id}/cancel")
+async def cancel_job(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER) -> dict[str, Any]:
+    '''
+    Stop one of your queued or running jobs.
+
+    Without this, a mistaken batch cannot be stopped: it holds the submitter's
+    only slot and everyone queued behind it waits for work nobody wants.
+    '''
+    job = _require_job(job_id, user)
+    if job.is_terminal():
+        raise HTTPException(
+            status_code=409,
+            detail=f"This job has already finished ({job.status})."
+        )
+
+    if not await asyncio.to_thread(RUNNER.cancel, job_id):
+        raise HTTPException(
+            status_code=409,
+            detail="This job finished before it could be cancelled."
+        )
+
+    return {"job_id": job_id, "status": str(job.status)}
 
 
 @app.post("/api/jobs/{job_id}/retry", status_code=201)

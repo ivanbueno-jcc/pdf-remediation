@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 
 import pdf_web.app as web_app
 from pdf_web.models import Job, JobStatus, UploadedFile
+from pdf_web.runner import PipelineRunner
 from pdf_web.store import JobStore
 from tests.web_factories import add_completed_result, make_job, write_job_artifacts
 
@@ -292,3 +293,141 @@ class QueueFairnessTests(unittest.TestCase):
         self.assertEqual(self._submit(ALICE).status_code, 201)
         self.assertEqual(self._submit(ALICE).status_code, 201)
         self.assertEqual(self._submit(ALICE).status_code, 409)
+
+
+class CancellationTests(unittest.TestCase):
+    '''A mistaken job must be stoppable without restarting the server.'''
+
+    def setUp(self) -> None:
+        '''Run the app in proxy mode with a real runner that never starts.'''
+        self.enterContext(mock.patch.dict(os.environ, {
+            "PDF_WEB_PROXY_SECRET": SECRET,
+        }))
+        self.jobs_root = Path(self.enterContext(
+            tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
+        ))
+        self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
+        self.enterContext(mock.patch.object(web_app, "JOBS_ROOT", self.jobs_root))
+        self.store = JobStore()
+        self.enterContext(mock.patch.object(web_app, "STORE", self.store))
+        self.runner = PipelineRunner(self.store)
+        self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
+        self.client = TestClient(web_app.app)
+
+    def _queued_job(self, job_id: str, owner: str) -> Job:
+        '''Register a queued job and put it in the runner's queue.'''
+        job = make_job(job_id=job_id, submitted_by=owner, status=JobStatus.QUEUED)
+        job.web_path.mkdir(parents=True, exist_ok=True)
+        self.store.add(job)
+        self.runner.submit(job_id)
+        return job
+
+    def test_owner_can_cancel_a_queued_job(self) -> None:
+        '''Cancelling reaches a terminal state without the worker running.'''
+        job = self._queued_job("20260827-120000-aaaaaa", ALICE)
+
+        response = self.client.post(
+            f"/api/jobs/{job.job_id}/cancel", headers=headers(ALICE)
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(job.status, JobStatus.CANCELLED)
+        self.assertTrue(job.is_terminal())
+
+    def test_cancelling_frees_the_users_slot(self) -> None:
+        '''The whole point: the submitter is not locked out by their own mistake.'''
+        job = self._queued_job("20260827-120000-aaaaaa", ALICE)
+        self.client.post(f"/api/jobs/{job.job_id}/cancel", headers=headers(ALICE))
+
+        response = self.client.post(
+            "/api/jobs",
+            headers=headers(ALICE),
+            files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
+            data={"config_file": "default.json"},
+        )
+        self.assertEqual(response.status_code, 201)
+
+    def test_cancelling_removes_it_from_the_queue(self) -> None:
+        '''A cancelled job must not still be occupying the line.'''
+        first = self._queued_job("20260827-120000-aaaaaa", ALICE)
+        second = self._queued_job("20260827-120001-bbbbbb", BOB)
+        self.assertEqual(self.runner.jobs_ahead(second.job_id), 1)
+
+        self.client.post(f"/api/jobs/{first.job_id}/cancel", headers=headers(ALICE))
+
+        self.assertEqual(self.runner.jobs_ahead(second.job_id), 0)
+        self.assertNotIn(first.job_id, self.runner.pending_job_ids())
+
+    def test_other_users_cannot_cancel(self) -> None:
+        '''Cancelling destroys work, so it is owner-scoped like everything else.'''
+        job = self._queued_job("20260827-120000-aaaaaa", ALICE)
+
+        response = self.client.post(
+            f"/api/jobs/{job.job_id}/cancel", headers=headers(BOB)
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(job.status, JobStatus.QUEUED)
+
+    def test_finished_jobs_cannot_be_cancelled(self) -> None:
+        '''A completed job is not stoppable, and says so.'''
+        job = make_job(
+            job_id="20260827-120002-cccccc", submitted_by=ALICE,
+            status=JobStatus.COMPLETED
+        )
+        self.store.add(job)
+
+        response = self.client.post(
+            f"/api/jobs/{job.job_id}/cancel", headers=headers(ALICE)
+        )
+
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(job.status, JobStatus.COMPLETED)
+
+    def test_cancelled_job_can_then_be_deleted(self) -> None:
+        '''Cancellation is terminal, so the normal cleanup path applies.'''
+        job = self._queued_job("20260827-120000-aaaaaa", ALICE)
+        self.client.post(f"/api/jobs/{job.job_id}/cancel", headers=headers(ALICE))
+
+        response = self.client.delete(
+            f"/api/jobs/{job.job_id}", headers=headers(ALICE)
+        )
+        self.assertEqual(response.status_code, 200)
+
+
+class LivenessTests(unittest.TestCase):
+    '''Supervisors and load balancers must be able to probe without credentials.'''
+
+    def setUp(self) -> None:
+        '''Run the app in proxy mode so every data endpoint needs a secret.'''
+        self.enterContext(mock.patch.dict(os.environ, {
+            "PDF_WEB_PROXY_SECRET": SECRET,
+        }))
+        self.enterContext(mock.patch.object(web_app, "STORE", JobStore()))
+        self.runner = mock.Mock(is_running=mock.Mock(return_value=True))
+        self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
+        self.client = TestClient(web_app.app)
+
+    def test_probe_needs_no_credentials(self) -> None:
+        '''An unauthenticated probe is the entire purpose of this endpoint.'''
+        response = self.client.get("/healthz")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "ok")
+
+    def test_reports_degraded_when_the_worker_is_gone(self) -> None:
+        '''A live process with a dead worker accepts jobs it will never run.'''
+        self.runner.is_running.return_value = False
+        response = self.client.get("/healthz")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["worker"], "stopped")
+
+    def test_probe_reveals_nothing_sensitive(self) -> None:
+        '''Licence, tooling, and identity configuration stay behind auth.'''
+        body = self.client.get("/healthz").text.lower()
+        for leak in ("pdfix", "callas", "docker", "java", "forwarded", "secret"):
+            with self.subTest(leak=leak):
+                self.assertNotIn(leak, body)
+
+    def test_detailed_health_still_requires_authentication(self) -> None:
+        '''The informative endpoint is unchanged.'''
+        self.assertEqual(self.client.get("/api/health").status_code, 403)

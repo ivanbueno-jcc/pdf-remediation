@@ -155,10 +155,16 @@ def build_file_result(  # pylint: disable=too-many-arguments,too-many-positional
     Assemble one uploaded file's outcome, before report, and after report.
     '''
     located = find_final_pdf(job.workspace_path, stored_name) if final else None
+    completed = job.status == JobStatus.COMPLETED
     if not final:
         outcome = "pending"
     else:
         outcome = located[0] if located else "missing"
+        # A file still sitting in active/ means "remediation did not fix it"
+        # only when the pipeline actually ran to the end. If the run stopped or
+        # was cancelled, it simply never got that far.
+        if outcome == "active" and not completed:
+            outcome = "unprocessed"
     final_pdf_path = located[1] if located else None
 
     staged_input_path = job.workspace_path / "active" / "files" / stored_name
@@ -179,7 +185,7 @@ def build_file_result(  # pylint: disable=too-many-arguments,too-many-positional
 
     if final:
         notes = [
-            describe_outcome(outcome, job.status == JobStatus.COMPLETED),
+            describe_outcome(outcome, completed),
             describe_missing_after(outcome, after, after_report),
         ]
         note = " ".join(part for part in notes if part) or None
@@ -217,10 +223,10 @@ def describe_outcome(outcome: str, job_is_complete: bool) -> str | None:
     '''
     Explain an outcome that is easy to misread.
     '''
-    if outcome == "active":
-        if job_is_complete:
-            return "Remediation ran but the file still fails validation."
-        return "The pipeline stopped before this file was routed."
+    if outcome == "active" and job_is_complete:
+        return "Remediation ran but the file still fails validation."
+    if outcome == "unprocessed":
+        return "The run stopped before this file was processed."
     if outcome == "missing":
         return "The pipeline produced no output for this file."
     return None

@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
+from unittest import mock
 
 from pdf_web.harvest import (
     FULL_VALIDATION_EXCLUDED,
+    harvest_job,
     as_child_path,
     build_job_summary,
     build_stage_report,
@@ -20,7 +23,7 @@ from pdf_web.harvest import (
     read_report_xml,
     status_from_csv_value,
 )
-from pdf_web.models import FileResult
+from pdf_web.models import FileResult, Job, JobStatus, UploadedFile
 
 RESULTS_CSV_HEADER = (
     "path,ua1,ua1_failed_rules_count,wcag,wcag_failed_rules_count\n"
@@ -411,12 +414,64 @@ class NoteTests(unittest.TestCase):
         '''A file with a final report needs no explanation.'''
         self.assertIsNone(describe_missing_after("remediated", {"status": "pass"}, Path("x")))
 
-    def test_distinguishes_still_failing_from_in_flight(self) -> None:
-        '''"active" means still failing once the run is complete.'''
+    def test_distinguishes_still_failing_from_never_reached(self) -> None:
+        '''The same folder means different things depending on how the run ended.
+
+        A completed run leaves a file in active/ because remediation did not
+        fix it. An interrupted run leaves it there because nothing touched it,
+        and harvesting reports that as a separate outcome.
+        '''
         self.assertIn("still fails", describe_outcome("active", True))
-        self.assertIn("stopped", describe_outcome("active", False))
+        self.assertIn("stopped before", describe_outcome("unprocessed", False))
         self.assertIsNone(describe_outcome("remediated", True))
 
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class InterruptedRunOutcomeTests(unittest.TestCase):
+    '''A file the run never reached is not a file that failed remediation.'''
+
+    def setUp(self) -> None:
+        '''Create a workspace holding one unrouted file.'''
+        self.root = Path(self.enterContext(
+            tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
+        ))
+        self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.root))
+
+    def _job_with_active_file(self, status: JobStatus) -> Job:
+        '''Build a job whose only file is still sitting in active/files.'''
+        job = Job(
+            job_id="20260827-120000-aaaaaa",
+            created_at=datetime(2026, 8, 27, 12, 0, 0),
+            config_file="default.json",
+            submitted_by="alice@example.com",
+            status=status,
+        )
+        job.files.append(UploadedFile("000", "Report.pdf", "Report.pdf", 5))
+        staged = job.workspace_path / "active" / "files" / "Report.pdf"
+        staged.parent.mkdir(parents=True, exist_ok=True)
+        staged.write_bytes(b"%PDF-")
+        return job
+
+    def test_completed_run_reports_a_failing_file(self) -> None:
+        '''After a full run, active/ means remediation did not fix it.'''
+        job = self._job_with_active_file(JobStatus.COMPLETED)
+        result = harvest_job(job)[0]
+        self.assertEqual(result.outcome, "active")
+        self.assertIn("still fails", result.note)
+
+    def test_cancelled_run_reports_an_unprocessed_file(self) -> None:
+        '''After a cancellation, the same location means something different.'''
+        job = self._job_with_active_file(JobStatus.CANCELLED)
+        result = harvest_job(job)[0]
+        self.assertEqual(result.outcome, "unprocessed")
+        self.assertIn("stopped before", result.note)
+        self.assertNotIn("still fails", result.note or "")
+
+    def test_label_and_note_agree(self) -> None:
+        '''The readable label must not contradict its own explanation.'''
+        job = self._job_with_active_file(JobStatus.CANCELLED)
+        payload = harvest_job(job)[0].to_dict()
+        self.assertEqual(payload["outcome_label"], "Not processed")

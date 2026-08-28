@@ -131,6 +131,34 @@ unless `PDF_WEB_LEGACY_JOB_OWNER` names an owner; in single-user mode they
 belong to the local user. The server reports how many such jobs it found on
 startup, so they are not a silent surprise.
 
+### Trying multi-user locally
+
+A browser cannot set the identity header on a normal navigation, so exercising
+multi-user mode by hand needs something in front that injects it — exactly what
+the proxy does in production. `scripts/dev_identity_proxy.py` is a throwaway
+stand-in: run one per person, each on its own port, then open each port in a
+separate browser window to be several people at once.
+
+```bash
+uv sync --all-groups                                  # the tool needs the dev deps
+
+PDF_WEB_PROXY_SECRET=s3cret uv run web --port 8000    # terminal 1
+uv run python scripts/dev_identity_proxy.py alice@example.com \
+    --port 8101 --secret s3cret                       # terminal 2
+uv run python scripts/dev_identity_proxy.py bob@example.com \
+    --port 8102 --secret s3cret                       # terminal 3
+```
+
+Then browse <http://127.0.0.1:8101> as Alice and <http://127.0.0.1:8102> as
+Bob. Each sees only their own jobs, the per-user queue cap applies to each
+separately, and pasting one person's job link into the other's window shows the
+privacy message rather than the job.
+
+The proxy streams both directions, so uploads and the live pipeline log work
+through it. **It authenticates nobody** — it asserts whichever identity you
+name on the command line, which is the whole point. Never run it in front of a
+deployment others can reach.
+
 ### Queueing
 
 The pipeline runs one job at a time: veraPDF forks a JVM per file across every
@@ -149,6 +177,19 @@ with its own `PROJECT_BASE_PATH`, so web runs never touch `resources/projects/`.
 Uploads are seeded into the job's `source/` folder before `go.py` starts, which
 is what keeps the Terminus download path from firing. Job directories are swept
 after `PDF_WEB_JOB_TTL_HOURS` (default 72).
+
+A running or queued job can be cancelled from the job view. The pipeline's
+process group is signalled, so the veraPDF and PDFix child processes are reaped
+rather than orphaned, whatever partial results exist are still harvested and
+downloadable, and the submitter's queue slot is freed immediately. Without this
+a mistaken batch would hold its owner's only slot and block everyone queued
+behind it until it finished.
+
+`GET /healthz` is an unauthenticated liveness probe for supervisors and load
+balancers. It reports only whether the process is up and the worker thread is
+running, returning 503 if the worker has stopped — a live process with a dead
+worker accepts jobs it will never run. Everything revealing (licences, tooling,
+identity configuration) stays behind authentication on `/api/health`.
 
 The app binds `127.0.0.1` by default. Options: `--port`, `--host`,
 `--allow-remote`, `--reload`. See *Single-user and multi-user modes* above

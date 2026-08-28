@@ -32,6 +32,7 @@ class JobStatus(StrEnum):
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
 class StepState(StrEnum):
@@ -44,9 +45,14 @@ class StepState(StrEnum):
     DONE = "done"
     SKIPPED = "skipped"
     FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
-TERMINAL_STATUSES = frozenset({JobStatus.COMPLETED, JobStatus.FAILED})
+TERMINAL_STATUSES = frozenset({
+    JobStatus.COMPLETED,
+    JobStatus.FAILED,
+    JobStatus.CANCELLED,
+})
 
 
 @dataclass
@@ -112,6 +118,7 @@ OUTCOME_LABELS = {
     "unable-to-process": "Unable to process",
     "pending": "Working\u2026",
     "active": "Still not compliant",
+    "unprocessed": "Not processed",
     "missing": "Not produced",
 }
 
