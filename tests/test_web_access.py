@@ -114,7 +114,8 @@ class AccessControlTests(unittest.TestCase):
         )
         self.assertTrue(self.job.log_path.is_file())
 
-    def test_owner_can_delete_all_terminal_jobs_without_touching_active_or_other_users(self) -> None:
+    def test_owner_can_delete_all_terminal_jobs_without_touching_active_or_other_users(
+            self) -> None:
         '''Bulk cleanup removes owned artifacts while leaving live and foreign jobs alone.'''
         second = self._make_job("20260827-120001-bbbbbb", ALICE)
         active = make_job(

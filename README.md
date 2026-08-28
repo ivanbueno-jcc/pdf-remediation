@@ -61,12 +61,64 @@ uv run pdf-api                       # http://127.0.0.1:8100
 ```
 
 ```python
+from pathlib import Path
+
 from pdf_api.pipeline import process_pdf
 from pdf_api.models import PipelineOptions
 
 result = process_pdf(Path("in.pdf"), Path("out/"),
                      PipelineOptions(config_file="default.json"))
 print(result.status, result.before, result.after)
+```
+
+The HTTP API accepts the same options as a multipart form payload:
+
+```bash
+curl -X POST http://127.0.0.1:8100/api/pdf \
+  -F 'file=@in.pdf;type=application/pdf' \
+  -F 'config_file=default.json' \
+  -F 'wcag_and_ua1_must_pass=false' \
+  -F 'attempt_font_fix=true' \
+  -F 'attempt_unlock=true'
+```
+
+The `202 Accepted` response contains a job payload that can be polled with
+`GET /api/pdf/{job_id}`:
+
+```json
+{
+  "job_id": "8e4f2a9b7c1d4e6f8a0b2c3d4e5f6a7b",
+  "original_name": "in.pdf",
+  "state": "queued",
+  "created_at": "2026-08-28T12:00:00",
+  "stages": [],
+  "error": null
+}
+```
+
+When processing finishes, the same payload includes a `result` object. The
+artifacts are available at `/api/pdf/{job_id}/pdf`, `/before`, and `/after`:
+
+```json
+{
+  "job_id": "8e4f2a9b7c1d4e6f8a0b2c3d4e5f6a7b",
+  "original_name": "in.pdf",
+  "state": "done",
+  "created_at": "2026-08-28T12:00:00",
+  "stages": [],
+  "error": null,
+  "result": {
+    "status": "remediated",
+    "input_pdf_path": "/tmp/in.pdf",
+    "output_pdf_path": "/tmp/out/in.pdf",
+    "before": {},
+    "after": {},
+    "stages": [],
+    "warnings": [],
+    "diagnostics": [],
+    "error": null
+  }
+}
 ```
 
 The sequence: validate, short-circuit if already compliant, unlock if encrypted,
