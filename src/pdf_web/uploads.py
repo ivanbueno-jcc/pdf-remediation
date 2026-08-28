@@ -83,3 +83,24 @@ def looks_like_pdf(path: Path) -> bool:
             return handle.read(5) == b"%PDF-"
     except OSError:
         return False
+
+
+def get_pdf_page_count(path: Path) -> int | None:
+    '''Return a PDF's page count, or None when the document cannot be opened.'''
+    try:
+        from pdfixsdk import GetPdfix
+
+        pdfix = GetPdfix()
+        if pdfix is None:
+            return None
+        document = pdfix.OpenDoc(str(path), "")
+        if document is None:
+            return None
+        try:
+            return int(document.GetNumPages())
+        finally:
+            document.Close()
+    except Exception:  # pylint: disable=broad-exception-caught
+        # Page count is display metadata; an SDK/license issue must not reject
+        # an otherwise valid upload.
+        return None

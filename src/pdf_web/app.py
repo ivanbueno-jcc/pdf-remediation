@@ -54,6 +54,7 @@ from .store import (
 )
 from .uploads import (
     UploadError,
+    get_pdf_page_count,
     looks_like_pdf,
     sanitize_upload_name,
     write_upload_stream,
@@ -238,6 +239,7 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
                 "status": str(job.status),
                 "queued": job.status == JobStatus.QUEUED,
                 "created_at": job.created_at.isoformat(timespec="seconds"),
+                "page_count": job.file.page_count,
                 "name": job.file.original_name,
                 "outcome": job.outcome,
                 "outcome_label": outcome_label(job.outcome),
@@ -315,6 +317,9 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
             if not looks_like_pdf(job.input_path):
                 raise UploadError(f"File is not a PDF: {original_name}")
 
+            job.file.page_count = await asyncio.to_thread(
+                get_pdf_page_count, job.input_path
+            )
             total_bytes += size
             if total_bytes > MAX_SUBMISSION_BYTES:
                 raise UploadError(
@@ -371,6 +376,7 @@ async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
                 "job_id": job.job_id,
                 "name": job.file.original_name,
                 "created_at": job.created_at.isoformat(timespec="seconds"),
+                "page_count": job.file.page_count,
                 "config_file": job.config_file,
                 "config_label": CONFIG_FILE_DETAILS.get(job.config_file, {}).get(
                     "label", job.config_file

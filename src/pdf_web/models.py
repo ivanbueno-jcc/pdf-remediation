@@ -81,6 +81,7 @@ class UploadedFile:
     original_name: str
     stored_name: str
     size_bytes: int
+    page_count: int | None = None
 
     def to_dict(self) -> dict[str, Any]:
         '''
@@ -90,6 +91,7 @@ class UploadedFile:
             "original_name": self.original_name,
             "stored_name": self.stored_name,
             "size_bytes": self.size_bytes,
+            "page_count": self.page_count,
         }
 
 

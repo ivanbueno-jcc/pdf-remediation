@@ -173,6 +173,10 @@ def load_meta(meta_path: Path) -> Job | None:
             original_name=file_payload.get("original_name", ""),
             stored_name=file_payload.get("stored_name", ""),
             size_bytes=int(file_payload.get("size_bytes") or 0),
+            page_count=(
+                int(file_payload["page_count"])
+                if file_payload.get("page_count") is not None else None
+            ),
         ),
         submitted_by=(
             normalize_user(payload.get("submitted_by")) or (legacy_job_owner() or "")

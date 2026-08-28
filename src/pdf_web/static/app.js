@@ -556,9 +556,16 @@ function formatJobTimestamp(value) {
   if (!value) return '';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(undefined, {
-    month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
-  }).format(date);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return month + '/' + day + '/' + date.getFullYear();
+}
+
+function formatPageCount(value) {
+  if (value === null || value === undefined) return '';
+  const count = Number(value);
+  if (!Number.isInteger(count) || count < 0) return '';
+  return count + (count === 1 ? ' page' : ' pages');
 }
 
 function renderJobGroup(groupId, bodyId, countId, jobs) {
@@ -633,7 +640,8 @@ function buildJobRow(job) {
   fileName.className = 'file-name';
   fileName.textContent = job.name;
   fileInfo.appendChild(fileName);
-  const metadata = [formatJobTimestamp(job.created_at), job.config_label || job.config_file]
+  const metadata = [formatJobTimestamp(job.created_at), formatPageCount(job.page_count),
+    job.config_label || job.config_file]
     .filter(Boolean);
   if (metadata.length) {
     const meta = document.createElement('div');
