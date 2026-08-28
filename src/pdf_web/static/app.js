@@ -594,6 +594,7 @@ function buildJobRow(job) {
   disclosure.className = 'disclosure';
   disclosure.setAttribute('aria-expanded', 'false');
   disclosure.setAttribute('aria-label', 'Show details for ' + job.name);
+  disclosure.title = 'Show details for ' + job.name;
   const caret = document.createElement('span');
   caret.className = 'caret';
   caret.setAttribute('aria-hidden', 'true');
@@ -713,6 +714,7 @@ function updateJobRow(entry, job) {
     remove.className = 'delete-action';
     remove.append(downloadIcon('delete'), 'Delete');
     remove.setAttribute('aria-label', 'Delete ' + job.name);
+    remove.title = 'Delete ' + job.name;
     remove.addEventListener('click', () => deleteJob(job, remove));
     entry.fileActions.appendChild(remove);
   }
@@ -722,6 +724,7 @@ function updateJobRow(entry, job) {
     retry.className = 'retry-action';
     retry.append(downloadIcon('retry'), 'Retry');
     retry.setAttribute('aria-label', 'Stage processed PDF for ' + job.name);
+    retry.title = 'Retry ' + job.name;
     retry.addEventListener('click', () => retryProcessedPdf(job, retry));
     entry.fileActions.appendChild(retry);
   }
@@ -743,6 +746,7 @@ function updateJobRow(entry, job) {
   menu.open = state.openDownloadJobId === job.job_id;
   const menuSummary = document.createElement('summary');
   menuSummary.setAttribute('aria-label', 'More download options for ' + job.name);
+  menuSummary.title = 'More download options for ' + job.name;
   menuSummary.setAttribute('aria-expanded', menu.open ? 'true' : 'false');
   const menuId = 'downloads-' + job.job_id;
   menuSummary.setAttribute('aria-controls', menuId);
@@ -1205,6 +1209,7 @@ function link(href, label, enabled, fileName, iconName) {
   anchor.append(downloadIcon(iconName), label);
   anchor.setAttribute('aria-label', label + ' for ' + fileName +
     (enabled ? '' : ' (unavailable)'));
+  anchor.title = label + (enabled ? '' : ' (unavailable)');
   if (enabled) {
     anchor.href = href;
   } else {
@@ -1217,9 +1222,10 @@ function link(href, label, enabled, fileName, iconName) {
 /* ---------- job detail ---------- */
 
 function updateDisclosure(disclosure, fileName, expanded) {
+  const action = (expanded ? 'Hide' : 'Show') + ' details for ' + fileName;
   disclosure.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-  disclosure.setAttribute('aria-label', (expanded ? 'Hide' : 'Show') +
-    ' details for ' + fileName);
+  disclosure.setAttribute('aria-label', action);
+  disclosure.title = action;
 }
 
 async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
