@@ -595,6 +595,22 @@ async def retry_job(
     })
 
 
+@app.delete("/api/jobs")
+async def delete_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
+    '''Delete every terminal job owned by the current user.'''
+    jobs = [job for job in STORE.list_jobs() if job.submitted_by == user]
+    deleted: list[str] = []
+    skipped: list[str] = []
+    for job in jobs:
+        if not job.is_terminal():
+            skipped.append(job.job_id)
+            continue
+        STORE.remove(job.job_id)
+        await asyncio.to_thread(shutil.rmtree, job.base_path, True)
+        deleted.append(job.job_id)
+    return {"deleted": deleted, "skipped": skipped}
+
+
 @app.delete("/api/jobs/{job_id}")
 async def delete_job(
         job_id: str = JOB_ID_PATH,

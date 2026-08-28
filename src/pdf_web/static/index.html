@@ -8,8 +8,10 @@
 </head>
 <body>
 <main>
-  <h1>PDF Remediation</h1>
-  <p class="muted" id="identity"></p>
+  <header class="app-header">
+    <h1>PDF Remediation</h1>
+    <p class="muted" id="identity"></p>
+  </header>
 
   <section id="health-section">
     <h2>Environment</h2>
@@ -65,21 +67,24 @@
 
   <section id="jobs-section" class="hidden">
     <div class="jobs-header">
-      <h2>Jobs</h2>
+      <div class="jobs-title">
+        <h2>Jobs</h2>
+        <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
+      </div>
       <div class="job-filters">
         <input type="search" id="job-search" placeholder="Search by filename" autocomplete="off" aria-label="Search files">
-        <select id="job-status-filter" aria-label="Status">
-          <option value="all">All statuses</option>
-          <option value="active">Active</option>
-          <option value="queued">Queued</option>
-          <option value="running">Running</option>
-          <option value="completed">Complete</option>
+        <select id="job-outcome-filter" aria-label="Outcome">
+          <option value="all">All outcomes</option>
+          <option value="pending">Pending</option>
+          <option value="already_compliant">Already compliant</option>
+          <option value="remediated">Remediated</option>
+          <option value="improved">Improved, still failing</option>
+          <option value="unchanged">Unchanged</option>
           <option value="failed">Failed</option>
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
     </div>
-    <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
     <div id="job-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     <p class="muted job-empty hidden" id="job-empty" role="status"></p>
     <div class="job-group hidden" id="active-jobs-group">
@@ -96,8 +101,24 @@
         <tbody id="recent-jobs-body"></tbody>
       </table>
     </div>
+    <div class="jobs-footer">
+      <button type="button" class="delete-all" id="delete-all" aria-label="Delete all jobs">Delete all</button>
+    </div>
   </section>
 </main>
+<dialog id="delete-dialog" class="confirm-dialog" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-copy">
+  <div class="confirm-dialog-body">
+    <div class="confirm-dialog-icon" aria-hidden="true">!</div>
+    <div>
+      <h2 id="delete-dialog-title">Delete job?</h2>
+      <p id="delete-dialog-copy">This permanently removes the job and all of its artifacts.</p>
+    </div>
+  </div>
+  <div class="confirm-dialog-actions">
+    <button type="button" class="confirm-dialog-cancel" id="delete-cancel">Cancel</button>
+    <button type="button" class="confirm-dialog-confirm" id="delete-confirm">Delete job</button>
+  </div>
+</dialog>
 <script src="/static/app.js"></script>
 </body>
 </html>

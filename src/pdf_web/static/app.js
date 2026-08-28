@@ -19,7 +19,7 @@ const state = {
   jobRows: new Map(),
   jobStatusSnapshot: null,
   jobSearch: '',
-  jobStatusFilter: 'all',
+  jobOutcomeFilter: 'all',
 };
 
 const el = (id) => document.getElementById(id);
@@ -492,11 +492,11 @@ function isActiveJob(job) {
 
 function filteredJobs() {
   const query = state.jobSearch.trim().toLowerCase();
-  const filter = state.jobStatusFilter;
+  const filter = state.jobOutcomeFilter;
   return state.jobs.filter((job) => {
     if (query && !String(job.name || '').toLowerCase().includes(query)) return false;
-    if (filter === 'active' && !isActiveJob(job)) return false;
-    if (filter !== 'all' && filter !== 'active' && job.status !== filter) return false;
+    if (filter === 'pending' && job.outcome) return false;
+    if (filter !== 'all' && filter !== 'pending' && job.outcome !== filter) return false;
     return true;
   });
 }
@@ -524,13 +524,13 @@ function renderJobs() {
   const empty = el('job-empty');
   empty.classList.toggle('hidden', visible.length > 0);
   empty.textContent = total
-    ? 'No jobs match the current search and status filter.'
+    ? 'No jobs match the current search and outcome filter.'
     : 'No jobs yet.';
   renderJobGroup('active-jobs-group', 'active-jobs-body', 'active-jobs-count', active);
   renderJobGroup('recent-jobs-group', 'recent-jobs-body', 'recent-jobs-count', recent);
 
   // Drop rows for jobs that no longer exist or fell out of the current
-  // search/status filter, so stale elements don't linger detached in memory.
+  // search/outcome filter, so stale elements don't linger detached in memory.
   const visibleIds = new Set(visible.map((job) => job.job_id));
   state.jobRows.forEach((entry, jobId) => {
     if (visibleIds.has(jobId)) return;
@@ -574,6 +574,9 @@ function buildJobRow(job) {
     meta.textContent = metadata.join(' · ');
     fileInfo.appendChild(meta);
   }
+  const fileActions = document.createElement('div');
+  fileActions.className = 'file-actions';
+  fileInfo.appendChild(fileActions);
   fileLabel.append(disclosure, fileInfo);
   name.appendChild(fileLabel);
 
@@ -610,7 +613,7 @@ function buildJobRow(job) {
 
   const entry = {
     job, row, detail, cell, disclosure,
-    processingState, processingDot, outcome, status, validation, downloads,
+    processingState, processingDot, outcome, status, validation, downloads, fileActions,
   };
 
   // `entry.job` is refreshed on every poll via updateJobRow, so this closure
@@ -637,7 +640,24 @@ function updateJobRow(entry, job) {
 
   entry.outcome.className = 'outcome ' + (job.outcome ? outcomeTone(job.outcome) : 'pending');
   entry.outcome.textContent = job.outcome_label || 'Pending result';
-  entry.status.querySelectorAll('.muted, .retry-action').forEach((note) => note.remove());
+  entry.status.querySelectorAll('.muted').forEach((note) => note.remove());
+  if (job.error) {
+    const note = document.createElement('div');
+    note.className = 'muted';
+    note.textContent = job.error;
+    entry.status.appendChild(note);
+  }
+
+  entry.fileActions.innerHTML = '';
+  if (canDeleteJob(job)) {
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'delete-action';
+    remove.append(downloadIcon('delete'), 'Delete');
+    remove.setAttribute('aria-label', 'Delete ' + job.name);
+    remove.addEventListener('click', () => deleteJob(job, remove));
+    entry.fileActions.appendChild(remove);
+  }
   if (canRetryJob(job)) {
     const retry = document.createElement('button');
     retry.type = 'button';
@@ -645,13 +665,7 @@ function updateJobRow(entry, job) {
     retry.append(downloadIcon('retry'), 'Retry');
     retry.setAttribute('aria-label', 'Stage processed PDF for ' + job.name);
     retry.addEventListener('click', () => retryProcessedPdf(job, retry));
-    entry.status.appendChild(retry);
-  }
-  if (job.error) {
-    const note = document.createElement('div');
-    note.className = 'muted';
-    note.textContent = job.error;
-    entry.status.appendChild(note);
+    entry.fileActions.appendChild(retry);
   }
 
   entry.validation.innerHTML = validationComparison(job.before, job.after);
@@ -660,7 +674,7 @@ function updateJobRow(entry, job) {
   const base = '/api/jobs/' + job.job_id + '/';
   const split = document.createElement('div');
   split.className = 'split-download';
-  const primary = link(base + 'pdf', 'Remediated PDF', job.has_pdf,
+  const primary = link(base + 'pdf', pdfDownloadLabel(job), job.has_pdf,
     job.name, 'file-check');
   primary.classList.add('split-primary');
   split.appendChild(primary);
@@ -751,6 +765,14 @@ function canRetryJob(job) {
     job.outcome && job.outcome !== 'remediated' && job.outcome !== 'already_compliant');
 }
 
+function canDeleteJob(job) {
+  return Boolean(job && job.status !== 'queued' && job.status !== 'running');
+}
+
+function pdfDownloadLabel(job) {
+  return job.outcome === 'remediated' ? 'Remediated PDF' : 'Processed PDF';
+}
+
 async function retryProcessedPdf(job, button) {
   if (button.disabled || state.submitting) return;
   button.disabled = true;
@@ -777,6 +799,106 @@ async function retryProcessedPdf(job, button) {
     }
   } catch (error) {
     showSubmissionResult('Could not stage the processed PDF: ' + String(error.message || error), 'bad');
+  } finally {
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+  }
+}
+
+async function deleteJob(job, button) {
+  if (button.disabled || state.submitting) return;
+  if (!await confirmDelete(job)) return;
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  try {
+    const response = await fetch('/api/jobs/' + encodeURIComponent(job.job_id), {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(describeError(payload) || 'The job could not be deleted.');
+    }
+    await refreshQueue();
+    announceStatus(job.name + ' and its artifacts were deleted.');
+  } catch (error) {
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+    showSubmissionResult('Could not delete the job: ' + String(error.message || error), 'bad');
+  }
+}
+
+function confirmDelete(job) {
+  return confirmDeletion(
+    'Delete ' + job.name + '?',
+    'This permanently removes the job and all of its artifacts. This action cannot be undone.',
+    'Delete job'
+  );
+}
+
+function confirmDeleteAll(count) {
+  const noun = count === 1 ? 'job' : 'jobs';
+  return confirmDeletion(
+    'Delete all jobs?',
+    'This permanently removes all ' + count + ' ' + noun + ' and their artifacts. Jobs still running will be skipped until they finish. This action cannot be undone.',
+    'Delete all'
+  );
+}
+
+function confirmDeletion(titleText, copyText, confirmText) {
+  const dialog = el('delete-dialog');
+  const title = el('delete-dialog-title');
+  const copy = el('delete-dialog-copy');
+  const confirm = el('delete-confirm');
+  const cancel = el('delete-cancel');
+  title.textContent = titleText;
+  copy.textContent = copyText;
+  const previousConfirmLabel = confirm.textContent;
+  confirm.textContent = confirmText;
+
+  return new Promise((resolve) => {
+    const previouslyFocused = document.activeElement;
+    const onClose = () => {
+      confirm.textContent = previousConfirmLabel;
+      if (previouslyFocused && previouslyFocused.isConnected && previouslyFocused.focus) {
+        previouslyFocused.focus();
+      }
+      resolve(dialog.returnValue === 'confirm');
+    };
+    dialog.addEventListener('close', onClose, { once: true });
+    confirm.onclick = () => { dialog.returnValue = 'confirm'; dialog.close(); };
+    cancel.onclick = () => { dialog.returnValue = 'cancel'; dialog.close(); };
+    dialog.returnValue = '';
+    dialog.showModal();
+    cancel.focus();
+  });
+}
+
+async function deleteAllJobs(button) {
+  if (button.disabled || state.submitting || !state.jobs.length) return;
+  if (!await confirmDeleteAll(state.jobs.length)) return;
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  try {
+    const response = await fetch('/api/jobs', { method: 'DELETE' });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(describeError(payload) || 'The jobs could not be deleted.');
+    const deleted = Array.isArray(payload.deleted) ? payload.deleted : [];
+    const skipped = Array.isArray(payload.skipped) ? payload.skipped : [];
+    await refreshQueue();
+    if (skipped.length) {
+      const message = deleted.length
+        ? deleted.length + ' job' + (deleted.length === 1 ? '' : 's') +
+          ' deleted. ' + skipped.length + ' active job' + (skipped.length === 1 ? '' : 's') + ' remain.'
+        : 'Active jobs are still running and could not be deleted.';
+      showSubmissionResult(message, 'warn');
+      announceStatus(message);
+    } else {
+      const message = deleted.length + ' job' + (deleted.length === 1 ? '' : 's') +
+        ' and their artifacts were deleted.';
+      announceStatus(message);
+    }
+  } catch (error) {
+    showSubmissionResult('Could not delete all jobs: ' + String(error.message || error), 'bad');
   } finally {
     button.disabled = false;
     button.removeAttribute('aria-busy');
@@ -837,6 +959,12 @@ function downloadIcon(name) {
     retry: [
       ['path', { d: 'M3 12a9 9 0 1 0 3-6.7' }],
       ['polyline', { points: '3 4 3 10 9 10' }],
+    ],
+    delete: [
+      ['path', { d: 'M4 7h16' }],
+      ['path', { d: 'M10 11v6M14 11v6' }],
+      ['path', { d: 'M6 7l1 14h10l1-14' }],
+      ['path', { d: 'M9 7V4h6v3' }],
     ],
   };
 
@@ -1143,10 +1271,13 @@ el('job-search').addEventListener('input', (event) => {
   state.jobSearch = event.target.value;
   renderJobs();
 });
-el('job-status-filter').addEventListener('change', (event) => {
-  state.jobStatusFilter = event.target.value;
+el('job-outcome-filter').addEventListener('change', (event) => {
+  state.jobOutcomeFilter = event.target.value;
   renderJobs();
 });
+const deleteAllButton = el('delete-all');
+deleteAllButton.prepend(downloadIcon('delete'));
+deleteAllButton.addEventListener('click', () => deleteAllJobs(deleteAllButton));
 el('submit').addEventListener('click', submitJobs);
 document.addEventListener('click', (event) => {
   const openMenu = document.querySelector('.download-menu[open]');

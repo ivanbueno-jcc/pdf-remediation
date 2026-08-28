@@ -114,6 +114,30 @@ class AccessControlTests(unittest.TestCase):
         )
         self.assertTrue(self.job.log_path.is_file())
 
+    def test_owner_can_delete_all_terminal_jobs_without_touching_active_or_other_users(self) -> None:
+        '''Bulk cleanup removes owned artifacts while leaving live and foreign jobs alone.'''
+        second = self._make_job("20260827-120001-bbbbbb", ALICE)
+        active = make_job(
+            job_id="20260827-120002-cccccc", submitted_by=ALICE,
+            status=JobStatus.QUEUED,
+        )
+        self.store.add(active)
+        foreign = self._make_job("20260827-120003-dddddd", BOB)
+
+        response = self.client.delete("/api/jobs", headers=headers(ALICE))
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(set(payload["deleted"]), {self.job.job_id, second.job_id})
+        self.assertEqual(payload["skipped"], [active.job_id])
+        self.assertIsNone(self.store.get(self.job.job_id))
+        self.assertIsNone(self.store.get(second.job_id))
+        self.assertIs(self.store.get(active.job_id), active)
+        self.assertIs(self.store.get(foreign.job_id), foreign)
+        self.assertFalse(self.job.base_path.exists())
+        self.assertFalse(second.base_path.exists())
+        self.assertTrue(foreign.base_path.exists())
+
     def test_other_user_cannot_retry(self) -> None:
         '''Retry re-runs someone's documents, so it is owner-scoped too.'''
         response = self.client.post(

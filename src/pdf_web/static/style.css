@@ -39,6 +39,12 @@ main { max-width: 1040px; margin: 0 auto; }
 h1 { font-size: 30px; font-weight: 700; letter-spacing: -.01em; margin: 0 0 8px; }
 h2 { font-size: 19px; font-weight: 650; margin: 0 0 16px; color: var(--ink); }
 h3 { font-size: 16px; margin: 26px 0 10px; color: var(--ink); }
+.app-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px 24px; margin-bottom: 22px;
+}
+.app-header h1 { margin: 0; }
+#identity { margin: 0; text-align: right; overflow-wrap: anywhere; }
 section {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -215,6 +221,11 @@ ul.violation-group-ok li::marker { color: var(--ok); }
 .violation-collapse ul { margin-top: 10px; margin-bottom: 0; }
 tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
 @media (prefers-reduced-motion: no-preference) {
+  @keyframes dialog-enter {
+    from { opacity: 0; transform: translateY(8px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .confirm-dialog[open] { animation: dialog-enter .18s ease-out both; }
   @keyframes staged-row-enter {
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
@@ -279,7 +290,7 @@ button.disclosure[aria-expanded="true"] .caret { transform: rotate(90deg); }
 .outcome.bad { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
 .outcome.pending { color: var(--muted); background: rgba(127,127,127,.06); }
 .retry-action {
-  display: inline-flex; align-items: center; gap: 6px; margin-top: 7px;
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 0;
   min-height: 32px; padding: 3px 0; border-color: transparent;
   background: transparent; color: var(--accent); font-size: 13px; font-weight: 650;
 }
@@ -309,7 +320,12 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
   display: flex; flex-wrap: wrap; align-items: center;
   justify-content: space-between; gap: 12px 16px; margin-bottom: 16px;
 }
-.jobs-header h2 { margin: 0; }
+.jobs-title {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+  min-width: 0;
+}
+.jobs-title h2 { margin: 0; }
+#queue-summary { margin: 0; }
 .job-filters { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
 .job-filters input, .job-filters select {
   min-height: 44px; border: 1px solid var(--line); border-radius: 10px;
@@ -326,7 +342,49 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
 .job-group + .job-group { margin-top: 28px; }
 .job-group h3 { display: flex; align-items: baseline; gap: 7px; }
 .job-group h3 .group-count { font-size: 13px; font-weight: 400; color: var(--muted); }
+.jobs-footer {
+  display: flex; justify-content: flex-end; margin-top: 24px; padding-top: 16px;
+}
+.delete-all {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 40px;
+  border-color: var(--bad); color: var(--bad); background: transparent; font-weight: 650;
+}
+.delete-all:hover:not(:disabled) { border-color: var(--bad); color: var(--ink); }
+.delete-all .dl-icon { width: 15px; height: 15px; }
 .job-meta { margin-top: 4px; color: var(--muted); font-size: 13px; font-weight: 400; overflow-wrap: anywhere; }
+.file-actions { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; }
+.file-actions button {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px;
+  padding: 3px 0; border-color: transparent; background: transparent;
+  color: var(--accent); font-size: 13px; font-weight: 650;
+}
+.file-actions button:hover:not(:disabled) { border-color: transparent; color: var(--ink); }
+.file-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.file-actions .delete-action { color: var(--bad); }
+.file-actions .delete-action:hover:not(:disabled) { color: var(--ink); }
+.file-actions .dl-icon { width: 14px; height: 14px; }
+.confirm-dialog {
+  width: min(450px, calc(100vw - 32px)); max-width: 100%; margin: auto; padding: 0;
+  border: 1px solid var(--line); border-radius: 16px; background: var(--panel); color: var(--ink);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .35);
+}
+.confirm-dialog::backdrop { background: rgba(6, 10, 16, .66); backdrop-filter: blur(4px); }
+.confirm-dialog-body { display: flex; gap: 14px; padding: 24px 24px 18px; }
+.confirm-dialog-icon {
+  display: grid; place-items: center; flex: none; width: 42px; height: 42px;
+  border: 1px solid var(--bad); border-radius: 50%; color: var(--bad);
+  background: var(--bad-bg); font-size: 24px; font-weight: 750; line-height: 1;
+}
+.confirm-dialog h2 { margin: 0 0 5px; font-size: 19px; }
+.confirm-dialog p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.confirm-dialog-actions {
+  display: flex; justify-content: flex-end; gap: 10px; padding: 14px 24px 22px;
+  border-top: 1px solid var(--line);
+}
+.confirm-dialog-actions button { min-height: 40px; padding: 7px 16px; }
+.confirm-dialog-confirm { border-color: var(--bad); background: var(--bad); color: #fff; font-weight: 650; }
+.confirm-dialog-confirm:hover:not(:disabled) { border-color: var(--bad); filter: brightness(1.08); }
+.confirm-dialog-cancel { background: transparent; }
 .job-empty { margin: 20px 0 4px; padding: 20px; border: 1px dashed var(--line); border-radius: 6px; text-align: center; }
 /*
  * Fixed layout keeps column widths locked to the header row, so expanding a
@@ -342,6 +400,8 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
 
 @media (max-width: 700px) {
   body { padding: 16px 12px 40px; }
+  .app-header { align-items: flex-start; flex-direction: column; gap: 2px; }
+  #identity { text-align: left; }
   section { padding: 14px; }
   #jobs-section { padding: 14px 12px; }
   .advanced-settings[open] { width: 100%; }
@@ -393,7 +453,8 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
   }
   .jobs-table tr.detail-row > td { display: block; border: 0; }
   .jobs-header { display: block; }
-  .jobs-header h2 { margin-bottom: 12px; }
+  .jobs-title { margin-bottom: 12px; }
+  .jobs-title h2 { margin-bottom: 0; }
   .job-filters { width: 100%; align-items: stretch; }
   .job-filters input, .job-filters select { flex: 1 1 150px; width: 100%; }
   .job-detail { padding: 14px 12px 16px; }
