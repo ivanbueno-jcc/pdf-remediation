@@ -873,6 +873,34 @@ Before opening the PDF, the command passes the `PDFIX_LICENSE_NAME` and
 - `license_deactivate.py` deactivates an active license. -->
 - `.env` supports `PDFIX_LICENSE_NAME` and `PDFIX_LICENSE_KEY` for remediation.
 
+## Tests
+
+```bash
+uv run python -m unittest discover -s tests -t .
+```
+
+Runs in CI on every push, alongside pylint. The suite covers the pure logic
+that is easy to break silently and expensive to notice:
+
+- **Upload sanitization** — path traversal, interior-dot collapsing, and
+  deduplication. Filenames are attacker-controlled and become both paths and
+  report identifiers.
+- **veraPDF report filename reconstruction** — `expected_xml_name` rebuilds a
+  filename veraPDF composes by string-mangling a path
+  (`utilities/verapdf.py:107-113`). The test re-derives that formula
+  independently, so a drift breaks the build rather than silently emptying
+  every violation list while the counts keep working.
+- **Subprocess environment** — that `PROJECT_BASE_PATH` is overridden to the
+  job directory and `PANTHEON_EMAIL` is removed, which is the guard against an
+  accidental Terminus download.
+- **Console output parsing** — the step banners and stop message are parsed
+  from output produced by the real `print_console_*` helpers, so a formatting
+  change in `pdf_remediation` fails here instead of silently freezing the
+  progress stepper.
+- **Validation status** — that status is read from the results CSV, since
+  veraPDF writes no XML at all when validation errors and inferring from file
+  presence would report those files as passing.
+
 ## Troubleshooting
 
 ### Find slow files in a batch
