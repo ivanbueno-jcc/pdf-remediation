@@ -124,7 +124,15 @@ async function loadConfigs() {
     if (payload.upload_limits) state.uploadLimits = payload.upload_limits;
     renderUploadGuidance();
     select.innerHTML = '';
+    const groups = new Map();
     payload.files.forEach((entry) => {
+      const groupName = entry.group || '';
+      let optgroup = groups.has(groupName) ? groups.get(groupName) : undefined;
+      if (optgroup === undefined) {
+        optgroup = groupName ? document.createElement('optgroup') : null;
+        if (optgroup) optgroup.label = groupName;
+        groups.set(groupName, optgroup);
+      }
       const option = document.createElement('option');
       option.value = entry.name;
       option.textContent = (entry.label || entry.name) +
@@ -133,8 +141,9 @@ async function loadConfigs() {
       option.title = entry.description || '';
       option.disabled = !entry.available;
       option.selected = entry.name === payload.default;
-      select.appendChild(option);
+      (optgroup || select).appendChild(option);
     });
+    groups.forEach((optgroup) => { if (optgroup) select.appendChild(optgroup); });
     renderConfigDescription();
   } catch (error) {
     select.innerHTML = '<option value="default.json">Standard remediation</option>';

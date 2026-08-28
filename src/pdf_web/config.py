@@ -11,11 +11,19 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 CONFIG_DIR = REPO_ROOT / "resources" / "configuration"
 VERAPDF_JAR = REPO_ROOT / "lib" / "greenfield-apps-1.28.0.jar"
 
-ALLOWED_CONFIG_FILES = ("default.json", "default-slim.json",)
+ALLOWED_CONFIG_FILES = (
+    "default.json",
+    "default-slim.json",
+    "pdfix-fix_metadata.json",
+    "pdfix-make_accessible.json",
+    "pdfix-make_accessible_docling.json",
+    "pdfix-quick_fix.json",
+)
 DEFAULT_CONFIG_FILE = "default.json"
 CONFIG_FILE_DETAILS = {
     "default.json": {
         "label": "Standard",
+        "group": "Judicial Council",
         "description": (
             "Runs the full remediation preset for the broadest automatic "
             "accessibility repair coverage."
@@ -23,9 +31,44 @@ CONFIG_FILE_DETAILS = {
     },
     "default-slim.json": {
         "label": "Forms",
+        "group": "Judicial Council",
         "description": (
             "Uses a smaller, conservative preset for common structural and "
             "metadata repairs."
+        ),
+    },
+    "pdfix-fix_metadata.json": {
+        "label": "Fix metadata",
+        "group": "PDFix",
+        "description": (
+            "Repairs, normalizes, and rebuilds document metadata, sets the "
+            "document title, and applies the PDF/UA identifier."
+        ),
+    },
+    "pdfix-make_accessible.json": {
+        "label": "Make accessible",
+        "group": "PDFix",
+        "description": (
+            "PDFix's official PDF/UA-1 preset: conservative, non-destructive "
+            "cleanup, structure repair, tagging completion, and accessibility "
+            "fixes."
+        ),
+    },
+    "pdfix-make_accessible_docling.json": {
+        "label": "Make accessible (Docling)",
+        "group": "PDFix",
+        "description": (
+            "PDFix's PDF/UA-1 preset using Docling for AI-assisted "
+            "auto-tagging, built for maximum compatibility when processing "
+            "documents with Docling."
+        ),
+    },
+    "pdfix-quick_fix.json": {
+        "label": "Quick fix",
+        "group": "PDFix",
+        "description": (
+            "Automatically repairs common metadata, structure, font, and "
+            "accessibility issues that are safe to fix without manual review."
         ),
     },
 }
