@@ -107,29 +107,31 @@ pre#log {
 .banner.bad { border-color: var(--bad); color: var(--bad); }
 .banner.warn { border-color: var(--warn); color: var(--warn); }
 .banner.ok { border-color: var(--ok); color: var(--ok); }
+#submit-result { margin-top: 14px; }
 .hidden { display: none !important; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
 .muted { color: var(--muted); font-size: 13px; }
-.actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.action-list { display: flex; gap: 6px; flex-wrap: wrap; }
 a.dl { font-size: 13px; text-decoration: none; border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; color: var(--ink); }
 a.dl:hover { border-color: var(--accent); color: var(--accent); }
 a.dl[aria-disabled="true"] { opacity: .4; pointer-events: none; }
 tr.file-row { cursor: pointer; }
 tr.file-row:hover > td { background: rgba(127,127,127,.06); }
-td.expander { width: 26px; padding-right: 0; color: var(--muted); user-select: none; }
 tr.detail-row > td { background: rgba(127,127,127,.05); padding: 0; }
-.detail { padding: 12px 14px 14px 40px; }
-.detail h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
-.detail ul { margin: 0 0 12px; padding-left: 18px; }
-.detail li { margin-bottom: 5px; font-size: 13px; }
-.detail li:last-child { margin-bottom: 0; }
-.detail code { font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
-.detail .none { color: var(--ok); font-size: 13px; }
+.job-detail { padding: 12px 14px 14px 40px; }
+.job-detail h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.job-detail ul { margin: 0 0 12px; padding-left: 18px; }
+.job-detail li { margin-bottom: 5px; font-size: 13px; }
+.job-detail li:last-child { margin-bottom: 0; }
+.job-detail code { font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+.job-detail .none { color: var(--ok); font-size: 13px; }
 #rollup { margin: 0 0 16px; }
 #rollup table { font-size: 13px; }
 #rollup summary { cursor: pointer; font-size: 13px; color: var(--muted); padding: 6px 0; }
 #rollup summary:hover { color: var(--ink); }
-#jobs-body tr { cursor: pointer; }
-#jobs-body tr:hover > td { background: rgba(127,127,127,.06); }
 .pill { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
 .pill.completed { border-color: var(--ok); color: var(--ok); }
 .pill.cancelled { border-color: var(--warn); color: var(--warn); }
@@ -138,9 +140,49 @@ ol.steps li[data-state="cancelled"] .marker { border-color: var(--warn); color: 
 .pill.failed { border-color: var(--bad); color: var(--bad); }
 .pill.running, .pill.queued { border-color: var(--accent); color: var(--accent); }
 
-tr.job-row { cursor: pointer; }
-tr.job-row:hover > td { background: rgba(127,127,127,.06); }
 tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
+.file-label { display: flex; align-items: flex-start; gap: 5px; }
+.file-name { min-width: 0; padding-top: 1px; }
+button.disclosure {
+  display: grid; place-items: center; flex: none;
+  width: 28px; height: 28px; margin: -4px 0 -4px -7px; padding: 0;
+  border-color: transparent; background: transparent; color: var(--muted);
+}
+button.disclosure:hover { border-color: transparent; background: rgba(127,127,127,.08); color: var(--ink); }
+button.disclosure:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+button.disclosure .caret { font-size: 20px; line-height: 1; transition: transform .15s; }
+button.disclosure[aria-expanded="true"] .caret { transform: rotate(90deg); }
+.processing { min-width: 100px; }
+.processing-state {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--muted); font-size: 13px; font-weight: 650; white-space: nowrap;
+}
+.processing-state .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.processing-state.completed, .processing-state.running { color: var(--accent); }
+.processing-state.failed { color: var(--bad); }
+.processing-state.cancelled { color: var(--warn); }
+.processing-detail { margin-top: 2px; color: var(--muted); font-size: 12px; }
+.outcome {
+  display: inline-flex; align-items: center; min-height: 25px;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 2px 9px; font-size: 13px; font-weight: 650;
+}
+.outcome.ok { border-color: var(--ok); color: var(--ok); background: rgba(31,122,67,.08); }
+.outcome.warn { border-color: var(--warn); color: var(--warn); background: rgba(138,90,0,.08); }
+.outcome.bad { border-color: var(--bad); color: var(--bad); background: rgba(165,34,34,.08); }
+.outcome.pending { color: var(--muted); background: rgba(127,127,127,.06); }
+.validation-summary { display: grid; gap: 3px; min-width: 185px; }
+.validation-line {
+  display: grid; grid-template-columns: 42px max-content 14px max-content;
+  align-items: baseline; gap: 4px; font-size: 13px;
+}
+.validation-profile { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .03em; }
+.validation-value { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.validation-value.ok { color: var(--ok); font-weight: 650; }
+.validation-value.bad { color: var(--bad); }
+.validation-value.warn { color: var(--warn); }
+.validation-value.pending, .validation-arrow { color: var(--muted); }
+.validation-arrow { text-align: center; }
 ol.stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
 ol.stages li { display: flex; gap: 10px; align-items: baseline; font-size: 14px; }
 ol.stages li .marker { width: 20px; flex: none; text-align: center; }
@@ -151,6 +193,65 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
 #rejected { margin-top: 12px; }
 .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .progress > span { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+
+@media (max-width: 700px) {
+  body { padding: 16px 12px 40px; }
+  section { padding: 14px; }
+  #jobs-section { padding: 14px 12px; }
+  #jobs-table { display: block; }
+  #jobs-table thead {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  #jobs-table tbody { display: grid; gap: 12px; }
+  #jobs-table tr.job-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "name"
+      "processing"
+      "status"
+      "validation"
+      "actions";
+    gap: 3px;
+    padding: 13px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+  }
+  #jobs-table tr.job-row[data-open="true"] { border-radius: var(--radius) var(--radius) 0 0; }
+  #jobs-table tr.job-row > td { display: block; min-width: 0; padding: 0; border: 0; }
+  #jobs-table td.name {
+    grid-area: name; max-width: none; font-weight: 650;
+    word-break: normal; overflow-wrap: anywhere;
+  }
+  #jobs-table td.processing { grid-area: processing; padding-top: 5px; }
+  #jobs-table td.job-status { grid-area: status; padding-top: 8px; }
+  #jobs-table td.validation-change {
+    grid-area: validation; padding-top: 11px; margin-top: 7px;
+    border-top: 1px solid var(--line);
+  }
+  #jobs-table .validation-summary { min-width: 0; }
+  #jobs-table td.actions {
+    grid-area: actions; padding-top: 11px; margin-top: 7px;
+    border-top: 1px solid var(--line);
+  }
+  #jobs-table a.dl { padding: 6px 10px; }
+  #jobs-table tr.detail-row:not(.hidden) {
+    display: block; margin-top: -12px;
+    border: 1px solid var(--line); border-top: 0;
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+  }
+  #jobs-table tr.detail-row > td { display: block; border: 0; }
+  .job-detail { padding: 14px 12px 16px; }
+  ol.stages li {
+    display: grid; grid-template-columns: 20px minmax(0, 1fr);
+    gap: 2px 8px; align-items: start; margin-bottom: 8px;
+  }
+  ol.stages li .marker { grid-row: 1 / span 2; }
+  ol.stages li .detail { grid-column: 2; overflow-wrap: anywhere; }
+}
 </style>
 </head>
 <body>
@@ -161,7 +262,7 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
 
   <section id="health-section">
     <h2>Environment</h2>
-    <div id="health-banner" class="banner hidden"></div>
+    <div id="health-banner" class="banner hidden" role="alert" aria-atomic="true"></div>
     <div class="chips" id="health-chips"><span class="muted">Checking&hellip;</span></div>
   </section>
 
@@ -179,7 +280,7 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
       <thead><tr><th>File</th><th>Size</th><th></th></tr></thead>
       <tbody id="staged-body"></tbody>
     </table>
-    <p class="muted" id="staged-total"></p>
+    <p class="muted" id="staged-total" role="status" aria-live="polite" aria-atomic="true"></p>
 
     <div class="options">
       <label class="field">Configuration
@@ -191,16 +292,18 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
 
     <div class="row">
       <button class="primary" id="submit" disabled>Run pipeline</button>
-      <span class="muted" id="submit-note"></span>
+      <span class="muted" id="submit-note" role="status" aria-live="polite" aria-atomic="true"></span>
     </div>
+    <div id="submit-result" class="banner hidden" aria-atomic="true"></div>
     <div id="rejected"></div>
   </section>
 
   <section id="jobs-section" class="hidden">
     <h2>Jobs</h2>
-    <p class="muted" id="queue-summary"></p>
-    <table>
-      <thead><tr><th></th><th>File</th><th>Status</th><th>Before</th><th>After</th><th>Downloads</th></tr></thead>
+    <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
+    <div id="job-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+    <table id="jobs-table">
+      <thead><tr><th>File</th><th>Processing</th><th>Accessibility outcome</th><th>Validation change</th><th>Downloads</th></tr></thead>
       <tbody id="jobs-body"></tbody>
     </table>
   </section>
@@ -214,6 +317,7 @@ const POLL_MS = 2000;
 
 const state = {
   staged: [],
+  submitting: false,
   health: null,
   authError: null,
   openJobId: null,
@@ -221,6 +325,7 @@ const state = {
   pollTimer: null,
   logLines: [],
   jobs: [],
+  jobStatusSnapshot: null,
 };
 
 const el = (id) => document.getElementById(id);
@@ -334,12 +439,14 @@ async function loadConfigs() {
 /* ---------- staging ---------- */
 
 function addFiles(fileList) {
+  const previousCount = state.staged.length;
   Array.from(fileList).forEach((file) => {
     if (!file.name.toLowerCase().endsWith('.pdf')) return;
     if (!state.staged.some((s) => s.name === file.name && s.size === file.size)) {
       state.staged.push(file);
     }
   });
+  if (state.staged.length > previousCount) clearSubmissionResult();
   renderStaged();
   updateSubmitState();
 }
@@ -377,12 +484,34 @@ function renderStaged() {
     : '';
 }
 
-function updateSubmitState() {
+function updateSubmitState(message) {
   const healthy = Boolean(state.health && state.health.can_submit);
-  el('submit').disabled = !(healthy && state.staged.length);
-  if (!healthy) el('submit-note').textContent = 'Fix the environment problems above first.';
+  const submit = el('submit');
+  submit.disabled = state.submitting || !(healthy && state.staged.length);
+  submit.textContent = state.submitting ? 'Uploading\u2026'
+    : (state.staged.length === 1 ? 'Run 1 job'
+      : (state.staged.length > 1 ? 'Run ' + state.staged.length + ' jobs' : 'Run pipeline'));
+  if (message !== undefined) el('submit-note').textContent = message;
+  else if (state.submitting) el('submit-note').textContent = 'Uploading PDFs and creating jobs\u2026';
+  else if (!healthy) el('submit-note').textContent = 'Fix the environment problems above first.';
   else if (!state.staged.length) el('submit-note').textContent = 'Add at least one PDF.';
   else el('submit-note').textContent = '';
+}
+
+function clearSubmissionResult() {
+  const result = el('submit-result');
+  result.className = 'banner hidden';
+  result.textContent = '';
+  result.removeAttribute('role');
+  result.removeAttribute('aria-live');
+}
+
+function showSubmissionResult(message, tone) {
+  const result = el('submit-result');
+  result.textContent = message;
+  result.className = 'banner ' + tone;
+  result.setAttribute('role', tone === 'bad' ? 'alert' : 'status');
+  result.setAttribute('aria-live', tone === 'bad' ? 'assertive' : 'polite');
 }
 
 /* ---------- submit ---------- */
@@ -394,8 +523,9 @@ async function submitJobs() {
   form.append('skip_font_fix', el('skip-font-fix').checked ? 'true' : 'false');
   form.append('wcag_and_ua1_must_pass', el('strict').checked ? 'true' : 'false');
 
-  el('submit').disabled = true;
-  el('submit-note').textContent = 'Uploading\u2026';
+  state.submitting = true;
+  clearSubmissionResult();
+  updateSubmitState();
 
   let payload;
   try {
@@ -403,18 +533,21 @@ async function submitJobs() {
     payload = await response.json();
     if (!response.ok) throw new Error(describeError(payload));
   } catch (error) {
-    el('submit-note').textContent = String(error.message || error);
-    updateSubmitState();
+    state.submitting = false;
+    updateSubmitState('');
+    showSubmissionResult(String(error.message || error), 'bad');
     return;
   }
 
+  state.submitting = false;
   state.staged = [];
   renderStaged();
   renderRejected(payload.rejected || []);
-  el('submit-note').textContent =
-    payload.jobs.length + ' job(s) queued \u00b7 ' + payload.concurrency +
+  const queuedMessage = (payload.jobs.length === 1 ? '1 job queued' : payload.jobs.length + ' jobs queued') +
+    ' \u00b7 ' + payload.concurrency +
     ' run at a time, ' + payload.your_limit + ' of yours at once.';
-  updateSubmitState();
+  updateSubmitState('');
+  showSubmissionResult(queuedMessage, 'ok');
   startPolling();
 }
 
@@ -424,6 +557,8 @@ function renderRejected(rejected) {
   if (!rejected.length) return;
   const banner = document.createElement('div');
   banner.className = 'banner warn';
+  banner.setAttribute('role', 'alert');
+  banner.setAttribute('aria-atomic', 'true');
   banner.textContent = rejected.length + ' file(s) were not accepted: ' +
     rejected.map((r) => r.original_name + ' (' + r.reason + ')').join('; ');
   container.appendChild(banner);
@@ -449,7 +584,9 @@ async function refreshQueue() {
     payload = await response.json();
   } catch (error) { return; }
 
-  state.jobs = payload.jobs || [];
+  const jobs = payload.jobs || [];
+  announceJobChanges(jobs);
+  state.jobs = jobs;
   el('jobs-section').classList.toggle('hidden', state.jobs.length === 0);
   el('queue-summary').textContent = state.jobs.length
     ? payload.your_running + ' of ' + payload.your_limit +
@@ -461,8 +598,41 @@ async function refreshQueue() {
   if (payload.all_terminal) stopPolling();
 }
 
-const STATUS_MARK = { completed: '\u2713', failed: '\u2715', cancelled: '\u2298',
-                      running: '\u25b8', queued: '\u00b7' };
+function announceStatus(message) {
+  const region = el('job-announcer');
+  region.textContent = '';
+  requestAnimationFrame(() => { region.textContent = message; });
+}
+
+function jobStatusAnnouncement(job) {
+  if (job.status === 'running') {
+    const stage = job.current_stage ? ' at ' + job.current_stage.replaceAll('_', ' ') : '';
+    return job.name + ' is running' + stage + '.';
+  }
+  if (job.status === 'completed') {
+    return job.name + ' processing complete. Accessibility outcome: ' +
+      (job.outcome_label || 'available') + '.';
+  }
+  if (job.status === 'failed') return job.name + ' processing failed.';
+  if (job.status === 'cancelled') return job.name + ' was cancelled.';
+  return job.name + ' is queued.';
+}
+
+function announceJobChanges(jobs) {
+  const next = {};
+  const messages = [];
+  jobs.forEach((job) => {
+    next[job.job_id] = { status: job.status, outcome: job.outcome };
+    if (!state.jobStatusSnapshot || !state.jobStatusSnapshot[job.job_id]) return;
+    const previous = state.jobStatusSnapshot[job.job_id];
+    if (previous.status !== job.status) messages.push(jobStatusAnnouncement(job));
+    else if (previous.outcome !== job.outcome && job.outcome_label) {
+      messages.push('Accessibility outcome for ' + job.name + ': ' + job.outcome_label + '.');
+    }
+  });
+  state.jobStatusSnapshot = next;
+  if (messages.length) announceStatus(messages.join(' '));
+}
 
 function renderJobs() {
   const body = el('jobs-body');
@@ -473,18 +643,50 @@ function renderJobs() {
     const row = document.createElement('tr');
     row.className = 'job-row';
     row.dataset.jobId = job.job_id;
-    row.tabIndex = 0;
-
-    const marker = document.createElement('td');
-    marker.className = 'expander';
-    marker.textContent = STATUS_MARK[job.status] || '';
 
     const name = document.createElement('td');
     name.className = 'name';
-    name.textContent = job.name;
+    const fileLabel = document.createElement('div');
+    fileLabel.className = 'file-label';
+    const disclosure = document.createElement('button');
+    disclosure.type = 'button';
+    disclosure.className = 'disclosure';
+    disclosure.setAttribute('aria-expanded', 'false');
+    disclosure.setAttribute('aria-label', 'Show details for ' + job.name);
+    const caret = document.createElement('span');
+    caret.className = 'caret';
+    caret.setAttribute('aria-hidden', 'true');
+    caret.textContent = '\u203a';
+    disclosure.appendChild(caret);
+    const fileName = document.createElement('span');
+    fileName.className = 'file-name';
+    fileName.textContent = job.name;
+    fileLabel.append(disclosure, fileName);
+    name.appendChild(fileLabel);
+
+    const processing = document.createElement('td');
+    processing.className = 'processing';
+    const processingState = document.createElement('span');
+    processingState.className = 'processing-state ' + job.status;
+    const processingDot = document.createElement('span');
+    processingDot.className = 'dot';
+    processingDot.setAttribute('aria-hidden', 'true');
+    processingState.append(processingDot, processingLabel(job.status));
+    processing.appendChild(processingState);
+    const processingNote = processingDetail(job);
+    if (processingNote) {
+      const note = document.createElement('div');
+      note.className = 'processing-detail';
+      note.textContent = processingNote;
+      processing.appendChild(note);
+    }
 
     const status = document.createElement('td');
-    status.textContent = job.outcome_label || describeStatus(job);
+    status.className = 'job-status';
+    const outcome = document.createElement('span');
+    outcome.className = 'outcome ' + (job.outcome ? outcomeTone(job.outcome) : 'pending');
+    outcome.textContent = job.outcome_label || 'Pending result';
+    status.appendChild(outcome);
     if (job.error) {
       const note = document.createElement('div');
       note.className = 'muted';
@@ -492,62 +694,82 @@ function renderJobs() {
       status.appendChild(note);
     }
 
-    const before = document.createElement('td');
-    before.innerHTML = reportChips(job.before);
-    const after = document.createElement('td');
-    after.innerHTML = reportChips(job.after);
+    const validation = document.createElement('td');
+    validation.className = 'validation-change';
+    validation.innerHTML = validationComparison(job.before, job.after);
 
     const downloads = document.createElement('td');
     downloads.className = 'actions';
+    const actionList = document.createElement('div');
+    actionList.className = 'action-list';
     const base = '/api/jobs/' + job.job_id + '/';
-    downloads.appendChild(link(base + 'pdf', 'PDF', job.has_pdf));
-    downloads.appendChild(link(base + 'before', 'Before', Boolean(job.before)));
-    downloads.appendChild(link(base + 'after', 'After', Boolean(job.after)));
-    downloads.appendChild(link(base + 'download', 'ZIP', job.status === 'completed'));
-    downloads.addEventListener('click', (event) => event.stopPropagation());
+    actionList.appendChild(link(base + 'pdf', 'PDF', job.has_pdf));
+    actionList.appendChild(link(base + 'before', 'Before', Boolean(job.before)));
+    actionList.appendChild(link(base + 'after', 'After', Boolean(job.after)));
+    actionList.appendChild(link(base + 'download', 'ZIP', job.status === 'completed'));
+    downloads.appendChild(actionList);
 
-    row.append(marker, name, status, before, after, downloads);
+    row.append(name, processing, status, validation, downloads);
     body.appendChild(row);
 
     const detail = document.createElement('tr');
     detail.className = 'detail-row hidden';
+    detail.id = 'job-details-' + job.job_id;
+    detail.setAttribute('aria-hidden', 'true');
+    disclosure.setAttribute('aria-controls', detail.id);
     const cell = document.createElement('td');
-    cell.colSpan = 6;
+    cell.colSpan = 5;
     detail.appendChild(cell);
     body.appendChild(detail);
 
-    const toggle = () => toggleJob(job, row, detail, cell);
-    row.addEventListener('click', toggle);
-    row.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); }
-    });
+    const toggle = () => toggleJob(job, row, detail, cell, disclosure);
+    disclosure.addEventListener('click', toggle);
 
-    if (open === job.job_id) toggleJob(job, row, detail, cell, true);
+    if (open === job.job_id) toggleJob(job, row, detail, cell, disclosure, true);
   });
 }
 
-function describeStatus(job) {
-  if (job.status === 'queued') {
-    if (job.jobs_ahead === 0 || job.jobs_ahead === null) return 'Queued \u2014 next to run.';
-    return 'Queued \u2014 ' + job.jobs_ahead + ' ahead.';
-  }
-  if (job.status === 'running') {
-    return job.current_stage ? 'Running \u2014 ' + job.current_stage : 'Running\u2026';
-  }
-  return job.status;
+function processingLabel(status) {
+  return { queued: 'Queued', running: 'Running', completed: 'Complete',
+           failed: 'Failed', cancelled: 'Cancelled' }[status] || status;
 }
 
-function reportChips(report) {
-  if (!report) return '\u2014';
-  return ['ua1', 'wcag'].map((profile) => {
-    const entry = (report.profiles || {})[profile];
-    if (!entry) return '';
+function processingDetail(job) {
+  if (job.status === 'queued') {
+    if (job.jobs_ahead === 0 || job.jobs_ahead === null) return 'Next to run';
+    return job.jobs_ahead + ' ahead';
+  }
+  if (job.status === 'running' && job.current_stage) {
+    return job.current_stage.replaceAll('_', ' ');
+  }
+  return '';
+}
+
+function outcomeTone(outcome) {
+  if (outcome === 'remediated' || outcome === 'already_compliant') return 'ok';
+  if (outcome === 'improved' || outcome === 'unchanged' || outcome === 'cancelled') return 'warn';
+  return 'bad';
+}
+
+function validationValue(entry) {
+  if (!entry) return { text: 'Pending', tone: 'pending' };
+  if (entry.status === 'pass') return { text: 'Pass', tone: 'ok' };
+  if (entry.status === 'error') return { text: 'Error', tone: 'warn' };
+  const count = Number(entry.failed_rules_count || 0);
+  return { text: count + ' fail' + (count === 1 ? '' : 's'), tone: 'bad' };
+}
+
+function validationComparison(before, after) {
+  if (!before && !after) return '<span class="muted">Waiting for validation\u2026</span>';
+  return '<div class="validation-summary">' + ['ua1', 'wcag'].map((profile) => {
     const label = profile === 'ua1' ? 'UA1' : 'WCAG';
-    const tone = entry.status === 'pass' ? 'ok' : (entry.status === 'error' ? 'warn' : 'bad');
-    const count = entry.failed_rules_count ? ' \u00b7 ' + entry.failed_rules_count : '';
-    return '<span class="chip ' + tone + '"><span class="dot"></span>' +
-      label + ' ' + entry.status + count + '</span>';
-  }).join(' ');
+    const beforeValue = validationValue(((before || {}).profiles || {})[profile]);
+    const afterValue = validationValue(((after || {}).profiles || {})[profile]);
+    return '<div class="validation-line"><span class="validation-profile">' + label +
+      '</span><span class="validation-value ' + beforeValue.tone + '">' + beforeValue.text +
+      '</span><span class="validation-arrow" aria-hidden="true">\u2192</span>' +
+      '<span class="validation-value ' + afterValue.tone + '">' + afterValue.text + '</span></div>';
+  }).join('') + '</div>';
 }
 
 function link(href, label, enabled) {
@@ -561,11 +783,19 @@ function link(href, label, enabled) {
 
 /* ---------- job detail ---------- */
 
-async function toggleJob(job, row, detailRow, cell, forceOpen) {
+function updateDisclosure(disclosure, fileName, expanded) {
+  disclosure.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  disclosure.setAttribute('aria-label', (expanded ? 'Hide' : 'Show') +
+    ' details for ' + fileName);
+}
+
+async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
   const isOpen = row.dataset.open === 'true';
   if (isOpen && !forceOpen) {
     row.dataset.open = 'false';
     detailRow.classList.add('hidden');
+    detailRow.setAttribute('aria-hidden', 'true');
+    updateDisclosure(disclosure, job.name, false);
     state.openJobId = null;
     stopStreaming();
     return;
@@ -574,17 +804,25 @@ async function toggleJob(job, row, detailRow, cell, forceOpen) {
   state.openJobId = job.job_id;
   row.dataset.open = 'true';
   detailRow.classList.remove('hidden');
-  cell.innerHTML = '<div class="detail muted">Loading\u2026</div>';
+  detailRow.setAttribute('aria-hidden', 'false');
+  updateDisclosure(disclosure, job.name, true);
+  cell.innerHTML = '<div class="job-detail muted" role="status">Loading job details\u2026</div>';
 
-  const response = await fetch('/api/jobs/' + job.job_id);
-  if (!response.ok) { cell.innerHTML = '<div class="detail muted">Unavailable.</div>'; return; }
-  renderDetail(cell, await response.json());
+  try {
+    const response = await fetch('/api/jobs/' + job.job_id);
+    if (!response.ok) throw new Error('Details request failed.');
+    const detailJob = await response.json();
+    renderDetail(cell, detailJob);
+    if (row.dataset.open === 'true') announceStatus('Details loaded for ' + job.name + '.');
+  } catch (error) {
+    cell.innerHTML = '<div class="job-detail" role="alert">Job details are unavailable.</div>';
+  }
 }
 
 function renderDetail(cell, job) {
   cell.innerHTML = '';
   const wrap = document.createElement('div');
-  wrap.className = 'detail';
+  wrap.className = 'job-detail';
 
   const stagesHeading = document.createElement('h4');
   stagesHeading.textContent = 'Pipeline stages';
