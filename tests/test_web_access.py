@@ -11,7 +11,7 @@ from unittest import mock
 from fastapi.testclient import TestClient
 
 import pdf_web.app as web_app
-from pdf_web.models import Job, JobStatus, UploadedFile
+from pdf_web.models import Job, JobStatus
 from pdf_web.runner import PipelineRunner
 from pdf_web.store import JobStore
 from tests.web_factories import add_completed_result, make_job, write_job_artifacts
@@ -26,9 +26,9 @@ JOB_ENDPOINTS = (
     "",
     "/log",
     "/download",
-    "/files/000/pdf",
-    "/files/000/before",
-    "/files/000/after",
+    "/pdf",
+    "/before",
+    "/after",
 )
 
 
@@ -57,8 +57,9 @@ class AccessControlTests(unittest.TestCase):
         self.store = JobStore()
         self.enterContext(mock.patch.object(web_app, "STORE", self.store))
         self.runner = mock.Mock(queue_depth=mock.Mock(return_value=0),
+                                running_count=mock.Mock(return_value=0),
                                 jobs_ahead=mock.Mock(return_value=None),
-                                submit=mock.Mock(return_value=1))
+                                submit=mock.Mock(return_value=0))
         self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
 
         self.client = TestClient(web_app.app)
@@ -68,8 +69,10 @@ class AccessControlTests(unittest.TestCase):
         '''
         Create a completed job on disk and register it.
         '''
-        job = make_job(job_id=job_id, submitted_by=owner, status=JobStatus.COMPLETED)
-        job.files[0] = UploadedFile("000", "Report.pdf", "Report.pdf", 5)
+        job = make_job(
+            job_id=job_id, submitted_by=owner, status=JobStatus.COMPLETED,
+            original_name="Report.pdf", stored_name="Report.pdf",
+        )
         add_completed_result(job, write_job_artifacts(job))
         self.store.add(job)
         return job
@@ -201,7 +204,8 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.enterContext(mock.patch.object(web_app, "STORE", self.store))
         self.enterContext(mock.patch.object(
             web_app, "RUNNER",
-            mock.Mock(submit=mock.Mock(return_value=1))
+            mock.Mock(submit=mock.Mock(return_value=0),
+                      jobs_ahead=mock.Mock(return_value=None))
         ))
         self.client = TestClient(web_app.app)
 
@@ -214,9 +218,11 @@ class OwnershipRecordingTests(unittest.TestCase):
             data={"config_file": "default.json", "submitted_by": BOB},
         )
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json()["submitted_by"], ALICE)
+        created = response.json()["jobs"]
+        self.assertEqual(len(created), 1)
+        self.assertEqual(created[0]["submitted_by"], ALICE)
 
-        job = self.store.get(response.json()["job_id"])
+        job = self.store.get(created[0]["job_id"])
         self.assertEqual(job.submitted_by, ALICE)
 
     def test_submitted_job_is_invisible_to_others(self) -> None:
@@ -226,7 +232,7 @@ class OwnershipRecordingTests(unittest.TestCase):
             headers=headers(ALICE),
             files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
             data={"config_file": "default.json"},
-        ).json()
+        ).json()["jobs"][0]
         response = self.client.get(
             f"/api/jobs/{created['job_id']}", headers=headers(BOB)
         )
@@ -235,64 +241,6 @@ class OwnershipRecordingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
-class QueueFairnessTests(unittest.TestCase):
-    '''One user must not be able to monopolize the single worker.'''
-
-    def setUp(self) -> None:
-        '''Run the app in proxy mode with a scratch jobs directory.'''
-        self.enterContext(mock.patch.dict(os.environ, {
-            "PDF_WEB_PROXY_SECRET": SECRET,
-        }))
-        os.environ.pop("PDF_WEB_MAX_JOBS_PER_USER", None)
-        self.jobs_root = Path(self.enterContext(
-            tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
-        ))
-        self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
-        self.enterContext(mock.patch.object(web_app, "JOBS_ROOT", self.jobs_root))
-        self.store = JobStore()
-        self.enterContext(mock.patch.object(web_app, "STORE", self.store))
-        self.enterContext(mock.patch.object(
-            web_app, "RUNNER",
-            mock.Mock(submit=mock.Mock(return_value=0),
-                      jobs_ahead=mock.Mock(return_value=None))
-        ))
-        self.client = TestClient(web_app.app)
-
-    def _submit(self, user: str):
-        '''Submit one small PDF as the given user.'''
-        return self.client.post(
-            "/api/jobs",
-            headers=headers(user),
-            files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
-            data={"config_file": "default.json"},
-        )
-
-    def test_second_concurrent_submission_is_refused(self) -> None:
-        '''A user with work in flight cannot queue more behind it.'''
-        self.assertEqual(self._submit(ALICE).status_code, 201)
-        second = self._submit(ALICE)
-        self.assertEqual(second.status_code, 409)
-        self.assertIn("queued or running", second.json()["detail"])
-
-    def test_other_users_are_unaffected(self) -> None:
-        '''The cap is per user, not a global lock.'''
-        self.assertEqual(self._submit(ALICE).status_code, 201)
-        self.assertEqual(self._submit(BOB).status_code, 201)
-
-    def test_finished_jobs_free_the_slot(self) -> None:
-        '''The cap counts work in flight, not work in history.'''
-        first = self._submit(ALICE)
-        self.store.get(first.json()["job_id"]).status = JobStatus.COMPLETED
-        self.assertEqual(self._submit(ALICE).status_code, 201)
-
-    def test_limit_is_configurable(self) -> None:
-        '''A busier deployment can allow more per user.'''
-        os.environ["PDF_WEB_MAX_JOBS_PER_USER"] = "2"
-        self.assertEqual(self._submit(ALICE).status_code, 201)
-        self.assertEqual(self._submit(ALICE).status_code, 201)
-        self.assertEqual(self._submit(ALICE).status_code, 409)
 
 
 class CancellationTests(unittest.TestCase):
@@ -319,7 +267,7 @@ class CancellationTests(unittest.TestCase):
         job = make_job(job_id=job_id, submitted_by=owner, status=JobStatus.QUEUED)
         job.web_path.mkdir(parents=True, exist_ok=True)
         self.store.add(job)
-        self.runner.submit(job_id)
+        self.runner.submit(job_id, owner)
         return job
 
     def test_owner_can_cancel_a_queued_job(self) -> None:
@@ -334,18 +282,15 @@ class CancellationTests(unittest.TestCase):
         self.assertEqual(job.status, JobStatus.CANCELLED)
         self.assertTrue(job.is_terminal())
 
-    def test_cancelling_frees_the_users_slot(self) -> None:
-        '''The whole point: the submitter is not locked out by their own mistake.'''
-        job = self._queued_job("20260827-120000-aaaaaa", ALICE)
-        self.client.post(f"/api/jobs/{job.job_id}/cancel", headers=headers(ALICE))
+    def test_cancelling_frees_the_scheduler_slot(self) -> None:
+        '''A cancelled job must not keep holding its owner's running slot.'''
+        first = self._queued_job("20260827-120000-aaaaaa", ALICE)
+        second = self._queued_job("20260827-120001-bbbbbb", ALICE)
 
-        response = self.client.post(
-            "/api/jobs",
-            headers=headers(ALICE),
-            files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
-            data={"config_file": "default.json"},
-        )
-        self.assertEqual(response.status_code, 201)
+        self.client.post(f"/api/jobs/{first.job_id}/cancel", headers=headers(ALICE))
+
+        # pylint: disable=protected-access
+        self.assertEqual(self.runner._claim_next(), second.job_id)
 
     def test_cancelling_removes_it_from_the_queue(self) -> None:
         '''A cancelled job must not still be occupying the line.'''

@@ -9,9 +9,11 @@ from datetime import timedelta
 from pathlib import Path
 from unittest import mock
 
-from pdf_web.models import FileResult, JobStatus, StepState
+from pdf_web.models import JobStatus
 from pdf_web.store import JobStore, load_meta, load_persisted_jobs, save_meta
-from tests.web_factories import add_completed_result, make_job
+from tests.web_factories import (
+    add_completed_result, make_job, write_job_artifacts,
+)
 
 
 
@@ -115,13 +117,8 @@ class MetadataPersistenceTests(unittest.TestCase):
         job = make_job()
         job.status = JobStatus.COMPLETED
         job.finished_at = job.created_at + timedelta(minutes=4)
-        job.steps[1] = StepState.DONE
-        job.steps[3] = StepState.SKIPPED
-        job.summary = {"before": {"totals": {"pass": 0, "fail": 1}}}
-        pdf_path = job.workspace_path / "remediated" / "files" / "Report_v2.pdf"
-        pdf_path.parent.mkdir(parents=True)
-        pdf_path.write_bytes(b"%PDF-")
-        add_completed_result(job, pdf_path)
+        job.stages = [{"name": "fix", "status": "ok", "detail": "Applied."}]
+        add_completed_result(job, write_job_artifacts(job))
 
         save_meta(job)
         restored = load_meta(job.meta_path)
@@ -131,25 +128,21 @@ class MetadataPersistenceTests(unittest.TestCase):
         self.assertEqual(restored.status, JobStatus.COMPLETED)
         self.assertEqual(restored.config_file, "default-slim.json")
         self.assertTrue(restored.skip_font_fix)
-        self.assertEqual(restored.steps[1], StepState.DONE)
-        self.assertEqual(restored.steps[3], StepState.SKIPPED)
-        self.assertEqual(restored.summary, job.summary)
-        self.assertEqual(restored.files[0].original_name, "Report v2.pdf")
+        self.assertEqual(restored.stages, job.stages)
+        self.assertEqual(restored.file.original_name, "Report v2.pdf")
 
     def test_restores_output_pdf_location(self) -> None:
         '''The stored path is relative, so downloads work after a restart.'''
         job = make_job()
         job.status = JobStatus.COMPLETED
-        pdf_path = job.workspace_path / "remediated" / "files" / "Report_v2.pdf"
-        pdf_path.parent.mkdir(parents=True)
-        pdf_path.write_bytes(b"%PDF-")
-        job.results.append(FileResult("000", "remediated", final_pdf_path=pdf_path))
+        pdf_path = write_job_artifacts(job)
+        add_completed_result(job, pdf_path)
 
         save_meta(job)
         restored = load_meta(job.meta_path)
 
-        self.assertEqual(restored.results[0].final_pdf_path, pdf_path)
-        self.assertTrue(restored.results[0].final_pdf_path.is_file())
+        self.assertEqual(restored.result.output_pdf_path, pdf_path)
+        self.assertTrue(restored.result.output_pdf_path.is_file())
 
     def test_rejects_malformed_metadata(self) -> None:
         '''Corrupt or foreign metadata is skipped rather than crashing startup.'''

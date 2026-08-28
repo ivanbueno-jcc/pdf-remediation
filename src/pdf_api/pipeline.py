@@ -12,6 +12,7 @@ between workspace folders, which is work this design does not create.
 
 from __future__ import annotations
 
+import json
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -369,7 +370,13 @@ def _finish(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         error: str | None = None) -> PipelineResult:
     '''
     Assemble the result, folding in whatever the utilities recorded.
+
+    The reports are written next to the PDF as well as returned: a caller asked
+    for three artifacts, so all three should exist on disk.
     '''
+    if output_path is not None:
+        write_reports(output_path.parent, before, after)
+
     return PipelineResult(
         status=status,
         input_pdf_path=run.input_pdf,
@@ -381,6 +388,46 @@ def _finish(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         diagnostics=scratch.collect_diagnostics(),
         error=error,
     )
+
+
+def write_reports(
+        output_dir: Path,
+        before: dict[str, Any] | None,
+        after: dict[str, Any] | None) -> None:
+    '''
+    Write the before and after reports beside the remediated PDF.
+    '''
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for name, report in (("before.json", before), ("after.json", after)):
+        path = output_dir / name
+        if report is None:
+            path.unlink(missing_ok=True)
+            continue
+        path.write_text(
+            json.dumps(report, indent=2, sort_keys=True, default=str),
+            encoding="utf-8",
+        )
+
+
+def artifact_path(
+        output_dir: Path,
+        name: str,
+        output_pdf_path: Path | None) -> Path | None:
+    '''
+    Return one of the three artifacts a run produces, if it exists.
+
+    Paired with write_reports: one decides where they go, the other finds them,
+    so callers never encode the layout themselves.
+    '''
+    candidates: dict[str, Path | None] = {
+        "pdf": output_pdf_path,
+        "before": output_dir / "before.json",
+        "after": output_dir / "after.json",
+    }
+    candidate = candidates.get(name)
+    if candidate is None or not Path(candidate).is_file():
+        return None
+    return Path(candidate)
 
 
 def _describe(report: dict[str, Any]) -> str:

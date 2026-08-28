@@ -137,12 +137,26 @@ ol.steps li[data-state="cancelled"] { opacity: .6; }
 ol.steps li[data-state="cancelled"] .marker { border-color: var(--warn); color: var(--warn); }
 .pill.failed { border-color: var(--bad); color: var(--bad); }
 .pill.running, .pill.queued { border-color: var(--accent); color: var(--accent); }
+
+tr.job-row { cursor: pointer; }
+tr.job-row:hover > td { background: rgba(127,127,127,.06); }
+tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
+ol.stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+ol.stages li { display: flex; gap: 10px; align-items: baseline; font-size: 14px; }
+ol.stages li .marker { width: 20px; flex: none; text-align: center; }
+ol.stages li[data-status="ok"] .marker { color: var(--ok); }
+ol.stages li[data-status="failed"] .marker { color: var(--bad); }
+ol.stages li[data-status="skipped"] { opacity: .55; }
+ol.stages li .detail { color: var(--muted); font-size: 13px; }
+#rejected { margin-top: 12px; }
+.progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress > span { display: block; height: 100%; background: var(--accent); transition: width .3s; }
 </style>
 </head>
 <body>
 <main>
   <h1>PDF Remediation</h1>
-  <p class="sub">Drop PDFs, pick a configuration, and run the full remediation pipeline: validate, remediate, validate again.</p>
+  <p class="sub"></p>
   <p class="muted" id="identity"></p>
 
   <section id="health-section">
@@ -151,20 +165,12 @@ ol.steps li[data-state="cancelled"] .marker { border-color: var(--warn); color: 
     <div class="chips" id="health-chips"><span class="muted">Checking&hellip;</span></div>
   </section>
 
-  <section id="jobs-section" class="hidden">
-    <h2>Recent jobs</h2>
-    <table>
-      <thead><tr><th>Job</th><th>Started</th><th>Files</th><th>Config</th><th>Status</th></tr></thead>
-      <tbody id="jobs-body"></tbody>
-    </table>
-  </section>
-
   <section id="submit-section">
-    <h2>New job</h2>
+    <h2>New jobs</h2>
     <div id="drop" tabindex="-1">
       <label>
         <strong>Drop PDFs here</strong>
-        <span>or <u>browse</u> to choose files</span>
+        <span>or <u>browse</u> to choose files &mdash; one job per file</span>
         <input type="file" id="file-input" multiple accept=".pdf,application/pdf">
       </label>
     </div>
@@ -179,44 +185,24 @@ ol.steps li[data-state="cancelled"] .marker { border-color: var(--warn); color: 
       <label class="field">Configuration
         <select id="config-select"></select>
       </label>
-      <label class="check"><input type="checkbox" id="skip-font-fix"> Skip font fix (steps 3&ndash;4)</label>
+      <label class="check"><input type="checkbox" id="skip-font-fix"> Skip font fix</label>
       <label class="check"><input type="checkbox" id="strict"> Require WCAG&nbsp;+&nbsp;UA1</label>
-      <label class="check"><input type="checkbox" id="verbose"> Verbose log</label>
     </div>
 
     <div class="row">
       <button class="primary" id="submit" disabled>Run pipeline</button>
       <span class="muted" id="submit-note"></span>
     </div>
+    <div id="rejected"></div>
   </section>
 
-  <section id="job-section" class="hidden">
-    <h2>Progress</h2>
-    <div id="job-banner" class="banner hidden"></div>
-    <p id="job-status" role="status" aria-live="polite" class="muted"></p>
-    <ol class="steps" id="steps"></ol>
-    <div class="row" style="margin-top:16px">
-      <button class="small" id="cancel-job">Cancel job</button>
-      <button class="small" id="new-job">Start another job</button>
-      <a class="dl" id="download-all" aria-disabled="true" href="#">Download all (.zip)</a>
-      <a class="dl" id="download-log" aria-disabled="true" href="#">Download log</a>
-    </div>
-  </section>
-
-  <section id="results-section" class="hidden">
-    <h2>Results</h2>
-    <p class="muted" id="results-totals"></p>
-    <div id="rollup"></div>
+  <section id="jobs-section" class="hidden">
+    <h2>Jobs</h2>
+    <p class="muted" id="queue-summary"></p>
     <table>
-      <thead><tr><th></th><th>File</th><th>Outcome</th><th>Before</th><th>After</th><th>Downloads</th></tr></thead>
-      <tbody id="results-body"></tbody>
+      <thead><tr><th></th><th>File</th><th>Status</th><th>Before</th><th>After</th><th>Downloads</th></tr></thead>
+      <tbody id="jobs-body"></tbody>
     </table>
-  </section>
-
-  <section id="log-section" class="hidden">
-    <h2>Pipeline output</h2>
-    <label class="check" style="margin-bottom:10px"><input type="checkbox" id="follow" checked> Follow output</label>
-    <pre id="log" aria-live="off"></pre>
   </section>
 </main>
 
@@ -224,16 +210,17 @@ ol.steps li[data-state="cancelled"] .marker { border-color: var(--warn); color: 
 'use strict';
 
 const MAX_LOG_LINES = 2000;
+const POLL_MS = 2000;
+
 const state = {
   staged: [],
-  jobId: null,
-  cursor: 0,
-  jobActive: false,
+  health: null,
   authError: null,
+  openJobId: null,
   source: null,
   pollTimer: null,
-  health: null,
   logLines: [],
+  jobs: [],
 };
 
 const el = (id) => document.getElementById(id);
@@ -241,20 +228,26 @@ const el = (id) => document.getElementById(id);
 function formatBytes(bytes) {
   if (bytes < 1024) return bytes + ' B';
   const units = ['KB', 'MB', 'GB'];
-  let value = bytes / 1024;
-  let index = 0;
+  let value = bytes / 1024, index = 0;
   while (value >= 1024 && index < units.length - 1) { value /= 1024; index += 1; }
   return value.toFixed(value >= 10 ? 0 : 1) + ' ' + units[index];
 }
 
-/* ---------- health ---------- */
+function describeError(payload) {
+  const detail = payload && payload.detail;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) return detail.map((e) => e.msg || JSON.stringify(e)).join('; ');
+  return 'Request failed.';
+}
+
+/* ---------- environment ---------- */
 
 async function loadHealth() {
   try {
     const response = await fetch('/api/health');
     if (response.status === 401 || response.status === 403) {
       const payload = await response.json().catch(() => ({}));
-      state.authError = payload.detail || 'Not authenticated.';
+      state.authError = describeError(payload);
       state.health = { checks: [], can_submit: false, blocking: [] };
     } else {
       state.authError = null;
@@ -272,23 +265,31 @@ async function loadHealth() {
 function renderIdentity() {
   const line = el('identity');
   const auth = (state.health && state.health.auth) || {};
-  if (state.authError || !state.health.user) {
-    line.textContent = '';
-    return;
-  }
+  if (state.authError || !state.health.user) { line.textContent = ''; return; }
   line.textContent = auth.multi_user
     ? 'Signed in as ' + state.health.user + ' \u00b7 your jobs are private to you'
     : 'Single-user mode \u00b7 ' + state.health.user;
 }
 
 function renderHealth() {
+  const checks = state.health.checks || [];
+  const missing = checks.filter((check) => !check.ok);
+  const section = el('health-section');
+
+  // Nothing to tell the user: hide the whole section rather than showing an
+  // all-green checklist nobody needs to read.
+  const showSection = Boolean(state.authError) || missing.length > 0 ||
+    !state.health.can_submit;
+  section.classList.toggle('hidden', !showSection);
+  if (!showSection) return;
+
   const container = el('health-chips');
   container.innerHTML = '';
-  (state.health.checks || []).forEach((check) => {
+  missing.forEach((check) => {
     const chip = document.createElement('span');
-    chip.className = 'chip ' + (check.ok ? 'ok' : (check.required ? 'bad' : 'warn'));
+    chip.className = 'chip ' + (check.required ? 'bad' : 'warn');
     chip.innerHTML = '<span class="dot"></span>';
-    chip.append(check.name + (check.ok ? '' : ' — ' + check.detail));
+    chip.append(check.name + ' \u2014 ' + check.detail);
     chip.title = check.detail;
     container.appendChild(chip);
   });
@@ -302,12 +303,11 @@ function renderHealth() {
   if (!state.health.can_submit) {
     banner.className = 'banner bad';
     banner.textContent = 'Cannot run: ' + (state.health.blocking || []).join(', ') +
-      '. Validation would silently report every file as unvalidatable, so submitting is disabled.';
+      '. Validation would report every file as unvalidatable, so submitting is disabled.';
   } else if (state.health.recommend_skip_font_fix) {
     banner.className = 'banner warn';
-    banner.textContent = 'Docker is not running, so the font-fix steps would abort the pipeline. ' +
-      '"Skip font fix" has been enabled for you.';
-    el('skip-font-fix').checked = true;
+    banner.textContent = 'Docker is unavailable, so font repair will be skipped. ' +
+      'Everything else still runs.';
   } else {
     banner.className = 'banner hidden';
   }
@@ -316,8 +316,7 @@ function renderHealth() {
 async function loadConfigs() {
   const select = el('config-select');
   try {
-    const response = await fetch('/api/config-files');
-    const payload = await response.json();
+    const payload = await (await fetch('/api/config-files')).json();
     select.innerHTML = '';
     payload.files.forEach((entry) => {
       const option = document.createElement('option');
@@ -337,20 +336,18 @@ async function loadConfigs() {
 function addFiles(fileList) {
   Array.from(fileList).forEach((file) => {
     if (!file.name.toLowerCase().endsWith('.pdf')) return;
-    const duplicate = state.staged.some(
-      (staged) => staged.name === file.name && staged.size === file.size
-    );
-    if (!duplicate) state.staged.push(file);
+    if (!state.staged.some((s) => s.name === file.name && s.size === file.size)) {
+      state.staged.push(file);
+    }
   });
   renderStaged();
   updateSubmitState();
 }
 
 function renderStaged() {
-  const table = el('staged-table');
   const body = el('staged-body');
   body.innerHTML = '';
-  table.classList.toggle('hidden', state.staged.length === 0);
+  el('staged-table').classList.toggle('hidden', state.staged.length === 0);
 
   state.staged.forEach((file, index) => {
     const row = document.createElement('tr');
@@ -373,35 +370,32 @@ function renderStaged() {
     body.appendChild(row);
   });
 
-  const total = state.staged.reduce((sum, file) => sum + file.size, 0);
+  const total = state.staged.reduce((sum, f) => sum + f.size, 0);
   el('staged-total').textContent = state.staged.length
-    ? state.staged.length + ' file(s), ' + formatBytes(total)
+    ? state.staged.length + ' file(s), ' + formatBytes(total) +
+      ' \u2014 ' + state.staged.length + ' job(s)'
     : '';
 }
 
 function updateSubmitState() {
   const healthy = Boolean(state.health && state.health.can_submit);
-  const ready = healthy && state.staged.length > 0 && !state.jobActive;
-  el('submit').disabled = !ready;
+  el('submit').disabled = !(healthy && state.staged.length);
   if (!healthy) el('submit-note').textContent = 'Fix the environment problems above first.';
-  else if (state.jobActive) el('submit-note').textContent = 'A job is already running in this tab.';
   else if (!state.staged.length) el('submit-note').textContent = 'Add at least one PDF.';
   else el('submit-note').textContent = '';
 }
 
 /* ---------- submit ---------- */
 
-async function submitJob() {
+async function submitJobs() {
   const form = new FormData();
   state.staged.forEach((file) => form.append('files', file, file.name));
   form.append('config_file', el('config-select').value);
   form.append('skip_font_fix', el('skip-font-fix').checked ? 'true' : 'false');
   form.append('wcag_and_ua1_must_pass', el('strict').checked ? 'true' : 'false');
-  form.append('verbose', el('verbose').checked ? 'true' : 'false');
 
   el('submit').disabled = true;
-  state.jobActive = true;
-  el('submit-note').textContent = 'Uploading…';
+  el('submit-note').textContent = 'Uploading\u2026';
 
   let payload;
   try {
@@ -409,557 +403,305 @@ async function submitJob() {
     payload = await response.json();
     if (!response.ok) throw new Error(describeError(payload));
   } catch (error) {
-    state.jobActive = false;
-    updateSubmitState();
-    el('submit').disabled = state.staged.length === 0;
     el('submit-note').textContent = String(error.message || error);
+    updateSubmitState();
     return;
   }
 
-
-  state.jobId = payload.job_id;
-  state.cursor = 0;
-  state.logLines = [];
-  el('log').textContent = '';
-  el('job-section').classList.remove('hidden');
-  el('log-section').classList.remove('hidden');
-  el('results-section').classList.add('hidden');
-  el('download-all').setAttribute('aria-disabled', 'true');
-  el('download-log').setAttribute('aria-disabled', 'true');
-  history.replaceState(null, '', '#job=' + payload.job_id);
-  renderJob(payload);
-  connect();
+  state.staged = [];
+  renderStaged();
+  renderRejected(payload.rejected || []);
+  el('submit-note').textContent =
+    payload.jobs.length + ' job(s) queued \u00b7 ' + payload.concurrency +
+    ' run at a time, ' + payload.your_limit + ' of yours at once.';
   updateSubmitState();
+  startPolling();
 }
 
-function describeError(payload) {
-  const detail = payload && payload.detail;
-  if (typeof detail === 'string') return detail;
-  if (Array.isArray(detail)) {
-    return detail.map((entry) => entry.msg || JSON.stringify(entry)).join('; ');
-  }
-  return 'Upload failed.';
+function renderRejected(rejected) {
+  const container = el('rejected');
+  container.innerHTML = '';
+  if (!rejected.length) return;
+  const banner = document.createElement('div');
+  banner.className = 'banner warn';
+  banner.textContent = rejected.length + ' file(s) were not accepted: ' +
+    rejected.map((r) => r.original_name + ' (' + r.reason + ')').join('; ');
+  container.appendChild(banner);
 }
 
-/* ---------- streaming ---------- */
-
-function connect() {
-  const url = '/api/jobs/' + state.jobId + '/events?since=' + state.cursor;
-  try {
-    state.source = new EventSource(url);
-  } catch (error) {
-    startPolling();
-    return;
-  }
-  ['log', 'step', 'status', 'done', 'results', 'queue'].forEach((type) => {
-    state.source.addEventListener(type, (event) => handleEvent(JSON.parse(event.data)));
-  });
-  state.source.onerror = () => {
-    state.source.close();
-    state.source = null;
-    startPolling();
-  };
-}
+/* ---------- the job list ---------- */
 
 function startPolling() {
   if (state.pollTimer) return;
-  state.pollTimer = setInterval(refresh, 2000);
-  refresh();
+  refreshQueue();
+  state.pollTimer = setInterval(refreshQueue, POLL_MS);
 }
 
-function stopStreaming() {
-  if (state.source) { state.source.close(); state.source = null; }
+function stopPolling() {
   if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
 }
 
-async function refresh() {
-  if (!state.jobId) return;
-  const response = await fetch('/api/jobs/' + state.jobId + '?since=' + state.cursor);
-  if (!response.ok) { stopStreaming(); return; }
-  const payload = await response.json();
-  (payload.events || []).forEach(handleEvent);
-  renderJob(payload);
-  if (payload.status === 'completed' || payload.status === 'failed') {
-    stopStreaming();
-    finish(payload);
-  }
-}
+async function refreshQueue() {
+  let payload;
+  try {
+    const response = await fetch('/api/queue');
+    if (!response.ok) { stopPolling(); return; }
+    payload = await response.json();
+  } catch (error) { return; }
 
-function handleEvent(event) {
-  if (event.cursor) state.cursor = Math.max(state.cursor, event.cursor);
-  if (event.type === 'log') appendLog(event.payload.line);
-  else if (event.type === 'done') { stopStreaming(); refreshFinal(); }
-  else if (event.type === 'step' || event.type === 'status'
-           || event.type === 'results' || event.type === 'queue') refreshState();
-}
-
-let pendingRefresh = null;
-function refreshState() {
-  if (pendingRefresh) return;
-  pendingRefresh = setTimeout(async () => {
-    pendingRefresh = null;
-    if (!state.jobId) return;
-    const response = await fetch('/api/jobs/' + state.jobId);
-    if (response.ok) renderJob(await response.json());
-  }, 120);
-}
-
-async function refreshFinal() {
-  const response = await fetch('/api/jobs/' + state.jobId);
-  if (!response.ok) return;
-  const payload = await response.json();
-  renderJob(payload);
-  finish(payload);
-}
-
-function appendLog(line) {
-  state.logLines.push(line);
-  if (state.logLines.length > MAX_LOG_LINES) {
-    state.logLines.splice(0, state.logLines.length - MAX_LOG_LINES);
-  }
-  const pane = el('log');
-  pane.textContent = state.logLines.join('\n');
-  if (el('follow').checked) pane.scrollTop = pane.scrollHeight;
-}
-
-/* ---------- rendering ---------- */
-
-const STEP_MARKS = { done: '✓', failed: '✕', skipped: '–', running: '▸',
-                     cancelled: '⊘', pending: '' };
-
-function describeWait(job) {
-  const ahead = job.jobs_ahead;
-  if (ahead === null || ahead === undefined) return 'Queued.';
-  if (ahead === 0) return 'Queued — next to run.';
-  if (ahead === 1) return 'Queued — 1 job ahead of yours.';
-  return 'Queued — ' + ahead + ' jobs ahead of yours.';
-}
-
-function renderJob(job) {
-  state.jobActive = job.status === 'queued' || job.status === 'running';
-  renderResults(job);
-  const list = el('steps');
-  list.innerHTML = '';
-  (job.steps || []).forEach((step) => {
-    const item = document.createElement('li');
-    item.dataset.state = step.state;
-    if (step.state === 'running') item.setAttribute('aria-current', 'step');
-    const marker = document.createElement('span');
-    marker.className = 'marker';
-    marker.textContent = STEP_MARKS[step.state] || String(step.number);
-    const label = document.createElement('span');
-    label.textContent = step.number + '. ' + step.name +
-      (step.state === 'skipped' ? ' (skipped)' : '');
-    item.append(marker, label);
-    list.appendChild(item);
-  });
-
-  const statusText = {
-    queued: describeWait(job),
-    running: 'Running…',
-    completed: 'Completed.',
-    failed: 'Failed.',
-    cancelled: 'Cancelled.',
-  }[job.status] || job.status;
-
-  const privacy = (state.health && state.health.auth && state.health.auth.multi_user)
-    ? ' · only you can open this link'
+  state.jobs = payload.jobs || [];
+  el('jobs-section').classList.toggle('hidden', state.jobs.length === 0);
+  el('queue-summary').textContent = state.jobs.length
+    ? payload.your_running + ' of ' + payload.your_limit +
+      ' running \u00b7 ' + payload.concurrency + ' processed at a time'
     : '';
-  el('job-status').textContent = job.job_id + ' · ' + statusText + privacy;
-  updateSubmitState();
+  renderJobs();
 
-  el('cancel-job').classList.toggle(
-    'hidden', job.status !== 'queued' && job.status !== 'running'
-  );
-
-  const banner = el('job-banner');
-  if (job.status === 'cancelled') {
-    banner.className = 'banner warn';
-    banner.textContent = 'Cancelled.' +
-      (job.partial ? ' Partial results below are still downloadable.' : '');
-  } else if (job.status === 'failed') {
-    banner.className = 'banner bad';
-    banner.textContent = (job.error || 'The pipeline stopped.') +
-      (job.partial ? ' Partial results below are still downloadable.' : '');
-  } else if (job.status === 'completed') {
-    banner.className = 'banner ok';
-    banner.textContent = 'Pipeline completed successfully.';
-  } else {
-    banner.className = 'banner hidden';
-  }
+  // Nothing is moving, so stop asking.
+  if (payload.all_terminal) stopPolling();
 }
 
-function finish(job) {
-  el('cancel-job').classList.add('hidden');
-  el('download-all').href = '/api/jobs/' + job.job_id + '/download';
-  el('download-all').setAttribute('aria-disabled', 'false');
-  el('download-log').href = '/api/jobs/' + job.job_id + '/log';
-  el('download-log').setAttribute('aria-disabled', 'false');
-  renderResults(job);
+const STATUS_MARK = { completed: '\u2713', failed: '\u2715', cancelled: '\u2298',
+                      running: '\u25b8', queued: '\u00b7' };
+
+function renderJobs() {
+  const body = el('jobs-body');
+  const open = state.openJobId;
+  body.innerHTML = '';
+
+  state.jobs.forEach((job) => {
+    const row = document.createElement('tr');
+    row.className = 'job-row';
+    row.dataset.jobId = job.job_id;
+    row.tabIndex = 0;
+
+    const marker = document.createElement('td');
+    marker.className = 'expander';
+    marker.textContent = STATUS_MARK[job.status] || '';
+
+    const name = document.createElement('td');
+    name.className = 'name';
+    name.textContent = job.name;
+
+    const status = document.createElement('td');
+    status.textContent = job.outcome_label || describeStatus(job);
+    if (job.error) {
+      const note = document.createElement('div');
+      note.className = 'muted';
+      note.textContent = job.error;
+      status.appendChild(note);
+    }
+
+    const before = document.createElement('td');
+    before.innerHTML = reportChips(job.before);
+    const after = document.createElement('td');
+    after.innerHTML = reportChips(job.after);
+
+    const downloads = document.createElement('td');
+    downloads.className = 'actions';
+    const base = '/api/jobs/' + job.job_id + '/';
+    downloads.appendChild(link(base + 'pdf', 'PDF', job.has_pdf));
+    downloads.appendChild(link(base + 'before', 'Before', Boolean(job.before)));
+    downloads.appendChild(link(base + 'after', 'After', Boolean(job.after)));
+    downloads.appendChild(link(base + 'download', 'ZIP', job.status === 'completed'));
+    downloads.addEventListener('click', (event) => event.stopPropagation());
+
+    row.append(marker, name, status, before, after, downloads);
+    body.appendChild(row);
+
+    const detail = document.createElement('tr');
+    detail.className = 'detail-row hidden';
+    const cell = document.createElement('td');
+    cell.colSpan = 6;
+    detail.appendChild(cell);
+    body.appendChild(detail);
+
+    const toggle = () => toggleJob(job, row, detail, cell);
+    row.addEventListener('click', toggle);
+    row.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); }
+    });
+
+    if (open === job.job_id) toggleJob(job, row, detail, cell, true);
+  });
+}
+
+function describeStatus(job) {
+  if (job.status === 'queued') {
+    if (job.jobs_ahead === 0 || job.jobs_ahead === null) return 'Queued \u2014 next to run.';
+    return 'Queued \u2014 ' + job.jobs_ahead + ' ahead.';
+  }
+  if (job.status === 'running') {
+    return job.current_stage ? 'Running \u2014 ' + job.current_stage : 'Running\u2026';
+  }
+  return job.status;
 }
 
 function reportChips(report) {
-  if (!report) return '—';
+  if (!report) return '\u2014';
   return ['ua1', 'wcag'].map((profile) => {
     const entry = (report.profiles || {})[profile];
     if (!entry) return '';
     const label = profile === 'ua1' ? 'UA1' : 'WCAG';
     const tone = entry.status === 'pass' ? 'ok' : (entry.status === 'error' ? 'warn' : 'bad');
-    const count = entry.failed_rules_count ? ' · ' + entry.failed_rules_count : '';
+    const count = entry.failed_rules_count ? ' \u00b7 ' + entry.failed_rules_count : '';
     return '<span class="chip ' + tone + '"><span class="dot"></span>' +
       label + ' ' + entry.status + count + '</span>';
   }).join(' ');
 }
 
-function renderResults(job) {
-  const body = el('results-body');
-  const openRows = new Set(
-    Array.from(body.querySelectorAll('tr.file-row[data-open="true"]'))
-      .map((row) => row.dataset.fileId)
-  );
-  body.innerHTML = '';
-
-  const byId = {};
-  (job.results || []).forEach((result) => { byId[result.file_id] = result; });
-
-  (job.files || []).forEach((file) => {
-    const result = byId[file.file_id] || {};
-    const hasDetail = Boolean(result.before || result.after);
-
-    const row = document.createElement('tr');
-    row.className = 'file-row';
-    row.dataset.fileId = file.file_id;
-
-    const expander = document.createElement('td');
-    expander.className = 'expander';
-    expander.textContent = hasDetail ? '▸' : '';
-
-    const name = document.createElement('td');
-    name.className = 'name';
-    name.textContent = file.original_name;
-
-    const outcome = document.createElement('td');
-    outcome.textContent = result.outcome_label || result.outcome || '—';
-    if (result.note) {
-      const note = document.createElement('div');
-      note.className = 'muted';
-      note.textContent = result.note;
-      outcome.appendChild(note);
-    }
-
-    const before = document.createElement('td');
-    before.innerHTML = reportChips(result.before);
-    const after = document.createElement('td');
-    after.innerHTML = reportChips(result.after);
-
-    const downloads = document.createElement('td');
-    downloads.className = 'actions';
-    const base = '/api/jobs/' + job.job_id + '/files/' + file.file_id + '/';
-    downloads.appendChild(downloadLink(base + 'pdf', 'PDF', Boolean(result.has_pdf)));
-    downloads.appendChild(downloadLink(base + 'before', 'Before', Boolean(result.before)));
-    downloads.appendChild(downloadLink(base + 'after', 'After', Boolean(result.after)));
-    downloads.addEventListener('click', (event) => event.stopPropagation());
-
-    row.append(expander, name, outcome, before, after, downloads);
-    body.appendChild(row);
-
-    if (!hasDetail) return;
-
-    const detailRow = document.createElement('tr');
-    detailRow.className = 'detail-row hidden';
-    const detailCell = document.createElement('td');
-    detailCell.colSpan = 6;
-    detailCell.innerHTML = '<div class="detail muted">Loading…</div>';
-    detailRow.appendChild(detailCell);
-    body.appendChild(detailRow);
-
-    row.addEventListener('click', () => toggleDetail(job, file, row, detailRow, detailCell));
-    row.tabIndex = 0;
-    row.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        toggleDetail(job, file, row, detailRow, detailCell);
-      }
-    });
-
-    if (openRows.has(file.file_id)) {
-      toggleDetail(job, file, row, detailRow, detailCell);
-    }
-  });
-
-  renderSummary(job);
-  el('results-section').classList.toggle('hidden', (job.files || []).length === 0);
+function link(href, label, enabled) {
+  const anchor = document.createElement('a');
+  anchor.className = 'dl';
+  anchor.textContent = label;
+  if (enabled) anchor.href = href;
+  else anchor.setAttribute('aria-disabled', 'true');
+  return anchor;
 }
 
-async function toggleDetail(job, file, row, detailRow, detailCell) {
-  const open = row.dataset.open === 'true';
-  row.dataset.open = open ? 'false' : 'true';
-  row.cells[0].textContent = open ? '▸' : '▾';
-  detailRow.classList.toggle('hidden', open);
-  if (open || detailCell.dataset.loaded === 'true') return;
+/* ---------- job detail ---------- */
 
-  const stages = await Promise.all(['before', 'after'].map(async (stage) => {
-    try {
-      const response = await fetch(
-        '/api/jobs/' + job.job_id + '/files/' + file.file_id + '/' + stage
-      );
-      return response.ok ? [stage, await response.json()] : [stage, null];
-    } catch (error) {
-      return [stage, null];
-    }
-  }));
+async function toggleJob(job, row, detailRow, cell, forceOpen) {
+  const isOpen = row.dataset.open === 'true';
+  if (isOpen && !forceOpen) {
+    row.dataset.open = 'false';
+    detailRow.classList.add('hidden');
+    state.openJobId = null;
+    stopStreaming();
+    return;
+  }
 
-  detailCell.innerHTML = '';
+  state.openJobId = job.job_id;
+  row.dataset.open = 'true';
+  detailRow.classList.remove('hidden');
+  cell.innerHTML = '<div class="detail muted">Loading\u2026</div>';
+
+  const response = await fetch('/api/jobs/' + job.job_id);
+  if (!response.ok) { cell.innerHTML = '<div class="detail muted">Unavailable.</div>'; return; }
+  renderDetail(cell, await response.json());
+}
+
+function renderDetail(cell, job) {
+  cell.innerHTML = '';
   const wrap = document.createElement('div');
   wrap.className = 'detail';
-  stages.forEach(([stage, report]) => {
-    if (!report) return;
+
+  const stagesHeading = document.createElement('h4');
+  stagesHeading.textContent = 'Pipeline stages';
+  wrap.appendChild(stagesHeading);
+
+  const list = document.createElement('ol');
+  list.className = 'stages';
+  (job.stages || []).forEach((stage) => {
+    const item = document.createElement('li');
+    item.dataset.status = stage.status;
+    const marker = document.createElement('span');
+    marker.className = 'marker';
+    marker.textContent = stage.status === 'ok' ? '\u2713'
+      : (stage.status === 'failed' ? '\u2715' : '\u2013');
+    const label = document.createElement('span');
+    label.textContent = stage.name;
+    const detail = document.createElement('span');
+    detail.className = 'detail';
+    detail.textContent = stage.detail || '';
+    item.append(marker, label, detail);
+    list.appendChild(item);
+  });
+  wrap.appendChild(list);
+
+  (job.warnings || []).forEach((warning) => {
+    const note = document.createElement('p');
+    note.className = 'muted';
+    note.textContent = warning;
+    wrap.appendChild(note);
+  });
+
+  ['before', 'after'].forEach((stage) => {
+    if (!job[stage]) return;
     const heading = document.createElement('h4');
     heading.textContent = stage === 'before' ? 'Before remediation' : 'After remediation';
     wrap.appendChild(heading);
-
-    const violations = mergeViolations(report);
-    if (!violations.length) {
-      const none = document.createElement('p');
-      none.className = 'none';
-      none.textContent = 'No violations reported.';
-      wrap.appendChild(none);
-      return;
-    }
-    const list = document.createElement('ul');
-    violations.forEach((violation) => {
-      const item = document.createElement('li');
-      const code = document.createElement('code');
-      code.textContent = violation.clause_test;
-      const profiles = document.createElement('span');
-      profiles.className = 'muted';
-      profiles.textContent = ' ' + violation.profiles.join(', ') +
-        (violation.count > 1 ? ' · ' + violation.count + '×' : '') + ' ';
-      item.append(code, profiles, violation.description || '');
-      list.appendChild(item);
-    });
-    wrap.appendChild(list);
+    wrap.appendChild(violationList(job.job_id, stage));
   });
-  if (!wrap.children.length) {
-    wrap.innerHTML = '<span class="muted">No validation detail available.</span>';
+
+  if (job.status === 'queued' || job.status === 'running') {
+    const cancel = document.createElement('button');
+    cancel.className = 'small';
+    cancel.textContent = 'Cancel job';
+    cancel.addEventListener('click', async (event) => {
+      event.stopPropagation();
+      cancel.disabled = true;
+      await fetch('/api/jobs/' + job.job_id + '/cancel', { method: 'POST' });
+      refreshQueue();
+    });
+    wrap.appendChild(cancel);
   }
-  detailCell.appendChild(wrap);
-  detailCell.dataset.loaded = 'true';
+
+  cell.appendChild(wrap);
+}
+
+function violationList(jobId, stage) {
+  const list = document.createElement('ul');
+  list.innerHTML = '<li class="muted">Loading\u2026</li>';
+  fetch('/api/jobs/' + jobId + '/' + stage)
+    .then((response) => (response.ok ? response.json() : null))
+    .then((report) => {
+      list.innerHTML = '';
+      const merged = mergeViolations(report);
+      if (!merged.length) {
+        const none = document.createElement('li');
+        none.className = 'none';
+        none.textContent = 'No violations reported.';
+        list.appendChild(none);
+        return;
+      }
+      merged.forEach((violation) => {
+        const item = document.createElement('li');
+        const code = document.createElement('code');
+        code.textContent = violation.clause_test;
+        const profiles = document.createElement('span');
+        profiles.className = 'muted';
+        profiles.textContent = ' ' + violation.profiles.join(', ') + ' ';
+        item.append(code, profiles, violation.description || '');
+        list.appendChild(item);
+      });
+    })
+    .catch(() => { list.innerHTML = '<li class="muted">Unavailable.</li>'; });
+  return list;
 }
 
 function mergeViolations(report) {
+  if (!report) return [];
   const merged = new Map();
   ['ua1', 'wcag'].forEach((profile) => {
-    const entries = ((report.profiles || {})[profile] || {}).violations || [];
-    entries.forEach((violation) => {
+    (((report.profiles || {})[profile] || {}).violations || []).forEach((violation) => {
       const key = violation.clause_test || 'unknown';
       if (!merged.has(key)) {
-        merged.set(key, {
-          clause_test: key,
-          description: violation.description || '',
-          profiles: [],
-          count: 0,
-          perProfile: {},
-        });
+        merged.set(key, { clause_test: key, description: violation.description || '',
+                          profiles: [] });
       }
       const entry = merged.get(key);
-      entry.perProfile[profile] = (entry.perProfile[profile] || 0) + 1;
+      const label = profile.toUpperCase();
+      if (!entry.profiles.includes(label)) entry.profiles.push(label);
       if (!entry.description) entry.description = violation.description || '';
     });
   });
-  return Array.from(merged.values()).map((entry) => {
-    entry.profiles = Object.keys(entry.perProfile).map((p) => p.toUpperCase());
-    entry.count = Math.max(...Object.values(entry.perProfile));
-    return entry;
-  }).sort((a, b) => b.count - a.count || a.clause_test.localeCompare(b.clause_test));
+  return Array.from(merged.values())
+    .sort((a, b) => a.clause_test.localeCompare(b.clause_test));
 }
 
-function renderSummary(job) {
-  const summary = job.summary || {};
-  const totalsLine = ['before', 'after'].map((stage) => {
-    const totals = (summary[stage] || {}).totals;
-    if (!totals) return null;
-    const counted = totals.pass + totals.fail + totals.error;
-    if (!counted) return null;
-    const label = stage === 'before' ? 'Before' : 'After';
-    return label + ': ' + totals.pass + ' of ' + counted + ' passing' +
-      (totals.error ? ' · ' + totals.error + ' error' : '');
-  }).filter(Boolean).join('   ·   ');
-  el('results-totals').textContent = totalsLine;
-
-  const container = el('rollup');
-  container.innerHTML = '';
-  const stage = (summary.after || {}).clauses && summary.after.clauses.length
-    ? 'after' : 'before';
-  const clauses = (summary[stage] || {}).clauses || [];
-  if (!clauses.length) return;
-
-  const details = document.createElement('details');
-  details.open = clauses.length <= 8;
-  const caption = document.createElement('summary');
-  caption.textContent = clauses.length + ' distinct failing rule(s) ' +
-    (stage === 'after' ? 'remaining after remediation' : 'before remediation');
-  details.appendChild(caption);
-
-  const table = document.createElement('table');
-  table.innerHTML = '<thead><tr><th>Rule</th><th>Profile</th><th>Files</th>' +
-    '<th>Description</th></tr></thead>';
-  const tbody = document.createElement('tbody');
-  clauses.forEach((entry) => {
-    const row = document.createElement('tr');
-    const rule = document.createElement('td');
-    const code = document.createElement('code');
-    code.textContent = entry.clause_test;
-    rule.appendChild(code);
-    const profiles = document.createElement('td');
-    profiles.textContent = (entry.profiles || []).map((p) => p.toUpperCase()).join(', ');
-    const count = document.createElement('td');
-    count.textContent = entry.file_count;
-    const description = document.createElement('td');
-    description.textContent = entry.description || '';
-    row.append(rule, profiles, count, description);
-    tbody.appendChild(row);
-  });
-  table.appendChild(tbody);
-  details.appendChild(table);
-  container.appendChild(details);
+function stopStreaming() {
+  if (state.source) { state.source.close(); state.source = null; }
 }
-
-function downloadLink(href, label, enabled) {
-  const link = document.createElement('a');
-  link.className = 'dl';
-  link.textContent = label;
-  if (enabled) link.href = href;
-  else link.setAttribute('aria-disabled', 'true');
-  return link;
-}
-
-/* ---------- job history and deep links ---------- */
-
-async function loadJobsList() {
-  let jobs = [];
-  try {
-    const response = await fetch('/api/jobs');
-    jobs = (await response.json()).jobs || [];
-  } catch (error) {
-    jobs = [];
-  }
-
-  const body = el('jobs-body');
-  body.innerHTML = '';
-  jobs.slice(0, 25).forEach((job) => {
-    const row = document.createElement('tr');
-    row.tabIndex = 0;
-
-    const id = document.createElement('td');
-    id.textContent = job.job_id;
-    const started = document.createElement('td');
-    started.textContent = job.created_at.replace('T', ' ');
-    const count = document.createElement('td');
-    count.textContent = job.file_count;
-    const config = document.createElement('td');
-    config.textContent = job.config_file;
-    const status = document.createElement('td');
-    const pill = document.createElement('span');
-    pill.className = 'pill ' + job.status;
-    pill.textContent = job.status;
-    status.appendChild(pill);
-
-    const open = () => { window.location.hash = 'job=' + job.job_id; };
-    row.addEventListener('click', open);
-    row.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') open();
-    });
-
-    row.append(id, started, count, config, status);
-    body.appendChild(row);
-  });
-
-  el('jobs-section').classList.toggle('hidden', jobs.length === 0);
-}
-
-async function openJob(jobId) {
-  const response = await fetch('/api/jobs/' + jobId);
-  if (!response.ok) {
-    if (response.status === 404) {
-      const banner = el('health-banner');
-      banner.className = 'banner warn';
-      banner.textContent =
-        'That job is not available. Jobs are private to whoever submitted ' +
-        'them, so a link shared by a colleague will not open here.';
-    }
-    window.location.hash = '';
-    return;
-  }
-  const job = await response.json();
-
-  stopStreaming();
-  state.jobId = job.job_id;
-  state.cursor = 0;
-  state.logLines = [];
-  el('log').textContent = '';
-  el('job-section').classList.remove('hidden');
-  el('log-section').classList.remove('hidden');
-  el('download-all').setAttribute('aria-disabled', 'true');
-  el('download-log').setAttribute('aria-disabled', 'true');
-
-  renderJob(job);
-  updateSubmitState();
-
-  if (job.status === 'completed' || job.status === 'failed') {
-    await loadStoredLog(jobId);
-    finish(job);
-  } else {
-    connect();
-  }
-}
-
-async function loadStoredLog(jobId) {
-  try {
-    const response = await fetch('/api/jobs/' + jobId + '/log');
-    if (!response.ok) return;
-    const text = await response.text();
-    state.logLines = text.split('\n').slice(-MAX_LOG_LINES);
-    const pane = el('log');
-    pane.textContent = state.logLines.join('\n');
-    pane.scrollTop = pane.scrollHeight;
-  } catch (error) {
-    /* the log is best-effort when reopening an old job */
-  }
-}
-
-function applyHash() {
-  const match = /^#job=([\w-]+)$/.exec(window.location.hash);
-  if (match) {
-    if (match[1] !== state.jobId) openJob(match[1]);
-    return;
-  }
-  stopStreaming();
-  state.jobId = null;
-  state.jobActive = false;
-  el('job-section').classList.add('hidden');
-  el('results-section').classList.add('hidden');
-  el('log-section').classList.add('hidden');
-  updateSubmitState();
-  loadJobsList();
-}
-
-window.addEventListener('hashchange', applyHash);
 
 /* ---------- wiring ---------- */
 
 const drop = el('drop');
 ['dragenter', 'dragover'].forEach((type) => {
-  drop.addEventListener(type, (event) => {
-    event.preventDefault();
-    drop.classList.add('over');
-  });
+  drop.addEventListener(type, (event) => { event.preventDefault(); drop.classList.add('over'); });
 });
 ['dragleave', 'drop'].forEach((type) => {
-  drop.addEventListener(type, (event) => {
-    event.preventDefault();
-    drop.classList.remove('over');
-  });
+  drop.addEventListener(type, (event) => { event.preventDefault(); drop.classList.remove('over'); });
 });
 drop.addEventListener('drop', (event) => {
   if (event.dataTransfer && event.dataTransfer.files) addFiles(event.dataTransfer.files);
@@ -968,34 +710,12 @@ el('file-input').addEventListener('change', (event) => {
   addFiles(event.target.files);
   event.target.value = '';
 });
-el('submit').addEventListener('click', submitJob);
-el('cancel-job').addEventListener('click', async () => {
-  if (!state.jobId) return;
-  const button = el('cancel-job');
-  button.disabled = true;
-  try {
-    const response = await fetch('/api/jobs/' + state.jobId + '/cancel', { method: 'POST' });
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      el('job-status').textContent = describeError(payload);
-    }
-  } finally {
-    button.disabled = false;
-    refreshState();
-  }
-});
-
-el('new-job').addEventListener('click', () => {
-  state.staged = [];
-  renderStaged();
-  if (window.location.hash) window.location.hash = '';
-  else applyHash();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+el('submit').addEventListener('click', submitJobs);
 
 loadConfigs();
 loadHealth();
-applyHash();
+refreshQueue();
+startPolling();
 </script>
 </body>
 </html>

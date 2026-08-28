@@ -25,10 +25,11 @@ from .config import (
     DEFAULT_CONFIG_FILE,
     JOBS_ROOT,
     MAX_FILES,
-    MAX_JOB_BYTES,
+    MAX_SUBMISSION_BYTES,
     MIN_FREE_DISK_BYTES,
     RETENTION_SWEEP_SECONDS,
-    max_jobs_per_user,
+    max_concurrent_jobs,
+    max_running_jobs_per_user,
     SSE_KEEPALIVE_SECONDS,
     SSE_POLL_SECONDS,
     STATIC_DIR,
@@ -40,8 +41,8 @@ from .identity import (
     header_diagnostic_enabled,
     resolve_user,
 )
-from .models import Job, JobStatus, UploadedFile
-from .runner import PipelineRunner, seed_source_folder
+from .models import Job, JobStatus, UploadedFile, outcome_label, summarize_report
+from .runner import PipelineRunner
 from .store import (
     JobStore,
     is_valid_job_id,
@@ -65,7 +66,7 @@ async def current_user(request: Request) -> str:
 
 CURRENT_USER = Depends(current_user)
 JOB_ID_PATH = PathParam(..., pattern=r"^\d{8}-\d{6}-[0-9a-f]{6}$")
-FILE_ID_PATH = PathParam(..., pattern=r"^\d{3}$")
+ARTIFACT_PATH = PathParam(..., pattern=r"^(pdf|before|after)$")
 
 STORE = JobStore()
 RUNNER = PipelineRunner(STORE)
@@ -200,7 +201,9 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
                 "status": str(job.status),
                 "queued": job.status == JobStatus.QUEUED,
                 "created_at": job.created_at.isoformat(timespec="seconds"),
-                "file_count": len(job.files),
+                "name": job.file.original_name,
+                "outcome": job.outcome,
+                "outcome_label": outcome_label(job.outcome),
                 "config_file": job.config_file,
             }
             for job in STORE.list_jobs()
@@ -210,7 +213,7 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
 
 
 @app.post("/api/jobs", status_code=201)
-async def create_job(  # pylint: disable=too-many-locals,too-many-arguments,too-many-positional-arguments
+async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
         files: list[UploadFile] = File(...),
         config_file: str = Form(DEFAULT_CONFIG_FILE),
         skip_font_fix: bool = Form(False),
@@ -218,17 +221,19 @@ async def create_job(  # pylint: disable=too-many-locals,too-many-arguments,too-
         verbose: bool = Form(False),
         user: str = CURRENT_USER) -> JSONResponse:
     '''
-    Accept uploaded PDFs and queue a pipeline run.
+    Accept uploaded PDFs and queue one independent job per file.
+
+    A file that cannot be accepted is reported rather than failing the whole
+    submission, so nineteen good PDFs still run when the twentieth is a
+    spreadsheet.
     '''
     if config_file not in ALLOWED_CONFIG_FILES:
         raise HTTPException(
-            status_code=400,
-            detail=f"Unknown configuration file: {config_file}"
+            status_code=400, detail=f"Unknown configuration file: {config_file}"
         )
     if not (CONFIG_DIR / config_file).is_file():
         raise HTTPException(
-            status_code=400,
-            detail=f"Configuration file is missing on disk: {config_file}"
+            status_code=400, detail=f"Configuration file is missing: {config_file}"
         )
 
     incoming = [upload for upload in files if upload.filename]
@@ -236,43 +241,110 @@ async def create_job(  # pylint: disable=too-many-locals,too-many-arguments,too-
         raise HTTPException(status_code=400, detail="Attach at least one PDF.")
     if len(incoming) > MAX_FILES:
         raise HTTPException(
-            status_code=400,
-            detail=f"Attach at most {MAX_FILES} PDFs per job."
+            status_code=400, detail=f"Attach at most {MAX_FILES} PDFs per submission."
         )
 
     _assert_disk_space()
-    _assert_within_user_limit(user)
 
-    job = Job(
-        job_id=_new_job_id(),
-        created_at=datetime.now(),
-        config_file=config_file,
-        submitted_by=user,
-        skip_font_fix=skip_font_fix,
-        wcag_and_ua1_must_pass=wcag_and_ua1_must_pass,
-        verbose=verbose,
-    )
-    job.source_path.mkdir(parents=True, exist_ok=True)
-    job.web_path.mkdir(parents=True, exist_ok=True)
+    created_at = datetime.now()
+    taken_ids: set[str] = set()
+    taken_names: set[str] = set()
+    accepted: list[dict[str, Any]] = []
+    rejected: list[dict[str, str]] = []
+    total_bytes = 0
 
-    try:
-        await _store_uploads(job, incoming)
-    except UploadError as error:
-        shutil.rmtree(job.base_path, ignore_errors=True)
-        status_code = 413 if "limit" in str(error) else 400
-        raise HTTPException(status_code=status_code, detail=str(error)) from error
-    except Exception as error:  # pylint: disable=broad-exception-caught
-        shutil.rmtree(job.base_path, ignore_errors=True)
-        raise HTTPException(status_code=500, detail=str(error)) from error
+    for upload in incoming:
+        original_name = upload.filename or "upload.pdf"
+        job = None
+        try:
+            stored_name = sanitize_upload_name(original_name, taken_names)
+            job = Job(
+                job_id=_new_job_id(taken_ids),
+                created_at=created_at,
+                config_file=config_file,
+                file=UploadedFile(original_name, stored_name, 0),
+                submitted_by=user,
+                skip_font_fix=skip_font_fix,
+                wcag_and_ua1_must_pass=wcag_and_ua1_must_pass,
+                verbose=verbose,
+            )
+            job.input_path.parent.mkdir(parents=True, exist_ok=True)
+            job.web_path.mkdir(parents=True, exist_ok=True)
 
-    STORE.add(job)
-    save_meta(job)
-    queue_position = RUNNER.submit(job.job_id)
+            size = await asyncio.to_thread(
+                write_upload_stream, _iterate_upload(upload),
+                job.input_path, original_name
+            )
+            if not looks_like_pdf(job.input_path):
+                raise UploadError(f"File is not a PDF: {original_name}")
 
-    return JSONResponse(
-        status_code=201,
-        content={**job.to_dict(), "jobs_ahead": queue_position}
-    )
+            total_bytes += size
+            if total_bytes > MAX_SUBMISSION_BYTES:
+                raise UploadError(
+                    f"Submission exceeds the {MAX_SUBMISSION_BYTES} byte limit."
+                )
+            job.file.size_bytes = size
+        except UploadError as error:
+            if job is not None:
+                shutil.rmtree(job.base_path, ignore_errors=True)
+            rejected.append({"original_name": original_name, "reason": str(error)})
+            continue
+
+        STORE.add(job)
+        save_meta(job)
+        accepted.append({
+            **job.to_dict(),
+            "jobs_ahead": RUNNER.submit(job.job_id, user),
+        })
+
+    if not accepted:
+        raise HTTPException(
+            status_code=400,
+            detail="; ".join(f"{r['original_name']}: {r['reason']}" for r in rejected),
+        )
+
+    return JSONResponse(status_code=201, content={
+        "jobs": accepted,
+        "rejected": rejected,
+        "concurrency": max_concurrent_jobs(),
+        "your_limit": max_running_jobs_per_user(),
+    })
+
+
+@app.get("/api/queue")
+async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
+    '''
+    Summarize the caller's jobs in one small payload.
+
+    A browser watching twenty jobs cannot open twenty event streams: it would
+    exhaust the per-origin connection limit and starve the rest of the page. So
+    the list view polls this, and the detail view keeps the single stream.
+    '''
+    jobs = [job for job in STORE.list_jobs() if job.submitted_by == user]
+    running = sum(1 for job in jobs if job.status == JobStatus.RUNNING)
+    return {
+        "concurrency": max_concurrent_jobs(),
+        "your_limit": max_running_jobs_per_user(),
+        "your_running": running,
+        "all_terminal": all(job.is_terminal() for job in jobs),
+        "jobs": [
+            {
+                "job_id": job.job_id,
+                "name": job.file.original_name,
+                "status": str(job.status),
+                "outcome": job.outcome,
+                "outcome_label": outcome_label(job.outcome),
+                "stages_done": len(job.stages),
+                "current_stage": job.stages[-1]["name"] if job.stages else None,
+                "jobs_ahead": RUNNER.jobs_ahead(job.job_id),
+                "before": summarize_report(job.result.before if job.result else None),
+                "after": summarize_report(job.result.after if job.result else None),
+                "has_pdf": job.artifact("pdf") is not None,
+                "error": job.error,
+            }
+            for job in jobs
+        ],
+    }
 
 
 @app.get("/api/jobs/{job_id}")
@@ -365,47 +437,6 @@ async def job_log(
     )
 
 
-@app.get("/api/jobs/{job_id}/files/{file_id}/pdf")
-async def download_pdf(
-        job_id: str = JOB_ID_PATH,
-        file_id: str = FILE_ID_PATH,
-        user: str = CURRENT_USER) -> FileResponse:
-    '''
-    Download one file's remediated PDF.
-    '''
-    job = _require_job(job_id, user)
-    uploaded_file = _require_upload(job, file_id)
-    result = job.find_result(file_id)
-    if result is None or result.final_pdf_path is None:
-        raise HTTPException(status_code=404, detail="No output PDF for this file.")
-
-    pdf_path = _require_file(result.final_pdf_path)
-    return FileResponse(
-        pdf_path,
-        media_type="application/pdf",
-        filename=uploaded_file.original_name
-    )
-
-
-@app.get("/api/jobs/{job_id}/files/{file_id}/{stage}")
-async def download_report(
-        job_id: str = JOB_ID_PATH,
-        file_id: str = FILE_ID_PATH,
-        stage: str = PathParam(..., pattern=r"^(before|after)$"),
-        user: str = CURRENT_USER) -> FileResponse:
-    '''
-    Download one file's normalized validation report.
-    '''
-    job = _require_job(job_id, user)
-    uploaded_file = _require_upload(job, file_id)
-    report_path = _require_file(job.result_folder(file_id) / f"{stage}.json")
-    return FileResponse(
-        report_path,
-        media_type="application/json",
-        filename=f"{Path(uploaded_file.original_name).stem}-{stage}.json"
-    )
-
-
 @app.get("/api/jobs/{job_id}/download")
 async def download_bundle(
         job_id: str = JOB_ID_PATH,
@@ -426,6 +457,28 @@ async def download_bundle(
         media_type="application/zip",
         filename=f"{job.job_id}-remediation.zip"
     )
+
+
+@app.get("/api/jobs/{job_id}/{artifact}")
+async def download_artifact(
+        job_id: str = JOB_ID_PATH,
+        artifact: str = ARTIFACT_PATH,
+        user: str = CURRENT_USER) -> FileResponse:
+    '''
+    Download the remediated PDF or one of the two validation reports.
+    '''
+    job = _require_job(job_id, user)
+    path = job.artifact(artifact)
+    if path is None:
+        raise HTTPException(status_code=404, detail=f"No {artifact} for this job.")
+
+    _require_file(path)
+    if artifact == "pdf":
+        return FileResponse(path, media_type="application/pdf",
+                            filename=job.file.original_name)
+    stem = Path(job.file.original_name).stem
+    return FileResponse(path, media_type="application/json",
+                        filename=f"{stem}-{artifact}.json")
 
 
 @app.post("/api/jobs/{job_id}/cancel")
@@ -460,54 +513,42 @@ async def retry_job(
         skip_font_fix: bool = Form(True),
         user: str = CURRENT_USER) -> JSONResponse:
     '''
-    Re-run a finished job's PDFs without asking the browser to upload them again.
+    Re-run a finished job's PDF without asking the browser to upload it again.
     '''
     original = _require_job(job_id, user)
     if not original.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
-
-    sources = [
-        original.source_path / uploaded_file.stored_name
-        for uploaded_file in original.files
-    ]
-    missing = [path.name for path in sources if not path.is_file()]
-    if not sources or missing:
+    if not original.input_path.is_file():
         raise HTTPException(
             status_code=409,
-            detail="The original uploads are no longer on disk; upload them again."
+            detail="The original upload is no longer on disk; upload it again.",
         )
 
     _assert_disk_space()
-    _assert_within_user_limit(user)
 
     job = Job(
-        job_id=_new_job_id(),
+        job_id=_new_job_id(set()),
         created_at=datetime.now(),
         config_file=original.config_file,
+        file=UploadedFile(
+            original.file.original_name,
+            original.file.stored_name,
+            original.file.size_bytes,
+        ),
         submitted_by=user,
         skip_font_fix=skip_font_fix,
         wcag_and_ua1_must_pass=original.wcag_and_ua1_must_pass,
         verbose=original.verbose,
     )
+    job.input_path.parent.mkdir(parents=True, exist_ok=True)
     job.web_path.mkdir(parents=True, exist_ok=True)
-    await asyncio.to_thread(seed_source_folder, job, sources)
-    job.files = [
-        UploadedFile(
-            file_id=uploaded_file.file_id,
-            original_name=uploaded_file.original_name,
-            stored_name=uploaded_file.stored_name,
-            size_bytes=uploaded_file.size_bytes,
-        )
-        for uploaded_file in original.files
-    ]
+    await asyncio.to_thread(shutil.copy2, original.input_path, job.input_path)
 
     STORE.add(job)
     save_meta(job)
-    queue_position = RUNNER.submit(job.job_id)
-    return JSONResponse(
-        status_code=201,
-        content={**job.to_dict(), "jobs_ahead": queue_position}
-    )
+    return JSONResponse(status_code=201, content={
+        **job.to_dict(), "jobs_ahead": RUNNER.submit(job.job_id, user)
+    })
 
 
 @app.delete("/api/jobs/{job_id}")
@@ -526,43 +567,6 @@ async def delete_job(
     return {"job_id": job_id, "deleted": True}
 
 
-async def _store_uploads(job: Job, incoming: list[UploadFile]) -> None:
-    '''
-    Sanitize and write every upload into the job's source folder.
-    '''
-    taken_names: set[str] = set()
-    total_bytes = 0
-
-    for position, upload in enumerate(incoming):
-        original_name = upload.filename or f"upload-{position}.pdf"
-        stored_name = sanitize_upload_name(original_name, taken_names)
-        destination = job.source_path / stored_name
-
-        size_bytes = await asyncio.to_thread(
-            write_upload_stream,
-            _iterate_upload(upload),
-            destination,
-            original_name
-        )
-
-        if not looks_like_pdf(destination):
-            destination.unlink(missing_ok=True)
-            raise UploadError(f"File is not a PDF: {original_name}")
-
-        total_bytes += size_bytes
-        if total_bytes > MAX_JOB_BYTES:
-            raise UploadError(
-                f"Uploads exceed the {MAX_JOB_BYTES} byte per-job limit."
-            )
-
-        job.files.append(UploadedFile(
-            file_id=f"{position:03d}",
-            original_name=original_name,
-            stored_name=stored_name,
-            size_bytes=size_bytes,
-        ))
-
-
 def _iterate_upload(upload: UploadFile):
     '''
     Yield an upload's contents in chunks from its synchronous file object.
@@ -575,11 +579,21 @@ def _iterate_upload(upload: UploadFile):
         yield chunk
 
 
-def _new_job_id() -> str:
+def _new_job_id(taken: set[str]) -> str:
     '''
-    Return a sortable, filesystem-safe job identifier.
+    Return a sortable, filesystem-safe identifier no other job is using.
+
+    A submission mints many identifiers inside one second, so the timestamp
+    stops distinguishing them and the random suffix has to be checked.
     '''
-    return f"{datetime.now():%Y%m%d-%H%M%S}-{uuid4().hex[:6]}"
+    while True:
+        candidate = f"{datetime.now():%Y%m%d-%H%M%S}-{uuid4().hex[:6]}"
+        if candidate in taken or STORE.get(candidate) is not None:
+            continue
+        if (JOBS_ROOT / candidate).exists():
+            continue
+        taken.add(candidate)
+        return candidate
 
 
 def _require_job(job_id: str, user: str) -> Job:
@@ -597,16 +611,6 @@ def _require_job(job_id: str, user: str) -> Job:
     return job
 
 
-def _require_upload(job: Job, file_id: str) -> UploadedFile:
-    '''
-    Return an uploaded file record or raise a 404.
-    '''
-    uploaded_file = job.find_file(file_id)
-    if uploaded_file is None:
-        raise HTTPException(status_code=404, detail="Unknown file.")
-    return uploaded_file
-
-
 def _require_file(candidate: Path) -> Path:
     '''
     Return an existing path that is contained within the jobs directory.
@@ -615,25 +619,6 @@ def _require_file(candidate: Path) -> Path:
     if not resolved.is_relative_to(JOBS_ROOT.resolve()) or not resolved.is_file():
         raise HTTPException(status_code=404, detail="Not found.")
     return resolved
-
-
-def _assert_within_user_limit(user: str) -> None:
-    '''
-    Refuse a submission that would let one user monopolize the single worker.
-    '''
-    limit = max_jobs_per_user()
-    active = sum(
-        1 for job in STORE.list_jobs()
-        if job.submitted_by == user and not job.is_terminal()
-    )
-    if active >= limit:
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                f"You already have {active} job(s) queued or running. "
-                "Wait for them to finish before submitting more."
-            )
-        )
 
 
 def _assert_disk_space() -> None:

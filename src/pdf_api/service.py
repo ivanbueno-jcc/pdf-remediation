@@ -9,7 +9,6 @@ richer job model and calls the pipeline library directly.
 
 from __future__ import annotations
 
-import json
 import os
 import shutil
 import threading
@@ -22,7 +21,7 @@ from typing import Any
 from uuid import uuid4
 
 from .models import PipelineOptions, PipelineResult, StageOutcome
-from .pipeline import process_pdf
+from .pipeline import artifact_path, process_pdf
 
 JOB_ID_LENGTH = 32
 
@@ -79,15 +78,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
         '''
         if self.result is None:
             return None
-        candidates = {
-            "pdf": self.result.output_pdf_path,
-            "before": self.output_dir / "before.json",
-            "after": self.output_dir / "after.json",
-        }
-        candidate = candidates.get(name)
-        if candidate is None or not Path(candidate).is_file():
-            return None
-        return Path(candidate)
+        return artifact_path(self.output_dir, name, self.result.output_pdf_path)
 
 
 def max_concurrent_jobs() -> int:
@@ -211,7 +202,6 @@ class JobRegistry:
             return
 
         job.result = result
-        _write_reports(job.output_dir, result)
 
         if str(result.status) == "cancelled":
             job.state = JobState.CANCELLED
@@ -220,18 +210,3 @@ class JobRegistry:
         else:
             job.state = JobState.ERROR
             job.error = result.error
-
-
-def _write_reports(output_dir: Path, result: PipelineResult) -> None:
-    '''
-    Write the before and after reports next to the remediated PDF.
-    '''
-    for name, report in (("before.json", result.before), ("after.json", result.after)):
-        path = output_dir / name
-        if report is None:
-            path.unlink(missing_ok=True)
-            continue
-        path.write_text(
-            json.dumps(report, indent=2, sort_keys=True, default=str),
-            encoding="utf-8",
-        )

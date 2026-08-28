@@ -12,9 +12,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from pdf_api.models import PipelineResult, PipelineStatus
+
 from .config import JOBS_ROOT, LOG_RING_BUFFER_LINES, job_ttl_hours
 from .identity import legacy_job_owner, normalize_user
-from .models import FileResult, Job, JobStatus, StepState, UploadedFile
+from .models import Job, JobStatus, UploadedFile
 
 JOB_ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 PROGRESS_LINE_PATTERN = re.compile(r"^\s*\d+%\|")
@@ -125,28 +127,31 @@ def is_valid_job_id(job_id: str) -> bool:
 
 
 def save_meta(job: Job) -> None:
-    '''
+    """
     Persist a job's metadata so downloads survive a server restart.
-    '''
+    """
     job.web_path.mkdir(parents=True, exist_ok=True)
     payload = job.to_dict()
-    payload["final_pdf_paths"] = {
-        result.file_id: (
-            result.final_pdf_path.relative_to(job.base_path).as_posix()
-            if result.final_pdf_path else None
-        )
-        for result in job.results
-    }
+    result = job.result
+    payload["output_pdf_path"] = (
+        result.output_pdf_path.relative_to(job.base_path).as_posix()
+        if result and result.output_pdf_path
+        and result.output_pdf_path.is_relative_to(job.base_path)
+        else None
+    )
     job.meta_path.write_text(
-        json.dumps(payload, indent=2, default=str),
-        encoding="utf-8"
+        json.dumps(payload, indent=2, default=str), encoding="utf-8"
     )
 
 
 def load_meta(meta_path: Path) -> Job | None:
-    '''
+    """
     Rebuild a job from persisted metadata.
-    '''
+
+    Metadata written before one-PDF-per-job carries a list of files and cannot
+    honestly be represented as a single-file job, so it is skipped rather than
+    guessed at.
+    """
     try:
         payload = json.loads(meta_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -156,51 +161,67 @@ def load_meta(meta_path: Path) -> Job | None:
     if not is_valid_job_id(job_id):
         return None
 
+    file_payload = payload.get("file")
+    if not isinstance(file_payload, dict):
+        return None
+
     job = Job(
         job_id=job_id,
         created_at=_parse_datetime(payload.get("created_at")),
         config_file=payload.get("config_file", ""),
-        submitted_by=normalize_user(payload.get("submitted_by")) or (legacy_job_owner() or ""),
+        file=UploadedFile(
+            original_name=file_payload.get("original_name", ""),
+            stored_name=file_payload.get("stored_name", ""),
+            size_bytes=int(file_payload.get("size_bytes") or 0),
+        ),
+        submitted_by=(
+            normalize_user(payload.get("submitted_by")) or (legacy_job_owner() or "")
+        ),
         skip_font_fix=bool(payload.get("skip_font_fix")),
         wcag_and_ua1_must_pass=bool(payload.get("wcag_and_ua1_must_pass")),
         verbose=bool(payload.get("verbose")),
         status=_parse_status(payload.get("status")),
-        return_code=payload.get("return_code"),
+        outcome=payload.get("outcome"),
         error=payload.get("error"),
-        partial=bool(payload.get("partial")),
     )
-    job.summary = payload.get("summary") or {}
     job.started_at = _parse_optional_datetime(payload.get("started_at"))
     job.finished_at = _parse_optional_datetime(payload.get("finished_at"))
-    job.files = [
-        UploadedFile(
-            file_id=entry.get("file_id", ""),
-            original_name=entry.get("original_name", ""),
-            stored_name=entry.get("stored_name", ""),
-            size_bytes=int(entry.get("size_bytes") or 0),
-        )
-        for entry in payload.get("files", [])
-    ]
-    for step in payload.get("steps", []):
-        try:
-            job.steps[int(step["number"])] = StepState(step["state"])
-        except (KeyError, ValueError):
-            continue
+    job.stages = list(payload.get("stages") or [])
 
-    final_paths = payload.get("final_pdf_paths", {})
-    for entry in payload.get("results", []):
-        file_id = entry.get("file_id", "")
-        relative_path = final_paths.get(file_id)
-        job.results.append(FileResult(
-            file_id=file_id,
-            outcome=entry.get("outcome", "unknown"),
-            final_pdf_path=(job.base_path / relative_path) if relative_path else None,
-            before=entry.get("before"),
-            after=entry.get("after"),
-            note=entry.get("note"),
-        ))
-
+    output_relative = payload.get("output_pdf_path")
+    job.result = PipelineResult(
+        status=_parse_pipeline_status(payload.get("outcome")),
+        input_pdf_path=job.input_path,
+        output_pdf_path=(
+            job.base_path / output_relative if output_relative else None
+        ),
+        before=_read_report(job.output_dir / "before.json"),
+        after=_read_report(job.output_dir / "after.json"),
+        warnings=list(payload.get("warnings") or []),
+        diagnostics=list(payload.get("diagnostics") or []),
+        error=payload.get("error"),
+    )
     return job
+
+
+def _read_report(path: Path) -> dict | None:
+    """
+    Read a stored validation report back from disk.
+    """
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _parse_pipeline_status(value: object) -> PipelineStatus:
+    """
+    Parse a persisted pipeline outcome, defaulting to failed.
+    """
+    try:
+        return PipelineStatus(str(value))
+    except ValueError:
+        return PipelineStatus.FAILED
 
 
 def load_persisted_jobs(store: JobStore) -> tuple[int, int]:

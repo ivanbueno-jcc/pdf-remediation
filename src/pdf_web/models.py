@@ -1,5 +1,9 @@
 '''
-Job and result data structures for the PDF remediation web application.
+Job and result structures for the PDF remediation web application.
+
+One job is one PDF. Progress is the pipeline's own stage list rather than a
+fixed set of steps scraped from console output, so a job reports what actually
+happened to it: which stages ran, which were skipped, and why.
 '''
 
 from __future__ import annotations
@@ -10,17 +14,10 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-from .config import JOBS_ROOT, PROJECT_NAME, WEB_FOLDER_NAME, WORKSPACE_NAME
+from pdf_api.models import PipelineResult, PipelineStatus
+from pdf_api.pipeline import artifact_path
 
-PIPELINE_STEPS: tuple[tuple[int, str], ...] = (
-    (1, "validate (pre-fix)"),
-    (2, "fix"),
-    (3, "font_fix"),
-    (4, "font_fix_pdfix"),
-    (5, "reprocess"),
-    (6, "fix_target"),
-    (7, "validate (final)"),
-)
+from .config import JOBS_ROOT, WEB_FOLDER_NAME
 
 
 class JobStatus(StrEnum):
@@ -35,33 +32,52 @@ class JobStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
-class StepState(StrEnum):
-    '''
-    Lifecycle state of a single pipeline step.
-    '''
-
-    PENDING = "pending"
-    RUNNING = "running"
-    DONE = "done"
-    SKIPPED = "skipped"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
-
-
 TERMINAL_STATUSES = frozenset({
     JobStatus.COMPLETED,
     JobStatus.FAILED,
     JobStatus.CANCELLED,
 })
 
+# How a finished run reads to somebody who never sees a workspace.
+OUTCOME_LABELS = {
+    str(PipelineStatus.ALREADY_COMPLIANT): "Already compliant",
+    str(PipelineStatus.REMEDIATED): "Remediated",
+    str(PipelineStatus.IMPROVED): "Improved, still failing",
+    str(PipelineStatus.UNCHANGED): "Unchanged",
+    str(PipelineStatus.FAILED): "Failed",
+    str(PipelineStatus.CANCELLED): "Cancelled",
+}
+
+
+def outcome_label(outcome: str | None) -> str | None:
+    '''
+    Return a readable label for a pipeline outcome.
+    '''
+    if outcome is None:
+        return None
+    return OUTCOME_LABELS.get(outcome, outcome)
+
+
+def status_for(outcome: PipelineStatus) -> JobStatus:
+    '''
+    Map a pipeline outcome onto the job lifecycle.
+
+    Improved and unchanged are completed runs: remediation ran and reported
+    honestly. Only an inability to run is a failure.
+    '''
+    if outcome == PipelineStatus.CANCELLED:
+        return JobStatus.CANCELLED
+    if outcome == PipelineStatus.FAILED:
+        return JobStatus.FAILED
+    return JobStatus.COMPLETED
+
 
 @dataclass
 class UploadedFile:
     '''
-    One PDF accepted from the browser.
+    The PDF a job was created for.
     '''
 
-    file_id: str
     original_name: str
     stored_name: str
     size_bytes: int
@@ -71,72 +87,21 @@ class UploadedFile:
         Return a JSON-serializable view.
         '''
         return {
-            "file_id": self.file_id,
             "original_name": self.original_name,
             "stored_name": self.stored_name,
             "size_bytes": self.size_bytes,
         }
 
 
-@dataclass
-class FileResult:
-    '''
-    Harvested outcome for one uploaded PDF.
-    '''
-
-    file_id: str
-    outcome: str
-    final_pdf_path: Path | None = None
-    before: dict[str, Any] | None = None
-    after: dict[str, Any] | None = None
-    note: str | None = None
-
-    def to_dict(self) -> dict[str, Any]:
-        '''
-        Return a JSON-serializable view with compact profile summaries.
-        '''
-        return {
-            "file_id": self.file_id,
-            "outcome": self.outcome,
-            "outcome_label": outcome_label(self.outcome),
-            "has_pdf": self.final_pdf_path is not None,
-            "before": summarize_report(self.before),
-            "after": summarize_report(self.after),
-            "note": self.note,
-        }
-
-
-OUTCOME_LABELS = {
-    "remediated": "Remediated",
-    "font-issues": "Font issues remain",
-    "font-issues-missing-unicode": "Font issues (missing Unicode)",
-    "unable-to-validate": "Unable to validate",
-    "secured-needs-approval": "Secured, needs approval",
-    "secured-cannot-process": "Secured, cannot process",
-    "pdfix-unable-to-open": "PDFix could not open",
-    "pdfix-cannot-process": "PDFix could not process",
-    "unable-to-process": "Unable to process",
-    "pending": "Working\u2026",
-    "active": "Still not compliant",
-    "unprocessed": "Not processed",
-    "missing": "Not produced",
-}
-
-
-def outcome_label(outcome: str) -> str:
-    '''
-    Return a readable label for a routing outcome.
-    '''
-    return OUTCOME_LABELS.get(outcome, outcome)
-
-
 def summarize_report(report: dict[str, Any] | None) -> dict[str, Any] | None:
     '''
-    Reduce a validation report to the fields the browser renders.
+    Reduce a validation report to what the job list renders.
+
+    Violations are deliberately excluded: they are large, and the detail view
+    fetches the full report on demand.
     '''
     if report is None:
         return None
-    profiles = report.get("profiles", {})
     return {
         "status": report.get("status"),
         "passed": report.get("passed"),
@@ -147,7 +112,7 @@ def summarize_report(report: dict[str, Any] | None) -> dict[str, Any] | None:
                 "passed": profile.get("passed"),
                 "failed_rules_count": profile.get("failed_rules_count", 0),
             }
-            for name, profile in profiles.items()
+            for name, profile in report.get("profiles", {}).items()
         },
     }
 
@@ -155,59 +120,45 @@ def summarize_report(report: dict[str, Any] | None) -> dict[str, Any] | None:
 @dataclass
 class Job:  # pylint: disable=too-many-instance-attributes
     '''
-    One remediation run over a batch of uploaded PDFs.
+    One PDF moving through the remediation pipeline.
     '''
 
     job_id: str
     created_at: datetime
     config_file: str
+    file: UploadedFile
     submitted_by: str = ""
     skip_font_fix: bool = False
     wcag_and_ua1_must_pass: bool = False
     verbose: bool = False
     status: JobStatus = JobStatus.QUEUED
-    files: list[UploadedFile] = field(default_factory=list)
-    steps: dict[int, StepState] = field(
-        default_factory=lambda: {
-            number: StepState.PENDING for number, _ in PIPELINE_STEPS
-        }
-    )
-    current_step: int | None = None
+    stages: list[dict[str, Any]] = field(default_factory=list)
     started_at: datetime | None = None
     finished_at: datetime | None = None
-    return_code: int | None = None
+    result: PipelineResult | None = None
+    outcome: str | None = None
     error: str | None = None
-    partial: bool = False
-    results: list[FileResult] = field(default_factory=list)
-    summary: dict[str, Any] = field(default_factory=dict)
 
     @property
     def base_path(self) -> Path:
         '''
-        Return the PROJECT_BASE_PATH handed to the pipeline subprocess.
+        Return the directory holding everything for this job.
         '''
         return JOBS_ROOT / self.job_id
 
     @property
-    def project_path(self) -> Path:
+    def input_path(self) -> Path:
         '''
-        Return the ephemeral project directory.
+        Return the uploaded PDF.
         '''
-        return self.base_path / PROJECT_NAME
+        return self.base_path / "input" / self.file.stored_name
 
     @property
-    def source_path(self) -> Path:
+    def output_dir(self) -> Path:
         '''
-        Return the seeded source folder.
+        Return the directory the pipeline writes its artifacts into.
         '''
-        return self.project_path / "source"
-
-    @property
-    def workspace_path(self) -> Path:
-        '''
-        Return the workspace the pipeline writes into.
-        '''
-        return self.project_path / "workspace" / WORKSPACE_NAME
+        return self.base_path / "output"
 
     @property
     def web_path(self) -> Path:
@@ -219,51 +170,37 @@ class Job:  # pylint: disable=too-many-instance-attributes
     @property
     def log_path(self) -> Path:
         '''
-        Return the captured pipeline log path.
+        Return the captured run log.
         '''
         return self.web_path / "pipeline.log"
 
     @property
     def meta_path(self) -> Path:
         '''
-        Return the persisted job metadata path.
+        Return the persisted job metadata.
         '''
         return self.web_path / "meta.json"
 
     @property
     def bundle_path(self) -> Path:
         '''
-        Return the cached ZIP bundle path.
+        Return the cached ZIP bundle.
         '''
         return self.web_path / "bundle.zip"
 
-    def result_folder(self, file_id: str) -> Path:
+    def artifact(self, name: str) -> Path | None:
         '''
-        Return the folder holding one file's normalized reports.
+        Return one downloadable artifact, if the pipeline produced it.
         '''
-        return self.web_path / "results" / file_id
-
-    def find_file(self, file_id: str) -> UploadedFile | None:
-        '''
-        Return the upload with the given identifier.
-        '''
-        for uploaded_file in self.files:
-            if uploaded_file.file_id == file_id:
-                return uploaded_file
-        return None
-
-    def find_result(self, file_id: str) -> FileResult | None:
-        '''
-        Return the harvested result with the given identifier.
-        '''
-        for result in self.results:
-            if result.file_id == file_id:
-                return result
-        return None
+        return artifact_path(
+            self.output_dir,
+            name,
+            self.result.output_pdf_path if self.result else None,
+        )
 
     def is_terminal(self) -> bool:
         '''
-        Return whether the job has finished running.
+        Return whether the job has finished.
         '''
         return self.status in TERMINAL_STATUSES
 
@@ -271,6 +208,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
         '''
         Return a JSON-serializable view for the browser.
         '''
+        result = self.result
         return {
             "job_id": self.job_id,
             "submitted_by": self.submitted_by,
@@ -288,19 +226,14 @@ class Job:  # pylint: disable=too-many-instance-attributes
             "skip_font_fix": self.skip_font_fix,
             "wcag_and_ua1_must_pass": self.wcag_and_ua1_must_pass,
             "verbose": self.verbose,
-            "current_step": self.current_step,
-            "steps": [
-                {
-                    "number": number,
-                    "name": name,
-                    "state": str(self.steps.get(number, StepState.PENDING)),
-                }
-                for number, name in PIPELINE_STEPS
-            ],
-            "files": [uploaded_file.to_dict() for uploaded_file in self.files],
-            "results": [result.to_dict() for result in self.results],
-            "summary": self.summary,
-            "return_code": self.return_code,
+            "file": self.file.to_dict(),
+            "stages": self.stages,
+            "outcome": self.outcome,
+            "outcome_label": outcome_label(self.outcome),
+            "before": summarize_report(result.before if result else None),
+            "after": summarize_report(result.after if result else None),
+            "has_pdf": self.artifact("pdf") is not None,
+            "warnings": list(result.warnings) if result else [],
+            "diagnostics": list(result.diagnostics) if result else [],
             "error": self.error,
-            "partial": self.partial,
         }

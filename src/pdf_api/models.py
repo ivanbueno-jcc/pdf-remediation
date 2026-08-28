@@ -10,21 +10,20 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-# The clauses that send a file to Callas font fixing. Taken from fix.py's
-# routing list, which is the only place the set is written down.
-FONT_ISSUE_CLAUSES = frozenset({
-    "7.21.4.1",
-    "7.21.3.2",
-    "7.21.4.2",
-    "7.21.8",
-    "7.21.7",
-    "7.21.6",
-    "7.21.5",
-})
+from pdf_remediation.solo import (
+    DEFAULT_CALLAS_CLAUSE_TESTS,
+    DEFAULT_PDFIX_FONT_CLAUSE_TESTS,
+)
 
-# The single clause that distinguishes the PDFix "missing unicode" step from the
-# broader Callas font work. font_fix.py routes on exactly this one.
-MISSING_UNICODE_CLAUSE = "7.21.7"
+# The clauses that send a file to Callas font fixing, and the single clause that
+# distinguishes the PDFix "missing unicode" step from the broader Callas work.
+#
+# Imported rather than restated. fix.py's routing list and font_fix.py's
+# hand-off are the definitions; pdf_remediation.solo already collects them as
+# named constants, so this stays in step with the batch pipeline instead of
+# drifting from it.
+FONT_ISSUE_CLAUSES = frozenset(DEFAULT_CALLAS_CLAUSE_TESTS)
+MISSING_UNICODE_CLAUSE = DEFAULT_PDFIX_FONT_CLAUSE_TESTS[0]
 
 # Clause-test to config mapping, as go.py passes it to fix_target.
 DEFAULT_TARGETS: tuple[tuple[str, str], ...] = (

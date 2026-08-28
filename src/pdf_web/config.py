@@ -20,7 +20,7 @@ WEB_FOLDER_NAME = "_web"
 
 MAX_FILES = 200
 MAX_FILE_BYTES = 200 * 1024 * 1024
-MAX_JOB_BYTES = 2 * 1024 * 1024 * 1024
+MAX_SUBMISSION_BYTES = 2 * 1024 * 1024 * 1024
 MIN_FREE_DISK_BYTES = 5 * 1024 * 1024 * 1024
 MAX_STEM_LENGTH = 96
 
@@ -51,14 +51,25 @@ def job_ttl_hours() -> int:
     return _read_int_env("PDF_WEB_JOB_TTL_HOURS", 72)
 
 
-def max_jobs_per_user() -> int:
+def max_concurrent_jobs() -> int:
     '''
-    Return how many jobs one user may have queued or running at once.
+    Return how many PDFs may be processed at once.
 
-    The pipeline runs one job at a time by design, so without a cap a single
-    large batch would block everyone behind it.
+    Each run holds roughly one veraPDF JVM and one PDFix process, so this is a
+    machine-capacity number. Kept low until the PDFix licence has been shown to
+    permit several simultaneous authorizations.
     '''
-    return max(1, _read_int_env("PDF_WEB_MAX_JOBS_PER_USER", 1))
+    return max(1, _read_int_env("PDF_WEB_MAX_CONCURRENT_JOBS", 2))
+
+
+def max_running_jobs_per_user() -> int:
+    '''
+    Return how many of one user's jobs may run at once.
+
+    Queueing is unlimited; this only limits how much of the pool one person can
+    hold, so dropping twenty files does not lock everyone else out.
+    '''
+    return max(1, _read_int_env("PDF_WEB_MAX_RUNNING_JOBS_PER_USER", 1))
 
 
 def job_timeout_seconds() -> int:

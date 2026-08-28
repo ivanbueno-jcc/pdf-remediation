@@ -50,25 +50,67 @@ flowchart TD
    The tool now attempts to launch Docker Desktop automatically if it is not running.
 5) Save the Callas license in `resources/font/.env`
 
+## Single-PDF pipeline (`pdf_api`)
+
+`src/pdf_api` runs the same sequence as `go.py` for **one PDF**, with no
+project/workspace folder tree. In goes a PDF; out come the remediated PDF and a
+before and after validation report.
+
+```bash
+uv run pdf-api                       # http://127.0.0.1:8100
+```
+
+```python
+from pdf_api.pipeline import process_pdf
+from pdf_api.models import PipelineOptions
+
+result = process_pdf(Path("in.pdf"), Path("out/"),
+                     PipelineOptions(config_file="default.json"))
+print(result.status, result.before, result.after)
+```
+
+The sequence: validate, short-circuit if already compliant, unlock if encrypted,
+apply the chosen configuration, repair fonts with Callas and then PDFix if the
+`7.21.x` clauses call for it, apply targeted configurations for specific failing
+clause-tests, validate again. `go.py`'s `reprocess` step has no equivalent — it
+exists only to sweep files between workspace folders.
+
+Everything intermediate lives in a temporary directory that is removed before
+the call returns, and the input file is never modified. A single file completes
+in **2-5 seconds** rather than the ~40s the batch pipeline needs, because none
+of the chunking, page counting, workspace scaffolding, or folder routing runs.
+
+`PipelineResult.status` is `already_compliant`, `remediated`, `improved`,
+`unchanged`, `failed`, or `cancelled` — outcomes rather than folder names.
+Font stages are skipped with a recorded reason when Docker is unavailable, so
+the pipeline still completes on a machine without it.
+
+The HTTP surface is asynchronous because a run takes minutes: `POST /api/pdf`
+returns an id, `GET /api/pdf/{id}` reports progress, and
+`GET /api/pdf/{id}/{pdf,before,after}` fetches the artifacts. It has no
+authentication and binds loopback by default.
+
 ## Web app
 
-For one-off files, `uv run web` serves a browser front end for the same
-pipeline at <http://127.0.0.1:8000>: drag and drop PDFs, choose
-`default.json` or `default-slim.json`, and watch the seven pipeline steps run
-live. Each file's remediated PDF and its before/after validation reports are
-downloadable when the run finishes, along with a ZIP of everything including
-the full veraPDF report folders.
+`uv run web` serves a browser front end at <http://127.0.0.1:8000>: drag and
+drop PDFs, choose `default.json` or `default-slim.json`, and watch each one
+progress. **One PDF is one job** — dropping twenty files creates twenty
+independent jobs that succeed, fail, and are cancelled on their own. Each
+offers its remediated PDF, both validation reports, and a ZIP.
+
+It runs the `pdf_api` pipeline in-process rather than shelling out, so progress
+is the pipeline's own stage list rather than text scraped from console output.
+Jobs run on a worker pool: `PDF_WEB_MAX_CONCURRENT_JOBS` (default 2) bounds the
+machine, and `PDF_WEB_MAX_RUNNING_JOBS_PER_USER` (default 1) stops one person
+holding all of it. Queueing is unlimited; only running is capped.
 
 ```bash
 uv run web
 ```
 
-Per-file results appear as soon as the pre-fix validation finishes, so the
-before-state of every file is visible while remediation is still running rather
-than only at the end. Expanding a file row lists the failing veraPDF rules with
+Expanding a job lists its pipeline stages and the failing veraPDF rules with
 their clause/test identifier and description, merged across the UA1 and WCAG
-profiles, for both the before and after passes; a rollup above the table counts
-how many files each rule affects so the remaining work is obvious at a glance.
+profiles, for both the before and after passes.
 
 Every job has a permanent URL (`/#job=<job-id>`), so a refresh, a bookmark, or a
 shared link reopens the run with its results and captured log. The landing page
