@@ -24,6 +24,7 @@ from .config import (
     CONFIG_DIR,
     DEFAULT_CONFIG_FILE,
     JOBS_ROOT,
+    MAX_FILE_BYTES,
     MAX_FILES,
     MAX_SUBMISSION_BYTES,
     MIN_FREE_DISK_BYTES,
@@ -182,6 +183,11 @@ async def config_files() -> dict[str, Any]:
     '''
     return {
         "default": DEFAULT_CONFIG_FILE,
+        "upload_limits": {
+            "max_files": MAX_FILES,
+            "max_file_bytes": MAX_FILE_BYTES,
+            "max_submission_bytes": MAX_SUBMISSION_BYTES,
+        },
         "files": [
             {"name": name, "available": (CONFIG_DIR / name).is_file()}
             for name in ALLOWED_CONFIG_FILES
@@ -298,10 +304,12 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
         })
 
     if not accepted:
-        raise HTTPException(
-            status_code=400,
-            detail="; ".join(f"{r['original_name']}: {r['reason']}" for r in rejected),
-        )
+        return JSONResponse(status_code=400, content={
+            "detail": "; ".join(
+                f"{r['original_name']}: {r['reason']}" for r in rejected
+            ),
+            "rejected": rejected,
+        })
 
     return JSONResponse(status_code=201, content={
         "jobs": accepted,

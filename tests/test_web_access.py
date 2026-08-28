@@ -11,6 +11,7 @@ from unittest import mock
 from fastapi.testclient import TestClient
 
 import pdf_web.app as web_app
+from pdf_web.config import MAX_FILE_BYTES, MAX_FILES, MAX_SUBMISSION_BYTES
 from pdf_web.models import Job, JobStatus
 from pdf_web.runner import PipelineRunner
 from pdf_web.store import JobStore
@@ -159,6 +160,17 @@ class AuthenticationTests(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 403)
 
+    def test_config_endpoint_describes_upload_limits(self) -> None:
+        '''The browser validates selections against the server's real limits.'''
+        response = self.client.get("/api/config-files", headers=headers(ALICE))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["upload_limits"], {
+            "max_files": MAX_FILES,
+            "max_file_bytes": MAX_FILE_BYTES,
+            "max_submission_bytes": MAX_SUBMISSION_BYTES,
+        })
+
     def test_wrong_secret_is_refused(self) -> None:
         '''A guessed secret does not authenticate.'''
         response = self.client.get("/api/jobs", headers=headers(ALICE, "wrong"))
@@ -237,6 +249,21 @@ class OwnershipRecordingTests(unittest.TestCase):
             f"/api/jobs/{created['job_id']}", headers=headers(BOB)
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_rejected_submission_returns_per_file_reasons(self) -> None:
+        '''The browser can keep rejected files in the batch with their reason.'''
+        response = self.client.post(
+            "/api/jobs",
+            headers=headers(ALICE),
+            files={"files": ("fake.pdf", b"not a pdf", "application/pdf")},
+            data={"config_file": "default.json"},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["rejected"], [{
+            "original_name": "fake.pdf",
+            "reason": "File is not a PDF: fake.pdf",
+        }])
 
 
 if __name__ == "__main__":
