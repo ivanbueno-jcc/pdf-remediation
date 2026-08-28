@@ -438,13 +438,15 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
 .job-stat {
   display: flex; align-items: center; gap: var(--space-2); min-width: 0;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--line); border-radius: var(--control-radius);
-  background: var(--bg);
+  border-left: 3px solid var(--line); border-radius: 0;
+  background: transparent;
+  pointer-events: none;
 }
-.job-stat-icon { color: var(--accent); }
+.job-stat:first-child { border-left-color: var(--accent); }
+.job-stat-icon { color: var(--accent); opacity: .85; }
 .job-stat-copy { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
 .job-stat-value { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.job-stat-label { color: var(--muted); font-size: 12px; line-height: 1.3; }
+.job-stat-label { color: var(--muted); font-size: 12px; line-height: 1.3; letter-spacing: .01em; }
 .jobs-header {
   display: flex; flex-wrap: wrap; align-items: center;
   justify-content: space-between; gap: var(--space-3) var(--space-4); margin-bottom: var(--space-4);
