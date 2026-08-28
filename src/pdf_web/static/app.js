@@ -807,14 +807,30 @@ function processingStatusIcon(status) {
            failed: 'failed', cancelled: 'cancelled' }[status] || 'info';
 }
 
+function pipelineStageLabel(stage) {
+  const labels = {
+    validate_before: 'Initial validation',
+    compliance_gate: 'Compliance check',
+    unlock: 'Remove security',
+    fix: 'Apply remediation',
+    font_fix: 'Font repair',
+    font_fix_callas: 'Callas font repair',
+    font_fix_pdfix: 'PDFix font repair',
+    fix_target: 'Targeted repairs',
+    validate_after: 'Final validation',
+  };
+  if (labels[stage]) return labels[stage];
+  const words = String(stage || '').replaceAll('_', ' ');
+  return words ? words.charAt(0).toUpperCase() + words.slice(1) : 'Unknown stage';
+}
+
 function processingDetail(job) {
   if (job.status === 'queued') {
     if (job.jobs_ahead === 0 || job.jobs_ahead === null) return 'Next to run';
     return job.jobs_ahead + ' ahead';
   }
   if (job.status === 'running' && job.current_stage) {
-    const stage = job.current_stage.replaceAll('_', ' ');
-    return stage.charAt(0).toUpperCase() + stage.slice(1);
+    return pipelineStageLabel(job.current_stage);
   }
   return '';
 }
@@ -1255,7 +1271,7 @@ function renderDetail(cell, job) {
     marker.textContent = stage.status === 'ok' ? '✓'
       : (stage.status === 'failed' ? '✕' : '–');
     const label = document.createElement('span');
-    label.textContent = stage.name;
+    label.textContent = pipelineStageLabel(stage.name);
     const detail = document.createElement('span');
     detail.className = 'detail';
     detail.textContent = stage.detail || '';
