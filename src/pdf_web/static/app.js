@@ -615,10 +615,6 @@ function buildJobRow(job) {
   const processing = document.createElement('td');
   processing.className = 'processing';
   const processingState = document.createElement('span');
-  const processingDot = document.createElement('span');
-  processingDot.className = 'dot';
-  processingDot.setAttribute('aria-hidden', 'true');
-  processingState.appendChild(processingDot);
   processing.appendChild(processingState);
 
   const status = document.createElement('td');
@@ -645,7 +641,7 @@ function buildJobRow(job) {
 
   const entry = {
     job, row, detail, cell, disclosure,
-    processingState, processingDot, outcome, status, validation, downloads, fileActions,
+    processingState, outcome, status, validation, downloads, fileActions,
   };
 
   // `entry.job` is refreshed on every poll via updateJobRow, so this closure
@@ -665,7 +661,6 @@ function updateJobRow(entry, job) {
   const label = processingLabel(job.status);
   entry.processingState.className = 'processing-state ' + job.status;
   entry.processingState.textContent = '';
-  entry.processingState.appendChild(entry.processingDot);
   entry.processingState.append(detailNote || label);
   if (detailNote) entry.processingState.setAttribute('aria-label', label + ': ' + detailNote);
   else entry.processingState.removeAttribute('aria-label');
