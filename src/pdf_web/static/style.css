@@ -211,6 +211,29 @@ ul.violation-group-ok li::marker { color: var(--ok); }
 .violation-collapse ul { margin-top: 10px; margin-bottom: 0; }
 tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
 @media (prefers-reduced-motion: no-preference) {
+  @keyframes staged-row-enter {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes staged-row-exit {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-5px); }
+  }
+  @keyframes jobs-section-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes job-row-enter {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  #staged-table tr.stage-row-enter { animation: staged-row-enter .24s ease-out both; }
+  #staged-table tr.stage-row-exit {
+    animation: staged-row-exit .22s ease-in both;
+    pointer-events: none;
+  }
+  #jobs-section.jobs-section-enter { animation: jobs-section-enter .3s ease-out both; }
+  .jobs-table tr.job-row-enter { animation: job-row-enter .28s ease-out both; }
   @keyframes row-halo-pulse {
     0%, 100% { background-color: transparent; }
     50% { background-color: var(--accent-bg); }

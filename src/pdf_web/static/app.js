@@ -201,12 +201,12 @@ function addFiles(fileList) {
     }
 
     if (reason) {
-      state.staged.push({ file, status: 'error', reason });
+      state.staged.push({ file, status: 'error', reason, motion: 'enter' });
       errors.push({ name: file.name, reason });
       return;
     }
 
-    const item = { file, status: 'accepted', reason: 'Ready to upload.' };
+    const item = { file, status: 'accepted', reason: 'Ready to upload.', motion: 'enter' };
     state.staged.push(item);
     ready.push(item);
     totalBytes += file.size;
@@ -232,6 +232,14 @@ function renderStaged() {
   state.staged.forEach((item, index) => {
     const row = document.createElement('tr');
     row.dataset.status = item.status;
+    if (item.motion) {
+      const motionClass = item.motion === 'exit' ? 'stage-row-exit' : 'stage-row-enter';
+      row.classList.add(motionClass);
+      item.motion = '';
+      if (motionClass === 'stage-row-enter') {
+        row.addEventListener('animationend', () => row.classList.remove(motionClass), { once: true });
+      }
+    }
     const name = document.createElement('td');
     name.className = 'name';
     name.textContent = item.file.name;
@@ -318,6 +326,22 @@ function showSubmissionResult(message, tone) {
   result.setAttribute('aria-live', tone === 'bad' ? 'assertive' : 'polite');
 }
 
+function waitForStagedExit() {
+  const rows = Array.from(document.querySelectorAll('#staged-body tr.stage-row-exit'));
+  const reducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!rows.length || reducedMotion) return Promise.resolve();
+  return new Promise((resolve) => {
+    let remaining = rows.length;
+    const done = () => {
+      remaining -= 1;
+      if (remaining === 0) resolve();
+    };
+    rows.forEach((row) => row.addEventListener('animationend', done, { once: true }));
+    window.setTimeout(resolve, 280);
+  });
+}
+
 /* ---------- submit ---------- */
 
 async function submitJobs() {
@@ -362,7 +386,6 @@ async function submitJobs() {
     return;
   }
 
-  state.submitting = false;
   submitted.forEach((item) => {
     const rejection = (payload.rejected || []).find(
       (entry) => entry.original_name === item.file.name
@@ -373,9 +396,13 @@ async function submitJobs() {
     item.status = rejection ? 'error' : (job ? 'queued' : 'error');
     item.reason = rejection ? rejection.reason : (job ? 'Job queued.' : 'No job was created.');
     item.jobId = job ? job.job_id : null;
+    if (job) item.motion = 'exit';
   });
   // Processing has started; remove queued files from the staging area. Keep
   // rejected files visible so the user can fix and resubmit them.
+  renderStaged();
+  await waitForStagedExit();
+  state.submitting = false;
   state.staged = state.staged.filter((item) => item.status === 'error');
   el('batch-announcer').textContent = '';
   renderStaged();
@@ -410,7 +437,18 @@ async function refreshQueue() {
   const jobs = payload.jobs || [];
   announceJobChanges(jobs);
   state.jobs = jobs;
-  el('jobs-section').classList.toggle('hidden', state.jobs.length === 0);
+  const jobsSection = el('jobs-section');
+  const shouldShowJobs = state.jobs.length > 0;
+  const isEntering = shouldShowJobs && jobsSection.classList.contains('hidden');
+  jobsSection.classList.toggle('hidden', !shouldShowJobs);
+  if (isEntering) {
+    jobsSection.classList.remove('jobs-section-enter');
+    void jobsSection.offsetWidth;
+    jobsSection.classList.add('jobs-section-enter');
+    jobsSection.addEventListener(
+      'animationend', () => jobsSection.classList.remove('jobs-section-enter'), { once: true }
+    );
+  }
   el('queue-summary').textContent = state.jobs.length
     ? payload.your_running + ' of ' + payload.your_limit +
       ' running · ' + payload.concurrency + ' processed at a time'
@@ -513,8 +551,9 @@ function renderJobs() {
 
 function buildJobRow(job) {
   const row = document.createElement('tr');
-  row.className = 'job-row';
+  row.className = 'job-row job-row-enter';
   row.dataset.jobId = job.job_id;
+  row.addEventListener('animationend', () => row.classList.remove('job-row-enter'), { once: true });
 
   const name = document.createElement('td');
   name.className = 'name';
