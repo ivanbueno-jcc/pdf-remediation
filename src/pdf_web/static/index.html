@@ -836,6 +836,10 @@ async function submitJobs() {
     item.reason = rejection ? rejection.reason : (job ? 'Job queued.' : 'No job was created.');
     item.jobId = job ? job.job_id : null;
   });
+  // Processing has started; remove queued files from the staging area. Keep
+  // rejected files visible so the user can fix and resubmit them.
+  state.staged = state.staged.filter((item) => item.status === 'error');
+  el('batch-announcer').textContent = '';
   renderStaged();
   const queuedMessage = (payload.jobs.length === 1 ? '1 job queued' : payload.jobs.length + ' jobs queued') +
     ' \u00b7 ' + payload.concurrency +
