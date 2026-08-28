@@ -167,6 +167,7 @@ def load_meta(meta_path: Path) -> Job | None:
         error=payload.get("error"),
         partial=bool(payload.get("partial")),
     )
+    job.summary = payload.get("summary") or {}
     job.started_at = _parse_optional_datetime(payload.get("started_at"))
     job.finished_at = _parse_optional_datetime(payload.get("finished_at"))
     job.files = [

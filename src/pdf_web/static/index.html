@@ -113,6 +113,27 @@ pre#log {
 a.dl { font-size: 13px; text-decoration: none; border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; color: var(--ink); }
 a.dl:hover { border-color: var(--accent); color: var(--accent); }
 a.dl[aria-disabled="true"] { opacity: .4; pointer-events: none; }
+tr.file-row { cursor: pointer; }
+tr.file-row:hover > td { background: rgba(127,127,127,.06); }
+td.expander { width: 26px; padding-right: 0; color: var(--muted); user-select: none; }
+tr.detail-row > td { background: rgba(127,127,127,.05); padding: 0; }
+.detail { padding: 12px 14px 14px 40px; }
+.detail h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.detail ul { margin: 0 0 12px; padding-left: 18px; }
+.detail li { margin-bottom: 5px; font-size: 13px; }
+.detail li:last-child { margin-bottom: 0; }
+.detail code { font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+.detail .none { color: var(--ok); font-size: 13px; }
+#rollup { margin: 0 0 16px; }
+#rollup table { font-size: 13px; }
+#rollup summary { cursor: pointer; font-size: 13px; color: var(--muted); padding: 6px 0; }
+#rollup summary:hover { color: var(--ink); }
+#jobs-body tr { cursor: pointer; }
+#jobs-body tr:hover > td { background: rgba(127,127,127,.06); }
+.pill { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
+.pill.completed { border-color: var(--ok); color: var(--ok); }
+.pill.failed { border-color: var(--bad); color: var(--bad); }
+.pill.running, .pill.queued { border-color: var(--accent); color: var(--accent); }
 </style>
 </head>
 <body>
@@ -124,6 +145,14 @@ a.dl[aria-disabled="true"] { opacity: .4; pointer-events: none; }
     <h2>Environment</h2>
     <div id="health-banner" class="banner hidden"></div>
     <div class="chips" id="health-chips"><span class="muted">Checking&hellip;</span></div>
+  </section>
+
+  <section id="jobs-section" class="hidden">
+    <h2>Recent jobs</h2>
+    <table>
+      <thead><tr><th>Job</th><th>Started</th><th>Files</th><th>Config</th><th>Status</th></tr></thead>
+      <tbody id="jobs-body"></tbody>
+    </table>
   </section>
 
   <section id="submit-section">
@@ -171,8 +200,10 @@ a.dl[aria-disabled="true"] { opacity: .4; pointer-events: none; }
 
   <section id="results-section" class="hidden">
     <h2>Results</h2>
+    <p class="muted" id="results-totals"></p>
+    <div id="rollup"></div>
     <table>
-      <thead><tr><th>File</th><th>Outcome</th><th>Before</th><th>After</th><th>Downloads</th></tr></thead>
+      <thead><tr><th></th><th>File</th><th>Outcome</th><th>Before</th><th>After</th><th>Downloads</th></tr></thead>
       <tbody id="results-body"></tbody>
     </table>
   </section>
@@ -192,6 +223,7 @@ const state = {
   staged: [],
   jobId: null,
   cursor: 0,
+  jobActive: false,
   source: null,
   pollTimer: null,
   health: null,
@@ -317,10 +349,10 @@ function renderStaged() {
 
 function updateSubmitState() {
   const healthy = Boolean(state.health && state.health.can_submit);
-  const ready = healthy && state.staged.length > 0 && !state.jobId;
+  const ready = healthy && state.staged.length > 0 && !state.jobActive;
   el('submit').disabled = !ready;
   if (!healthy) el('submit-note').textContent = 'Fix the environment problems above first.';
-  else if (state.jobId) el('submit-note').textContent = 'A job is already running in this tab.';
+  else if (state.jobActive) el('submit-note').textContent = 'A job is already running in this tab.';
   else if (!state.staged.length) el('submit-note').textContent = 'Add at least one PDF.';
   else el('submit-note').textContent = '';
 }
@@ -336,6 +368,7 @@ async function submitJob() {
   form.append('verbose', el('verbose').checked ? 'true' : 'false');
 
   el('submit').disabled = true;
+  state.jobActive = true;
   el('submit-note').textContent = 'Uploading…';
 
   let payload;
@@ -344,8 +377,10 @@ async function submitJob() {
     payload = await response.json();
     if (!response.ok) throw new Error(describeError(payload));
   } catch (error) {
-    el('submit-note').textContent = String(error.message || error);
+    state.jobActive = false;
     updateSubmitState();
+    el('submit').disabled = state.staged.length === 0;
+    el('submit-note').textContent = String(error.message || error);
     return;
   }
 
@@ -356,6 +391,9 @@ async function submitJob() {
   el('job-section').classList.remove('hidden');
   el('log-section').classList.remove('hidden');
   el('results-section').classList.add('hidden');
+  el('download-all').setAttribute('aria-disabled', 'true');
+  el('download-log').setAttribute('aria-disabled', 'true');
+  history.replaceState(null, '', '#job=' + payload.job_id);
   renderJob(payload);
   connect();
   updateSubmitState();
@@ -380,7 +418,7 @@ function connect() {
     startPolling();
     return;
   }
-  ['log', 'step', 'status', 'done'].forEach((type) => {
+  ['log', 'step', 'status', 'done', 'results'].forEach((type) => {
     state.source.addEventListener(type, (event) => handleEvent(JSON.parse(event.data)));
   });
   state.source.onerror = () => {
@@ -418,7 +456,7 @@ function handleEvent(event) {
   if (event.cursor) state.cursor = Math.max(state.cursor, event.cursor);
   if (event.type === 'log') appendLog(event.payload.line);
   else if (event.type === 'done') { stopStreaming(); refreshFinal(); }
-  else if (event.type === 'step' || event.type === 'status') refreshState();
+  else if (event.type === 'step' || event.type === 'status' || event.type === 'results') refreshState();
 }
 
 let pendingRefresh = null;
@@ -455,6 +493,8 @@ function appendLog(line) {
 const STEP_MARKS = { done: '✓', failed: '✕', skipped: '–', running: '▸', pending: '' };
 
 function renderJob(job) {
+  state.jobActive = job.status === 'queued' || job.status === 'running';
+  renderResults(job);
   const list = el('steps');
   list.innerHTML = '';
   (job.steps || []).forEach((step) => {
@@ -478,6 +518,7 @@ function renderJob(job) {
     failed: 'Failed.',
   }[job.status] || job.status;
   el('job-status').textContent = job.job_id + ' · ' + statusText;
+  updateSubmitState();
 
   const banner = el('job-banner');
   if (job.status === 'failed') {
@@ -515,13 +556,26 @@ function reportChips(report) {
 
 function renderResults(job) {
   const body = el('results-body');
+  const openRows = new Set(
+    Array.from(body.querySelectorAll('tr.file-row[data-open="true"]'))
+      .map((row) => row.dataset.fileId)
+  );
   body.innerHTML = '';
+
   const byId = {};
   (job.results || []).forEach((result) => { byId[result.file_id] = result; });
 
   (job.files || []).forEach((file) => {
     const result = byId[file.file_id] || {};
+    const hasDetail = Boolean(result.before || result.after);
+
     const row = document.createElement('tr');
+    row.className = 'file-row';
+    row.dataset.fileId = file.file_id;
+
+    const expander = document.createElement('td');
+    expander.className = 'expander';
+    expander.textContent = hasDetail ? '▸' : '';
 
     const name = document.createElement('td');
     name.className = 'name';
@@ -547,12 +601,171 @@ function renderResults(job) {
     downloads.appendChild(downloadLink(base + 'pdf', 'PDF', Boolean(result.has_pdf)));
     downloads.appendChild(downloadLink(base + 'before', 'Before', Boolean(result.before)));
     downloads.appendChild(downloadLink(base + 'after', 'After', Boolean(result.after)));
+    downloads.addEventListener('click', (event) => event.stopPropagation());
 
-    row.append(name, outcome, before, after, downloads);
+    row.append(expander, name, outcome, before, after, downloads);
     body.appendChild(row);
+
+    if (!hasDetail) return;
+
+    const detailRow = document.createElement('tr');
+    detailRow.className = 'detail-row hidden';
+    const detailCell = document.createElement('td');
+    detailCell.colSpan = 6;
+    detailCell.innerHTML = '<div class="detail muted">Loading…</div>';
+    detailRow.appendChild(detailCell);
+    body.appendChild(detailRow);
+
+    row.addEventListener('click', () => toggleDetail(job, file, row, detailRow, detailCell));
+    row.tabIndex = 0;
+    row.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggleDetail(job, file, row, detailRow, detailCell);
+      }
+    });
+
+    if (openRows.has(file.file_id)) {
+      toggleDetail(job, file, row, detailRow, detailCell);
+    }
   });
 
+  renderSummary(job);
   el('results-section').classList.toggle('hidden', (job.files || []).length === 0);
+}
+
+async function toggleDetail(job, file, row, detailRow, detailCell) {
+  const open = row.dataset.open === 'true';
+  row.dataset.open = open ? 'false' : 'true';
+  row.cells[0].textContent = open ? '▸' : '▾';
+  detailRow.classList.toggle('hidden', open);
+  if (open || detailCell.dataset.loaded === 'true') return;
+
+  const stages = await Promise.all(['before', 'after'].map(async (stage) => {
+    try {
+      const response = await fetch(
+        '/api/jobs/' + job.job_id + '/files/' + file.file_id + '/' + stage
+      );
+      return response.ok ? [stage, await response.json()] : [stage, null];
+    } catch (error) {
+      return [stage, null];
+    }
+  }));
+
+  detailCell.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'detail';
+  stages.forEach(([stage, report]) => {
+    if (!report) return;
+    const heading = document.createElement('h4');
+    heading.textContent = stage === 'before' ? 'Before remediation' : 'After remediation';
+    wrap.appendChild(heading);
+
+    const violations = mergeViolations(report);
+    if (!violations.length) {
+      const none = document.createElement('p');
+      none.className = 'none';
+      none.textContent = 'No violations reported.';
+      wrap.appendChild(none);
+      return;
+    }
+    const list = document.createElement('ul');
+    violations.forEach((violation) => {
+      const item = document.createElement('li');
+      const code = document.createElement('code');
+      code.textContent = violation.clause_test;
+      const profiles = document.createElement('span');
+      profiles.className = 'muted';
+      profiles.textContent = ' ' + violation.profiles.join(', ') +
+        (violation.count > 1 ? ' · ' + violation.count + '×' : '') + ' ';
+      item.append(code, profiles, violation.description || '');
+      list.appendChild(item);
+    });
+    wrap.appendChild(list);
+  });
+  if (!wrap.children.length) {
+    wrap.innerHTML = '<span class="muted">No validation detail available.</span>';
+  }
+  detailCell.appendChild(wrap);
+  detailCell.dataset.loaded = 'true';
+}
+
+function mergeViolations(report) {
+  const merged = new Map();
+  ['ua1', 'wcag'].forEach((profile) => {
+    const entries = ((report.profiles || {})[profile] || {}).violations || [];
+    entries.forEach((violation) => {
+      const key = violation.clause_test || 'unknown';
+      if (!merged.has(key)) {
+        merged.set(key, {
+          clause_test: key,
+          description: violation.description || '',
+          profiles: [],
+          count: 0,
+          perProfile: {},
+        });
+      }
+      const entry = merged.get(key);
+      entry.perProfile[profile] = (entry.perProfile[profile] || 0) + 1;
+      if (!entry.description) entry.description = violation.description || '';
+    });
+  });
+  return Array.from(merged.values()).map((entry) => {
+    entry.profiles = Object.keys(entry.perProfile).map((p) => p.toUpperCase());
+    entry.count = Math.max(...Object.values(entry.perProfile));
+    return entry;
+  }).sort((a, b) => b.count - a.count || a.clause_test.localeCompare(b.clause_test));
+}
+
+function renderSummary(job) {
+  const summary = job.summary || {};
+  const totalsLine = ['before', 'after'].map((stage) => {
+    const totals = (summary[stage] || {}).totals;
+    if (!totals) return null;
+    const counted = totals.pass + totals.fail + totals.error;
+    if (!counted) return null;
+    const label = stage === 'before' ? 'Before' : 'After';
+    return label + ': ' + totals.pass + ' of ' + counted + ' passing' +
+      (totals.error ? ' · ' + totals.error + ' error' : '');
+  }).filter(Boolean).join('   ·   ');
+  el('results-totals').textContent = totalsLine;
+
+  const container = el('rollup');
+  container.innerHTML = '';
+  const stage = (summary.after || {}).clauses && summary.after.clauses.length
+    ? 'after' : 'before';
+  const clauses = (summary[stage] || {}).clauses || [];
+  if (!clauses.length) return;
+
+  const details = document.createElement('details');
+  details.open = clauses.length <= 8;
+  const caption = document.createElement('summary');
+  caption.textContent = clauses.length + ' distinct failing rule(s) ' +
+    (stage === 'after' ? 'remaining after remediation' : 'before remediation');
+  details.appendChild(caption);
+
+  const table = document.createElement('table');
+  table.innerHTML = '<thead><tr><th>Rule</th><th>Profile</th><th>Files</th>' +
+    '<th>Description</th></tr></thead>';
+  const tbody = document.createElement('tbody');
+  clauses.forEach((entry) => {
+    const row = document.createElement('tr');
+    const rule = document.createElement('td');
+    const code = document.createElement('code');
+    code.textContent = entry.clause_test;
+    rule.appendChild(code);
+    const profiles = document.createElement('td');
+    profiles.textContent = (entry.profiles || []).map((p) => p.toUpperCase()).join(', ');
+    const count = document.createElement('td');
+    count.textContent = entry.file_count;
+    const description = document.createElement('td');
+    description.textContent = entry.description || '';
+    row.append(rule, profiles, count, description);
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+  details.appendChild(table);
+  container.appendChild(details);
 }
 
 function downloadLink(href, label, enabled) {
@@ -563,6 +776,111 @@ function downloadLink(href, label, enabled) {
   else link.setAttribute('aria-disabled', 'true');
   return link;
 }
+
+/* ---------- job history and deep links ---------- */
+
+async function loadJobsList() {
+  let jobs = [];
+  try {
+    const response = await fetch('/api/jobs');
+    jobs = (await response.json()).jobs || [];
+  } catch (error) {
+    jobs = [];
+  }
+
+  const body = el('jobs-body');
+  body.innerHTML = '';
+  jobs.slice(0, 25).forEach((job) => {
+    const row = document.createElement('tr');
+    row.tabIndex = 0;
+
+    const id = document.createElement('td');
+    id.textContent = job.job_id;
+    const started = document.createElement('td');
+    started.textContent = job.created_at.replace('T', ' ');
+    const count = document.createElement('td');
+    count.textContent = job.file_count;
+    const config = document.createElement('td');
+    config.textContent = job.config_file;
+    const status = document.createElement('td');
+    const pill = document.createElement('span');
+    pill.className = 'pill ' + job.status;
+    pill.textContent = job.status;
+    status.appendChild(pill);
+
+    const open = () => { window.location.hash = 'job=' + job.job_id; };
+    row.addEventListener('click', open);
+    row.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') open();
+    });
+
+    row.append(id, started, count, config, status);
+    body.appendChild(row);
+  });
+
+  el('jobs-section').classList.toggle('hidden', jobs.length === 0);
+}
+
+async function openJob(jobId) {
+  const response = await fetch('/api/jobs/' + jobId);
+  if (!response.ok) {
+    window.location.hash = '';
+    return;
+  }
+  const job = await response.json();
+
+  stopStreaming();
+  state.jobId = job.job_id;
+  state.cursor = 0;
+  state.logLines = [];
+  el('log').textContent = '';
+  el('job-section').classList.remove('hidden');
+  el('log-section').classList.remove('hidden');
+  el('download-all').setAttribute('aria-disabled', 'true');
+  el('download-log').setAttribute('aria-disabled', 'true');
+
+  renderJob(job);
+  updateSubmitState();
+
+  if (job.status === 'completed' || job.status === 'failed') {
+    await loadStoredLog(jobId);
+    finish(job);
+  } else {
+    connect();
+  }
+}
+
+async function loadStoredLog(jobId) {
+  try {
+    const response = await fetch('/api/jobs/' + jobId + '/log');
+    if (!response.ok) return;
+    const text = await response.text();
+    state.logLines = text.split('\n').slice(-MAX_LOG_LINES);
+    const pane = el('log');
+    pane.textContent = state.logLines.join('\n');
+    pane.scrollTop = pane.scrollHeight;
+  } catch (error) {
+    /* the log is best-effort when reopening an old job */
+  }
+}
+
+function applyHash() {
+  const match = /^#job=([\w-]+)$/.exec(window.location.hash);
+  if (match) {
+    if (match[1] !== state.jobId) openJob(match[1]);
+    return;
+  }
+  stopStreaming();
+  state.jobId = null;
+  state.jobActive = false;
+  el('job-section').classList.add('hidden');
+  el('results-section').classList.add('hidden');
+  el('log-section').classList.add('hidden');
+  updateSubmitState();
+  loadJobsList();
+}
+
+window.addEventListener('hashchange', applyHash);
 
 /* ---------- wiring ---------- */
 
@@ -588,20 +906,16 @@ el('file-input').addEventListener('change', (event) => {
 });
 el('submit').addEventListener('click', submitJob);
 el('new-job').addEventListener('click', () => {
-  stopStreaming();
-  state.jobId = null;
   state.staged = [];
-  state.cursor = 0;
   renderStaged();
-  updateSubmitState();
-  el('job-section').classList.add('hidden');
-  el('results-section').classList.add('hidden');
-  el('log-section').classList.add('hidden');
+  if (window.location.hash) window.location.hash = '';
+  else applyHash();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 loadConfigs();
 loadHealth();
+applyHash();
 </script>
 </body>
 </html>

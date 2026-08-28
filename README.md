@@ -63,6 +63,18 @@ the full veraPDF report folders.
 uv run web
 ```
 
+Per-file results appear as soon as the pre-fix validation finishes, so the
+before-state of every file is visible while remediation is still running rather
+than only at the end. Expanding a file row lists the failing veraPDF rules with
+their clause/test identifier and description, merged across the UA1 and WCAG
+profiles, for both the before and after passes; a rollup above the table counts
+how many files each rule affects so the remaining work is obvious at a glance.
+
+Every job has a permanent URL (`/#job=<job-id>`), so a refresh, a bookmark, or a
+shared link reopens the run with its results and captured log. The landing page
+lists recent jobs; job directories are removed by the retention sweep described
+below, and their links stop resolving at that point.
+
 Each submission becomes a throwaway project under `resources/web-jobs/<job-id>/`
 with its own `PROJECT_BASE_PATH`, so web runs never touch `resources/projects/`.
 Uploads are seeded into the job's `source/` folder before `go.py` starts, which

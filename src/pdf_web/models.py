@@ -110,6 +110,7 @@ OUTCOME_LABELS = {
     "pdfix-unable-to-open": "PDFix could not open",
     "pdfix-cannot-process": "PDFix could not process",
     "unable-to-process": "Unable to process",
+    "pending": "Working\u2026",
     "active": "Still not compliant",
     "missing": "Not produced",
 }
@@ -170,6 +171,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
     error: str | None = None
     partial: bool = False
     results: list[FileResult] = field(default_factory=list)
+    summary: dict[str, Any] = field(default_factory=dict)
 
     @property
     def base_path(self) -> Path:
@@ -288,6 +290,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
             ],
             "files": [uploaded_file.to_dict() for uploaded_file in self.files],
             "results": [result.to_dict() for result in self.results],
+            "summary": self.summary,
             "return_code": self.return_code,
             "error": self.error,
             "partial": self.partial,

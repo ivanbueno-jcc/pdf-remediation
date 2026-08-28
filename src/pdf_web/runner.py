@@ -46,6 +46,7 @@ class PipelineRunner:
         self._queue: queue.Queue[str | None] = queue.Queue()
         self._thread: threading.Thread | None = None
         self._process_lock = threading.Lock()
+        self._harvest_lock = threading.Lock()
         self._process: subprocess.Popen | None = None
         self._stopping = False
 
@@ -242,6 +243,11 @@ class PipelineRunner:
         job.current_step = number
         self._store.emit(job.job_id, "step", {"step": number, "name": name})
 
+        # Step 1 has written the pre-fix report by the time step 2 announces
+        # itself, so before-results can be shown without waiting for the run.
+        if number >= 2 and not job.results:
+            self._harvest_early(job)
+
     def _mark_remaining_steps_done(self, job: Job) -> None:
         '''
         Close out any step still marked running after a successful run.
@@ -259,6 +265,31 @@ class PipelineRunner:
             if state == StepState.RUNNING:
                 job.steps[number] = StepState.FAILED
 
+    def _harvest_early(self, job: Job) -> None:
+        '''
+        Publish before-results mid-run without blocking the output reader.
+        '''
+        def run() -> None:
+            '''
+            Harvest the pre-fix report and announce the partial results.
+            '''
+            with self._harvest_lock:
+                if job.is_terminal():
+                    return
+                try:
+                    harvest_job(job, final=False)
+                except Exception as error:  # pylint: disable=broad-exception-caught
+                    self._log(job, f"[WARN] Early result harvesting failed: {error}")
+                    return
+            self._store.emit(job.job_id, "results", {"stage": "before"})
+
+        thread = threading.Thread(
+            target=run,
+            name=f"pdf-web-harvest-{job.job_id}",
+            daemon=True
+        )
+        thread.start()
+
     def _finish(self, job: Job, status: JobStatus, error: str | None) -> None:
         '''
         Harvest results, persist metadata, and emit the terminal event.
@@ -269,7 +300,8 @@ class PipelineRunner:
             job.error = error
 
         try:
-            harvest_job(job)
+            with self._harvest_lock:
+                harvest_job(job)
         except Exception as harvest_error:  # pylint: disable=broad-exception-caught
             self._log(job, f"[ERROR] Result harvesting failed: {harvest_error}")
 

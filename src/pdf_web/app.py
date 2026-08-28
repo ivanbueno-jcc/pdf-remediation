@@ -94,7 +94,12 @@ async def index() -> HTMLResponse:
     index_path = STATIC_DIR / "index.html"
     if not index_path.is_file():
         raise HTTPException(status_code=500, detail="Frontend asset is missing.")
-    return HTMLResponse(index_path.read_text(encoding="utf-8"))
+    # The page carries its own script, so a cached copy silently pins the UI to
+    # an old build after an upgrade.
+    return HTMLResponse(
+        index_path.read_text(encoding="utf-8"),
+        headers={"Cache-Control": "no-store"}
+    )
 
 
 @app.get("/api/health")
