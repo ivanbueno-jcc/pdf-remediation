@@ -16,6 +16,7 @@ const state = {
   openDownloadJobId: null,
   pollTimer: null,
   jobs: [],
+  jobRows: new Map(),
   jobStatusSnapshot: null,
   jobSearch: '',
   jobStatusFilter: 'all',
@@ -489,147 +490,188 @@ function renderJobs() {
     : 'No jobs yet.';
   renderJobGroup('active-jobs-group', 'active-jobs-body', 'active-jobs-count', active);
   renderJobGroup('recent-jobs-group', 'recent-jobs-body', 'recent-jobs-count', recent);
+
+  // Drop rows for jobs that no longer exist or fell out of the current
+  // search/status filter, so stale elements don't linger detached in memory.
+  const visibleIds = new Set(visible.map((job) => job.job_id));
+  state.jobRows.forEach((entry, jobId) => {
+    if (visibleIds.has(jobId)) return;
+    entry.row.remove();
+    entry.detail.remove();
+    state.jobRows.delete(jobId);
+  });
+}
+
+function buildJobRow(job) {
+  const row = document.createElement('tr');
+  row.className = 'job-row';
+  row.dataset.jobId = job.job_id;
+
+  const name = document.createElement('td');
+  name.className = 'name';
+  const fileLabel = document.createElement('div');
+  fileLabel.className = 'file-label';
+  const disclosure = document.createElement('button');
+  disclosure.type = 'button';
+  disclosure.className = 'disclosure';
+  disclosure.setAttribute('aria-expanded', 'false');
+  disclosure.setAttribute('aria-label', 'Show details for ' + job.name);
+  const caret = document.createElement('span');
+  caret.className = 'caret';
+  caret.setAttribute('aria-hidden', 'true');
+  caret.textContent = '›';
+  disclosure.appendChild(caret);
+  const fileInfo = document.createElement('div');
+  fileInfo.className = 'file-info';
+  const fileName = document.createElement('span');
+  fileName.className = 'file-name';
+  fileName.textContent = job.name;
+  fileInfo.appendChild(fileName);
+  const metadata = [formatJobTimestamp(job.created_at), job.config_label || job.config_file]
+    .filter(Boolean);
+  if (metadata.length) {
+    const meta = document.createElement('div');
+    meta.className = 'job-meta';
+    meta.textContent = metadata.join(' · ');
+    fileInfo.appendChild(meta);
+  }
+  fileLabel.append(disclosure, fileInfo);
+  name.appendChild(fileLabel);
+
+  const processing = document.createElement('td');
+  processing.className = 'processing';
+  const processingState = document.createElement('span');
+  const processingDot = document.createElement('span');
+  processingDot.className = 'dot';
+  processingDot.setAttribute('aria-hidden', 'true');
+  processingState.appendChild(processingDot);
+  processing.appendChild(processingState);
+
+  const status = document.createElement('td');
+  status.className = 'job-status';
+  const outcome = document.createElement('span');
+  status.appendChild(outcome);
+
+  const validation = document.createElement('td');
+  validation.className = 'validation-change';
+
+  const downloads = document.createElement('td');
+  downloads.className = 'actions';
+
+  row.append(name, processing, status, validation, downloads);
+
+  const detail = document.createElement('tr');
+  detail.className = 'detail-row hidden';
+  detail.id = 'job-details-' + job.job_id;
+  detail.setAttribute('aria-hidden', 'true');
+  disclosure.setAttribute('aria-controls', detail.id);
+  const cell = document.createElement('td');
+  cell.colSpan = 5;
+  detail.appendChild(cell);
+
+  const entry = {
+    job, row, detail, cell, disclosure,
+    processingState, processingDot, outcome, status, validation, downloads,
+  };
+
+  // `entry.job` is refreshed on every poll via updateJobRow, so this closure
+  // always acts on the latest data even though it's bound once at creation.
+  disclosure.addEventListener('click', () => {
+    toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure);
+  });
+
+  return entry;
+}
+
+function updateJobRow(entry, job) {
+  entry.job = job;
+  entry.row.dataset.status = job.status;
+
+  const detailNote = processingDetail(job);
+  const label = processingLabel(job.status);
+  entry.processingState.className = 'processing-state ' + job.status;
+  entry.processingState.textContent = '';
+  entry.processingState.appendChild(entry.processingDot);
+  entry.processingState.append(detailNote || label);
+  if (detailNote) entry.processingState.setAttribute('aria-label', label + ': ' + detailNote);
+  else entry.processingState.removeAttribute('aria-label');
+
+  entry.outcome.className = 'outcome ' + (job.outcome ? outcomeTone(job.outcome) : 'pending');
+  entry.outcome.textContent = job.outcome_label || 'Pending result';
+  entry.status.querySelectorAll('.muted').forEach((note) => note.remove());
+  if (job.error) {
+    const note = document.createElement('div');
+    note.className = 'muted';
+    note.textContent = job.error;
+    entry.status.appendChild(note);
+  }
+
+  entry.validation.innerHTML = validationComparison(job.before, job.after);
+
+  entry.downloads.innerHTML = '';
+  const base = '/api/jobs/' + job.job_id + '/';
+  const split = document.createElement('div');
+  split.className = 'split-download';
+  const primary = link(base + 'pdf', 'Remediated PDF', job.has_pdf,
+    job.name, 'file-check');
+  primary.classList.add('split-primary');
+  split.appendChild(primary);
+
+  const menu = document.createElement('details');
+  menu.className = 'download-menu';
+  menu.dataset.jobId = job.job_id;
+  menu.open = state.openDownloadJobId === job.job_id;
+  const menuSummary = document.createElement('summary');
+  menuSummary.setAttribute('aria-label', 'More download options for ' + job.name);
+  menuSummary.setAttribute('aria-expanded', menu.open ? 'true' : 'false');
+  const menuId = 'downloads-' + job.job_id;
+  menuSummary.setAttribute('aria-controls', menuId);
+  const menuCaret = document.createElement('span');
+  menuCaret.className = 'menu-caret';
+  menuCaret.setAttribute('aria-hidden', 'true');
+  menuCaret.textContent = '▾';
+  menuSummary.append(menuCaret);
+  const popover = document.createElement('div');
+  popover.className = 'download-popover';
+  popover.id = menuId;
+  popover.appendChild(link(base + 'before', 'Before report', Boolean(job.before),
+    job.name, 'file-search'));
+  popover.appendChild(link(base + 'after', 'After report', Boolean(job.after),
+    job.name, 'clipboard-check'));
+  popover.appendChild(link(base + 'download', 'Download all',
+    job.status === 'completed', job.name, 'download'));
+  menu.append(menuSummary, popover);
+  menu.addEventListener('toggle', () => {
+    menuSummary.setAttribute('aria-expanded', menu.open ? 'true' : 'false');
+    if (menu.open) {
+      state.openDownloadJobId = job.job_id;
+      document.querySelectorAll('.download-menu[open]').forEach((other) => {
+        if (other !== menu) other.removeAttribute('open');
+      });
+    } else if (state.openDownloadJobId === job.job_id) {
+      state.openDownloadJobId = null;
+    }
+  });
+  split.appendChild(menu);
+  entry.downloads.appendChild(split);
 }
 
 function renderJobRows(body, jobs) {
-  const open = state.openJobId;
-  body.innerHTML = '';
-
   jobs.forEach((job) => {
-    const row = document.createElement('tr');
-    row.className = 'job-row';
-    row.dataset.jobId = job.job_id;
-
-    const name = document.createElement('td');
-    name.className = 'name';
-    const fileLabel = document.createElement('div');
-    fileLabel.className = 'file-label';
-    const disclosure = document.createElement('button');
-    disclosure.type = 'button';
-    disclosure.className = 'disclosure';
-    disclosure.setAttribute('aria-expanded', 'false');
-    disclosure.setAttribute('aria-label', 'Show details for ' + job.name);
-    const caret = document.createElement('span');
-    caret.className = 'caret';
-    caret.setAttribute('aria-hidden', 'true');
-    caret.textContent = '›';
-    disclosure.appendChild(caret);
-    const fileInfo = document.createElement('div');
-    fileInfo.className = 'file-info';
-    const fileName = document.createElement('span');
-    fileName.className = 'file-name';
-    fileName.textContent = job.name;
-    fileInfo.appendChild(fileName);
-    const metadata = [formatJobTimestamp(job.created_at), job.config_label || job.config_file]
-      .filter(Boolean);
-    if (metadata.length) {
-      const meta = document.createElement('div');
-      meta.className = 'job-meta';
-      meta.textContent = metadata.join(' · ');
-      fileInfo.appendChild(meta);
+    let entry = state.jobRows.get(job.job_id);
+    if (!entry) {
+      entry = buildJobRow(job);
+      state.jobRows.set(job.job_id, entry);
     }
-    fileLabel.append(disclosure, fileInfo);
-    name.appendChild(fileLabel);
-
-    const processing = document.createElement('td');
-    processing.className = 'processing';
-    const processingState = document.createElement('span');
-    processingState.className = 'processing-state ' + job.status;
-    const processingDot = document.createElement('span');
-    processingDot.className = 'dot';
-    processingDot.setAttribute('aria-hidden', 'true');
-    processingState.append(processingDot, processingLabel(job.status));
-    processing.appendChild(processingState);
-    const processingNote = processingDetail(job);
-    if (processingNote) {
-      const note = document.createElement('div');
-      note.className = 'processing-detail';
-      note.textContent = processingNote;
-      processing.appendChild(note);
+    updateJobRow(entry, job);
+    // appendChild on an already-attached node moves it (including across
+    // tbodies, e.g. active -> recent when a job finishes) instead of
+    // recreating it, which is what lets CSS transitions animate the change.
+    body.appendChild(entry.row);
+    body.appendChild(entry.detail);
+    if (state.openJobId === job.job_id) {
+      toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure, true);
     }
-
-    const status = document.createElement('td');
-    status.className = 'job-status';
-    const outcome = document.createElement('span');
-    outcome.className = 'outcome ' + (job.outcome ? outcomeTone(job.outcome) : 'pending');
-    outcome.textContent = job.outcome_label || 'Pending result';
-    status.appendChild(outcome);
-    if (job.error) {
-      const note = document.createElement('div');
-      note.className = 'muted';
-      note.textContent = job.error;
-      status.appendChild(note);
-    }
-
-    const validation = document.createElement('td');
-    validation.className = 'validation-change';
-    validation.innerHTML = validationComparison(job.before, job.after);
-
-    const downloads = document.createElement('td');
-    downloads.className = 'actions';
-    const base = '/api/jobs/' + job.job_id + '/';
-    const split = document.createElement('div');
-    split.className = 'split-download';
-    const primary = link(base + 'pdf', 'Remediated PDF', job.has_pdf,
-      job.name, 'file-check');
-    primary.classList.add('split-primary');
-    split.appendChild(primary);
-
-    const menu = document.createElement('details');
-    menu.className = 'download-menu';
-    menu.dataset.jobId = job.job_id;
-    menu.open = state.openDownloadJobId === job.job_id;
-    const menuSummary = document.createElement('summary');
-    menuSummary.setAttribute('aria-label', 'More download options for ' + job.name);
-    menuSummary.setAttribute('aria-expanded', menu.open ? 'true' : 'false');
-    const menuId = 'downloads-' + job.job_id;
-    menuSummary.setAttribute('aria-controls', menuId);
-    const menuCaret = document.createElement('span');
-    menuCaret.className = 'menu-caret';
-    menuCaret.setAttribute('aria-hidden', 'true');
-    menuCaret.textContent = '▾';
-    menuSummary.append(menuCaret);
-    const popover = document.createElement('div');
-    popover.className = 'download-popover';
-    popover.id = menuId;
-    popover.appendChild(link(base + 'before', 'Before report', Boolean(job.before),
-      job.name, 'file-search'));
-    popover.appendChild(link(base + 'after', 'After report', Boolean(job.after),
-      job.name, 'clipboard-check'));
-    popover.appendChild(link(base + 'download', 'Download all',
-      job.status === 'completed', job.name, 'download'));
-    menu.append(menuSummary, popover);
-    menu.addEventListener('toggle', () => {
-      menuSummary.setAttribute('aria-expanded', menu.open ? 'true' : 'false');
-      if (menu.open) {
-        state.openDownloadJobId = job.job_id;
-        document.querySelectorAll('.download-menu[open]').forEach((other) => {
-          if (other !== menu) other.removeAttribute('open');
-        });
-      } else if (state.openDownloadJobId === job.job_id) {
-        state.openDownloadJobId = null;
-      }
-    });
-    split.appendChild(menu);
-    downloads.appendChild(split);
-
-    row.append(name, processing, status, validation, downloads);
-    body.appendChild(row);
-
-    const detail = document.createElement('tr');
-    detail.className = 'detail-row hidden';
-    detail.id = 'job-details-' + job.job_id;
-    detail.setAttribute('aria-hidden', 'true');
-    disclosure.setAttribute('aria-controls', detail.id);
-    const cell = document.createElement('td');
-    cell.colSpan = 5;
-    detail.appendChild(cell);
-    body.appendChild(detail);
-
-    const toggle = () => toggleJob(job, row, detail, cell, disclosure);
-    disclosure.addEventListener('click', toggle);
-
-    if (open === job.job_id) toggleJob(job, row, detail, cell, disclosure, true);
   });
 }
 
@@ -644,7 +686,8 @@ function processingDetail(job) {
     return job.jobs_ahead + ' ahead';
   }
   if (job.status === 'running' && job.current_stage) {
-    return job.current_stage.replaceAll('_', ' ');
+    const stage = job.current_stage.replaceAll('_', ' ');
+    return stage.charAt(0).toUpperCase() + stage.slice(1);
   }
   return '';
 }
