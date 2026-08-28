@@ -288,8 +288,8 @@ function updateSubmitState(message) {
   const submit = el('submit');
   submit.disabled = state.submitting || !(healthy && readyCount);
   submit.textContent = state.submitting ? 'Uploading…'
-    : (readyCount === 1 ? 'Run 1 job'
-      : (readyCount > 1 ? 'Run ' + readyCount + ' jobs' : 'Run pipeline'));
+    : (readyCount === 1 ? 'Remediate 1 job'
+      : (readyCount > 1 ? 'Remediate ' + readyCount + ' jobs' : 'Remediate'));
   el('file-input').disabled = state.submitting;
   el('drop').setAttribute('aria-disabled', state.submitting ? 'true' : 'false');
   el('clear-staged').disabled = state.submitting;
