@@ -15,7 +15,7 @@ from uuid import uuid4
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi import Path as PathParam
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response, StreamingResponse
 
 from . import APP_NAME, APP_VERSION
 from .bundle import build_bundle
@@ -111,20 +111,46 @@ async def _retention_loop() -> None:
 app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan)
 
 
-@app.get("/", response_class=HTMLResponse)
-async def index() -> HTMLResponse:
+def _serve_frontend_asset(filename: str, media_type: str) -> Response:
     '''
-    Serve the single-page frontend.
+    Read a frontend asset from disk and serve it uncached.
+
+    The HTML, CSS, and JS files version together; letting a browser cache
+    any one of them separately can pin the UI to a mismatched build after
+    an upgrade.
     '''
-    index_path = STATIC_DIR / "index.html"
-    if not index_path.is_file():
-        raise HTTPException(status_code=500, detail="Frontend asset is missing.")
-    # The page carries its own script, so a cached copy silently pins the UI to
-    # an old build after an upgrade.
-    return HTMLResponse(
-        index_path.read_text(encoding="utf-8"),
-        headers={"Cache-Control": "no-store"}
+    path = STATIC_DIR / filename
+    if not path.is_file():
+        raise HTTPException(status_code=500, detail=f"Frontend asset is missing: {filename}")
+    return Response(
+        path.read_text(encoding="utf-8"),
+        media_type=media_type,
+        headers={"Cache-Control": "no-store"},
     )
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index() -> Response:
+    '''
+    Serve the single-page frontend shell.
+    '''
+    return _serve_frontend_asset("index.html", "text/html")
+
+
+@app.get("/static/style.css")
+async def stylesheet() -> Response:
+    '''
+    Serve the frontend stylesheet.
+    '''
+    return _serve_frontend_asset("style.css", "text/css")
+
+
+@app.get("/static/app.js")
+async def script() -> Response:
+    '''
+    Serve the frontend script.
+    '''
+    return _serve_frontend_asset("app.js", "text/javascript")
 
 
 @app.get("/healthz")
