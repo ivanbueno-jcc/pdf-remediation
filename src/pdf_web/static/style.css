@@ -303,6 +303,20 @@ tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
   .detail-row .job-detail {
     transition: max-height .28s ease, opacity .2s ease, transform .28s ease;
   }
+  @keyframes queue-summary-shimmer {
+    from { background-position: 180% 0; }
+    to { background-position: -80% 0; }
+  }
+  #queue-summary.is-processing {
+    background-image: linear-gradient(
+      100deg, var(--muted) 28%, var(--accent) 50%, var(--muted) 72%
+    );
+    background-size: 250% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: queue-summary-shimmer 2.2s linear infinite;
+  }
   @keyframes status-transition {
     from { opacity: .72; transform: translateY(-2px); }
     to { opacity: 1; transform: translateY(0); }

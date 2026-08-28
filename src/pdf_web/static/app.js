@@ -436,11 +436,14 @@ async function refreshQueue() {
     );
   }
   const queueSummary = state.jobs.length
-    ? payload.your_running + '/' + payload.your_limit +
-      ' running · ' + payload.concurrency + ' concurrent'
+    ? payload.your_running + '/' + payload.your_limit + ' running'
     : '';
   const eta = formatQueueEta(queueEtaSeconds(payload));
-  el('queue-summary').textContent = eta ? queueSummary + ' · ' + eta : queueSummary;
+  const queueSummaryEl = el('queue-summary');
+  const hasActiveFiles = state.jobs.some(isActiveJob);
+  queueSummaryEl.textContent = eta ? queueSummary + ' · ' + eta : queueSummary;
+  queueSummaryEl.classList.toggle('is-processing', hasActiveFiles);
+  queueSummaryEl.setAttribute('aria-busy', hasActiveFiles ? 'true' : 'false');
   renderJobs();
 
   // Nothing is moving, so stop asking.
