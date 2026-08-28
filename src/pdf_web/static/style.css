@@ -147,7 +147,19 @@ button.small { padding: var(--space-2) var(--space-3); font-size: 13px; min-heig
 .banner.warn { border-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
 .banner.ok { border-color: var(--ok); color: var(--ok); background: var(--ok-bg); }
 .banner ul { margin: var(--space-2) 0 0; padding-left: var(--space-5); }
-#submit-result { margin-top: var(--space-4); }
+.toast-region {
+  position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 100;
+  display: grid; gap: var(--space-2); width: min(360px, calc(100vw - var(--space-4) - var(--space-4)));
+  pointer-events: none;
+}
+.toast {
+  border: 1px solid; border-radius: 8px; padding: var(--space-3) var(--space-4);
+  box-shadow: var(--section-shadow);
+  font-size: 14px; font-weight: 650; overflow-wrap: anywhere;
+}
+.toast.ok { border-color: var(--ok); color: var(--ok); background: var(--ok-bg); }
+.toast.warn { border-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
+.toast.bad { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
 .batch-toolbar {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--space-3); margin-top: var(--space-4);
@@ -282,11 +294,16 @@ tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes banner-fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
+  @keyframes toast-fade-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(6px); }
   }
-  #submit-result.banner-fade-out { animation: banner-fade-out .26s ease-in both; }
+  .toast { animation: toast-enter .2s ease-out both; }
+  .toast.toast-fade-out { animation: toast-fade-out .26s ease-in both; }
+  @keyframes toast-enter {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   @keyframes job-row-enter {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
@@ -550,6 +567,7 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
   .job-filters { width: 100%; align-items: stretch; }
   .job-filters input, .job-filters select { flex: 1 1 150px; width: 100%; }
   .job-detail { padding: var(--space-3) var(--space-3) var(--space-4); }
+  .toast-region { right: var(--space-3); bottom: var(--space-3); width: calc(100vw - var(--space-3) - var(--space-3)); }
   ol.stages li {
     display: grid; grid-template-columns: 20px minmax(0, 1fr);
     gap: 2px var(--space-2); align-items: start; margin-bottom: var(--space-2);

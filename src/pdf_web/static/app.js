@@ -21,8 +21,8 @@ const state = {
   jobStatusSnapshot: null,
   jobSearch: '',
   jobOutcomeFilter: 'all',
-  submissionResultTimer: null,
-  submissionResultFadeTimer: null,
+  toastTimer: null,
+  toastFadeTimer: null,
 };
 
 const el = (id) => document.getElementById(id);
@@ -206,7 +206,7 @@ function addFiles(fileList) {
     totalBytes += file.size;
   });
   announceSelectionErrors(errors);
-  if (acceptedItems().length > previousCount) clearSubmissionResult();
+  if (acceptedItems().length > previousCount) clearToast();
   renderStaged();
   updateSubmitState();
 }
@@ -306,37 +306,6 @@ function updateSubmitState(message) {
   else el('submit-note').textContent = '';
 }
 
-function clearSubmissionResult() {
-  if (state.submissionResultTimer) window.clearTimeout(state.submissionResultTimer);
-  if (state.submissionResultFadeTimer) window.clearTimeout(state.submissionResultFadeTimer);
-  state.submissionResultTimer = null;
-  state.submissionResultFadeTimer = null;
-  const result = el('submit-result');
-  result.className = 'banner hidden';
-  result.textContent = '';
-  result.removeAttribute('role');
-  result.removeAttribute('aria-live');
-}
-
-function showSubmissionResult(message, tone) {
-  clearSubmissionResult();
-  const result = el('submit-result');
-  result.textContent = message;
-  result.className = 'banner ' + tone;
-  result.setAttribute('role', tone === 'bad' ? 'alert' : 'status');
-  result.setAttribute('aria-live', tone === 'bad' ? 'assertive' : 'polite');
-  state.submissionResultTimer = window.setTimeout(() => {
-    const reducedMotion = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
-      clearSubmissionResult();
-      return;
-    }
-    result.classList.add('banner-fade-out');
-    state.submissionResultFadeTimer = window.setTimeout(clearSubmissionResult, 280);
-  }, 5000);
-}
-
 function waitForStagedExit() {
   const rows = Array.from(document.querySelectorAll('#staged-body tr.stage-row-exit'));
   const reducedMotion = window.matchMedia &&
@@ -368,7 +337,7 @@ async function submitJobs() {
     item.status = 'uploading';
     item.reason = 'Uploading to the server…';
   });
-  clearSubmissionResult();
+  clearToast();
   renderStaged();
   updateSubmitState();
 
@@ -393,7 +362,7 @@ async function submitJobs() {
     });
     renderStaged();
     updateSubmitState('');
-    showSubmissionResult(String(error.message || error), 'bad');
+    showToast(String(error.message || error), 'bad');
     return;
   }
 
@@ -421,7 +390,7 @@ async function submitJobs() {
     ' · ' + payload.concurrency +
     ' run at a time, ' + payload.your_limit + ' of yours at once.';
   updateSubmitState('');
-  showSubmissionResult(queuedMessage, 'ok');
+  showToast(queuedMessage, 'ok');
   startPolling();
 }
 
@@ -478,6 +447,41 @@ function announceStatus(message) {
   const region = el('job-announcer');
   region.textContent = '';
   requestAnimationFrame(() => { region.textContent = message; });
+}
+
+function clearToast() {
+  if (state.toastTimer) window.clearTimeout(state.toastTimer);
+  if (state.toastFadeTimer) window.clearTimeout(state.toastFadeTimer);
+  state.toastTimer = null;
+  state.toastFadeTimer = null;
+  const region = el('toast-region');
+  if (region) {
+    region.replaceChildren();
+    region.setAttribute('aria-live', 'polite');
+  }
+}
+
+function showToast(message, tone = 'ok') {
+  clearToast();
+  const region = el('toast-region');
+  if (!region) return;
+  const toastTone = ['ok', 'warn', 'bad'].includes(tone) ? tone : 'ok';
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + toastTone;
+  toast.setAttribute('role', toastTone === 'bad' ? 'alert' : 'status');
+  toast.textContent = message;
+  region.setAttribute('aria-live', toastTone === 'bad' ? 'assertive' : 'polite');
+  region.appendChild(toast);
+  state.toastTimer = window.setTimeout(() => {
+    const reducedMotion = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      clearToast();
+      return;
+    }
+    toast.classList.add('toast-fade-out');
+    state.toastFadeTimer = window.setTimeout(clearToast, 280);
+  }, 4200);
 }
 
 function jobStatusAnnouncement(job) {
@@ -883,7 +887,9 @@ async function retryProcessedPdf(job, button) {
     const beforeCount = acceptedItems().length;
     addFiles([file]);
     if (acceptedItems().length > beforeCount) {
-      announceStatus(job.name + ' processed PDF added to staging.');
+      const message = job.name + ' processed PDF added to staging.';
+      showToast(message);
+      announceStatus(message);
       const reducedMotion = window.matchMedia &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       el('submit-section').scrollIntoView({
@@ -891,7 +897,7 @@ async function retryProcessedPdf(job, button) {
       });
     }
   } catch (error) {
-    showSubmissionResult('Could not stage the processed PDF: ' + String(error.message || error), 'bad');
+    showToast('Could not stage the processed PDF: ' + String(error.message || error), 'bad');
   } finally {
     button.disabled = false;
     button.removeAttribute('aria-busy');
@@ -923,7 +929,7 @@ async function cancelJob(job, button) {
     button.removeAttribute('aria-busy');
     button.setAttribute('aria-label', 'Cancel ' + job.name);
     button.replaceChildren(downloadIcon('cancel'), 'Cancel');
-    showSubmissionResult('Could not cancel the job: ' + String(error.message || error), 'bad');
+    showToast('Could not cancel the job: ' + String(error.message || error), 'bad');
   }
 }
 
@@ -942,11 +948,13 @@ async function deleteJob(job, button) {
     }
     await animateJobRemoval([job.job_id]);
     await refreshQueue();
-    announceStatus(job.name + ' and its artifacts were deleted.');
+    const message = job.name + ' and its artifacts were deleted.';
+    showToast(message);
+    announceStatus(message);
   } catch (error) {
     button.disabled = false;
     button.removeAttribute('aria-busy');
-    showSubmissionResult('Could not delete the job: ' + String(error.message || error), 'bad');
+    showToast('Could not delete the job: ' + String(error.message || error), 'bad');
   }
 }
 
@@ -1043,15 +1051,16 @@ async function deleteAllJobs(button) {
         ? deleted.length + ' job' + (deleted.length === 1 ? '' : 's') +
           ' deleted. ' + skipped.length + ' active job' + (skipped.length === 1 ? '' : 's') + ' remain.'
         : 'Active jobs are still running and could not be deleted.';
-      showSubmissionResult(message, 'warn');
+      showToast(message, 'warn');
       announceStatus(message);
     } else {
       const message = deleted.length + ' job' + (deleted.length === 1 ? '' : 's') +
         ' and their artifacts were deleted.';
+      showToast(message);
       announceStatus(message);
     }
   } catch (error) {
-    showSubmissionResult('Could not delete all jobs: ' + String(error.message || error), 'bad');
+    showToast('Could not delete all jobs: ' + String(error.message || error), 'bad');
   } finally {
     button.disabled = false;
     button.removeAttribute('aria-busy');
@@ -1212,6 +1221,9 @@ function link(href, label, enabled, fileName, iconName) {
   anchor.title = label + (enabled ? '' : ' (unavailable)');
   if (enabled) {
     anchor.href = href;
+    anchor.addEventListener('click', () => {
+      showToast(label + ' download started for ' + fileName + '.');
+    });
   } else {
     anchor.setAttribute('aria-disabled', 'true');
     anchor.title = 'Unavailable until this artifact is ready';
