@@ -14,6 +14,7 @@ VERAPDF_JAR = REPO_ROOT / "lib" / "greenfield-apps-1.28.0.jar"
 ALLOWED_CONFIG_FILES = (
     "default.json",
     "default-slim.json",
+    "opinions.json",
     "pdfix-fix_metadata.json",
     "pdfix-make_accessible.json",
     "pdfix-make_accessible_docling.json",
@@ -35,6 +36,14 @@ CONFIG_FILE_DETAILS = {
         "description": (
             "Uses a smaller, conservative preset for common structural and "
             "metadata repairs."
+        ),
+    },
+    "opinions.json": {
+        "label": "Opinions",
+        "group": "Judicial Council",
+        "description": (
+            "Merges adjacent split footnote structure elements and fixes "
+            "the document title for judicial opinions."
         ),
     },
     "pdfix-fix_metadata.json": {
