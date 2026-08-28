@@ -171,6 +171,17 @@ class AuthenticationTests(unittest.TestCase):
             "max_submission_bytes": MAX_SUBMISSION_BYTES,
         })
 
+    def test_config_endpoint_uses_user_facing_preset_details(self) -> None:
+        '''The browser need not expose implementation filenames as labels.'''
+        response = self.client.get("/api/config-files", headers=headers(ALICE))
+
+        files = response.json()["files"]
+        self.assertEqual(
+            [entry["label"] for entry in files],
+            ["Standard remediation", "Focused remediation"],
+        )
+        self.assertTrue(all(entry["description"] for entry in files))
+
     def test_wrong_secret_is_refused(self) -> None:
         '''A guessed secret does not authenticate.'''
         response = self.client.get("/api/jobs", headers=headers(ALICE, "wrong"))
@@ -249,6 +260,27 @@ class OwnershipRecordingTests(unittest.TestCase):
             f"/api/jobs/{created['job_id']}", headers=headers(BOB)
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_queue_includes_metadata_for_job_organization(self) -> None:
+        '''The jobs view can group and label submissions without extra requests.'''
+        created = self.client.post(
+            "/api/jobs",
+            headers=headers(ALICE),
+            files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
+            data={"config_file": "default.json"},
+        ).json()["jobs"][0]
+
+        response = self.client.get("/api/queue", headers=headers(ALICE))
+
+        self.assertEqual(response.status_code, 200)
+        job = next(
+            item for item in response.json()["jobs"]
+            if item["job_id"] == created["job_id"]
+        )
+        self.assertEqual(job["name"], "Report.pdf")
+        self.assertEqual(job["config_file"], "default.json")
+        self.assertEqual(job["config_label"], "Standard remediation")
+        self.assertTrue(job["created_at"])
 
     def test_rejected_submission_returns_per_file_reasons(self) -> None:
         '''The browser can keep rejected files in the batch with their reason.'''

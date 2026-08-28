@@ -22,6 +22,7 @@ from .bundle import build_bundle
 from .config import (
     ALLOWED_CONFIG_FILES,
     CONFIG_DIR,
+    CONFIG_FILE_DETAILS,
     DEFAULT_CONFIG_FILE,
     JOBS_ROOT,
     MAX_FILE_BYTES,
@@ -189,7 +190,11 @@ async def config_files() -> dict[str, Any]:
             "max_submission_bytes": MAX_SUBMISSION_BYTES,
         },
         "files": [
-            {"name": name, "available": (CONFIG_DIR / name).is_file()}
+            {
+                "name": name,
+                **CONFIG_FILE_DETAILS[name],
+                "available": (CONFIG_DIR / name).is_file(),
+            }
             for name in ALLOWED_CONFIG_FILES
         ],
     }
@@ -339,6 +344,11 @@ async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
             {
                 "job_id": job.job_id,
                 "name": job.file.original_name,
+                "created_at": job.created_at.isoformat(timespec="seconds"),
+                "config_file": job.config_file,
+                "config_label": CONFIG_FILE_DETAILS.get(job.config_file, {}).get(
+                    "label", job.config_file
+                ),
                 "status": str(job.status),
                 "outcome": job.outcome,
                 "outcome_label": outcome_label(job.outcome),

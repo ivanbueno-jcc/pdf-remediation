@@ -41,6 +41,7 @@ body {
 main { max-width: 1040px; margin: 0 auto; }
 h1 { font-size: 22px; margin: 0 0 4px; }
 h2 { font-size: 15px; margin: 0 0 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+h3 { font-size: 14px; margin: 20px 0 8px; color: var(--ink); }
 .sub { color: var(--muted); margin: 0 0 24px; }
 section {
   background: var(--panel);
@@ -72,9 +73,29 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
 td.name { word-break: break-all; max-width: 260px; }
-.options { display: flex; flex-wrap: wrap; gap: 18px 24px; align-items: center; margin: 16px 0; }
 label.field { display: flex; flex-direction: column; gap: 5px; font-size: 13px; color: var(--muted); }
 label.check { display: flex; align-items: center; gap: 7px; font-size: 14px; color: var(--ink); }
+.advanced-settings { margin: 18px 0; border-top: 1px solid var(--line); }
+.advanced-settings summary {
+  min-height: 42px; display: flex; align-items: center; gap: 8px;
+  color: var(--ink); font-weight: 650; cursor: pointer; list-style: none;
+}
+.advanced-settings summary::-webkit-details-marker { display: none; }
+.advanced-settings summary::before {
+  content: '\203a'; color: var(--muted); font-size: 20px; line-height: 1;
+  transition: transform .15s;
+}
+.advanced-settings[open] summary::before { transform: rotate(90deg); }
+.advanced-settings summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.advanced-body {
+  display: grid; gap: 16px; padding: 2px 0 16px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.advanced-intro { margin: -2px 0 0; }
+.advanced-body select { min-width: 240px; max-width: 100%; }
+.field-help, .setting-help { color: var(--muted); font-size: 13px; }
+.setting-option { display: grid; gap: 3px; }
+.setting-help { margin: 0 0 0 22px; max-width: 680px; }
 select, button {
   font: inherit; color: var(--ink); background: var(--panel);
   border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px;
@@ -134,8 +155,43 @@ pre#log {
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 .muted { color: var(--muted); font-size: 13px; }
-.action-list { display: flex; gap: 6px; flex-wrap: wrap; }
-a.dl { font-size: 13px; text-decoration: none; border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; color: var(--ink); }
+.download-menu { position: relative; display: inline-block; }
+.split-download { display: inline-flex; align-items: stretch; }
+.download-menu summary {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 32px;
+  width: 32px; border: 1px solid var(--line); border-radius: 0 5px 5px 0;
+  margin-left: -1px; padding: 4px 7px;
+  color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap;
+  cursor: pointer; list-style: none;
+}
+.download-menu summary::-webkit-details-marker { display: none; }
+.download-menu summary:hover, .download-menu[open] summary {
+  border-color: var(--accent); color: var(--accent);
+}
+.download-menu summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.menu-caret { color: var(--muted); font-size: 16px; line-height: 1; transition: transform .15s; }
+.download-menu[open] .menu-caret { transform: rotate(180deg); }
+.split-download > .split-primary {
+  border-radius: 5px 0 0 5px; display: inline-flex; align-items: center;
+}
+.split-download > .split-primary[aria-disabled="true"] { pointer-events: none; }
+.download-popover {
+  position: absolute; z-index: 20; top: calc(100% + 6px); right: 0;
+  display: grid; min-width: 190px; padding: 6px;
+  border: 1px solid var(--line); border-radius: 7px;
+  background: var(--panel); box-shadow: 0 10px 28px rgba(0,0,0,.22);
+}
+a.dl {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; text-decoration: none; white-space: nowrap;
+  border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; color: var(--ink);
+}
+.download-popover a.dl { width: 100%; padding: 7px 8px; border-color: transparent; }
+.dl-icon {
+  width: 15px; height: 15px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round;
+}
 a.dl:hover { border-color: var(--accent); color: var(--accent); }
 a.dl[aria-disabled="true"] { opacity: .4; pointer-events: none; }
 tr.file-row { cursor: pointer; }
@@ -212,18 +268,28 @@ ol.stages li[data-status="skipped"] { opacity: .55; }
 ol.stages li .detail { color: var(--muted); font-size: 13px; }
 .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .progress > span { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+.jobs-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.job-filters { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: flex-end; }
+.job-filters input, .job-filters select { min-height: 36px; }
+.job-filters input { width: min(280px, 100%); }
+.job-count-summary { margin: 0 0 5px; white-space: nowrap; }
+.job-group + .job-group { margin-top: 22px; }
+.job-group h3 { display: flex; align-items: baseline; gap: 7px; }
+.job-group h3 .group-count { font-size: 12px; font-weight: 400; color: var(--muted); }
+.job-meta { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 400; overflow-wrap: anywhere; }
+.job-empty { margin: 20px 0 4px; padding: 16px; border: 1px dashed var(--line); border-radius: 6px; text-align: center; }
 
 @media (max-width: 700px) {
   body { padding: 16px 12px 40px; }
   section { padding: 14px; }
   #jobs-section { padding: 14px 12px; }
-  #jobs-table { display: block; }
-  #jobs-table thead {
+  .jobs-table { display: block; }
+  .jobs-table thead {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
     overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
   }
-  #jobs-table tbody { display: grid; gap: 12px; }
-  #jobs-table tr.job-row {
+  .jobs-table tbody { display: grid; gap: 12px; }
+  .jobs-table tr.job-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
@@ -238,31 +304,37 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
     border-radius: var(--radius);
     background: var(--panel);
   }
-  #jobs-table tr.job-row[data-open="true"] { border-radius: var(--radius) var(--radius) 0 0; }
-  #jobs-table tr.job-row > td { display: block; min-width: 0; padding: 0; border: 0; }
-  #jobs-table td.name {
+  .jobs-table tr.job-row[data-open="true"] { border-radius: var(--radius) var(--radius) 0 0; }
+  .jobs-table tr.job-row > td { display: block; min-width: 0; padding: 0; border: 0; }
+  .jobs-table td.name {
     grid-area: name; max-width: none; font-weight: 650;
     word-break: normal; overflow-wrap: anywhere;
   }
-  #jobs-table td.processing { grid-area: processing; padding-top: 5px; }
-  #jobs-table td.job-status { grid-area: status; padding-top: 8px; }
-  #jobs-table td.validation-change {
+  .jobs-table td.processing { grid-area: processing; padding-top: 5px; }
+  .jobs-table td.job-status { grid-area: status; padding-top: 8px; }
+  .jobs-table td.validation-change {
     grid-area: validation; padding-top: 11px; margin-top: 7px;
     border-top: 1px solid var(--line);
   }
-  #jobs-table .validation-summary { min-width: 0; }
-  #jobs-table td.actions {
+  .jobs-table .validation-summary { min-width: 0; }
+  .jobs-table td.actions {
     grid-area: actions; padding-top: 11px; margin-top: 7px;
     border-top: 1px solid var(--line);
   }
-  #jobs-table a.dl { padding: 6px 10px; }
-  #jobs-table tr.detail-row:not(.hidden) {
+  .jobs-table .download-popover { left: 0; right: auto; }
+  .jobs-table .download-popover a.dl { padding: 8px; }
+  .jobs-table tr.detail-row:not(.hidden) {
     display: block; margin-top: -12px;
     border: 1px solid var(--line); border-top: 0;
     border-radius: 0 0 var(--radius) var(--radius);
     overflow: hidden;
   }
-  #jobs-table tr.detail-row > td { display: block; border: 0; }
+  .jobs-table tr.detail-row > td { display: block; border: 0; }
+  .jobs-toolbar { display: block; }
+  .job-filters { align-items: stretch; }
+  .job-filters label.field { flex: 1 1 150px; }
+  .job-filters input, .job-filters select { width: 100%; }
+  .job-count-summary { margin: 12px 0 0; }
   .job-detail { padding: 14px 12px 16px; }
   ol.stages li {
     display: grid; grid-template-columns: 20px minmax(0, 1fr);
@@ -327,13 +399,24 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
       <tbody id="staged-body"></tbody>
     </table>
 
-    <div class="options">
-      <label class="field">Configuration
-        <select id="config-select"></select>
-      </label>
-      <label class="check"><input type="checkbox" id="skip-font-fix"> Skip font fix</label>
-      <label class="check"><input type="checkbox" id="strict"> Require WCAG&nbsp;+&nbsp;UA1</label>
-    </div>
+    <details class="advanced-settings" id="advanced-settings">
+      <summary>Advanced settings</summary>
+      <div class="advanced-body">
+        <p class="muted advanced-intro">The recommended defaults work for most documents.</p>
+        <label class="field">Remediation approach
+          <select id="config-select" aria-describedby="config-description"></select>
+          <span class="field-help" id="config-description"></span>
+        </label>
+        <div class="setting-option">
+          <label class="check"><input type="checkbox" id="skip-font-fix"> Skip font repair</label>
+          <p class="setting-help">Finishes without the optional Docker-based font repair stage. Font-related issues may remain.</p>
+        </div>
+        <div class="setting-option">
+          <label class="check"><input type="checkbox" id="strict"> Require both WCAG and PDF/UA-1 to pass</label>
+          <p class="setting-help">Treats the job as successful only when both validation profiles pass.</p>
+        </div>
+      </div>
+    </details>
 
     <div class="row">
       <button class="primary" id="submit" disabled>Run pipeline</button>
@@ -344,12 +427,42 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
 
   <section id="jobs-section" class="hidden">
     <h2>Jobs</h2>
+    <div class="jobs-toolbar">
+      <div class="job-filters">
+        <label class="field">Search files
+          <input type="search" id="job-search" placeholder="Search by filename" autocomplete="off">
+        </label>
+        <label class="field">Status
+          <select id="job-status-filter">
+            <option value="all">All statuses</option>
+            <option value="active">Active</option>
+            <option value="queued">Queued</option>
+            <option value="running">Running</option>
+            <option value="completed">Complete</option>
+            <option value="failed">Failed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+      </div>
+      <p class="muted job-count-summary" id="job-count-summary" role="status" aria-live="polite" aria-atomic="true"></p>
+    </div>
     <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
     <div id="job-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
-    <table id="jobs-table">
-      <thead><tr><th>File</th><th>Processing</th><th>Accessibility outcome</th><th>Validation change</th><th>Downloads</th></tr></thead>
-      <tbody id="jobs-body"></tbody>
-    </table>
+    <p class="muted job-empty hidden" id="job-empty" role="status"></p>
+    <div class="job-group hidden" id="active-jobs-group">
+      <h3>Active jobs <span class="group-count" id="active-jobs-count"></span></h3>
+      <table class="jobs-table">
+        <thead><tr><th>File</th><th>Processing</th><th>Accessibility outcome</th><th>Validation change</th><th>Downloads</th></tr></thead>
+        <tbody id="active-jobs-body"></tbody>
+      </table>
+    </div>
+    <div class="job-group hidden" id="recent-jobs-group">
+      <h3>Recent jobs <span class="group-count" id="recent-jobs-count"></span></h3>
+      <table class="jobs-table">
+        <thead><tr><th>File</th><th>Processing</th><th>Accessibility outcome</th><th>Validation change</th><th>Downloads</th></tr></thead>
+        <tbody id="recent-jobs-body"></tbody>
+      </table>
+    </div>
   </section>
 </main>
 
@@ -370,11 +483,14 @@ const state = {
   health: null,
   authError: null,
   openJobId: null,
+  openDownloadJobId: null,
   source: null,
   pollTimer: null,
   logLines: [],
   jobs: [],
   jobStatusSnapshot: null,
+  jobSearch: '',
+  jobStatusFilter: 'all',
 };
 
 const el = (id) => document.getElementById(id);
@@ -467,6 +583,11 @@ function renderHealth() {
   }
 }
 
+function renderConfigDescription() {
+  const option = el('config-select').selectedOptions[0];
+  el('config-description').textContent = option ? option.dataset.description || '' : '';
+}
+
 async function loadConfigs() {
   const select = el('config-select');
   try {
@@ -477,13 +598,20 @@ async function loadConfigs() {
     payload.files.forEach((entry) => {
       const option = document.createElement('option');
       option.value = entry.name;
-      option.textContent = entry.name + (entry.available ? '' : ' (missing)');
+      option.textContent = (entry.label || entry.name) +
+        (entry.available ? '' : ' (unavailable)');
+      option.dataset.description = entry.description || '';
+      option.title = entry.description || '';
       option.disabled = !entry.available;
       option.selected = entry.name === payload.default;
       select.appendChild(option);
     });
+    renderConfigDescription();
   } catch (error) {
-    select.innerHTML = '<option>default.json</option>';
+    select.innerHTML = '<option value="default.json">Standard remediation</option>';
+    select.options[0].dataset.description =
+      'Runs the full remediation preset for the broadest automatic accessibility repair coverage.';
+    renderConfigDescription();
     renderUploadGuidance();
   }
 }
@@ -787,12 +915,58 @@ function announceJobChanges(jobs) {
   if (messages.length) announceStatus(messages.join(' '));
 }
 
+function isActiveJob(job) {
+  return job.status === 'queued' || job.status === 'running';
+}
+
+function filteredJobs() {
+  const query = state.jobSearch.trim().toLowerCase();
+  const filter = state.jobStatusFilter;
+  return state.jobs.filter((job) => {
+    if (query && !String(job.name || '').toLowerCase().includes(query)) return false;
+    if (filter === 'active' && !isActiveJob(job)) return false;
+    if (filter !== 'all' && filter !== 'active' && job.status !== filter) return false;
+    return true;
+  });
+}
+
+function formatJobTimestamp(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+  }).format(date);
+}
+
+function renderJobGroup(groupId, bodyId, countId, jobs) {
+  el(groupId).classList.toggle('hidden', jobs.length === 0);
+  el(countId).textContent = jobs.length ? '(' + jobs.length + ')' : '';
+  renderJobRows(el(bodyId), jobs);
+}
+
 function renderJobs() {
-  const body = el('jobs-body');
+  const visible = filteredJobs();
+  const active = visible.filter(isActiveJob);
+  const recent = visible.filter((job) => !isActiveJob(job));
+  const total = state.jobs.length;
+  el('job-count-summary').textContent = visible.length === total
+    ? total + ' job' + (total === 1 ? '' : 's')
+    : visible.length + ' of ' + total + ' jobs';
+  const empty = el('job-empty');
+  empty.classList.toggle('hidden', visible.length > 0);
+  empty.textContent = total
+    ? 'No jobs match the current search and status filter.'
+    : 'No jobs yet.';
+  renderJobGroup('active-jobs-group', 'active-jobs-body', 'active-jobs-count', active);
+  renderJobGroup('recent-jobs-group', 'recent-jobs-body', 'recent-jobs-count', recent);
+}
+
+function renderJobRows(body, jobs) {
   const open = state.openJobId;
   body.innerHTML = '';
 
-  state.jobs.forEach((job) => {
+  jobs.forEach((job) => {
     const row = document.createElement('tr');
     row.className = 'job-row';
     row.dataset.jobId = job.job_id;
@@ -816,6 +990,14 @@ function renderJobs() {
     fileName.textContent = job.name;
     fileLabel.append(disclosure, fileName);
     name.appendChild(fileLabel);
+    const metadata = [formatJobTimestamp(job.created_at), job.config_label || job.config_file]
+      .filter(Boolean);
+    if (metadata.length) {
+      const meta = document.createElement('div');
+      meta.className = 'job-meta';
+      meta.textContent = metadata.join(' \u00b7 ');
+      name.appendChild(meta);
+    }
 
     const processing = document.createElement('td');
     processing.className = 'processing';
@@ -853,14 +1035,51 @@ function renderJobs() {
 
     const downloads = document.createElement('td');
     downloads.className = 'actions';
-    const actionList = document.createElement('div');
-    actionList.className = 'action-list';
     const base = '/api/jobs/' + job.job_id + '/';
-    actionList.appendChild(link(base + 'pdf', 'PDF', job.has_pdf));
-    actionList.appendChild(link(base + 'before', 'Before', Boolean(job.before)));
-    actionList.appendChild(link(base + 'after', 'After', Boolean(job.after)));
-    actionList.appendChild(link(base + 'download', 'ZIP', job.status === 'completed'));
-    downloads.appendChild(actionList);
+    const split = document.createElement('div');
+    split.className = 'split-download';
+    const primary = link(base + 'pdf', 'Remediated PDF', job.has_pdf,
+      job.name, 'file-check');
+    primary.classList.add('split-primary');
+    split.appendChild(primary);
+
+    const menu = document.createElement('details');
+    menu.className = 'download-menu';
+    menu.dataset.jobId = job.job_id;
+    menu.open = state.openDownloadJobId === job.job_id;
+    const menuSummary = document.createElement('summary');
+    menuSummary.setAttribute('aria-label', 'More download options for ' + job.name);
+    menuSummary.setAttribute('aria-expanded', menu.open ? 'true' : 'false');
+    const menuId = 'downloads-' + job.job_id;
+    menuSummary.setAttribute('aria-controls', menuId);
+    const menuCaret = document.createElement('span');
+    menuCaret.className = 'menu-caret';
+    menuCaret.setAttribute('aria-hidden', 'true');
+    menuCaret.textContent = '\u25be';
+    menuSummary.append(menuCaret);
+    const popover = document.createElement('div');
+    popover.className = 'download-popover';
+    popover.id = menuId;
+    popover.appendChild(link(base + 'before', 'Before report', Boolean(job.before),
+      job.name, 'file-search'));
+    popover.appendChild(link(base + 'after', 'After report', Boolean(job.after),
+      job.name, 'clipboard-check'));
+    popover.appendChild(link(base + 'download', 'Download all',
+      job.status === 'completed', job.name, 'download'));
+    menu.append(menuSummary, popover);
+    menu.addEventListener('toggle', () => {
+      menuSummary.setAttribute('aria-expanded', menu.open ? 'true' : 'false');
+      if (menu.open) {
+        state.openDownloadJobId = job.job_id;
+        document.querySelectorAll('.download-menu[open]').forEach((other) => {
+          if (other !== menu) other.removeAttribute('open');
+        });
+      } else if (state.openDownloadJobId === job.job_id) {
+        state.openDownloadJobId = null;
+      }
+    });
+    split.appendChild(menu);
+    downloads.appendChild(split);
 
     row.append(name, processing, status, validation, downloads);
     body.appendChild(row);
@@ -925,12 +1144,58 @@ function validationComparison(before, after) {
   }).join('') + '</div>';
 }
 
-function link(href, label, enabled) {
+function downloadIcon(name) {
+  const namespace = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(namespace, 'svg');
+  svg.classList.add('dl-icon');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+
+  const shapes = {
+    'file-check': [
+      ['path', { d: 'M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z' }],
+      ['polyline', { points: '14 2 14 8 20 8' }],
+      ['path', { d: 'm9 15 2 2 4-4' }],
+    ],
+    'file-search': [
+      ['path', { d: 'M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z' }],
+      ['polyline', { points: '14 2 14 8 20 8' }],
+      ['circle', { cx: '11.5', cy: '14.5', r: '2.5' }],
+      ['path', { d: 'm13.3 16.3 2.2 2.2' }],
+    ],
+    'clipboard-check': [
+      ['rect', { width: '8', height: '4', x: '8', y: '2', rx: '1' }],
+      ['path', { d: 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2' }],
+      ['path', { d: 'm9 14 2 2 4-4' }],
+    ],
+    download: [
+      ['path', { d: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' }],
+      ['polyline', { points: '7 10 12 15 17 10' }],
+      ['line', { x1: '12', x2: '12', y1: '15', y2: '3' }],
+    ],
+  };
+
+  (shapes[name] || []).forEach(([tag, attributes]) => {
+    const shape = document.createElementNS(namespace, tag);
+    Object.entries(attributes).forEach(([key, value]) => shape.setAttribute(key, value));
+    svg.appendChild(shape);
+  });
+  return svg;
+}
+
+function link(href, label, enabled, fileName, iconName) {
   const anchor = document.createElement('a');
   anchor.className = 'dl';
-  anchor.textContent = label;
-  if (enabled) anchor.href = href;
-  else anchor.setAttribute('aria-disabled', 'true');
+  anchor.append(downloadIcon(iconName), label);
+  anchor.setAttribute('aria-label', label + ' for ' + fileName +
+    (enabled ? '' : ' (unavailable)'));
+  if (enabled) {
+    anchor.href = href;
+  } else {
+    anchor.setAttribute('aria-disabled', 'true');
+    anchor.title = 'Unavailable until this artifact is ready';
+  }
   return anchor;
 }
 
@@ -1108,7 +1373,32 @@ el('clear-staged').addEventListener('click', () => {
   renderStaged();
   updateSubmitState();
 });
+el('config-select').addEventListener('change', renderConfigDescription);
+el('job-search').addEventListener('input', (event) => {
+  state.jobSearch = event.target.value;
+  renderJobs();
+});
+el('job-status-filter').addEventListener('change', (event) => {
+  state.jobStatusFilter = event.target.value;
+  renderJobs();
+});
 el('submit').addEventListener('click', submitJobs);
+document.addEventListener('click', (event) => {
+  const openMenu = document.querySelector('.download-menu[open]');
+  if (openMenu && !openMenu.contains(event.target)) {
+    openMenu.removeAttribute('open');
+    state.openDownloadJobId = null;
+  }
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  const openMenu = document.querySelector('.download-menu[open]');
+  if (!openMenu) return;
+  const summary = openMenu.querySelector('summary');
+  openMenu.removeAttribute('open');
+  state.openDownloadJobId = null;
+  summary.focus();
+});
 
 loadConfigs();
 loadHealth();
