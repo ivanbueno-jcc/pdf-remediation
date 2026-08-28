@@ -181,10 +181,8 @@ class AuthenticationTests(unittest.TestCase):
             [
                 "Standard",
                 "Forms",
-                "Opinions",
                 "Fix metadata",
                 "Make accessible",
-                "Make accessible (Docling)",
                 "Quick fix",
             ],
         )

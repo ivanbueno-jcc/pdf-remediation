@@ -14,10 +14,8 @@ VERAPDF_JAR = REPO_ROOT / "lib" / "greenfield-apps-1.28.0.jar"
 ALLOWED_CONFIG_FILES = (
     "default.json",
     "default-slim.json",
-    "opinions.json",
     "pdfix-fix_metadata.json",
     "pdfix-make_accessible.json",
-    "pdfix-make_accessible_docling.json",
     "pdfix-quick_fix.json",
 )
 DEFAULT_CONFIG_FILE = "default.json"
@@ -38,14 +36,6 @@ CONFIG_FILE_DETAILS = {
             "metadata repairs."
         ),
     },
-    "opinions.json": {
-        "label": "Opinions",
-        "group": "Judicial Council",
-        "description": (
-            "Merges adjacent split footnote structure elements and fixes "
-            "the document title for judicial opinions."
-        ),
-    },
     "pdfix-fix_metadata.json": {
         "label": "Fix metadata",
         "group": "PDFix",
@@ -61,15 +51,6 @@ CONFIG_FILE_DETAILS = {
             "PDFix's official PDF/UA-1 preset: conservative, non-destructive "
             "cleanup, structure repair, tagging completion, and accessibility "
             "fixes."
-        ),
-    },
-    "pdfix-make_accessible_docling.json": {
-        "label": "Make accessible (Docling)",
-        "group": "PDFix",
-        "description": (
-            "PDFix's PDF/UA-1 preset using Docling for AI-assisted "
-            "auto-tagging, built for maximum compatibility when processing "
-            "documents with Docling."
         ),
     },
     "pdfix-quick_fix.json": {
