@@ -32,6 +32,7 @@ class JobStatus(StrEnum):
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
 class StepState(StrEnum):
@@ -44,9 +45,14 @@ class StepState(StrEnum):
     DONE = "done"
     SKIPPED = "skipped"
     FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
-TERMINAL_STATUSES = frozenset({JobStatus.COMPLETED, JobStatus.FAILED})
+TERMINAL_STATUSES = frozenset({
+    JobStatus.COMPLETED,
+    JobStatus.FAILED,
+    JobStatus.CANCELLED,
+})
 
 
 @dataclass
@@ -112,6 +118,7 @@ OUTCOME_LABELS = {
     "unable-to-process": "Unable to process",
     "pending": "Working\u2026",
     "active": "Still not compliant",
+    "unprocessed": "Not processed",
     "missing": "Not produced",
 }
 
@@ -154,6 +161,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
     job_id: str
     created_at: datetime
     config_file: str
+    submitted_by: str = ""
     skip_font_fix: bool = False
     wcag_and_ua1_must_pass: bool = False
     verbose: bool = False
@@ -265,6 +273,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
         '''
         return {
             "job_id": self.job_id,
+            "submitted_by": self.submitted_by,
             "created_at": self.created_at.isoformat(timespec="seconds"),
             "started_at": (
                 self.started_at.isoformat(timespec="seconds")

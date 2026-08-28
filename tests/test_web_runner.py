@@ -15,9 +15,11 @@ from pdf_remediation.utilities.resources import (
     print_console_message,
 )
 from pdf_web.config import REPO_ROOT
-from pdf_web.models import Job
+from pdf_web.models import Job, JobStatus
+from pdf_web.store import JobStore
 from pdf_web.runner import (
     PIPELINE_STEP_PATTERN,
+    PipelineRunner,
     PIPELINE_STOPPED_PATTERN,
     SKIP_FONT_FIX_MARKER,
     TERMINUS_MARKERS,
@@ -226,3 +228,190 @@ class IterOutputLinesTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class QueuePositionTests(unittest.TestCase):
+    '''Waiting users are told how long the line is, but not whose it is.'''
+
+    def setUp(self) -> None:
+        '''Create a runner without starting its worker thread.'''
+        self.store = JobStore()
+        self.runner = PipelineRunner(self.store)
+        for job_id in ("20260827-120000-aaaaaa", "20260827-120001-bbbbbb",
+                       "20260827-120002-cccccc"):
+            self.store.add(make_job(job_id=job_id))
+
+    def test_first_submission_waits_for_nobody(self) -> None:
+        '''An idle worker means the job runs next.'''
+        self.assertEqual(self.runner.submit("20260827-120000-aaaaaa"), 0)
+
+    def test_positions_reflect_submission_order(self) -> None:
+        '''Each later submission reports the jobs queued before it.'''
+        self.runner.submit("20260827-120000-aaaaaa")
+        self.assertEqual(self.runner.submit("20260827-120001-bbbbbb"), 1)
+        self.assertEqual(self.runner.submit("20260827-120002-cccccc"), 2)
+
+    def test_unknown_job_has_no_position(self) -> None:
+        '''A job that is not waiting reports no position rather than zero.'''
+        self.assertIsNone(self.runner.jobs_ahead("20260827-120000-aaaaaa"))
+
+    def test_queue_depth_counts_only_waiting_jobs(self) -> None:
+        '''Depth is what is queued, which drives the health readout.'''
+        self.assertEqual(self.runner.queue_depth(), 0)
+        self.runner.submit("20260827-120000-aaaaaa")
+        self.runner.submit("20260827-120001-bbbbbb")
+        self.assertEqual(self.runner.queue_depth(), 2)
+
+    def test_pending_order_is_preserved(self) -> None:
+        '''The queue is first in, first out.'''
+        for job_id in ("20260827-120000-aaaaaa", "20260827-120001-bbbbbb"):
+            self.runner.submit(job_id)
+        self.assertEqual(
+            self.runner.pending_job_ids(),
+            ("20260827-120000-aaaaaa", "20260827-120001-bbbbbb")
+        )
+
+
+class CancellationRaceTests(unittest.TestCase):
+    '''Cancelling between claiming a job and starting it must still stop it.'''
+
+    def setUp(self) -> None:
+        '''Create a runner holding one job, with no worker thread.'''
+        self.store = JobStore()
+        self.runner = PipelineRunner(self.store)
+        self.job = make_job(job_id="20260827-120000-aaaaaa")
+        self.store.add(self.job)
+
+    def test_cancel_before_the_process_exists_prevents_the_run(self) -> None:
+        '''There is no process to signal yet, so the flag must be honoured.
+
+        Without the pre-run check the pipeline would run to completion and only
+        then report itself cancelled, which stops nothing.
+        '''
+        self.runner.submit(self.job.job_id)
+        # Claim the job the way the worker loop does, then cancel it.
+        # pylint: disable=protected-access
+        with self.runner._pending_lock:
+            self.runner._pending.remove(self.job.job_id)
+            self.runner._active_job_id = self.job.job_id
+        self.assertTrue(self.runner.cancel(self.job.job_id))
+
+        with (
+            mock.patch.object(self.runner, "_guard_source_seeded"),
+            mock.patch.object(self.runner, "_stream_pipeline") as pipeline,
+        ):
+            self.runner._run_job(self.job)
+
+        pipeline.assert_not_called()
+        self.assertEqual(self.job.status, JobStatus.CANCELLED)
+
+    def test_an_uncancelled_job_still_runs(self) -> None:
+        '''The guard must not stop ordinary jobs.'''
+        # The source guard is a separate concern; stub it so this test is
+        # about the cancellation check alone.
+        # pylint: disable=protected-access
+        with (
+            mock.patch.object(self.runner, "_guard_source_seeded"),
+            mock.patch.object(self.runner, "_stream_pipeline", return_value=0) as pipeline,
+            mock.patch.object(self.runner, "_finish"),
+        ):
+            self.runner._run_job(self.job)
+        pipeline.assert_called_once()
+
+
+class RunningJobCancellationTests(unittest.TestCase):
+    '''Cancelling a job that is mid-pipeline must stop it and say so.'''
+
+    def setUp(self) -> None:
+        '''Create a runner holding one job, with no worker thread.'''
+        self.store = JobStore()
+        self.runner = PipelineRunner(self.store)
+        self.job = make_job(job_id="20260827-120000-aaaaaa")
+        self.store.add(self.job)
+
+    def _make_active(self) -> None:
+        '''Put the job in the state the worker leaves it while running.'''
+        # pylint: disable=protected-access
+        with self.runner._pending_lock:
+            self.runner._active_job_id = self.job.job_id
+
+    def test_cancel_signals_the_process_group(self) -> None:
+        '''Killing the group is what reaps the multiprocessing children.'''
+        self._make_active()
+        process = mock.Mock()
+        # pylint: disable=protected-access
+        self.runner._process = process
+
+        with mock.patch("pdf_web.runner.terminate_process_group") as terminate:
+            self.assertTrue(self.runner.cancel(self.job.job_id))
+
+        terminate.assert_called_once_with(process)
+
+    def test_a_killed_run_reports_cancelled_not_failed(self) -> None:
+        '''Killing the pipeline makes it exit non-zero; that is not a failure.
+
+        Reporting it as failed would tell the user their documents broke when
+        in fact they stopped it themselves. The cancellation has to arrive
+        while the pipeline is running, so that the check after it returns is
+        the one under test rather than the check before it starts.
+        '''
+        self._make_active()
+        # pylint: disable=protected-access
+        self.runner._process = mock.Mock()
+
+        def cancel_mid_run(_job):
+            '''Cancel while the pipeline is running, then exit as killed.'''
+            with mock.patch("pdf_web.runner.terminate_process_group"):
+                self.runner.cancel(self.job.job_id)
+            return -15
+
+        with (
+            mock.patch.object(self.runner, "_guard_source_seeded"),
+            mock.patch.object(
+                self.runner, "_stream_pipeline", side_effect=cancel_mid_run
+            ) as pipeline,
+            mock.patch("pdf_web.runner.harvest_job"),
+            mock.patch("pdf_web.runner.save_meta"),
+        ):
+            self.runner._run_job(self.job)
+
+        pipeline.assert_called_once()
+        self.assertEqual(self.job.status, JobStatus.CANCELLED)
+        self.assertIn("Cancelled", self.job.error)
+
+    def test_a_genuinely_failed_run_still_reports_failed(self) -> None:
+        '''The cancellation branch must not swallow real failures.'''
+        self._make_active()
+        with (
+            mock.patch.object(self.runner, "_guard_source_seeded"),
+            mock.patch.object(self.runner, "_stream_pipeline", return_value=1),
+            mock.patch("pdf_web.runner.harvest_job"),
+            mock.patch("pdf_web.runner.save_meta"),
+        ):
+            # pylint: disable=protected-access
+            self.runner._run_job(self.job)
+
+        self.assertEqual(self.job.status, JobStatus.FAILED)
+
+    def test_worker_skips_jobs_already_finished(self) -> None:
+        '''A job cancelled while queued is still in the queue; it must be skipped.'''
+        self.job.status = JobStatus.CANCELLED
+        self.runner.submit(self.job.job_id)
+        # pylint: disable=protected-access
+        self.runner._queue.put(None)
+
+        with mock.patch.object(self.runner, "_run_job") as run_job:
+            self.runner._worker_loop()
+
+        run_job.assert_not_called()
+
+    def test_worker_runs_a_job_that_is_not_finished(self) -> None:
+        '''The skip must not swallow ordinary work.'''
+        self.runner.submit(self.job.job_id)
+        # pylint: disable=protected-access
+        self.runner._queue.put(None)
+
+        with mock.patch.object(self.runner, "_run_job") as run_job:
+            self.runner._worker_loop()
+
+        run_job.assert_called_once()

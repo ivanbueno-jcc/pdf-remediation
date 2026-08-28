@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, AsyncIterator
 from uuid import uuid4
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi import Path as PathParam
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 
@@ -28,11 +28,18 @@ from .config import (
     MAX_JOB_BYTES,
     MIN_FREE_DISK_BYTES,
     RETENTION_SWEEP_SECONDS,
+    max_jobs_per_user,
     SSE_KEEPALIVE_SECONDS,
     SSE_POLL_SECONDS,
     STATIC_DIR,
 )
 from .environment import cached_health
+from .identity import (
+    describe_mode,
+    diagnose_request,
+    header_diagnostic_enabled,
+    resolve_user,
+)
 from .models import Job, JobStatus, UploadedFile
 from .runner import PipelineRunner, seed_source_folder
 from .store import (
@@ -49,6 +56,14 @@ from .uploads import (
     write_upload_stream,
 )
 
+async def current_user(request: Request) -> str:
+    '''
+    Return the authenticated user, rejecting unauthenticated requests.
+    '''
+    return resolve_user(request)
+
+
+CURRENT_USER = Depends(current_user)
 JOB_ID_PATH = PathParam(..., pattern=r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 FILE_ID_PATH = PathParam(..., pattern=r"^\d{3}$")
 
@@ -62,7 +77,14 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     Load persisted jobs, start the worker, and clean up on shutdown.
     '''
     JOBS_ROOT.mkdir(parents=True, exist_ok=True)
-    load_persisted_jobs(STORE)
+    _loaded, unowned = load_persisted_jobs(STORE)
+    if unowned:
+        print(
+            f"{APP_NAME}: {unowned} job(s) have no recorded owner and are "
+            "unreachable by every user. They predate per-user ownership. "
+            "Set PDF_WEB_LEGACY_JOB_OWNER to adopt them, or delete "
+            f"{JOBS_ROOT} entries you no longer need."
+        )
     sweep_expired_jobs(STORE)
     RUNNER.start()
     sweep_task = asyncio.create_task(_retention_loop())
@@ -102,16 +124,57 @@ async def index() -> HTMLResponse:
     )
 
 
+@app.get("/healthz")
+async def liveness() -> JSONResponse:
+    '''
+    Report whether the service can do work, for supervisors and load balancers.
+
+    Deliberately unauthenticated and deliberately uninformative: a probe needs
+    to know the process is alive and the worker is running, and nothing about
+    licences, tooling, or the identity configuration. That detail stays behind
+    authentication on /api/health.
+    '''
+    worker_alive = RUNNER.is_running()
+    return JSONResponse(
+        status_code=200 if worker_alive else 503,
+        content={
+            "status": "ok" if worker_alive else "degraded",
+            "worker": "running" if worker_alive else "stopped",
+            "version": APP_VERSION,
+        }
+    )
+
+
+@app.get("/api/proxy-headers")
+async def proxy_headers(request: Request) -> dict[str, Any]:
+    '''
+    Report what the proxy forwarded, for diagnosing a deployment.
+
+    Deliberately reachable without authenticating, because its purpose is to
+    explain why authentication is not working. It is disabled unless
+    PDF_WEB_HEADER_DIAGNOSTIC is set, returns 404 when off so it is not
+    discoverable, and redacts credential-bearing values.
+    '''
+    if not header_diagnostic_enabled():
+        raise HTTPException(status_code=404, detail="Not found.")
+    return {"auth": describe_mode(), **diagnose_request(request)}
+
+
 @app.get("/api/health")
-async def health() -> dict[str, Any]:
+async def health(user: str = CURRENT_USER) -> dict[str, Any]:
     '''
     Report on the external tools the pipeline needs.
     '''
     payload = await asyncio.to_thread(cached_health)
-    return {**payload, "queue_depth": RUNNER.queue_depth()}
+    return {
+        **payload,
+        "queue_depth": RUNNER.queue_depth(),
+        "user": user,
+        "auth": describe_mode(),
+    }
 
 
-@app.get("/api/config-files")
+@app.get("/api/config-files", dependencies=[Depends(current_user)])
 async def config_files() -> dict[str, Any]:
     '''
     List the remediation configurations offered in the browser.
@@ -126,7 +189,7 @@ async def config_files() -> dict[str, Any]:
 
 
 @app.get("/api/jobs")
-async def list_jobs() -> dict[str, Any]:
+async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
     '''
     List known jobs, newest first.
     '''
@@ -141,17 +204,19 @@ async def list_jobs() -> dict[str, Any]:
                 "config_file": job.config_file,
             }
             for job in STORE.list_jobs()
+            if job.submitted_by == user
         ]
     }
 
 
 @app.post("/api/jobs", status_code=201)
-async def create_job(  # pylint: disable=too-many-locals
+async def create_job(  # pylint: disable=too-many-locals,too-many-arguments,too-many-positional-arguments
         files: list[UploadFile] = File(...),
         config_file: str = Form(DEFAULT_CONFIG_FILE),
         skip_font_fix: bool = Form(False),
         wcag_and_ua1_must_pass: bool = Form(False),
-        verbose: bool = Form(False)) -> JSONResponse:
+        verbose: bool = Form(False),
+        user: str = CURRENT_USER) -> JSONResponse:
     '''
     Accept uploaded PDFs and queue a pipeline run.
     '''
@@ -176,11 +241,13 @@ async def create_job(  # pylint: disable=too-many-locals
         )
 
     _assert_disk_space()
+    _assert_within_user_limit(user)
 
     job = Job(
         job_id=_new_job_id(),
         created_at=datetime.now(),
         config_file=config_file,
+        submitted_by=user,
         skip_font_fix=skip_font_fix,
         wcag_and_ua1_must_pass=wcag_and_ua1_must_pass,
         verbose=verbose,
@@ -204,26 +271,38 @@ async def create_job(  # pylint: disable=too-many-locals
 
     return JSONResponse(
         status_code=201,
-        content={**job.to_dict(), "queue_position": queue_position}
+        content={**job.to_dict(), "jobs_ahead": queue_position}
     )
 
 
 @app.get("/api/jobs/{job_id}")
-async def get_job(job_id: str = JOB_ID_PATH, since: int = 0) -> dict[str, Any]:
+async def get_job(
+        job_id: str = JOB_ID_PATH,
+        since: int = 0,
+        user: str = CURRENT_USER) -> dict[str, Any]:
     '''
     Return a job's state, optionally with events recorded after a cursor.
     '''
-    job = _require_job(job_id)
+    job = _require_job(job_id, user)
     cursor, events = STORE.events_since(job_id, since)
-    return {**job.to_dict(), "cursor": cursor, "events": events}
+    return {
+        **job.to_dict(),
+        "cursor": cursor,
+        "events": events,
+        "jobs_ahead": RUNNER.jobs_ahead(job_id),
+    }
 
 
 @app.get("/api/jobs/{job_id}/events")
-async def job_events(request: Request, job_id: str = JOB_ID_PATH, since: int = 0):
+async def job_events(
+        request: Request,
+        job_id: str = JOB_ID_PATH,
+        since: int = 0,
+        user: str = CURRENT_USER):
     '''
     Stream job events as Server-Sent Events.
     '''
-    _require_job(job_id)
+    _require_job(job_id, user)
 
     async def event_stream() -> AsyncIterator[str]:
         '''
@@ -271,11 +350,13 @@ async def job_events(request: Request, job_id: str = JOB_ID_PATH, since: int = 0
 
 
 @app.get("/api/jobs/{job_id}/log")
-async def job_log(job_id: str = JOB_ID_PATH) -> FileResponse:
+async def job_log(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER) -> FileResponse:
     '''
     Download the captured pipeline log.
     '''
-    job = _require_job(job_id)
+    job = _require_job(job_id, user)
     log_path = _require_file(job.log_path)
     return FileResponse(
         log_path,
@@ -287,11 +368,12 @@ async def job_log(job_id: str = JOB_ID_PATH) -> FileResponse:
 @app.get("/api/jobs/{job_id}/files/{file_id}/pdf")
 async def download_pdf(
         job_id: str = JOB_ID_PATH,
-        file_id: str = FILE_ID_PATH) -> FileResponse:
+        file_id: str = FILE_ID_PATH,
+        user: str = CURRENT_USER) -> FileResponse:
     '''
     Download one file's remediated PDF.
     '''
-    job = _require_job(job_id)
+    job = _require_job(job_id, user)
     uploaded_file = _require_upload(job, file_id)
     result = job.find_result(file_id)
     if result is None or result.final_pdf_path is None:
@@ -309,11 +391,12 @@ async def download_pdf(
 async def download_report(
         job_id: str = JOB_ID_PATH,
         file_id: str = FILE_ID_PATH,
-        stage: str = PathParam(..., pattern=r"^(before|after)$")) -> FileResponse:
+        stage: str = PathParam(..., pattern=r"^(before|after)$"),
+        user: str = CURRENT_USER) -> FileResponse:
     '''
     Download one file's normalized validation report.
     '''
-    job = _require_job(job_id)
+    job = _require_job(job_id, user)
     uploaded_file = _require_upload(job, file_id)
     report_path = _require_file(job.result_folder(file_id) / f"{stage}.json")
     return FileResponse(
@@ -324,11 +407,13 @@ async def download_report(
 
 
 @app.get("/api/jobs/{job_id}/download")
-async def download_bundle(job_id: str = JOB_ID_PATH) -> FileResponse:
+async def download_bundle(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER) -> FileResponse:
     '''
     Download every artifact for a job as one ZIP archive.
     '''
-    job = _require_job(job_id)
+    job = _require_job(job_id, user)
     if not job.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
 
@@ -343,14 +428,41 @@ async def download_bundle(job_id: str = JOB_ID_PATH) -> FileResponse:
     )
 
 
+@app.post("/api/jobs/{job_id}/cancel")
+async def cancel_job(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER) -> dict[str, Any]:
+    '''
+    Stop one of your queued or running jobs.
+
+    Without this, a mistaken batch cannot be stopped: it holds the submitter's
+    only slot and everyone queued behind it waits for work nobody wants.
+    '''
+    job = _require_job(job_id, user)
+    if job.is_terminal():
+        raise HTTPException(
+            status_code=409,
+            detail=f"This job has already finished ({job.status})."
+        )
+
+    if not await asyncio.to_thread(RUNNER.cancel, job_id):
+        raise HTTPException(
+            status_code=409,
+            detail="This job finished before it could be cancelled."
+        )
+
+    return {"job_id": job_id, "status": str(job.status)}
+
+
 @app.post("/api/jobs/{job_id}/retry", status_code=201)
 async def retry_job(
         job_id: str = JOB_ID_PATH,
-        skip_font_fix: bool = Form(True)) -> JSONResponse:
+        skip_font_fix: bool = Form(True),
+        user: str = CURRENT_USER) -> JSONResponse:
     '''
     Re-run a finished job's PDFs without asking the browser to upload them again.
     '''
-    original = _require_job(job_id)
+    original = _require_job(job_id, user)
     if not original.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
 
@@ -366,11 +478,13 @@ async def retry_job(
         )
 
     _assert_disk_space()
+    _assert_within_user_limit(user)
 
     job = Job(
         job_id=_new_job_id(),
         created_at=datetime.now(),
         config_file=original.config_file,
+        submitted_by=user,
         skip_font_fix=skip_font_fix,
         wcag_and_ua1_must_pass=original.wcag_and_ua1_must_pass,
         verbose=original.verbose,
@@ -392,16 +506,18 @@ async def retry_job(
     queue_position = RUNNER.submit(job.job_id)
     return JSONResponse(
         status_code=201,
-        content={**job.to_dict(), "queue_position": queue_position}
+        content={**job.to_dict(), "jobs_ahead": queue_position}
     )
 
 
 @app.delete("/api/jobs/{job_id}")
-async def delete_job(job_id: str = JOB_ID_PATH) -> dict[str, Any]:
+async def delete_job(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER) -> dict[str, Any]:
     '''
     Delete a finished job and everything it produced.
     '''
-    job = _require_job(job_id)
+    job = _require_job(job_id, user)
     if not job.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
 
@@ -466,14 +582,17 @@ def _new_job_id() -> str:
     return f"{datetime.now():%Y%m%d-%H%M%S}-{uuid4().hex[:6]}"
 
 
-def _require_job(job_id: str) -> Job:
-    '''
-    Return a job or raise a 404.
-    '''
+def _require_job(job_id: str, user: str) -> Job:
+    """
+    Return a job owned by the given user, or raise a 404.
+
+    Someone else's job is reported as missing rather than forbidden, so job
+    identifiers cannot be probed for existence.
+    """
     if not is_valid_job_id(job_id):
         raise HTTPException(status_code=404, detail="Unknown job.")
     job = STORE.get(job_id)
-    if job is None:
+    if job is None or job.submitted_by != user:
         raise HTTPException(status_code=404, detail="Unknown job.")
     return job
 
@@ -496,6 +615,25 @@ def _require_file(candidate: Path) -> Path:
     if not resolved.is_relative_to(JOBS_ROOT.resolve()) or not resolved.is_file():
         raise HTTPException(status_code=404, detail="Not found.")
     return resolved
+
+
+def _assert_within_user_limit(user: str) -> None:
+    '''
+    Refuse a submission that would let one user monopolize the single worker.
+    '''
+    limit = max_jobs_per_user()
+    active = sum(
+        1 for job in STORE.list_jobs()
+        if job.submitted_by == user and not job.is_terminal()
+    )
+    if active >= limit:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"You already have {active} job(s) queued or running. "
+                "Wait for them to finish before submitting more."
+            )
+        )
 
 
 def _assert_disk_space() -> None:

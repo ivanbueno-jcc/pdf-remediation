@@ -132,6 +132,9 @@ tr.detail-row > td { background: rgba(127,127,127,.05); padding: 0; }
 #jobs-body tr:hover > td { background: rgba(127,127,127,.06); }
 .pill { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
 .pill.completed { border-color: var(--ok); color: var(--ok); }
+.pill.cancelled { border-color: var(--warn); color: var(--warn); }
+ol.steps li[data-state="cancelled"] { opacity: .6; }
+ol.steps li[data-state="cancelled"] .marker { border-color: var(--warn); color: var(--warn); }
 .pill.failed { border-color: var(--bad); color: var(--bad); }
 .pill.running, .pill.queued { border-color: var(--accent); color: var(--accent); }
 </style>
@@ -140,6 +143,7 @@ tr.detail-row > td { background: rgba(127,127,127,.05); padding: 0; }
 <main>
   <h1>PDF Remediation</h1>
   <p class="sub">Drop PDFs, pick a configuration, and run the full remediation pipeline: validate, remediate, validate again.</p>
+  <p class="muted" id="identity"></p>
 
   <section id="health-section">
     <h2>Environment</h2>
@@ -192,6 +196,7 @@ tr.detail-row > td { background: rgba(127,127,127,.05); padding: 0; }
     <p id="job-status" role="status" aria-live="polite" class="muted"></p>
     <ol class="steps" id="steps"></ol>
     <div class="row" style="margin-top:16px">
+      <button class="small" id="cancel-job">Cancel job</button>
       <button class="small" id="new-job">Start another job</button>
       <a class="dl" id="download-all" aria-disabled="true" href="#">Download all (.zip)</a>
       <a class="dl" id="download-log" aria-disabled="true" href="#">Download log</a>
@@ -224,6 +229,7 @@ const state = {
   jobId: null,
   cursor: 0,
   jobActive: false,
+  authError: null,
   source: null,
   pollTimer: null,
   health: null,
@@ -246,12 +252,33 @@ function formatBytes(bytes) {
 async function loadHealth() {
   try {
     const response = await fetch('/api/health');
-    state.health = await response.json();
+    if (response.status === 401 || response.status === 403) {
+      const payload = await response.json().catch(() => ({}));
+      state.authError = payload.detail || 'Not authenticated.';
+      state.health = { checks: [], can_submit: false, blocking: [] };
+    } else {
+      state.authError = null;
+      state.health = await response.json();
+    }
   } catch (error) {
-    state.health = { checks: [], can_submit: false, blocking: ['server'] };
+    state.authError = null;
+    state.health = { checks: [], can_submit: false, blocking: ['server unreachable'] };
   }
+  renderIdentity();
   renderHealth();
   updateSubmitState();
+}
+
+function renderIdentity() {
+  const line = el('identity');
+  const auth = (state.health && state.health.auth) || {};
+  if (state.authError || !state.health.user) {
+    line.textContent = '';
+    return;
+  }
+  line.textContent = auth.multi_user
+    ? 'Signed in as ' + state.health.user + ' \u00b7 your jobs are private to you'
+    : 'Single-user mode \u00b7 ' + state.health.user;
 }
 
 function renderHealth() {
@@ -267,6 +294,11 @@ function renderHealth() {
   });
 
   const banner = el('health-banner');
+  if (state.authError) {
+    banner.className = 'banner bad';
+    banner.textContent = state.authError;
+    return;
+  }
   if (!state.health.can_submit) {
     banner.className = 'banner bad';
     banner.textContent = 'Cannot run: ' + (state.health.blocking || []).join(', ') +
@@ -384,6 +416,7 @@ async function submitJob() {
     return;
   }
 
+
   state.jobId = payload.job_id;
   state.cursor = 0;
   state.logLines = [];
@@ -418,7 +451,7 @@ function connect() {
     startPolling();
     return;
   }
-  ['log', 'step', 'status', 'done', 'results'].forEach((type) => {
+  ['log', 'step', 'status', 'done', 'results', 'queue'].forEach((type) => {
     state.source.addEventListener(type, (event) => handleEvent(JSON.parse(event.data)));
   });
   state.source.onerror = () => {
@@ -456,7 +489,8 @@ function handleEvent(event) {
   if (event.cursor) state.cursor = Math.max(state.cursor, event.cursor);
   if (event.type === 'log') appendLog(event.payload.line);
   else if (event.type === 'done') { stopStreaming(); refreshFinal(); }
-  else if (event.type === 'step' || event.type === 'status' || event.type === 'results') refreshState();
+  else if (event.type === 'step' || event.type === 'status'
+           || event.type === 'results' || event.type === 'queue') refreshState();
 }
 
 let pendingRefresh = null;
@@ -490,7 +524,16 @@ function appendLog(line) {
 
 /* ---------- rendering ---------- */
 
-const STEP_MARKS = { done: '✓', failed: '✕', skipped: '–', running: '▸', pending: '' };
+const STEP_MARKS = { done: '✓', failed: '✕', skipped: '–', running: '▸',
+                     cancelled: '⊘', pending: '' };
+
+function describeWait(job) {
+  const ahead = job.jobs_ahead;
+  if (ahead === null || ahead === undefined) return 'Queued.';
+  if (ahead === 0) return 'Queued — next to run.';
+  if (ahead === 1) return 'Queued — 1 job ahead of yours.';
+  return 'Queued — ' + ahead + ' jobs ahead of yours.';
+}
 
 function renderJob(job) {
   state.jobActive = job.status === 'queued' || job.status === 'running';
@@ -512,16 +555,29 @@ function renderJob(job) {
   });
 
   const statusText = {
-    queued: 'Queued — waiting for the worker.',
+    queued: describeWait(job),
     running: 'Running…',
     completed: 'Completed.',
     failed: 'Failed.',
+    cancelled: 'Cancelled.',
   }[job.status] || job.status;
-  el('job-status').textContent = job.job_id + ' · ' + statusText;
+
+  const privacy = (state.health && state.health.auth && state.health.auth.multi_user)
+    ? ' · only you can open this link'
+    : '';
+  el('job-status').textContent = job.job_id + ' · ' + statusText + privacy;
   updateSubmitState();
 
+  el('cancel-job').classList.toggle(
+    'hidden', job.status !== 'queued' && job.status !== 'running'
+  );
+
   const banner = el('job-banner');
-  if (job.status === 'failed') {
+  if (job.status === 'cancelled') {
+    banner.className = 'banner warn';
+    banner.textContent = 'Cancelled.' +
+      (job.partial ? ' Partial results below are still downloadable.' : '');
+  } else if (job.status === 'failed') {
     banner.className = 'banner bad';
     banner.textContent = (job.error || 'The pipeline stopped.') +
       (job.partial ? ' Partial results below are still downloadable.' : '');
@@ -534,6 +590,7 @@ function renderJob(job) {
 }
 
 function finish(job) {
+  el('cancel-job').classList.add('hidden');
   el('download-all').href = '/api/jobs/' + job.job_id + '/download';
   el('download-all').setAttribute('aria-disabled', 'false');
   el('download-log').href = '/api/jobs/' + job.job_id + '/log';
@@ -824,6 +881,13 @@ async function loadJobsList() {
 async function openJob(jobId) {
   const response = await fetch('/api/jobs/' + jobId);
   if (!response.ok) {
+    if (response.status === 404) {
+      const banner = el('health-banner');
+      banner.className = 'banner warn';
+      banner.textContent =
+        'That job is not available. Jobs are private to whoever submitted ' +
+        'them, so a link shared by a colleague will not open here.';
+    }
     window.location.hash = '';
     return;
   }
@@ -905,6 +969,22 @@ el('file-input').addEventListener('change', (event) => {
   event.target.value = '';
 });
 el('submit').addEventListener('click', submitJob);
+el('cancel-job').addEventListener('click', async () => {
+  if (!state.jobId) return;
+  const button = el('cancel-job');
+  button.disabled = true;
+  try {
+    const response = await fetch('/api/jobs/' + state.jobId + '/cancel', { method: 'POST' });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      el('job-status').textContent = describeError(payload);
+    }
+  } finally {
+    button.disabled = false;
+    refreshState();
+  }
+});
+
 el('new-job').addEventListener('click', () => {
   state.staged = [];
   renderStaged();

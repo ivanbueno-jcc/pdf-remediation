@@ -33,7 +33,7 @@ LINE_BREAK_PATTERN = re.compile(r"[\r\n]")
 TERMINATE_GRACE_SECONDS = 10.0
 
 
-class PipelineRunner:
+class PipelineRunner:  # pylint: disable=too-many-instance-attributes
     '''
     Serialize pipeline runs so only one go.py invocation is active at a time.
     '''
@@ -44,6 +44,10 @@ class PipelineRunner:
         '''
         self._store = store
         self._queue: queue.Queue[str | None] = queue.Queue()
+        self._pending_lock = threading.Lock()
+        self._pending: list[str] = []
+        self._cancelled: set[str] = set()
+        self._active_job_id: str | None = None
         self._thread: threading.Thread | None = None
         self._process_lock = threading.Lock()
         self._harvest_lock = threading.Lock()
@@ -79,16 +83,96 @@ class PipelineRunner:
 
     def submit(self, job_id: str) -> int:
         '''
-        Queue a job and return its position in the queue.
+        Queue a job and return how many jobs will run before it.
         '''
+        with self._pending_lock:
+            self._pending.append(job_id)
         self._queue.put(job_id)
-        return self._queue.qsize()
+        return self.jobs_ahead(job_id) or 0
+
+    def is_running(self) -> bool:
+        '''
+        Return whether the worker thread is alive and able to take jobs.
+        '''
+        return self._thread is not None and self._thread.is_alive()
 
     def queue_depth(self) -> int:
         '''
         Return the number of jobs waiting to run.
         '''
-        return self._queue.qsize()
+        with self._pending_lock:
+            return len(self._pending)
+
+    def active_job_id(self) -> str | None:
+        '''
+        Return the job currently running, if any.
+        '''
+        with self._pending_lock:
+            return self._active_job_id
+
+    def pending_job_ids(self) -> tuple[str, ...]:
+        '''
+        Return the queued jobs in the order they will run.
+        '''
+        with self._pending_lock:
+            return tuple(self._pending)
+
+    def jobs_ahead(self, job_id: str) -> int | None:
+        '''
+        Return how many jobs will run before this one, or None if not waiting.
+
+        Only the count is exposed. Which jobs they are, and whose, is not the
+        waiting user's business.
+        '''
+        with self._pending_lock:
+            if job_id == self._active_job_id:
+                return 0
+            if job_id not in self._pending:
+                return None
+            running = 1 if self._active_job_id is not None else 0
+            return self._pending.index(job_id) + running
+
+    def cancel(self, job_id: str) -> bool:
+        '''
+        Stop a queued or running job, returning whether anything was stopped.
+
+        A queued job is finalized here, since nothing is executing it. A running
+        job's process group is signalled and the run loop finalizes it, so the
+        partial results it produced are still harvested.
+        '''
+        with self._pending_lock:
+            if job_id == self._active_job_id:
+                self._cancelled.add(job_id)
+                running = True
+            elif job_id in self._pending:
+                self._pending.remove(job_id)
+                self._cancelled.add(job_id)
+                running = False
+            else:
+                return False
+
+        if not running:
+            job = self._store.get(job_id)
+            if job is not None:
+                self._finish(job, JobStatus.CANCELLED, "Cancelled before it started.")
+            self._announce_queue_positions()
+            return True
+
+        with self._process_lock:
+            process = self._process
+        if process is not None:
+            terminate_process_group(process)
+        return True
+
+    def _take_cancelled(self, job_id: str) -> bool:
+        '''
+        Consume the cancellation flag for a job.
+        '''
+        with self._pending_lock:
+            if job_id in self._cancelled:
+                self._cancelled.discard(job_id)
+                return True
+            return False
 
     def _worker_loop(self) -> None:
         '''
@@ -99,13 +183,22 @@ class PipelineRunner:
             if job_id is None:
                 self._queue.task_done()
                 return
+            with self._pending_lock:
+                if job_id in self._pending:
+                    self._pending.remove(job_id)
+                self._active_job_id = job_id
             try:
                 job = self._store.get(job_id)
+                if job is not None and job.is_terminal():
+                    continue
                 if job is not None and not self._stopping:
                     self._run_job(job)
                 elif job is not None:
                     self._finish(job, JobStatus.FAILED, "Server is shutting down.")
             finally:
+                with self._pending_lock:
+                    self._active_job_id = None
+                self._announce_queue_positions()
                 self._queue.task_done()
 
     def _run_job(self, job: Job) -> None:
@@ -116,11 +209,21 @@ class PipelineRunner:
         job.started_at = datetime.now()
         self._store.emit(job.job_id, "status", {"status": str(job.status)})
 
+        # A cancellation can land after this job became the active one but
+        # before there is a process to signal, so check before starting rather
+        # than running the pipeline to completion and then reporting it stopped.
+        if self._take_cancelled(job.job_id):
+            self._finish(job, JobStatus.CANCELLED, "Cancelled before it started.")
+            return
+
         try:
             self._guard_source_seeded(job)
             return_code = self._stream_pipeline(job)
             job.return_code = return_code
-            if return_code == 0 and job.error is None:
+            if self._take_cancelled(job.job_id):
+                self._mark_current_step_cancelled(job)
+                self._finish(job, JobStatus.CANCELLED, "Cancelled while running.")
+            elif return_code == 0 and job.error is None:
                 self._mark_remaining_steps_done(job)
                 self._finish(job, JobStatus.COMPLETED, None)
             else:
@@ -265,6 +368,15 @@ class PipelineRunner:
             if state == StepState.RUNNING:
                 job.steps[number] = StepState.FAILED
 
+    def _announce_queue_positions(self) -> None:
+        '''
+        Tell each waiting job its new position after the queue advances.
+        '''
+        for pending_id in self.pending_job_ids():
+            ahead = self.jobs_ahead(pending_id)
+            if ahead is not None:
+                self._store.emit(pending_id, "queue", {"jobs_ahead": ahead})
+
     def _harvest_early(self, job: Job) -> None:
         '''
         Publish before-results mid-run without blocking the output reader.
@@ -290,6 +402,14 @@ class PipelineRunner:
         )
         thread.start()
 
+    def _mark_current_step_cancelled(self, job: Job) -> None:
+        '''
+        Mark the step that was running when the job was cancelled.
+        '''
+        for number, state in job.steps.items():
+            if state == StepState.RUNNING:
+                job.steps[number] = StepState.CANCELLED
+
     def _finish(self, job: Job, status: JobStatus, error: str | None) -> None:
         '''
         Harvest results, persist metadata, and emit the terminal event.
@@ -305,7 +425,7 @@ class PipelineRunner:
         except Exception as harvest_error:  # pylint: disable=broad-exception-caught
             self._log(job, f"[ERROR] Result harvesting failed: {harvest_error}")
 
-        job.partial = status == JobStatus.FAILED and any(
+        job.partial = status in (JobStatus.FAILED, JobStatus.CANCELLED) and any(
             result.before is not None or result.final_pdf_path is not None
             for result in job.results
         )

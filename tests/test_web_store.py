@@ -2,26 +2,19 @@
 
 from __future__ import annotations
 
+import os
 import tempfile
 import unittest
-from datetime import datetime, timedelta
+from datetime import timedelta
 from pathlib import Path
 from unittest import mock
 
-from pdf_web.models import FileResult, Job, JobStatus, StepState, UploadedFile
-from pdf_web.store import JobStore, load_meta, save_meta
+from pdf_web.models import FileResult, JobStatus, StepState
+from pdf_web.store import JobStore, load_meta, load_persisted_jobs, save_meta
+from tests.web_factories import add_completed_result, make_job
 
 
-def make_job(job_id: str = "20260827-151733-baf398") -> Job:
-    '''Build a job with one uploaded file.'''
-    job = Job(
-        job_id=job_id,
-        created_at=datetime(2026, 8, 27, 15, 17, 33),
-        config_file="default-slim.json",
-        skip_font_fix=True,
-    )
-    job.files.append(UploadedFile("000", "Report v2.pdf", "Report_v2.pdf", 1234))
-    return job
+
 
 
 class JobStoreTests(unittest.TestCase):
@@ -128,13 +121,7 @@ class MetadataPersistenceTests(unittest.TestCase):
         pdf_path = job.workspace_path / "remediated" / "files" / "Report_v2.pdf"
         pdf_path.parent.mkdir(parents=True)
         pdf_path.write_bytes(b"%PDF-")
-        job.results.append(FileResult(
-            file_id="000",
-            outcome="remediated",
-            final_pdf_path=pdf_path,
-            before={"status": "fail", "profiles": {}},
-            after={"status": "pass", "profiles": {}},
-        ))
+        add_completed_result(job, pdf_path)
 
         save_meta(job)
         restored = load_meta(job.meta_path)
@@ -180,3 +167,58 @@ class MetadataPersistenceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LegacyJobLoadingTests(unittest.TestCase):
+    '''Jobs predating ownership must be reported, not silently unreachable.'''
+
+    def setUp(self) -> None:
+        '''Point the jobs root at a scratch directory in multi-user mode.'''
+        self.jobs_root = Path(self.enterContext(
+            tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
+        ))
+        self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
+        self.enterContext(mock.patch("pdf_web.store.JOBS_ROOT", self.jobs_root))
+        self.enterContext(mock.patch.dict(
+            os.environ, {"PDF_WEB_PROXY_SECRET": "s3cret"}
+        ))
+        os.environ.pop("PDF_WEB_LEGACY_JOB_OWNER", None)
+
+    def _write_job(self, job_id: str, owner: str) -> None:
+        '''Persist one job, optionally without an owner.'''
+        job = make_job(job_id=job_id)
+        job.submitted_by = owner
+        job.status = JobStatus.COMPLETED
+        save_meta(job)
+
+    def test_counts_jobs_without_an_owner(self) -> None:
+        '''The count is what lets an operator notice and act on them.'''
+        self._write_job("20260827-120000-aaaaaa", "alice@example.com")
+        self._write_job("20260827-120001-bbbbbb", "")
+        self._write_job("20260827-120002-cccccc", "")
+
+        store = JobStore()
+        loaded, unowned = load_persisted_jobs(store)
+
+        self.assertEqual(loaded, 3)
+        self.assertEqual(unowned, 2)
+
+    def test_unowned_jobs_stay_unreachable(self) -> None:
+        '''Counting them must not quietly assign them to somebody.'''
+        self._write_job("20260827-120001-bbbbbb", "")
+        store = JobStore()
+        load_persisted_jobs(store)
+        self.assertEqual(store.get("20260827-120001-bbbbbb").submitted_by, "")
+
+    def test_configured_owner_adopts_them(self) -> None:
+        '''An operator can take ownership deliberately.'''
+        self._write_job("20260827-120001-bbbbbb", "")
+        os.environ["PDF_WEB_LEGACY_JOB_OWNER"] = "admin@example.com"
+
+        store = JobStore()
+        _loaded, unowned = load_persisted_jobs(store)
+
+        self.assertEqual(unowned, 0)
+        self.assertEqual(
+            store.get("20260827-120001-bbbbbb").submitted_by, "admin@example.com"
+        )
