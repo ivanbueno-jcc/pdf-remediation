@@ -644,6 +644,11 @@ function buildJobRow(job) {
     processingState, outcome, status, validation, downloads, fileActions,
   };
 
+  fileName.classList.add('file-name-toggle');
+  fileName.addEventListener('click', () => {
+    toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure);
+  });
+
   // `entry.job` is refreshed on every poll via updateJobRow, so this closure
   // always acts on the latest data even though it's bound once at creation.
   disclosure.addEventListener('click', () => {
@@ -1133,45 +1138,75 @@ function renderDetail(cell, job) {
 }
 
 function violationItem(violation) {
-  const item = document.createElement('li');
+  const item = document.createElement('tr');
   const code = document.createElement('code');
   code.textContent = violation.clause_test;
-  item.appendChild(code);
+  const codeCell = document.createElement('td');
+  codeCell.className = 'violation-code';
+  codeCell.appendChild(code);
+  item.appendChild(codeCell);
+  const profiles = document.createElement('td');
+  profiles.className = 'violation-profiles';
   violation.profiles.forEach((profile) => {
     const tag = document.createElement('span');
     tag.className = 'profile-chip';
     tag.textContent = profile;
-    item.appendChild(tag);
+    profiles.appendChild(tag);
   });
-  item.appendChild(document.createTextNode(' ' + (violation.description || '')));
+  item.appendChild(profiles);
+  const description = document.createElement('td');
+  description.className = 'violation-description';
+  description.textContent = violation.description || '';
+  item.appendChild(description);
   return item;
 }
 
 function violationGroupList(violations, tone) {
-  const list = document.createElement('ul');
-  list.className = 'violation-group violation-group-' + tone;
-  violations.forEach((violation) => list.appendChild(violationItem(violation)));
-  return list;
+  const table = document.createElement('table');
+  table.className = 'violation-group' + (tone ? ' violation-group-' + tone : '');
+  const body = document.createElement('tbody');
+  violations.forEach((violation) => body.appendChild(violationItem(violation)));
+  table.appendChild(body);
+  return table;
 }
 
 function violationList(jobId, stage) {
-  const list = document.createElement('ul');
-  list.innerHTML = '<li class="muted">Loading…</li>';
+  const list = violationGroupList([], '');
+  const body = list.querySelector('tbody');
+  const loading = document.createElement('tr');
+  const loadingCell = document.createElement('td');
+  loadingCell.colSpan = 3;
+  loadingCell.className = 'muted';
+  loadingCell.textContent = 'Loading…';
+  loading.appendChild(loadingCell);
+  body.appendChild(loading);
   fetch('/api/jobs/' + jobId + '/' + stage)
     .then((response) => (response.ok ? response.json() : null))
     .then((report) => {
-      list.innerHTML = '';
+      body.innerHTML = '';
       const merged = mergeViolations(report);
       if (!merged.length) {
-        const none = document.createElement('li');
-        none.className = 'none';
-        none.textContent = 'No violations reported.';
-        list.appendChild(none);
+        const none = document.createElement('tr');
+        const noneCell = document.createElement('td');
+        noneCell.colSpan = 3;
+        noneCell.className = 'none';
+        noneCell.textContent = 'No violations reported.';
+        none.appendChild(noneCell);
+        body.appendChild(none);
         return;
       }
-      merged.forEach((violation) => list.appendChild(violationItem(violation)));
+      merged.forEach((violation) => body.appendChild(violationItem(violation)));
     })
-    .catch(() => { list.innerHTML = '<li class="muted">Unavailable.</li>'; });
+    .catch(() => {
+      body.innerHTML = '';
+      const unavailable = document.createElement('tr');
+      const unavailableCell = document.createElement('td');
+      unavailableCell.colSpan = 3;
+      unavailableCell.className = 'muted';
+      unavailableCell.textContent = 'Unavailable.';
+      unavailable.appendChild(unavailableCell);
+      body.appendChild(unavailable);
+    });
   return list;
 }
 
