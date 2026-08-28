@@ -50,6 +50,35 @@ flowchart TD
    The tool now attempts to launch Docker Desktop automatically if it is not running.
 5) Save the Callas license in `resources/font/.env`
 
+## Web app
+
+For one-off files, `uv run web` serves a browser front end for the same
+pipeline at <http://127.0.0.1:8000>: drag and drop PDFs, choose
+`default.json` or `default-slim.json`, and watch the seven pipeline steps run
+live. Each file's remediated PDF and its before/after validation reports are
+downloadable when the run finishes, along with a ZIP of everything including
+the full veraPDF report folders.
+
+```bash
+uv run web
+```
+
+Each submission becomes a throwaway project under `resources/web-jobs/<job-id>/`
+with its own `PROJECT_BASE_PATH`, so web runs never touch `resources/projects/`.
+Uploads are seeded into the job's `source/` folder before `go.py` starts, which
+is what keeps the Terminus download path from firing. Job directories are swept
+after `PDF_WEB_JOB_TTL_HOURS` (default 72).
+
+The app has no authentication and binds `127.0.0.1` by default; `--allow-remote`
+is required to bind any other interface. Options: `--port`, `--host`, `--reload`.
+
+The environment banner checks Java, the veraPDF jar, the configuration files,
+Docker, and the PDFix and Callas licenses. Java or the jar missing disables
+submission outright, because veraPDF failures are silent — every file would be
+reported as unvalidatable while the pipeline still exits successfully. When
+Docker is unreachable, "Skip font fix" is enabled automatically, since steps 3
+and 4 would otherwise abort the run before the final validation.
+
 ## Run the full workflow with one command
 
 ```bash
@@ -584,6 +613,7 @@ Project scripts can be run directly with `uv run <script>`:
 - `uv run reprocess ...`
 - `uv run reset ...`
 - `uv run status ...`
+- `uv run web ...`
 
 ### Single-PDF security removal
 

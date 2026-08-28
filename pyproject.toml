@@ -5,13 +5,16 @@ description = "Automated PDF remediation to meet WCAG 2.2 using the PDFix SDK."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "fastapi>=0.121.0",
     "pandas>=3.0.0",
     "parallelbar>=2.5",
     "pathlib>=1.0.1",
     "pdfix-sdk>=8.7.8",
     "plotext>=5.3.2",
     "python-dotenv>=1.2.1",
+    "python-multipart>=0.0.20",
     "python-on-whales>=0.80.0",
+    "uvicorn>=0.42.0",
 ]
 
 [project.scripts]
@@ -33,10 +36,16 @@ solo-remove-security = "pdf_worker.solo_remove_security:main"
 solo-validate = "pdf_worker.solo_validate:main"
 status = "pdf_remediation.status:main"
 validate = "pdf_remediation.validate:main"
+web = "pdf_web.__main__:main"
 
 [build-system]
 requires = ["uv_build>=0.9.18,<0.10.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# Ship every src/ package, not just the one matching the project name.
+module-name = ["pdf_remediation", "pdf_web", "pdf_worker"]
+source-include = ["src/pdf_web/static/*"]
 
 [dependency-groups]
 dev = [
