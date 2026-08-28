@@ -88,7 +88,7 @@ def looks_like_pdf(path: Path) -> bool:
 def get_pdf_page_count(path: Path) -> int | None:
     '''Return a PDF's page count, or None when the document cannot be opened.'''
     try:
-        from pdfixsdk import GetPdfix
+        from pdfixsdk import GetPdfix  # pylint: disable=import-outside-toplevel
 
         pdfix = GetPdfix()
         if pdfix is None:
