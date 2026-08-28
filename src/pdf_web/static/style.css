@@ -139,7 +139,7 @@ select, button {
 button { cursor: pointer; }
 button:hover:not(:disabled) { border-color: var(--accent); }
 button:disabled { opacity: .5; cursor: not-allowed; }
-button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; padding: var(--space-2) var(--space-5); min-height: 44px; }
+button.primary { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; padding: var(--space-2) var(--space-5); min-height: 44px; }
 button.small { padding: var(--space-2) var(--space-3); font-size: 13px; min-height: 40px; }
 .row { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; }
 .banner { border-radius: 6px; padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); font-size: 15px; border: 1px solid; }
@@ -329,6 +329,16 @@ tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
   }
   @keyframes cancel-progress-spin {
     to { transform: rotate(360deg); }
+  }
+  @keyframes submit-progress-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    50% { box-shadow: 0 0 0 4px var(--accent-bg); }
+  }
+  button.primary.is-submitting {
+    animation: submit-progress-pulse 1.2s ease-in-out infinite;
+  }
+  button.primary.is-submitting .dl-icon {
+    animation: cancel-progress-spin .8s linear infinite;
   }
   .cancel-action.is-cancelling .dl-icon {
     animation: cancel-progress-spin .8s linear infinite;

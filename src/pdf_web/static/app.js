@@ -290,9 +290,11 @@ function updateSubmitState(message) {
   const readyCount = acceptedItems().length;
   const submit = el('submit');
   submit.disabled = state.submitting || !(healthy && readyCount);
-  submit.textContent = state.submitting ? 'Uploading…'
+  submit.classList.toggle('is-submitting', state.submitting);
+  const label = state.submitting ? 'Uploading…'
     : (readyCount === 1 ? 'Remediate 1 job'
       : (readyCount > 1 ? 'Remediate ' + readyCount + ' jobs' : 'Remediate'));
+  submit.replaceChildren(downloadIcon(state.submitting ? 'spinner' : 'remediate'), label);
   el('file-input').disabled = state.submitting;
   el('drop').setAttribute('aria-disabled', state.submitting ? 'true' : 'false');
   el('clear-staged').disabled = state.submitting;
@@ -1222,6 +1224,10 @@ function downloadIcon(name) {
     spinner: [
       ['path', { d: 'M21 12a9 9 0 1 1-6.2-8.6' }],
       ['path', { d: 'M21 3v6h-6' }],
+    ],
+    remediate: [
+      ['path', { d: 'm12 3-1.5 4.5L6 9l4.5 1.5L12 15l1.5-4.5L18 9l-4.5-1.5L12 3z' }],
+      ['path', { d: 'm19 14-.7 2.3L16 17l2.3.7L19 20l.7-2.3L22 17l-2.3-.7L19 14z' }],
     ],
   };
 
