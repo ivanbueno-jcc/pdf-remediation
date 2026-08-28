@@ -51,6 +51,16 @@ def job_ttl_hours() -> int:
     return _read_int_env("PDF_WEB_JOB_TTL_HOURS", 72)
 
 
+def max_jobs_per_user() -> int:
+    '''
+    Return how many jobs one user may have queued or running at once.
+
+    The pipeline runs one job at a time by design, so without a cap a single
+    large batch would block everyone behind it.
+    '''
+    return max(1, _read_int_env("PDF_WEB_MAX_JOBS_PER_USER", 1))
+
+
 def job_timeout_seconds() -> int:
     '''
     Return the wall-clock cap for a single pipeline run in seconds.

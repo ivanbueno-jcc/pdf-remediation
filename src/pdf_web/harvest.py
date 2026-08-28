@@ -44,15 +44,22 @@ FULL_VALIDATION_EXCLUDED = frozenset({
     "unable-to-process",
 })
 
-def harvest_job(job: Job) -> list[FileResult]:
+def harvest_job(job: Job, final: bool = True) -> list[FileResult]:
     '''
-    Build a per-file result set from the finished workspace.
+    Build a per-file result set from the workspace.
+
+    With ``final`` false this is a mid-pipeline pass: only the pre-fix report is
+    read, and every file is reported as pending, because a file's location while
+    the pipeline is still routing it says nothing about where it will end up.
     '''
     before_report = latest_report_folder(
         job.workspace_path / "active" / "reports",
         "pre-fix"
     )
-    after_report = latest_report_folder(job.workspace_path / "reports", "full")
+    after_report = (
+        latest_report_folder(job.workspace_path / "reports", "full")
+        if final else None
+    )
 
     before_index = load_results_index(before_report)
     after_index = load_results_index(after_report)
@@ -67,25 +74,91 @@ def harvest_job(job: Job) -> list[FileResult]:
             before_index,
             after_report,
             after_index,
+            final,
         ))
 
     job.results = results
+    job.summary = build_job_summary(results)
     return results
 
 
-def build_file_result(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+def build_job_summary(results: list[FileResult]) -> dict[str, Any]:
+    '''
+    Aggregate per-file results into batch totals and clause rollups.
+    '''
+    return {
+        stage: {
+            "totals": _stage_totals(results, stage),
+            "clauses": _clause_rollup(results, stage),
+        }
+        for stage in ("before", "after")
+    }
+
+
+def _stage_totals(results: list[FileResult], stage: str) -> dict[str, int]:
+    '''
+    Count pass, fail, error, and unreported files for one stage.
+    '''
+    totals = {"pass": 0, "fail": 0, "error": 0, "none": 0}
+    for result in results:
+        report = getattr(result, stage)
+        key = report.get("status", "none") if report else "none"
+        totals[key] = totals.get(key, 0) + 1
+    return totals
+
+
+def _clause_rollup(results: list[FileResult], stage: str) -> list[dict[str, Any]]:
+    '''
+    Count how many files each failing clause affects, worst first.
+    '''
+    clauses: dict[str, dict[str, Any]] = {}
+    for result in results:
+        report = getattr(result, stage)
+        if not report:
+            continue
+        for profile_name, profile in report.get("profiles", {}).items():
+            for violation in profile.get("violations", []):
+                key = violation.get("clause_test") or "unknown"
+                entry = clauses.setdefault(key, {
+                    "clause_test": key,
+                    "profiles": set(),
+                    "description": violation.get("description"),
+                    "file_count": 0,
+                    "files": set(),
+                })
+                entry["profiles"].add(profile_name)
+                entry["files"].add(result.file_id)
+                if not entry["description"]:
+                    entry["description"] = violation.get("description")
+
+    rollup = []
+    for entry in clauses.values():
+        entry["file_count"] = len(entry["files"])
+        entry["profiles"] = sorted(entry["profiles"])
+        entry.pop("files")
+        rollup.append(entry)
+
+    rollup.sort(key=lambda entry: (-entry["file_count"], entry["clause_test"]))
+    return rollup
+
+
+def build_file_result(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
         job: Job,
         file_id: str,
         stored_name: str,
         before_report: Path | None,
         before_index: dict[str, dict[str, str]],
         after_report: Path | None,
-        after_index: dict[str, dict[str, str]]) -> FileResult:
+        after_index: dict[str, dict[str, str]],
+        final: bool = True) -> FileResult:
     '''
     Assemble one uploaded file's outcome, before report, and after report.
     '''
-    located = find_final_pdf(job.workspace_path, stored_name)
-    outcome = located[0] if located else "missing"
+    located = find_final_pdf(job.workspace_path, stored_name) if final else None
+    if not final:
+        outcome = "pending"
+    else:
+        outcome = located[0] if located else "missing"
     final_pdf_path = located[1] if located else None
 
     staged_input_path = job.workspace_path / "active" / "files" / stored_name
@@ -104,11 +177,14 @@ def build_file_result(  # pylint: disable=too-many-arguments,too-many-positional
         "after"
     )
 
-    notes = [
-        describe_outcome(outcome, job.status == JobStatus.COMPLETED),
-        describe_missing_after(outcome, after, after_report),
-    ]
-    note = " ".join(part for part in notes if part) or None
+    if final:
+        notes = [
+            describe_outcome(outcome, job.status == JobStatus.COMPLETED),
+            describe_missing_after(outcome, after, after_report),
+        ]
+        note = " ".join(part for part in notes if part) or None
+    else:
+        note = None
     write_stage_reports(job, file_id, before, after)
 
     return FileResult(

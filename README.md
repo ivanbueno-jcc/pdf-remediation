@@ -63,14 +63,96 @@ the full veraPDF report folders.
 uv run web
 ```
 
+Per-file results appear as soon as the pre-fix validation finishes, so the
+before-state of every file is visible while remediation is still running rather
+than only at the end. Expanding a file row lists the failing veraPDF rules with
+their clause/test identifier and description, merged across the UA1 and WCAG
+profiles, for both the before and after passes; a rollup above the table counts
+how many files each rule affects so the remaining work is obvious at a glance.
+
+Every job has a permanent URL (`/#job=<job-id>`), so a refresh, a bookmark, or a
+shared link reopens the run with its results and captured log. The landing page
+lists recent jobs; job directories are removed by the retention sweep described
+below, and their links stop resolving at that point.
+
+### Single-user and multi-user modes
+
+With no configuration the app runs **single-user**: loopback only, no
+authentication, every job owned by a local identity. This is the default and
+needs nothing set up.
+
+For a shared server it runs **multi-user**, delegating authentication to an
+authenticating reverse proxy (oauth2-proxy, Cloudflare Access, Entra
+Application Proxy) that terminates TLS and SSO and forwards the signed-in user
+in a header. The app never handles OAuth flows, passwords, or sessions.
+
+```bash
+export PDF_WEB_PROXY_SECRET="$(openssl rand -hex 32)"   # also set on the proxy
+uv run web --host 0.0.0.0 --allow-remote
+```
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PDF_WEB_PROXY_SECRET` | unset | Shared secret proving a request came through the proxy. |
+| `PDF_WEB_TRUSTED_PROXY_IPS` | unset | Source addresses or CIDRs allowed to assert an identity. |
+| `PDF_WEB_PROXY_SECRET_HEADER` | `x-pdf-web-proxy-secret` | Header carrying the shared secret. |
+| `PDF_WEB_IDENTITY_HEADER` | `x-forwarded-email` | Header(s) carrying the authenticated user; comma-separated, first present wins. |
+| `PDF_WEB_DEV_USER` | `local` | Identity used in single-user mode. |
+| `PDF_WEB_LEGACY_JOB_OWNER` | unset | Owner assigned to job directories created before ownership existed. |
+| `PDF_WEB_HEADER_DIAGNOSTIC` | unset | Exposes `/api/proxy-headers` for diagnosing a deployment. Leave off in normal use. |
+| `PDF_WEB_MAX_JOBS_PER_USER` | `1` | Jobs one user may have queued or running at once. |
+
+**Proof of origin is the entire security model.** The app decides who you are by
+reading a header, and a header is only trustworthy if clients cannot set it
+themselves. Setting either `PDF_WEB_PROXY_SECRET` or
+`PDF_WEB_TRUSTED_PROXY_IPS` enables multi-user mode; if both are set, both must
+pass. The app refuses to bind a non-loopback interface unless one is
+configured, and single-user mode additionally refuses non-loopback clients.
+
+Which proof to use depends on the proxy. Use the **shared secret** where the
+proxy can inject arbitrary headers, such as oauth2-proxy. Use the **source
+allowlist** where it cannot, such as Microsoft Entra Application Proxy, whose
+connector is the only host able to reach the application — see
+[docs/deployment-entra-app-proxy.md](docs/deployment-entra-app-proxy.md).
+
+When a deployment does not authenticate as expected, set
+`PDF_WEB_HEADER_DIAGNOSTIC=1` and read `/api/proxy-headers`. It reports the
+source address, which identity headers arrived, and whether the request would
+authenticate, with credential values redacted. It is deliberately reachable
+without authenticating, so turn it off when finished; the server warns on every
+start while it is enabled.
+
+Jobs are **private to whoever submitted them**. Another user's job returns 404
+rather than 403, so job identifiers cannot be probed for existence, and a job
+link shared with a colleague will not open for them — the job view says so.
+
+Job directories that predate ownership are unreachable in multi-user mode
+unless `PDF_WEB_LEGACY_JOB_OWNER` names an owner; in single-user mode they
+belong to the local user. The server reports how many such jobs it found on
+startup, so they are not a silent surprise.
+
+### Queueing
+
+The pipeline runs one job at a time: veraPDF forks a JVM per file across every
+CPU, the font-fix steps drive Docker through module-global state, and PDFix
+activates its licence per process. Running two pipelines on one machine would
+thrash rather than go faster.
+
+So the queue is fair rather than parallel. Each user may have
+`PDF_WEB_MAX_JOBS_PER_USER` jobs in flight (one by default); a further
+submission is refused with 409 rather than queued behind their own work. A
+waiting job shows how many jobs will run before it, and is told when that
+number changes. Only the count is exposed, never whose jobs they are.
+
 Each submission becomes a throwaway project under `resources/web-jobs/<job-id>/`
 with its own `PROJECT_BASE_PATH`, so web runs never touch `resources/projects/`.
 Uploads are seeded into the job's `source/` folder before `go.py` starts, which
 is what keeps the Terminus download path from firing. Job directories are swept
 after `PDF_WEB_JOB_TTL_HOURS` (default 72).
 
-The app has no authentication and binds `127.0.0.1` by default; `--allow-remote`
-is required to bind any other interface. Options: `--port`, `--host`, `--reload`.
+The app binds `127.0.0.1` by default. Options: `--port`, `--host`,
+`--allow-remote`, `--reload`. See *Single-user and multi-user modes* above
+before exposing it beyond loopback.
 
 The environment banner checks Java, the veraPDF jar, the configuration files,
 Docker, and the PDFix and Callas licenses. Java or the jar missing disables
@@ -860,6 +942,38 @@ Before opening the PDF, the command passes the `PDFIX_LICENSE_NAME` and
 <!-- - `license_activate.py` activates a license key.
 - `license_deactivate.py` deactivates an active license. -->
 - `.env` supports `PDFIX_LICENSE_NAME` and `PDFIX_LICENSE_KEY` for remediation.
+
+## Tests
+
+```bash
+uv run python -m unittest discover -s tests -t .
+```
+
+Runs in CI on every push, alongside pylint. The suite covers the pure logic
+that is easy to break silently and expensive to notice:
+
+- **Upload sanitization** — path traversal, interior-dot collapsing, and
+  deduplication. Filenames are attacker-controlled and become both paths and
+  report identifiers.
+- **veraPDF report filename reconstruction** — `expected_xml_name` rebuilds a
+  filename veraPDF composes by string-mangling a path
+  (`utilities/verapdf.py:107-113`). The test re-derives that formula
+  independently, so a drift breaks the build rather than silently emptying
+  every violation list while the counts keep working.
+- **Subprocess environment** — that `PROJECT_BASE_PATH` is overridden to the
+  job directory and `PANTHEON_EMAIL` is removed, which is the guard against an
+  accidental Terminus download.
+- **Console output parsing** — the step banners and stop message are parsed
+  from output produced by the real `print_console_*` helpers, so a formatting
+  change in `pdf_remediation` fails here instead of silently freezing the
+  progress stepper.
+- **Validation status** — that status is read from the results CSV, since
+  veraPDF writes no XML at all when validation errors and inferring from file
+  presence would report those files as passing.
+- **Access control** — that a forwarded identity is refused without the proxy
+  secret, that every job endpoint is scoped to its owner, that refusal is
+  indistinguishable from absence, and that the server refuses to bind a remote
+  interface unauthenticated.
 
 ## Troubleshooting
 

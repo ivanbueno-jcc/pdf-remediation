@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import JOBS_ROOT, LOG_RING_BUFFER_LINES, job_ttl_hours
+from .identity import legacy_job_owner, normalize_user
 from .models import FileResult, Job, JobStatus, StepState, UploadedFile
 
 JOB_ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
@@ -159,6 +160,7 @@ def load_meta(meta_path: Path) -> Job | None:
         job_id=job_id,
         created_at=_parse_datetime(payload.get("created_at")),
         config_file=payload.get("config_file", ""),
+        submitted_by=normalize_user(payload.get("submitted_by")) or (legacy_job_owner() or ""),
         skip_font_fix=bool(payload.get("skip_font_fix")),
         wcag_and_ua1_must_pass=bool(payload.get("wcag_and_ua1_must_pass")),
         verbose=bool(payload.get("verbose")),
@@ -167,6 +169,7 @@ def load_meta(meta_path: Path) -> Job | None:
         error=payload.get("error"),
         partial=bool(payload.get("partial")),
     )
+    job.summary = payload.get("summary") or {}
     job.started_at = _parse_optional_datetime(payload.get("started_at"))
     job.finished_at = _parse_optional_datetime(payload.get("finished_at"))
     job.files = [
@@ -200,14 +203,19 @@ def load_meta(meta_path: Path) -> Job | None:
     return job
 
 
-def load_persisted_jobs(store: JobStore) -> int:
+def load_persisted_jobs(store: JobStore) -> tuple[int, int]:
     '''
     Load previously completed jobs from disk into the store.
+
+    Returns the number loaded and the number that have no owner. Unowned jobs
+    predate ownership and are unreachable by every user, so the count is
+    reported rather than left as a silent surprise.
     '''
     if not JOBS_ROOT.is_dir():
-        return 0
+        return 0, 0
 
     loaded = 0
+    unowned = 0
     for job_path in sorted(JOBS_ROOT.iterdir()):
         if not job_path.is_dir() or not is_valid_job_id(job_path.name):
             continue
@@ -220,9 +228,11 @@ def load_persisted_jobs(store: JobStore) -> int:
         if not job.is_terminal():
             job.status = JobStatus.FAILED
             job.error = job.error or "Server restarted while this job was running."
+        if not job.submitted_by:
+            unowned += 1
         store.add(job)
         loaded += 1
-    return loaded
+    return loaded, unowned
 
 
 def sweep_expired_jobs(store: JobStore) -> int:

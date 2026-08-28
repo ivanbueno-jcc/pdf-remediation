@@ -110,6 +110,7 @@ OUTCOME_LABELS = {
     "pdfix-unable-to-open": "PDFix could not open",
     "pdfix-cannot-process": "PDFix could not process",
     "unable-to-process": "Unable to process",
+    "pending": "Working\u2026",
     "active": "Still not compliant",
     "missing": "Not produced",
 }
@@ -153,6 +154,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
     job_id: str
     created_at: datetime
     config_file: str
+    submitted_by: str = ""
     skip_font_fix: bool = False
     wcag_and_ua1_must_pass: bool = False
     verbose: bool = False
@@ -170,6 +172,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
     error: str | None = None
     partial: bool = False
     results: list[FileResult] = field(default_factory=list)
+    summary: dict[str, Any] = field(default_factory=dict)
 
     @property
     def base_path(self) -> Path:
@@ -263,6 +266,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
         '''
         return {
             "job_id": self.job_id,
+            "submitted_by": self.submitted_by,
             "created_at": self.created_at.isoformat(timespec="seconds"),
             "started_at": (
                 self.started_at.isoformat(timespec="seconds")
@@ -288,6 +292,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
             ],
             "files": [uploaded_file.to_dict() for uploaded_file in self.files],
             "results": [result.to_dict() for result in self.results],
+            "summary": self.summary,
             "return_code": self.return_code,
             "error": self.error,
             "partial": self.partial,

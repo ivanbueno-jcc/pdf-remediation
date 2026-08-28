@@ -33,7 +33,7 @@ LINE_BREAK_PATTERN = re.compile(r"[\r\n]")
 TERMINATE_GRACE_SECONDS = 10.0
 
 
-class PipelineRunner:
+class PipelineRunner:  # pylint: disable=too-many-instance-attributes
     '''
     Serialize pipeline runs so only one go.py invocation is active at a time.
     '''
@@ -44,8 +44,12 @@ class PipelineRunner:
         '''
         self._store = store
         self._queue: queue.Queue[str | None] = queue.Queue()
+        self._pending_lock = threading.Lock()
+        self._pending: list[str] = []
+        self._active_job_id: str | None = None
         self._thread: threading.Thread | None = None
         self._process_lock = threading.Lock()
+        self._harvest_lock = threading.Lock()
         self._process: subprocess.Popen | None = None
         self._stopping = False
 
@@ -78,16 +82,48 @@ class PipelineRunner:
 
     def submit(self, job_id: str) -> int:
         '''
-        Queue a job and return its position in the queue.
+        Queue a job and return how many jobs will run before it.
         '''
+        with self._pending_lock:
+            self._pending.append(job_id)
         self._queue.put(job_id)
-        return self._queue.qsize()
+        return self.jobs_ahead(job_id) or 0
 
     def queue_depth(self) -> int:
         '''
         Return the number of jobs waiting to run.
         '''
-        return self._queue.qsize()
+        with self._pending_lock:
+            return len(self._pending)
+
+    def active_job_id(self) -> str | None:
+        '''
+        Return the job currently running, if any.
+        '''
+        with self._pending_lock:
+            return self._active_job_id
+
+    def pending_job_ids(self) -> tuple[str, ...]:
+        '''
+        Return the queued jobs in the order they will run.
+        '''
+        with self._pending_lock:
+            return tuple(self._pending)
+
+    def jobs_ahead(self, job_id: str) -> int | None:
+        '''
+        Return how many jobs will run before this one, or None if not waiting.
+
+        Only the count is exposed. Which jobs they are, and whose, is not the
+        waiting user's business.
+        '''
+        with self._pending_lock:
+            if job_id == self._active_job_id:
+                return 0
+            if job_id not in self._pending:
+                return None
+            running = 1 if self._active_job_id is not None else 0
+            return self._pending.index(job_id) + running
 
     def _worker_loop(self) -> None:
         '''
@@ -98,6 +134,10 @@ class PipelineRunner:
             if job_id is None:
                 self._queue.task_done()
                 return
+            with self._pending_lock:
+                if job_id in self._pending:
+                    self._pending.remove(job_id)
+                self._active_job_id = job_id
             try:
                 job = self._store.get(job_id)
                 if job is not None and not self._stopping:
@@ -105,6 +145,9 @@ class PipelineRunner:
                 elif job is not None:
                     self._finish(job, JobStatus.FAILED, "Server is shutting down.")
             finally:
+                with self._pending_lock:
+                    self._active_job_id = None
+                self._announce_queue_positions()
                 self._queue.task_done()
 
     def _run_job(self, job: Job) -> None:
@@ -242,6 +285,11 @@ class PipelineRunner:
         job.current_step = number
         self._store.emit(job.job_id, "step", {"step": number, "name": name})
 
+        # Step 1 has written the pre-fix report by the time step 2 announces
+        # itself, so before-results can be shown without waiting for the run.
+        if number >= 2 and not job.results:
+            self._harvest_early(job)
+
     def _mark_remaining_steps_done(self, job: Job) -> None:
         '''
         Close out any step still marked running after a successful run.
@@ -259,6 +307,40 @@ class PipelineRunner:
             if state == StepState.RUNNING:
                 job.steps[number] = StepState.FAILED
 
+    def _announce_queue_positions(self) -> None:
+        '''
+        Tell each waiting job its new position after the queue advances.
+        '''
+        for pending_id in self.pending_job_ids():
+            ahead = self.jobs_ahead(pending_id)
+            if ahead is not None:
+                self._store.emit(pending_id, "queue", {"jobs_ahead": ahead})
+
+    def _harvest_early(self, job: Job) -> None:
+        '''
+        Publish before-results mid-run without blocking the output reader.
+        '''
+        def run() -> None:
+            '''
+            Harvest the pre-fix report and announce the partial results.
+            '''
+            with self._harvest_lock:
+                if job.is_terminal():
+                    return
+                try:
+                    harvest_job(job, final=False)
+                except Exception as error:  # pylint: disable=broad-exception-caught
+                    self._log(job, f"[WARN] Early result harvesting failed: {error}")
+                    return
+            self._store.emit(job.job_id, "results", {"stage": "before"})
+
+        thread = threading.Thread(
+            target=run,
+            name=f"pdf-web-harvest-{job.job_id}",
+            daemon=True
+        )
+        thread.start()
+
     def _finish(self, job: Job, status: JobStatus, error: str | None) -> None:
         '''
         Harvest results, persist metadata, and emit the terminal event.
@@ -269,7 +351,8 @@ class PipelineRunner:
             job.error = error
 
         try:
-            harvest_job(job)
+            with self._harvest_lock:
+                harvest_job(job)
         except Exception as harvest_error:  # pylint: disable=broad-exception-caught
             self._log(job, f"[ERROR] Result harvesting failed: {harvest_error}")
 
