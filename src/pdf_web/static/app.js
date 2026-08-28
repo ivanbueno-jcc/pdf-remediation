@@ -745,8 +745,11 @@ function buildJobRow(job) {
 }
 
 function updateJobRow(entry, job) {
+  const previousStatus = entry.row.dataset.status;
+  const previousOutcome = entry.row.dataset.outcome;
   entry.job = job;
   entry.row.dataset.status = job.status;
+  entry.row.dataset.outcome = job.outcome || '';
 
   const detailNote = processingDetail(job);
   const label = processingLabel(job.status);
@@ -768,6 +771,19 @@ function updateJobRow(entry, job) {
     note.className = 'muted';
     note.textContent = job.error;
     entry.status.appendChild(note);
+  }
+
+  const statusChanged = previousStatus !== undefined && previousStatus !== job.status;
+  const outcomeChanged = previousOutcome !== undefined && previousOutcome !== (job.outcome || '');
+  const reducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reducedMotion && (statusChanged || outcomeChanged)) {
+    [entry.processingState, entry.outcome].forEach((state) => {
+      state.classList.remove('status-transition');
+      void state.offsetWidth;
+      state.classList.add('status-transition');
+      state.addEventListener('animationend', () => state.classList.remove('status-transition'), { once: true });
+    });
   }
 
   entry.fileActions.innerHTML = '';
@@ -860,6 +876,14 @@ function updateJobRow(entry, job) {
 }
 
 function renderJobRows(body, jobs) {
+  const initialTops = new Map();
+  jobs.forEach((job) => {
+    const existing = state.jobRows.get(job.job_id);
+    if (existing && existing.row.parentElement === body &&
+        !existing.row.classList.contains('job-row-enter')) {
+      initialTops.set(job.job_id, existing.row.getBoundingClientRect().top);
+    }
+  });
   jobs.forEach((job, index) => {
     let entry = state.jobRows.get(job.job_id);
     if (!entry) {
@@ -876,6 +900,24 @@ function renderJobRows(body, jobs) {
     if (state.openJobId === job.job_id) {
       toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure, true);
     }
+  });
+
+  const reducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion || !initialTops.size) return;
+  requestAnimationFrame(() => {
+    jobs.forEach((job) => {
+      const entry = state.jobRows.get(job.job_id);
+      const initialTop = initialTops.get(job.job_id);
+      if (!entry || initialTop === undefined) return;
+      const delta = initialTop - entry.row.getBoundingClientRect().top;
+      if (Math.abs(delta) < 1) return;
+      entry.row.style.transition = 'none';
+      entry.row.style.transform = 'translateY(' + delta + 'px)';
+      void entry.row.offsetWidth;
+      entry.row.style.transition = '';
+      entry.row.style.transform = '';
+    });
   });
 }
 

@@ -245,6 +245,7 @@ tr.detail-row > td { background: var(--detail-row-bg); padding: 0; }
 .jobs-table tr.job-row {
   outline: 2px solid transparent;
   outline-offset: -2px;
+  transition: background-color .15s ease, transform .24s ease;
 }
 .jobs-table tr.job-row > td { transition: background-color .15s ease; }
 @media (hover: hover) {
@@ -301,6 +302,12 @@ tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
   .detail-row .job-detail {
     transition: max-height .28s ease, opacity .2s ease, transform .28s ease;
   }
+  @keyframes status-transition {
+    from { opacity: .72; transform: translateY(-2px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .processing-state.status-transition,
+  .outcome.status-transition { animation: status-transition .2s ease-out both; }
   @keyframes dialog-enter {
     from { opacity: 0; transform: translateY(8px) scale(.98); }
     to { opacity: 1; transform: translateY(0) scale(1); }
@@ -579,7 +586,7 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--panel);
-    transition: background-color .15s ease;
+    transition: background-color .15s ease, transform .24s ease;
   }
   @media (hover: hover) {
     .jobs-table tr.job-row:hover { background: var(--job-row-hover); }
