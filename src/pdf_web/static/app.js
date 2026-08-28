@@ -1433,6 +1433,11 @@ function updateDetailHeight(detailRow) {
   if (detail) detailRow.style.setProperty('--detail-height', detail.scrollHeight + 'px');
 }
 
+function updateDetailHeightFrom(node) {
+  const detailRow = node && node.closest ? node.closest('.detail-row') : null;
+  if (detailRow) updateDetailHeight(detailRow);
+}
+
 function setDetailExpanded(detailRow, expanded) {
   const token = (Number(detailRow.dataset.animationToken) || 0) + 1;
   detailRow.dataset.animationToken = String(token);
@@ -1589,9 +1594,11 @@ function violationList(jobId, stage) {
         noneCell.textContent = 'No violations reported.';
         none.appendChild(noneCell);
         body.appendChild(none);
+        updateDetailHeightFrom(list);
         return;
       }
       merged.forEach((violation) => body.appendChild(violationItem(violation)));
+      updateDetailHeightFrom(list);
     })
     .catch(() => {
       body.innerHTML = '';
@@ -1602,6 +1609,7 @@ function violationList(jobId, stage) {
       unavailableCell.textContent = 'Unavailable.';
       unavailable.appendChild(unavailableCell);
       body.appendChild(unavailable);
+      updateDetailHeightFrom(list);
     });
   return list;
 }
@@ -1655,6 +1663,7 @@ function violationDiff(jobId) {
       none.className = 'none';
       none.textContent = 'No violations reported.';
       container.appendChild(none);
+      updateDetailHeightFrom(container);
       return;
     }
 
@@ -1678,10 +1687,13 @@ function violationDiff(jobId) {
       const summaryToggle = document.createElement('summary');
       summaryToggle.textContent = 'Resolved (' + resolved.length + ')';
       details.append(summaryToggle, violationGroupList(resolved, 'ok'));
+      details.addEventListener('toggle', () => updateDetailHeightFrom(details));
       container.appendChild(details);
     }
+    updateDetailHeightFrom(container);
   }).catch(() => {
     container.innerHTML = '<p class="muted">Unavailable.</p>';
+    updateDetailHeightFrom(container);
   });
 
   return container;
