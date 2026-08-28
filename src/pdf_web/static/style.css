@@ -329,7 +329,10 @@ button.disclosure:hover { border-color: transparent; background: rgba(127,127,12
 button.disclosure:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 button.disclosure .caret { font-size: 20px; line-height: 1; transition: transform .15s; }
 button.disclosure[aria-expanded="true"] .caret { transform: rotate(90deg); }
-.processing { min-width: 100px; }
+.job-state-stack {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: var(--space-1);
+}
 .processing-state {
   display: inline-flex; align-items: center; gap: var(--space-1);
   color: var(--muted); font-size: 12px; font-weight: 650; white-space: nowrap;
@@ -470,11 +473,10 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
  * reflows the widths of the columns above it.
  */
 .jobs-table { table-layout: fixed; }
-.jobs-table th:nth-child(1) { width: 31%; }
-.jobs-table th:nth-child(2) { width: 13%; }
-.jobs-table th:nth-child(3) { width: 15%; }
-.jobs-table th:nth-child(4) { width: 19%; }
-.jobs-table th:nth-child(5) { width: 22%; }
+.jobs-table th:nth-child(1) { width: 33%; }
+.jobs-table th:nth-child(2) { width: 25%; }
+.jobs-table th:nth-child(3) { width: 20%; }
+.jobs-table th:nth-child(4) { width: 22%; }
 
 @media (max-width: 700px) {
   body { padding: var(--space-4) var(--space-3) var(--space-7); }
@@ -499,7 +501,6 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "name"
-      "processing"
       "status"
       "validation"
       "actions";
@@ -522,7 +523,6 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
     grid-area: name; max-width: none; font-weight: 650;
     word-break: normal; overflow-wrap: anywhere;
   }
-  .jobs-table td.processing { grid-area: processing; padding-top: var(--space-1); }
   .jobs-table td.job-status { grid-area: status; padding-top: var(--space-2); }
   .jobs-table td.validation-change {
     grid-area: validation; padding-top: var(--space-3); margin-top: var(--space-2);

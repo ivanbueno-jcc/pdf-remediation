@@ -619,15 +619,14 @@ function buildJobRow(job) {
   fileLabel.append(disclosure, fileInfo);
   name.appendChild(fileLabel);
 
-  const processing = document.createElement('td');
-  processing.className = 'processing';
   const processingState = document.createElement('span');
-  processing.appendChild(processingState);
-
   const status = document.createElement('td');
   status.className = 'job-status';
+  const stateStack = document.createElement('div');
+  stateStack.className = 'job-state-stack';
   const outcome = document.createElement('span');
-  status.appendChild(outcome);
+  stateStack.append(processingState, outcome);
+  status.appendChild(stateStack);
 
   const validation = document.createElement('td');
   validation.className = 'validation-change';
@@ -635,7 +634,7 @@ function buildJobRow(job) {
   const downloads = document.createElement('td');
   downloads.className = 'actions';
 
-  row.append(name, processing, status, validation, downloads);
+  row.append(name, status, validation, downloads);
 
   const detail = document.createElement('tr');
   detail.className = 'detail-row hidden';
@@ -643,7 +642,7 @@ function buildJobRow(job) {
   detail.setAttribute('aria-hidden', 'true');
   disclosure.setAttribute('aria-controls', detail.id);
   const cell = document.createElement('td');
-  cell.colSpan = 5;
+  cell.colSpan = 4;
   detail.appendChild(cell);
 
   const entry = {
