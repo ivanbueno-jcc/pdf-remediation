@@ -178,9 +178,17 @@ class AuthenticationTests(unittest.TestCase):
         files = response.json()["files"]
         self.assertEqual(
             [entry["label"] for entry in files],
-            ["Standard remediation", "Focused remediation"],
+            [
+                "Standard",
+                "Forms",
+                "Fix metadata",
+                "Make accessible",
+                "Make accessible (Docling)",
+                "Quick fix",
+            ],
         )
         self.assertTrue(all(entry["description"] for entry in files))
+        self.assertTrue(all(entry["group"] for entry in files))
 
     def test_wrong_secret_is_refused(self) -> None:
         '''A guessed secret does not authenticate.'''
@@ -279,7 +287,7 @@ class OwnershipRecordingTests(unittest.TestCase):
         )
         self.assertEqual(job["name"], "Report.pdf")
         self.assertEqual(job["config_file"], "default.json")
-        self.assertEqual(job["config_label"], "Standard remediation")
+        self.assertEqual(job["config_label"], "Standard")
         self.assertTrue(job["created_at"])
 
     def test_rejected_submission_returns_per_file_reasons(self) -> None:

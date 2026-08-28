@@ -146,7 +146,7 @@ async function loadConfigs() {
     groups.forEach((optgroup) => { if (optgroup) select.appendChild(optgroup); });
     renderConfigDescription();
   } catch (error) {
-    select.innerHTML = '<option value="default.json">Standard remediation</option>';
+    select.innerHTML = '<option value="default.json">Standard</option>';
     select.options[0].dataset.description =
       'Runs the full remediation preset for the broadest automatic accessibility repair coverage.';
     renderConfigDescription();
