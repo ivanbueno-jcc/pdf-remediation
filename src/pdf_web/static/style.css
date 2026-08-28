@@ -184,9 +184,33 @@ tr.detail-row > td { background: rgba(127,127,127,.05); padding: 0; }
 .job-detail li:last-child { margin-bottom: 0; }
 .job-detail code { font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
 .job-detail .none { color: var(--ok); font-size: 14px; }
+.profile-chip {
+  display: inline-block; margin: 0 5px; border: 1px solid var(--line); border-radius: 4px;
+  padding: 0 5px; font-size: 11px; font-weight: 700; letter-spacing: .02em;
+  color: var(--muted); vertical-align: middle;
+}
+.violation-summary-line { margin: 0 0 14px; font-size: 14px; font-weight: 650; color: var(--ink); }
+.violation-group-label { margin: 18px 0 6px; font-size: 13px; font-weight: 650; }
+.violation-group-label-bad { color: var(--bad); }
+.violation-group-label-warn { color: var(--warn); }
+ul.violation-group-bad li::marker { color: var(--bad); }
+ul.violation-group-warn li::marker { color: var(--warn); }
+ul.violation-group-ok li::marker { color: var(--ok); }
+.violation-collapse { margin-top: 18px; }
+.violation-collapse summary {
+  cursor: pointer; font-size: 13px; font-weight: 650; color: var(--ok); list-style: none;
+}
+.violation-collapse summary::-webkit-details-marker { display: none; }
+.violation-collapse summary::before {
+  content: '\203a'; display: inline-block; margin-right: 5px; color: var(--muted);
+  transition: transform .15s;
+}
+.violation-collapse[open] summary::before { transform: rotate(90deg); }
+.violation-collapse ul { margin-top: 10px; }
 tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
 .file-label { display: flex; align-items: flex-start; gap: 5px; }
-.file-name { min-width: 0; padding-top: 1px; }
+.file-info { min-width: 0; }
+.file-name { display: block; padding-top: 1px; }
 button.disclosure {
   display: grid; place-items: center; flex: none;
   width: 40px; height: 40px; margin: -10px 0 -10px -13px; padding: 0;

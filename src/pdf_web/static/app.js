@@ -517,19 +517,22 @@ function renderJobRows(body, jobs) {
     caret.setAttribute('aria-hidden', 'true');
     caret.textContent = '›';
     disclosure.appendChild(caret);
+    const fileInfo = document.createElement('div');
+    fileInfo.className = 'file-info';
     const fileName = document.createElement('span');
     fileName.className = 'file-name';
     fileName.textContent = job.name;
-    fileLabel.append(disclosure, fileName);
-    name.appendChild(fileLabel);
+    fileInfo.appendChild(fileName);
     const metadata = [formatJobTimestamp(job.created_at), job.config_label || job.config_file]
       .filter(Boolean);
     if (metadata.length) {
       const meta = document.createElement('div');
       meta.className = 'job-meta';
       meta.textContent = metadata.join(' · ');
-      name.appendChild(meta);
+      fileInfo.appendChild(meta);
     }
+    fileLabel.append(disclosure, fileInfo);
+    name.appendChild(fileLabel);
 
     const processing = document.createElement('td');
     processing.className = 'processing';
@@ -803,13 +806,7 @@ function renderDetail(cell, job) {
     wrap.appendChild(note);
   });
 
-  ['before', 'after'].forEach((stage) => {
-    if (!job[stage]) return;
-    const heading = document.createElement('h4');
-    heading.textContent = stage === 'before' ? 'Before remediation' : 'After remediation';
-    wrap.appendChild(heading);
-    wrap.appendChild(violationList(job.job_id, stage));
-  });
+  appendViolationSection(wrap, job);
 
   if (job.status === 'queued' || job.status === 'running') {
     const cancel = document.createElement('button');
@@ -827,6 +824,28 @@ function renderDetail(cell, job) {
   cell.appendChild(wrap);
 }
 
+function violationItem(violation) {
+  const item = document.createElement('li');
+  const code = document.createElement('code');
+  code.textContent = violation.clause_test;
+  item.appendChild(code);
+  violation.profiles.forEach((profile) => {
+    const tag = document.createElement('span');
+    tag.className = 'profile-chip';
+    tag.textContent = profile;
+    item.appendChild(tag);
+  });
+  item.appendChild(document.createTextNode(' ' + (violation.description || '')));
+  return item;
+}
+
+function violationGroupList(violations, tone) {
+  const list = document.createElement('ul');
+  list.className = 'violation-group violation-group-' + tone;
+  violations.forEach((violation) => list.appendChild(violationItem(violation)));
+  return list;
+}
+
 function violationList(jobId, stage) {
   const list = document.createElement('ul');
   list.innerHTML = '<li class="muted">Loading…</li>';
@@ -842,19 +861,100 @@ function violationList(jobId, stage) {
         list.appendChild(none);
         return;
       }
-      merged.forEach((violation) => {
-        const item = document.createElement('li');
-        const code = document.createElement('code');
-        code.textContent = violation.clause_test;
-        const profiles = document.createElement('span');
-        profiles.className = 'muted';
-        profiles.textContent = ' ' + violation.profiles.join(', ') + ' ';
-        item.append(code, profiles, violation.description || '');
-        list.appendChild(item);
-      });
+      merged.forEach((violation) => list.appendChild(violationItem(violation)));
     })
     .catch(() => { list.innerHTML = '<li class="muted">Unavailable.</li>'; });
   return list;
+}
+
+/*
+ * Once both a before and an after report exist, show one diffed view instead
+ * of two near-duplicate lists: what's still failing, what's new, and what
+ * got fixed (collapsed, since it's not actionable).
+ */
+function appendViolationSection(wrap, job) {
+  const hasBefore = Boolean(job.before);
+  const hasAfter = Boolean(job.after);
+  if (!hasBefore && !hasAfter) return;
+
+  if (hasBefore && hasAfter) {
+    const heading = document.createElement('h4');
+    heading.textContent = 'Accessibility violations';
+    wrap.appendChild(heading);
+    wrap.appendChild(violationDiff(job.job_id));
+    return;
+  }
+
+  const stage = hasBefore ? 'before' : 'after';
+  const heading = document.createElement('h4');
+  heading.textContent = stage === 'before' ? 'Before remediation' : 'After remediation';
+  wrap.appendChild(heading);
+  wrap.appendChild(violationList(job.job_id, stage));
+}
+
+function violationDiff(jobId) {
+  const container = document.createElement('div');
+  container.className = 'violation-diff';
+  container.innerHTML = '<p class="muted">Loading…</p>';
+
+  Promise.all([
+    fetch('/api/jobs/' + jobId + '/before').then((r) => (r.ok ? r.json() : null)),
+    fetch('/api/jobs/' + jobId + '/after').then((r) => (r.ok ? r.json() : null)),
+  ]).then(([beforeReport, afterReport]) => {
+    container.innerHTML = '';
+
+    const beforeMap = new Map(mergeViolations(beforeReport).map((v) => [v.clause_test, v]));
+    const afterMap = new Map(mergeViolations(afterReport).map((v) => [v.clause_test, v]));
+    const byCode = (a, b) => a.clause_test.localeCompare(b.clause_test);
+
+    const persisting = [...beforeMap.values()].filter((v) => afterMap.has(v.clause_test)).sort(byCode);
+    const resolved = [...beforeMap.values()].filter((v) => !afterMap.has(v.clause_test)).sort(byCode);
+    const introduced = [...afterMap.values()].filter((v) => !beforeMap.has(v.clause_test)).sort(byCode);
+
+    if (!persisting.length && !resolved.length && !introduced.length) {
+      const none = document.createElement('p');
+      none.className = 'none';
+      none.textContent = 'No violations reported.';
+      container.appendChild(none);
+      return;
+    }
+
+    const summary = document.createElement('p');
+    summary.className = 'violation-summary-line';
+    summary.textContent = [
+      persisting.length ? persisting.length + ' still failing' : '',
+      introduced.length ? introduced.length + ' new' : '',
+      resolved.length ? resolved.length + ' resolved' : '',
+    ].filter(Boolean).join(' · ');
+    container.appendChild(summary);
+
+    if (persisting.length) {
+      const label = document.createElement('p');
+      label.className = 'violation-group-label violation-group-label-bad';
+      label.textContent = 'Still failing (' + persisting.length + ')';
+      container.append(label, violationGroupList(persisting, 'bad'));
+    }
+
+    if (introduced.length) {
+      const label = document.createElement('p');
+      label.className = 'violation-group-label violation-group-label-warn';
+      label.textContent = 'New after remediation (' + introduced.length + ')';
+      container.append(label, violationGroupList(introduced, 'warn'));
+    }
+
+    if (resolved.length) {
+      const details = document.createElement('details');
+      details.className = 'violation-collapse';
+      const summaryToggle = document.createElement('summary');
+      summaryToggle.textContent = 'Resolved (' + resolved.length + ')';
+      details.append(summaryToggle, violationGroupList(resolved, 'ok'));
+      container.appendChild(details);
+    }
+  }).catch(() => {
+    container.innerHTML = '<p class="muted">Unavailable.</p>';
+  });
+
+  return container;
 }
 
 function mergeViolations(report) {
