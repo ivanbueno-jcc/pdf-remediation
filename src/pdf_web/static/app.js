@@ -751,12 +751,13 @@ function updateJobRow(entry, job) {
 }
 
 function renderJobRows(body, jobs) {
-  jobs.forEach((job) => {
+  jobs.forEach((job, index) => {
     let entry = state.jobRows.get(job.job_id);
     if (!entry) {
       entry = buildJobRow(job);
       state.jobRows.set(job.job_id, entry);
     }
+    entry.row.classList.toggle('job-row-stripe', index % 2 === 1);
     updateJobRow(entry, job);
     // appendChild on an already-attached node moves it (including across
     // tbodies, e.g. active -> recent when a job finishes) instead of
