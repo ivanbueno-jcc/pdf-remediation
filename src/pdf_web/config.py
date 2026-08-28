@@ -85,7 +85,7 @@ def max_running_jobs_per_user() -> int:
     Queueing is unlimited; this only limits how much of the pool one person can
     hold, so dropping twenty files does not lock everyone else out.
     '''
-    return max(1, _read_int_env("PDF_WEB_MAX_RUNNING_JOBS_PER_USER", 1))
+    return max(1, _read_int_env("PDF_WEB_MAX_RUNNING_JOBS_PER_USER", 4))
 
 
 def job_timeout_seconds() -> int:
