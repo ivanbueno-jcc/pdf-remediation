@@ -238,9 +238,18 @@ tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  @keyframes banner-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  #submit-result.banner-fade-out { animation: banner-fade-out .26s ease-in both; }
   @keyframes job-row-enter {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes job-row-exit {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-5px); }
   }
   #staged-table tr.stage-row-enter { animation: staged-row-enter .24s ease-out both; }
   #staged-table tr.stage-row-exit {
@@ -249,6 +258,10 @@ tr.job-row[data-open="true"] > td { background: rgba(127,127,127,.05); }
   }
   #jobs-section.jobs-section-enter { animation: jobs-section-enter .3s ease-out both; }
   .jobs-table tr.job-row-enter { animation: job-row-enter .28s ease-out both; }
+  .jobs-table tr.job-row-exit {
+    animation: job-row-exit .22s ease-in both;
+    pointer-events: none;
+  }
   @keyframes row-halo-pulse {
     0%, 100% { background-color: transparent; }
     50% { background-color: var(--accent-bg); }

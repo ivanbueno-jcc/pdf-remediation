@@ -20,6 +20,8 @@ const state = {
   jobStatusSnapshot: null,
   jobSearch: '',
   jobOutcomeFilter: 'all',
+  submissionResultTimer: null,
+  submissionResultFadeTimer: null,
 };
 
 const el = (id) => document.getElementById(id);
@@ -302,6 +304,10 @@ function updateSubmitState(message) {
 }
 
 function clearSubmissionResult() {
+  if (state.submissionResultTimer) window.clearTimeout(state.submissionResultTimer);
+  if (state.submissionResultFadeTimer) window.clearTimeout(state.submissionResultFadeTimer);
+  state.submissionResultTimer = null;
+  state.submissionResultFadeTimer = null;
   const result = el('submit-result');
   result.className = 'banner hidden';
   result.textContent = '';
@@ -310,11 +316,22 @@ function clearSubmissionResult() {
 }
 
 function showSubmissionResult(message, tone) {
+  clearSubmissionResult();
   const result = el('submit-result');
   result.textContent = message;
   result.className = 'banner ' + tone;
   result.setAttribute('role', tone === 'bad' ? 'alert' : 'status');
   result.setAttribute('aria-live', tone === 'bad' ? 'assertive' : 'polite');
+  state.submissionResultTimer = window.setTimeout(() => {
+    const reducedMotion = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      clearSubmissionResult();
+      return;
+    }
+    result.classList.add('banner-fade-out');
+    state.submissionResultFadeTimer = window.setTimeout(clearSubmissionResult, 280);
+  }, 5000);
 }
 
 function waitForStagedExit() {
@@ -538,6 +555,21 @@ function renderJobs() {
     entry.detail.remove();
     state.jobRows.delete(jobId);
   });
+}
+
+function animateJobRemoval(jobIds) {
+  const entries = jobIds
+    .map((jobId) => state.jobRows.get(jobId))
+    .filter(Boolean);
+  if (!entries.length) return Promise.resolve();
+  entries.forEach((entry) => {
+    entry.row.classList.add('job-row-exit');
+    entry.detail.classList.add('job-row-exit');
+  });
+  const reducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) return Promise.resolve();
+  return new Promise((resolve) => setTimeout(resolve, 230));
 }
 
 function buildJobRow(job) {
@@ -818,6 +850,7 @@ async function deleteJob(job, button) {
       const payload = await response.json().catch(() => ({}));
       throw new Error(describeError(payload) || 'The job could not be deleted.');
     }
+    await animateJobRemoval([job.job_id]);
     await refreshQueue();
     announceStatus(job.name + ' and its artifacts were deleted.');
   } catch (error) {
@@ -879,11 +912,34 @@ async function deleteAllJobs(button) {
   button.disabled = true;
   button.setAttribute('aria-busy', 'true');
   try {
+    const jobs = state.jobs.slice();
     const response = await fetch('/api/jobs', { method: 'DELETE' });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(describeError(payload) || 'The jobs could not be deleted.');
+    let payload = await response.json().catch(() => ({}));
+    if (response.status === 405) {
+      // Older server processes may still have the per-job route but not the
+      // bulk route. Keep the action usable while that process is being
+      // restarted or reloaded.
+      const results = await Promise.all(jobs.map(async (job) => {
+        const itemResponse = await fetch('/api/jobs/' + encodeURIComponent(job.job_id), {
+          method: 'DELETE',
+        });
+        return { job, response: itemResponse };
+      }));
+      const unexpected = results.find((item) => !item.response.ok && item.response.status !== 409);
+      if (unexpected) {
+        const itemPayload = await unexpected.response.json().catch(() => ({}));
+        throw new Error(describeError(itemPayload) || 'The jobs could not be deleted.');
+      }
+      payload = {
+        deleted: results.filter((item) => item.response.ok).map((item) => item.job.job_id),
+        skipped: results.filter((item) => item.response.status === 409).map((item) => item.job.job_id),
+      };
+    } else if (!response.ok) {
+      throw new Error(describeError(payload) || 'The jobs could not be deleted.');
+    }
     const deleted = Array.isArray(payload.deleted) ? payload.deleted : [];
     const skipped = Array.isArray(payload.skipped) ? payload.skipped : [];
+    await animateJobRemoval(deleted);
     await refreshQueue();
     if (skipped.length) {
       const message = deleted.length
