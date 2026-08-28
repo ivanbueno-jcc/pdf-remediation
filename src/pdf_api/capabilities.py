@@ -22,6 +22,7 @@ from pdf_remediation.utilities.resources import CONFIG_DIR, ROOT_DIR
 
 VERAPDF_JAR = ROOT_DIR / "lib" / "greenfield-apps-1.28.0.jar"
 CALLAS_ENV_PATH = ROOT_DIR / "resources" / "font" / ".env"
+CALLAS_ENV_KEYS = ("ENV_CALLAS_LICENSE", "ENV_CALLAS_SECRET")
 PROBE_TIMEOUT_SECONDS = 10.0
 PROBE_CACHE_SECONDS = 5.0
 
@@ -106,6 +107,37 @@ def _docker_available() -> tuple[bool, str]:
     return False, "daemon not running"
 
 
+def _callas_license_status() -> tuple[bool, str]:
+    '''Return whether the Callas env file contains both active credentials.'''
+    if not CALLAS_ENV_PATH.is_file():
+        return False, f"missing {CALLAS_ENV_PATH}"
+    try:
+        lines = CALLAS_ENV_PATH.read_text(encoding="utf-8").splitlines()
+    except OSError as error:
+        return False, f"could not read {CALLAS_ENV_PATH}: {error}"
+
+    configured: set[str] = set()
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        key, separator, value = line.partition("=")
+        key = key.strip()
+        if separator and key in CALLAS_ENV_KEYS:
+            value = value.strip()
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+                value = value[1:-1].strip()
+            if value:
+                configured.add(key)
+
+    missing = [key for key in CALLAS_ENV_KEYS if key not in configured]
+    if missing:
+        return False, f"missing or commented out {', '.join(missing)} in {CALLAS_ENV_PATH}"
+    return True, "configured"
+
+
 def probe() -> Capabilities:
     '''
     Run every probe and return what is available.
@@ -118,7 +150,7 @@ def probe() -> Capabilities:
         os.getenv("PDFIX_LICENSE_NAME", "").strip()
         and os.getenv("PDFIX_LICENSE_KEY", "").strip()
     )
-    callas_licence = CALLAS_ENV_PATH.is_file()
+    callas_licence, callas_detail = _callas_license_status()
 
     return Capabilities(
         java=java,
@@ -137,8 +169,7 @@ def probe() -> Capabilities:
                 else "PDFIX_LICENSE_NAME/PDFIX_LICENSE_KEY not set"
             ),
             "callas_licence": (
-                "configured" if callas_licence
-                else f"missing {CALLAS_ENV_PATH}"
+                callas_detail
             ),
             "configuration_dir": str(CONFIG_DIR),
         },

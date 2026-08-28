@@ -108,8 +108,11 @@ function renderHealth() {
       '. Validation would report every file as unvalidatable, so submitting is disabled.';
   } else if (state.health.recommend_skip_font_fix) {
     banner.className = 'banner warn';
-    banner.textContent = 'Docker is unavailable, so font repair will be skipped. ' +
-      'Everything else still runs.';
+    const unavailable = checks.filter((check) => !check.required && !check.ok);
+    const reason = unavailable.length
+      ? unavailable.map((check) => check.name + ' unavailable (' + check.detail + ')').join('; ')
+      : 'Font repair prerequisites are unavailable';
+    banner.textContent = reason + ', so font repair will be skipped. Everything else still runs.';
   } else {
     banner.className = 'banner hidden';
   }
