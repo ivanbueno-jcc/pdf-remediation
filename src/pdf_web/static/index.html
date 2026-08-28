@@ -20,11 +20,11 @@
   </section>
 
   <section id="submit-section">
-    <h2>New jobs</h2>
+    <h2>New files</h2>
     <div id="drop" tabindex="-1">
       <label>
         <strong>Drop PDFs here</strong>
-        <span>or <u>browse</u> to choose files &mdash; one job per file</span>
+        <span>or <u>browse</u> to choose files &mdash; one file per remediation</span>
         <input type="file" id="file-input" multiple accept=".pdf,application/pdf">
       </label>
     </div>
@@ -43,7 +43,7 @@
         </div>
         <div class="setting-option">
           <label class="check"><input type="checkbox" id="strict"> Require both WCAG and PDF/UA-1 to pass</label>
-          <p class="setting-help">Treats the job as successful only when both validation profiles pass.</p>
+          <p class="setting-help">Treats the file as successful only when both validation profiles pass.</p>
         </div>
       </div>
     </details>
@@ -65,10 +65,10 @@
   </section>
 
   <section id="jobs-section" class="hidden">
-    <div id="jobs-stats" class="jobs-stats" aria-label="Job statistics"></div>
+    <div id="jobs-stats" class="jobs-stats" aria-label="File statistics"></div>
     <div class="jobs-header">
       <div class="jobs-title">
-        <h2>Jobs</h2>
+        <h2>Files</h2>
         <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
       </div>
       <div class="job-filters">
@@ -88,21 +88,21 @@
     <div id="job-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     <p class="muted job-empty hidden" id="job-empty" role="status"></p>
     <div class="job-group hidden" id="active-jobs-group">
-      <h3>Active jobs <span class="group-count" id="active-jobs-count"></span></h3>
+      <h3>Active files <span class="group-count" id="active-jobs-count"></span></h3>
       <table class="jobs-table">
         <thead><tr><th>File</th><th>Status</th><th>Validation change</th><th>Downloads</th></tr></thead>
         <tbody id="active-jobs-body"></tbody>
       </table>
     </div>
     <div class="job-group hidden" id="recent-jobs-group">
-      <h3>Recent jobs <span class="group-count" id="recent-jobs-count"></span></h3>
+      <h3>Recent files <span class="group-count" id="recent-jobs-count"></span></h3>
       <table class="jobs-table">
         <thead><tr><th>File</th><th>Status</th><th>Validation change</th><th>Downloads</th></tr></thead>
         <tbody id="recent-jobs-body"></tbody>
       </table>
     </div>
     <div class="jobs-footer">
-      <button type="button" class="delete-all" id="delete-all" aria-label="Delete all jobs">Delete all</button>
+      <button type="button" class="delete-all" id="delete-all" aria-label="Delete all files">Delete all</button>
     </div>
   </section>
 </main>
@@ -110,13 +110,13 @@
   <div class="confirm-dialog-body">
     <div class="confirm-dialog-icon" aria-hidden="true">!</div>
     <div>
-      <h2 id="delete-dialog-title">Delete job?</h2>
-      <p id="delete-dialog-copy">This permanently removes the job and all of its artifacts.</p>
+      <h2 id="delete-dialog-title">Delete file?</h2>
+      <p id="delete-dialog-copy">This permanently removes the file and all of its artifacts.</p>
     </div>
   </div>
   <div class="confirm-dialog-actions">
     <button type="button" class="confirm-dialog-cancel" id="delete-cancel">Cancel</button>
-    <button type="button" class="confirm-dialog-confirm" id="delete-confirm">Delete job</button>
+    <button type="button" class="confirm-dialog-confirm" id="delete-confirm">Delete file</button>
   </div>
 </dialog>
 <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>

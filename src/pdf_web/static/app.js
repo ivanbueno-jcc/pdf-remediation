@@ -69,7 +69,7 @@ function renderIdentity() {
   const auth = (state.health && state.health.auth) || {};
   if (state.authError || !state.health.user) { line.textContent = ''; return; }
   line.textContent = auth.multi_user
-    ? 'Signed in as ' + state.health.user + ' · your jobs are private to you'
+    ? 'Signed in as ' + state.health.user + ' · your files are private to you'
     : 'Single-user mode · ' + state.health.user;
 }
 
@@ -292,14 +292,14 @@ function updateSubmitState(message) {
   submit.disabled = state.submitting || !(healthy && readyCount);
   submit.classList.toggle('is-submitting', state.submitting);
   const label = state.submitting ? 'Uploading…'
-    : (readyCount === 1 ? 'Remediate 1 job'
-      : (readyCount > 1 ? 'Remediate ' + readyCount + ' jobs' : 'Remediate'));
+    : (readyCount === 1 ? 'Remediate 1 file'
+      : (readyCount > 1 ? 'Remediate ' + readyCount + ' files' : 'Remediate'));
   submit.replaceChildren(downloadIcon(state.submitting ? 'spinner' : 'remediate'), label);
   el('file-input').disabled = state.submitting;
   el('drop').setAttribute('aria-disabled', state.submitting ? 'true' : 'false');
   el('clear-staged').disabled = state.submitting;
   if (message !== undefined) el('submit-note').textContent = message;
-  else if (state.submitting) el('submit-note').textContent = 'Uploading PDFs and creating jobs…';
+  else if (state.submitting) el('submit-note').textContent = 'Uploading PDFs and processing files…';
   else if (!healthy) el('submit-note').textContent = 'Fix the environment problems above first.';
   else if (!readyCount) el('submit-note').textContent = state.staged.some(
     (item) => item.status === 'error'
@@ -376,7 +376,7 @@ async function submitJobs() {
       (entry) => entry.file && entry.file.original_name === item.file.name
     );
     item.status = rejection ? 'error' : (job ? 'queued' : 'error');
-    item.reason = rejection ? rejection.reason : (job ? 'Job queued.' : 'No job was created.');
+    item.reason = rejection ? rejection.reason : (job ? 'File queued.' : 'No file was queued.');
     item.jobId = job ? job.job_id : null;
     if (job) item.motion = 'exit';
   });
@@ -388,7 +388,7 @@ async function submitJobs() {
   state.staged = state.staged.filter((item) => item.status === 'error');
   el('batch-announcer').textContent = '';
   renderStaged();
-  const queuedMessage = (payload.jobs.length === 1 ? '1 job queued' : payload.jobs.length + ' jobs queued') +
+  const queuedMessage = (payload.jobs.length === 1 ? '1 file queued' : payload.jobs.length + ' files queued') +
     ' · ' + payload.concurrency +
     ' run at a time, ' + payload.your_limit + ' of yours at once.';
   updateSubmitState('');
@@ -625,8 +625,8 @@ function renderJobs() {
   const empty = el('job-empty');
   empty.classList.toggle('hidden', visible.length > 0);
   empty.textContent = total
-    ? 'No jobs match the current search and outcome filter.'
-    : 'No jobs yet.';
+    ? 'No files match the current search and outcome filter.'
+    : 'No files yet.';
   renderJobStats();
   renderJobGroup('active-jobs-group', 'active-jobs-body', 'active-jobs-count', active);
   renderJobGroup('recent-jobs-group', 'recent-jobs-body', 'recent-jobs-count', recent);
@@ -1046,7 +1046,7 @@ async function cancelJob(job, button) {
     });
     if (!response.ok) {
       const payload = await response.json().catch(() => ({}));
-      throw new Error(describeError(payload) || 'The job could not be cancelled.');
+      throw new Error(describeError(payload) || 'The file could not be cancelled.');
     }
     await refreshQueue();
     announceStatus('Cancellation requested for ' + job.name + '.');
@@ -1057,7 +1057,7 @@ async function cancelJob(job, button) {
     button.removeAttribute('aria-busy');
     button.setAttribute('aria-label', 'Cancel ' + job.name);
     button.replaceChildren(downloadIcon('cancel'), 'Cancel');
-    showToast('Could not cancel the job: ' + String(error.message || error), 'bad');
+    showToast('Could not cancel the file: ' + String(error.message || error), 'bad');
   }
 }
 
@@ -1072,7 +1072,7 @@ async function deleteJob(job, button) {
     });
     if (!response.ok) {
       const payload = await response.json().catch(() => ({}));
-      throw new Error(describeError(payload) || 'The job could not be deleted.');
+      throw new Error(describeError(payload) || 'The file could not be deleted.');
     }
     await animateJobRemoval([job.job_id]);
     await refreshQueue();
@@ -1082,23 +1082,23 @@ async function deleteJob(job, button) {
   } catch (error) {
     button.disabled = false;
     button.removeAttribute('aria-busy');
-    showToast('Could not delete the job: ' + String(error.message || error), 'bad');
+    showToast('Could not delete the file: ' + String(error.message || error), 'bad');
   }
 }
 
 function confirmDelete(job) {
   return confirmAction(
     'Delete ' + job.name + '?',
-    'This permanently removes the job and all of its artifacts. This action cannot be undone.',
-    'Delete job'
+    'This permanently removes the file and all of its artifacts. This action cannot be undone.',
+    'Delete file'
   );
 }
 
 function confirmDeleteAll(count) {
-  const noun = count === 1 ? 'job' : 'jobs';
+  const noun = count === 1 ? 'file' : 'files';
   return confirmAction(
-    'Delete all jobs?',
-    'This permanently removes all ' + count + ' ' + noun + ' and their artifacts. Jobs still running will be skipped until they finish. This action cannot be undone.',
+    'Delete all files?',
+    'This permanently removes all ' + count + ' ' + noun + ' and their artifacts. Files still processing will be skipped until they finish. This action cannot be undone.',
     'Delete all'
   );
 }
@@ -1106,8 +1106,8 @@ function confirmDeleteAll(count) {
 function confirmCancel(job) {
   const copy = job.status === 'running'
     ? 'Processing will stop at the next safe point. Incomplete results will not be available.'
-    : 'This removes the job from the queue before processing begins.';
-  return confirmAction('Cancel ' + job.name + '?', copy, 'Cancel job');
+    : 'This removes the file from the queue before processing begins.';
+  return confirmAction('Cancel ' + job.name + '?', copy, 'Cancel file');
 }
 
 function confirmAction(titleText, copyText, confirmText) {
@@ -1161,14 +1161,14 @@ async function deleteAllJobs(button) {
       const unexpected = results.find((item) => !item.response.ok && item.response.status !== 409);
       if (unexpected) {
         const itemPayload = await unexpected.response.json().catch(() => ({}));
-        throw new Error(describeError(itemPayload) || 'The jobs could not be deleted.');
+        throw new Error(describeError(itemPayload) || 'The files could not be deleted.');
       }
       payload = {
         deleted: results.filter((item) => item.response.ok).map((item) => item.job.job_id),
         skipped: results.filter((item) => item.response.status === 409).map((item) => item.job.job_id),
       };
     } else if (!response.ok) {
-      throw new Error(describeError(payload) || 'The jobs could not be deleted.');
+      throw new Error(describeError(payload) || 'The files could not be deleted.');
     }
     const deleted = Array.isArray(payload.deleted) ? payload.deleted : [];
     const skipped = Array.isArray(payload.skipped) ? payload.skipped : [];
@@ -1176,19 +1176,19 @@ async function deleteAllJobs(button) {
     await refreshQueue();
     if (skipped.length) {
       const message = deleted.length
-        ? deleted.length + ' job' + (deleted.length === 1 ? '' : 's') +
-          ' deleted. ' + skipped.length + ' active job' + (skipped.length === 1 ? '' : 's') + ' remain.'
-        : 'Active jobs are still running and could not be deleted.';
+        ? deleted.length + ' file' + (deleted.length === 1 ? '' : 's') +
+          ' deleted. ' + skipped.length + ' active file' + (skipped.length === 1 ? '' : 's') + ' remain.'
+        : 'Active files are still processing and could not be deleted.';
       showToast(message, 'warn');
       announceStatus(message);
     } else {
-      const message = deleted.length + ' job' + (deleted.length === 1 ? '' : 's') +
+      const message = deleted.length + ' file' + (deleted.length === 1 ? '' : 's') +
         ' and their artifacts were deleted.';
       showToast(message);
       announceStatus(message);
     }
   } catch (error) {
-    showToast('Could not delete all jobs: ' + String(error.message || error), 'bad');
+    showToast('Could not delete all files: ' + String(error.message || error), 'bad');
   } finally {
     button.disabled = false;
     button.removeAttribute('aria-busy');
@@ -1429,7 +1429,7 @@ async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
   row.dataset.open = 'true';
   detailRow.setAttribute('aria-hidden', 'false');
   updateDisclosure(disclosure, job.name, true);
-  cell.innerHTML = '<div class="job-detail muted" role="status">Loading job details…</div>';
+  cell.innerHTML = '<div class="job-detail muted" role="status">Loading file details…</div>';
   updateDetailHeight(detailRow);
   setDetailExpanded(detailRow, true);
 
@@ -1440,7 +1440,7 @@ async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
     renderDetail(cell, detailJob);
     if (row.dataset.open === 'true') announceStatus('Details loaded for ' + job.name + '.');
   } catch (error) {
-    cell.innerHTML = '<div class="job-detail" role="alert">Job details are unavailable.</div>';
+    cell.innerHTML = '<div class="job-detail" role="alert">File details are unavailable.</div>';
     updateDetailHeight(detailRow);
   }
 }
