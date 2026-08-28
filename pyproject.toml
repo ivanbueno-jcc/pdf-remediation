@@ -36,6 +36,7 @@ solo-remove-security = "pdf_worker.solo_remove_security:main"
 solo-validate = "pdf_worker.solo_validate:main"
 status = "pdf_remediation.status:main"
 validate = "pdf_remediation.validate:main"
+pdf-api = "pdf_api.__main__:main"
 web = "pdf_web.__main__:main"
 
 [build-system]
@@ -44,7 +45,7 @@ build-backend = "uv_build"
 
 [tool.uv.build-backend]
 # Ship every src/ package, not just the one matching the project name.
-module-name = ["pdf_remediation", "pdf_web", "pdf_worker"]
+module-name = ["pdf_api", "pdf_remediation", "pdf_web", "pdf_worker"]
 source-include = ["src/pdf_web/static/*"]
 
 [dependency-groups]
