@@ -70,7 +70,7 @@ function renderIdentity() {
   if (state.authError || !state.health.user) { line.textContent = ''; return; }
   line.textContent = auth.multi_user
     ? 'Signed in as ' + state.health.user + ' · your files are private to you'
-    : 'Single-user mode · ' + state.health.user;
+    : 'Shared access · ' + state.health.user;
 }
 
 function renderHealth() {
