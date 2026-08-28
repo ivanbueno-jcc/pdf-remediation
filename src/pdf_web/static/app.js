@@ -705,7 +705,13 @@ function buildJobRow(job) {
   const stateStack = document.createElement('div');
   stateStack.className = 'job-state-stack';
   const outcome = document.createElement('span');
+  const progressLive = document.createElement('span');
+  progressLive.className = 'sr-only job-progress-live';
+  progressLive.setAttribute('role', 'status');
+  progressLive.setAttribute('aria-live', 'polite');
+  progressLive.setAttribute('aria-atomic', 'true');
   stateStack.append(processingState, outcome);
+  stateStack.appendChild(progressLive);
   status.appendChild(stateStack);
 
   const validation = document.createElement('td');
@@ -727,7 +733,7 @@ function buildJobRow(job) {
 
   const entry = {
     job, row, detail, cell, disclosure,
-    processingState, outcome, status, validation, downloads, fileActions,
+    processingState, outcome, progressLive, status, validation, downloads, fileActions,
   };
 
   fileName.classList.add('file-name-toggle');
@@ -753,11 +759,16 @@ function updateJobRow(entry, job) {
 
   const detailNote = processingDetail(job);
   const label = processingLabel(job.status);
+  const progressMessage = isActiveJob(job)
+    ? job.name + ': ' + label + (detailNote ? ', ' + detailNote : '') : '';
   entry.processingState.className = 'processing-state ' + job.status;
   entry.processingState.textContent = '';
   entry.processingState.append(statusIcon(processingStatusIcon(job.status)), detailNote || label);
   if (detailNote) entry.processingState.setAttribute('aria-label', label + ': ' + detailNote);
   else entry.processingState.removeAttribute('aria-label');
+  if (entry.progressLive.textContent !== progressMessage) {
+    entry.progressLive.textContent = progressMessage;
+  }
 
   entry.outcome.className = 'outcome ' + (job.outcome ? outcomeTone(job.outcome) : 'pending');
   entry.outcome.textContent = '';
