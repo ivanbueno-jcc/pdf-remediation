@@ -518,6 +518,27 @@ function isActiveJob(job) {
   return job.status === 'queued' || job.status === 'running';
 }
 
+function activeJobOrder(a, b) {
+  // Jobs already being processed occupy the next available slots, so keep
+  // them above queued work. Among queued jobs, the runner's position is the
+  // source of truth for processing order.
+  const statusOrder = { running: 0, queued: 1 };
+  const statusDifference = statusOrder[a.status] - statusOrder[b.status];
+  if (statusDifference) return statusDifference;
+
+  if (a.status === 'queued') {
+    const aAhead = a.jobs_ahead !== null && a.jobs_ahead !== undefined &&
+      Number.isFinite(Number(a.jobs_ahead)) ? Number(a.jobs_ahead) : Number.MAX_SAFE_INTEGER;
+    const bAhead = b.jobs_ahead !== null && b.jobs_ahead !== undefined &&
+      Number.isFinite(Number(b.jobs_ahead)) ? Number(b.jobs_ahead) : Number.MAX_SAFE_INTEGER;
+    if (aAhead !== bAhead) return aAhead - bAhead;
+  }
+
+  const aCreated = Date.parse(a.created_at || '') || 0;
+  const bCreated = Date.parse(b.created_at || '') || 0;
+  return aCreated - bCreated;
+}
+
 function filteredJobs() {
   const query = state.jobSearch.trim().toLowerCase();
   const filter = state.jobOutcomeFilter;
@@ -546,7 +567,7 @@ function renderJobGroup(groupId, bodyId, countId, jobs) {
 
 function renderJobs() {
   const visible = filteredJobs();
-  const active = visible.filter(isActiveJob);
+  const active = visible.filter(isActiveJob).sort(activeJobOrder);
   const recent = visible.filter((job) => !isActiveJob(job));
   const total = state.jobs.length;
   const empty = el('job-empty');
