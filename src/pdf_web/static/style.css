@@ -12,6 +12,8 @@
   --warn-bg: rgba(138,90,0,.15);
   --bad-bg: rgba(165,34,34,.18);
   --accent-bg: rgba(28,79,139,.15);
+  --active-group-bg: rgba(28,79,139,.035);
+  --active-group-border: rgba(28,79,139,.22);
   --job-row-hover: rgba(28,79,139,.055);
   --job-row-focus: rgba(28,79,139,.09);
   --radius: 8px;
@@ -36,6 +38,8 @@
     --ok: #61c98c;
     --warn: #e0b062;
     --bad: #ef8080;
+    --active-group-bg: rgba(111,168,224,.07);
+    --active-group-border: rgba(111,168,224,.3);
     --job-row-hover: rgba(111,168,224,.09);
     --job-row-focus: rgba(111,168,224,.14);
     --section-shadow: 0 1px 2px rgba(0, 0, 0, .14), 0 6px 18px rgba(0, 0, 0, .1);
@@ -394,9 +398,26 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
   color: var(--ink); border-color: var(--accent); outline: none;
 }
 .job-filters input::-webkit-search-cancel-button { -webkit-appearance: none; }
-.job-group + .job-group { margin-top: var(--space-6); }
 .job-group h3 { display: flex; align-items: baseline; gap: var(--space-2); }
 .job-group h3 .group-count { font-size: 13px; font-weight: 400; color: var(--muted); }
+#active-jobs-group {
+  padding: var(--space-4);
+  border: 1px solid var(--active-group-border);
+  border-radius: var(--radius);
+  background: var(--active-group-bg);
+}
+#active-jobs-group h3 { margin-top: 0; }
+#active-jobs-group h3::before {
+  content: '';
+  width: 4px; height: 18px; flex: none;
+  border-radius: 999px; background: var(--accent);
+}
+#active-jobs-group:not(.hidden) + #recent-jobs-group:not(.hidden) {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 2px solid var(--line);
+}
+#active-jobs-group:not(.hidden) + #recent-jobs-group:not(.hidden) h3 { margin-top: 0; }
 .jobs-footer {
   display: flex; justify-content: flex-start; margin-top: var(--space-5); padding-top: var(--space-4);
 }
@@ -462,6 +483,11 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
   section { padding: var(--space-4); }
   #jobs-section { padding: var(--space-4) var(--space-3); }
   .advanced-settings[open] { width: 100%; }
+  #active-jobs-group { padding: var(--space-3); }
+  #active-jobs-group:not(.hidden) + #recent-jobs-group:not(.hidden) {
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+  }
   .jobs-table { display: block; }
   .jobs-table thead {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
