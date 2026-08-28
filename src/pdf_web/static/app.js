@@ -574,6 +574,49 @@ function renderJobGroup(groupId, bodyId, countId, jobs) {
   renderJobRows(el(bodyId), jobs);
 }
 
+function hasPassedProfile(job, profile) {
+  return Boolean(job.after && job.after.profiles && job.after.profiles[profile] &&
+    job.after.profiles[profile].passed);
+}
+
+function renderJobStats() {
+  const jobs = state.jobs;
+  const processed = jobs.filter((job) => job.status === 'completed');
+  const pageCount = (job) => {
+    const count = Number(job.page_count);
+    return Number.isInteger(count) && count >= 0 ? count : null;
+  };
+  const totalPages = jobs.reduce((total, job) => total + (pageCount(job) || 0), 0);
+  const processedPages = processed.reduce(
+    (total, job) => total + (pageCount(job) || 0), 0
+  );
+  const stats = [
+    ['files', 'Files processed', processed.length],
+    ['check', 'WCAG compliant', processed.filter((job) => hasPassedProfile(job, 'wcag')).length],
+    ['check', 'UA1 compliant', processed.filter((job) => hasPassedProfile(job, 'ua1')).length],
+    ['pages', 'Pages remediated', processedPages + ' / ' + totalPages],
+  ];
+  const container = el('jobs-stats');
+  container.replaceChildren(...stats.map(([iconName, label, value]) => {
+    const stat = document.createElement('div');
+    stat.className = 'job-stat';
+    stat.setAttribute('aria-label', value + ' ' + label);
+    const icon = statusIcon(iconName);
+    icon.classList.add('job-stat-icon');
+    const copy = document.createElement('div');
+    copy.className = 'job-stat-copy';
+    const number = document.createElement('strong');
+    number.className = 'job-stat-value';
+    number.textContent = value;
+    const name = document.createElement('span');
+    name.className = 'job-stat-label';
+    name.textContent = label;
+    copy.append(number, name);
+    stat.append(icon, copy);
+    return stat;
+  }));
+}
+
 function renderJobs() {
   const visible = filteredJobs();
   const active = visible.filter(isActiveJob).sort(activeJobOrder);
@@ -584,6 +627,7 @@ function renderJobs() {
   empty.textContent = total
     ? 'No jobs match the current search and outcome filter.'
     : 'No jobs yet.';
+  renderJobStats();
   renderJobGroup('active-jobs-group', 'active-jobs-body', 'active-jobs-count', active);
   renderJobGroup('recent-jobs-group', 'recent-jobs-body', 'recent-jobs-count', recent);
 
@@ -1128,6 +1172,11 @@ function statusIcon(name) {
   svg.setAttribute('focusable', 'false');
 
   const shapes = {
+    files: [
+      ['path', { d: 'M6 3h9l3 3v15H6z' }],
+      ['path', { d: 'M15 3v4h4' }],
+      ['path', { d: 'm9 14 2 2 4-4' }],
+    ],
     check: [
       ['circle', { cx: '12', cy: '12', r: '9' }],
       ['path', { d: 'm8 12 2.5 2.5L16 9' }],
@@ -1174,6 +1223,10 @@ function statusIcon(name) {
       ['circle', { cx: '12', cy: '12', r: '9' }],
       ['path', { d: 'M12 11v6' }],
       ['path', { d: 'M12 7h.01' }],
+    ],
+    pages: [
+      ['path', { d: 'M5 4h9l3 3v13H5z' }],
+      ['path', { d: 'M8 2h9l3 3v13h-2' }],
     ],
   };
 
@@ -1275,11 +1328,44 @@ function updateDisclosure(disclosure, fileName, expanded) {
   disclosure.title = action;
 }
 
+function updateDetailHeight(detailRow) {
+  const detail = detailRow.querySelector('.job-detail');
+  if (detail) detailRow.style.setProperty('--detail-height', detail.scrollHeight + 'px');
+}
+
+function setDetailExpanded(detailRow, expanded) {
+  const token = (Number(detailRow.dataset.animationToken) || 0) + 1;
+  detailRow.dataset.animationToken = String(token);
+  if (expanded) {
+    detailRow.classList.remove('hidden');
+    if (detailRow.classList.contains('detail-expanded')) return;
+    requestAnimationFrame(() => {
+      if (detailRow.dataset.animationToken === String(token) &&
+          !detailRow.classList.contains('hidden')) {
+        detailRow.classList.add('detail-expanded');
+      }
+    });
+    return;
+  }
+
+  detailRow.classList.remove('detail-expanded');
+  const finish = () => {
+    if (detailRow.dataset.animationToken === String(token) &&
+        !detailRow.classList.contains('detail-expanded')) {
+      detailRow.classList.add('hidden');
+    }
+  };
+  const reducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) finish();
+  else window.setTimeout(finish, 290);
+}
+
 async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
   const isOpen = row.dataset.open === 'true';
   if (isOpen && !forceOpen) {
     row.dataset.open = 'false';
-    detailRow.classList.add('hidden');
+    setDetailExpanded(detailRow, false);
     detailRow.setAttribute('aria-hidden', 'true');
     updateDisclosure(disclosure, job.name, false);
     state.openJobId = null;
@@ -1288,10 +1374,11 @@ async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
 
   state.openJobId = job.job_id;
   row.dataset.open = 'true';
-  detailRow.classList.remove('hidden');
   detailRow.setAttribute('aria-hidden', 'false');
   updateDisclosure(disclosure, job.name, true);
   cell.innerHTML = '<div class="job-detail muted" role="status">Loading job details…</div>';
+  updateDetailHeight(detailRow);
+  setDetailExpanded(detailRow, true);
 
   try {
     const response = await fetch('/api/jobs/' + job.job_id);
@@ -1301,6 +1388,7 @@ async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
     if (row.dataset.open === 'true') announceStatus('Details loaded for ' + job.name + '.');
   } catch (error) {
     cell.innerHTML = '<div class="job-detail" role="alert">Job details are unavailable.</div>';
+    updateDetailHeight(detailRow);
   }
 }
 
@@ -1342,6 +1430,7 @@ function renderDetail(cell, job) {
   appendViolationSection(wrap, job);
 
   cell.appendChild(wrap);
+  updateDetailHeight(cell.parentElement);
 }
 
 function violationItem(violation) {
