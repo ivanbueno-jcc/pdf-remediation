@@ -1,0 +1,564 @@
+{
+  "name": "make_accessible_docling",
+  "title": "Make Accessible Docling",
+  "desc": "Official remediation preset for automated PDF/UA-1 compliance using Docling. This preset applies a comprehensive sequence of actions to clean up existing structure, apply AI-assisted auto-tagging, and perform targeted fixes to ensure the resulting document meets PDF/UA-1 accessibility standards. The preset is designed for maximum compatibility and reliability when processing documents with Docling's autotagging capabilities.",
+  "version": "0.3.3",
+  "min_sdk_version": "8.8.0",
+  "max_sdk_version": "",
+  "release_date": "2026-04-16",
+  "category": "Accessibility",
+  "icon": "docling",
+  "settings": {
+    "stop_on_action_failure": true
+  },
+  "actions": [
+    {
+      "name": "delete_annot",
+      "title": "Delete Annotations (TrapNet, PrinterMark)",
+      "desc": "Remove non-permitted annotation types that commonly cause PDF/UA compliance failures. TrapNet and PrinterMark annotations are production artifacts and must not be present in accessible documents.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": "^(TrapNet|PrinterMark)$"
+        }
+      ]
+    },
+    {
+      "name": "clear_structure",
+      "params": [
+        {
+          "name": "clear_tags",
+          "value": true
+        },
+        {
+          "name": "clear_struct_tree",
+          "value": true
+        },
+        {
+          "name": "clear_bookmarks",
+          "value": false
+        }
+      ]
+    },
+    {
+      "args": [
+        {
+          "ext": "pdf",
+          "flags": 2,
+          "name": "input_pdf",
+          "type": "file_path",
+          "value": ""
+        },
+        {
+          "ext": "pdf",
+          "flags": 4,
+          "name": "output_pdf",
+          "type": "file_path",
+          "value": ""
+        },
+        {
+          "ext": "",
+          "flags": 0,
+          "name": "process_formula",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "ext": "",
+          "flags": 0,
+          "name": "describe_images",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "ext": "",
+          "flags": 0,
+          "name": "per_page",
+          "type": "bool",
+          "value": true
+        }
+      ],
+      "name": "pdfix_autotag_docling",
+      "desc": "Automatically add structure tags using AI-assisted layout analysis without preserving an existing tag structure. The action overwrites existing tags.",
+      "path": "",
+      "program": "docker run --platform linux/amd64 -v \"${working_directory}:/data\" -w /data --rm pdfix/pdf-accessibility-docling:v1.2.21 tag --name \"${license_name}\" --key \"${license_key}\" -i \"/data/${input_pdf}\" -o \"/data/${output_pdf}\" --do_formula_recognition \"${process_formula}\" --do_image_description \"${describe_images}\" --per_page \"${per_page}\"",
+      "returnCodes": [
+        0
+      ],
+      "stderr": "",
+      "stdout": "",
+      "title": "AutoTag (Docling)"
+    },
+    {
+      "name": "set_display_doc_title",
+      "title": "Fix Display Document Title",
+      "desc": "Synchronize the ViewerPreferences DisplayDocTitle setting with the actual document title so that assistive technologies announce the correct title.",
+      "params": []
+    },
+    {
+      "name": "embed_font",
+      "title": "Fix Fonts",
+      "desc": "Embed and fix all fonts used in the document to ensure consistent rendering and reliable text extraction across platforms and assistive technologies.",
+      "params": []
+    },
+    {
+      "name": "fix_headings",
+      "title": "Fix Headings (Add missing headings)",
+      "desc": "Normalize heading hierarchy by resolving skipped levels and converting headings to a consistent generic H* structure. This improves outline quality and screen reader navigation.",
+      "params": [
+        {
+          "name": "renumber_headings",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "name": "fix_parent_tree",
+      "title": "Fix Parent Tree (Final normalization)",
+      "desc": "Re-run ParentTree repair after tagging and cleanup to ensure all newly created or modified content references are correctly linked.",
+      "params": []
+    },
+    {
+      "name": "fix_oc_name",
+      "title": "Fix Optional Content Configuration",
+      "desc": "Repair Optional Content (OCG) configuration dictionaries to ensure layer definitions are valid and accessible.",
+      "params": []
+    },
+    {
+      "name": "set_suspect_value",
+      "title": "Clear Suspect Flag",
+      "desc": "Fix the MarkInfo dictionary by clearing the Suspects entry, indicating that the document structure is no longer considered unreliable.",
+      "params": []
+    },
+    {
+      "name": "set_annot_contents",
+      "title": "Set Annotation Contents (BBox text)",
+      "desc": "Populate annotation Contents using text extracted from the annotation bounding box. Provides meaningful accessible names when available.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": ".*"
+        },
+        {
+          "name": "alt_type",
+          "value": 1
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "bbox_padding_x",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_x_right",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y_top",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y",
+          "value": 4
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_annot_contents",
+      "title": "Set Annotation Contents (Action destination)",
+      "desc": "Populate annotation Contents using the annotation action destination (e.g., link target) when available.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": ".*"
+        },
+        {
+          "name": "alt_type",
+          "value": 2
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "bbox_padding_x",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_x_right",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y_top",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y",
+          "value": 4
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_annot_contents",
+      "title": "Set Annotation Contents (Auto-generated)",
+      "desc": "Populate annotation Contents using auto-generated text as a fallback when no meaningful source text is available.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": ".*"
+        },
+        {
+          "name": "alt_type",
+          "value": 3
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "bbox_padding_x",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_x_right",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y_top",
+          "value": 4
+        },
+        {
+          "name": "bbox_padding_y",
+          "value": 4
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Figure/Formula: From associated content)",
+      "desc": "Set alternate descriptions for Figure and Formula tags using associated tag content. If an Annotation is present among children, its Contents is used.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$"
+        },
+        {
+          "name": "alt_type",
+          "value": 4
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": "Caption"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Figure/Formula: First description tag above)",
+      "desc": "Set alternate descriptions for Figure and Formula tags using the first suitable description tag found above the element.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$"
+        },
+        {
+          "name": "alt_type",
+          "value": 1
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Figure/Formula: First description tag below)",
+      "desc": "Set alternate descriptions for Figure and Formula tags using the first suitable description tag found below the element.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$"
+        },
+        {
+          "name": "alt_type",
+          "value": 2
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Figure/Formula: Custom text fallback)",
+      "desc": "Set alternate descriptions for Figure and Formula tags using a custom fallback value when no meaningful description is available.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$"
+        },
+        {
+          "name": "alt_type",
+          "value": 0
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": "Caption"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_alt",
+      "title": "Set Alt (Form: From associated content)",
+      "desc": "Set alternate descriptions for Form tags using associated tag content. If an Annotation is present among children, its Contents is used.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Form$"
+        },
+        {
+          "name": "alt_type",
+          "value": 4
+        },
+        {
+          "name": "custom_text",
+          "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": "Caption"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "fix_media_clip_keys",
+      "title": "Fix Media Clip (Content-Type to text/plain)",
+      "desc": "Fix media clip content type keys to a safe default (text/plain) to prevent validation failures on embedded media metadata.",
+      "params": [
+        {
+          "name": "ct_key",
+          "value": "text/plain"
+        }
+      ]
+    },
+    {
+      "name": "set_tag_id",
+      "title": "Set Tag IDs (Note, TH)",
+      "desc": "Generate unique ID keys for Note and table header (TH) structure elements as required by PDF/UA.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Note$|^TH$"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "fix_id_tree",
+      "title": "Fix ID Tree",
+      "desc": "Repair the document ID tree to restore valid references for structure elements and tagged content."
+    },
+    {
+      "name": "set_tabs_key",
+      "title": "Set Tab Order (Structure)",
+      "desc": "Set the page Tabs key to Structure so keyboard navigation follows the logical reading order.",
+      "params": [
+        {
+          "name": "tabs_key",
+          "value": "S"
+        },
+        {
+          "name": "overwrite",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "create_bookmarks",
+      "title": "Create Bookmarks",
+      "desc": "Create bookmarks from the tag tree hierarchy"
+    },
+    {
+      "name": "fix_metadata",
+      "desc": "Repair and normalize document XMP metadata to improve standards compliance and consistency",
+      "title": "Fix XMP Metadata"
+    },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata by picking text from the first matching structure tag (H1). This aligns metadata with the visible main heading for assistive technologies and preserves any existing Title unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "1"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": "H1"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From H1 Heading)"
+    },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata from the PDF Info dictionary. Use this as a reliable fallback when the tag structure does not contain a suitable heading. Existing Title is preserved unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "3"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From Info Dictionary)"
+    },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata from the input file name. This provides a deterministic fallback title when neither tag-based detection nor existing Info metadata is suitable. Existing Title is preserved unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "2"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From File Name)"
+    }, 
+    {
+      "name": "set_pdf_ua_standard",
+      "title": "Set PDF/UA-1 Identifier",
+      "desc": "Declare PDF/UA-1 conformance by setting the appropriate PDF/UA identifier in the document metadata.",
+      "params": [
+        {
+          "name": "part_number",
+          "value": "1"
+        },
+        {
+          "name": "rev_number",
+          "value": "2023"
+        }
+      ]
+    },    
+    {
+      "name": "set_language",
+      "title": "Set Document Language (en-US)",
+      "desc": "Define the primary document language to ensure correct pronunciation and processing by assistive technologies.",
+      "params": [
+        {
+          "name": "lang",
+          "value": "en-US"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "create_bookmarks",
+      "title": "Create Bookmarks",
+      "desc": "Create bookmarks for the document to improve navigation and accessibility.",
+      "params": [
+        {
+          "name": "tag_1",
+          "value": "^H1$"
+        },
+        {
+          "name": "tag_2",
+          "value": "^H2$"
+        },
+        {
+          "name": "tag_3",
+          "value": "^H3$"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    }
+  ]
+}

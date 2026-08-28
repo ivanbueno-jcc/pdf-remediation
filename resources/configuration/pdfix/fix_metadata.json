@@ -1,0 +1,98 @@
+{
+  "name": "fix_metadata_complete",
+  "title": "Fix Metadata (Complete)",
+  "desc": "Repair, normalize, and rebuild document metadata, automatically set the document title, and apply the PDF/UA identifier",
+  "keywords": [
+    "repair",
+    "normalize",
+    "metadata",
+    "title",
+    "document title",
+    "xmp",
+    "pdf/ua",
+    "info dictionary"
+  ],
+  "version": "0.2.2",
+  "min_sdk_version": "8.8.0",
+  "max_sdk_version": "",
+  "release_date": "2026-03-21",
+  "category": "Metadata",
+  "icon": "fix_metadata",
+  "settings": {
+    "stop_on_action_failure": false
+  },
+  "actions": [
+    {
+      "name": "fix_metadata",
+      "title": "Fix and Normalize Metadata",
+      "desc": "Repair, normalize, and reset document XMP metadata to improve standards compliance, consistency, and accessibility.",
+      "params": [
+        {
+          "name": "reset_metadata",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "set_title",
+      "title": "Set Title from First Heading",
+      "desc": "Set the document title from the first matching structure tag (typically H1).",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "1"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": "H1"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_title",
+      "title": "Set Title from File Name",
+      "desc": "Use the file name as the document title when no title was detected in the document structure.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "2"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "set_pdf_ua_standard",
+      "title": "Set PDF/UA Identifier",
+      "desc": "Declare the PDF/UA conformance level in the document metadata.",
+      "params": [
+        {
+          "name": "part_number",
+          "value": "1"
+        },
+        {
+          "name": "rev_number",
+          "value": "2023"
+        }
+      ]
+    }
+  ]
+}

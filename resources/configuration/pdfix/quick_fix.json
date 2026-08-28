@@ -1,0 +1,125 @@
+{
+  "name": "quickfix",
+  "title": "QuickFix",
+  "desc": "Automatically repairs common document issues that can be fixed safely without manual review. This preset focuses on simple metadata, structure, font, and accessibility corrections.",
+  "keywords": [
+    "quick fix",
+    "auto fix",
+    "automatic repair",
+    "accessibility",
+    "pdf accessibility",
+    "pdf/ua",
+    "tagged pdf",
+    "parent tree",
+    "id tree",
+    "structure tree",
+    "tabs order",
+    "tab order",
+    "document title",
+    "viewer preferences",
+    "suspects",
+    "optional content",
+    "metadata repair"
+  ],
+  "version": "0.4.2",
+  "min_sdk_version": "8.8.0",
+  "max_sdk_version": "",
+  "release_date": "2025-12-12",
+  "category": "Accessibility",
+  "icon": "quickfix",
+  "settings": {
+    "stop_on_action_failure": false
+  },
+  "actions": [
+    {
+      "name": "delete_annot",
+      "title": "Delete Annotations (TrapNet, PrinterMark)",
+      "desc": "Remove non-permitted annotation types that commonly cause PDF/UA compliance failures. TrapNet and PrinterMark annotations are production artifacts and must not be present in accessible documents.",
+      "params": [
+        {
+          "name": "annot_types",
+          "value": "^(TrapNet|PrinterMark)$"
+        }
+      ]
+    },
+    {
+      "name": "set_display_doc_title",
+      "title": "Fix Display Document Title",
+      "desc": "Synchronize the ViewerPreferences DisplayDocTitle setting with the actual document title so that assistive technologies announce the correct title.",
+      "params": []
+    },
+    {
+      "name": "set_suspect_value",
+      "title": "Clear Suspect Flag",
+      "desc": "Fix the MarkInfo dictionary by clearing the Suspects entry, indicating that the document structure is no longer considered unreliable.",
+      "params": []
+    },
+    {
+      "name": "fix_oc_name",
+      "title": "Fix Optional Content Configuration",
+      "desc": "Repair Optional Content (OCG) configuration dictionaries to ensure layer definitions are valid and accessible.",
+      "params": []
+    },
+    {
+      "name": "fix_media_clip_keys",
+      "title": "Fix Media Clip (Content-Type to text/plain)",
+      "desc": "Fix media clip content type keys to a safe default (text/plain) to prevent validation failures on embedded media metadata.",
+      "params": [
+        {
+          "name": "ct_key",
+          "value": "text/plain"
+        }
+      ]
+    },
+    {
+      "name": "set_tabs_key",
+      "title": "Set Tab Order (Structure)",
+      "desc": "Set the page Tabs key to Structure so keyboard navigation follows the logical reading order.",
+      "params": [
+        {
+          "name": "tabs_key",
+          "value": "S"
+        },
+        {
+          "name": "overwrite",
+          "value": true
+        }
+      ]
+    },
+    {
+      "name": "set_tag_id",
+      "title": "Set Tag IDs (Note, TH)",
+      "desc": "Generate unique ID keys for Note and table header (TH) structure elements as required by PDF/UA.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Note$|^TH$"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "fix_placement",
+      "title": "Fix Tag Placement Attributes",
+      "desc": "Correct invalid or inappropriate placement attributes for tags such as Figure, Formula, Form, and Note."
+    },
+    {
+      "name": "fix_parent_tree",
+      "title": "Rebuild Parent Tree",
+      "desc": "Repair the structural parent tree to restore correct associations between page content and structure elements."
+    },
+    {
+      "name": "fix_id_tree",
+      "title": "Repair ID Tree",
+      "desc": "Repair the document ID tree to restore valid references for structure elements and tagged content."
+    },
+    {
+      "name": "fix_metadata",
+      "desc": "Repair and normalize document XMP metadata to improve standards compliance and consistency",
+      "title": "Fix XMP Metadata"
+    }
+  ]
+}
