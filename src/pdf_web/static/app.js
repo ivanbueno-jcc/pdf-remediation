@@ -435,10 +435,12 @@ async function refreshQueue() {
       'animationend', () => jobsSection.classList.remove('jobs-section-enter'), { once: true }
     );
   }
-  el('queue-summary').textContent = state.jobs.length
+  const queueSummary = state.jobs.length
     ? payload.your_running + '/' + payload.your_limit +
       ' running · ' + payload.concurrency + ' concurrent'
     : '';
+  const eta = formatQueueEta(queueEtaSeconds(payload));
+  el('queue-summary').textContent = eta ? queueSummary + ' · ' + eta : queueSummary;
   renderJobs();
 
   // Nothing is moving, so stop asking.
@@ -566,6 +568,45 @@ function formatPageCount(value) {
   const count = Number(value);
   if (!Number.isInteger(count) || count < 0) return '';
   return count + (count === 1 ? ' page' : ' pages');
+}
+
+function formatQueueEta(seconds) {
+  if (!Number.isFinite(seconds)) return '';
+  const rounded = Math.max(1, Math.ceil(seconds));
+  const minutes = Math.floor(rounded / 60);
+  const remainder = rounded % 60;
+  if (!minutes) return remainder + 's left';
+  return minutes + 'm' + (remainder ? ' ' + remainder + 's' : '') + ' left';
+}
+
+function queueEtaSeconds(payload) {
+  const jobs = payload.jobs || [];
+  const active = jobs.filter(isActiveJob);
+  if (!active.length) return null;
+
+  const durations = jobs.map((job) => {
+    if (job.status !== 'completed') return null;
+    const started = Date.parse(job.started_at || '');
+    const finished = Date.parse(job.finished_at || '');
+    if (!started || !finished || finished <= started) return null;
+    return (finished - started) / 1000;
+  }).filter((duration) => duration !== null && Number.isFinite(duration) && duration > 0);
+  const average = durations.length
+    ? durations.reduce((total, duration) => total + duration, 0) / durations.length : 60;
+
+  const configuredSlots = [Number(payload.concurrency), Number(payload.your_limit)]
+    .filter((value) => Number.isFinite(value) && value > 0);
+  const slots = configuredSlots.length ? Math.max(1, Math.min(...configuredSlots)) : 1;
+  const running = active.filter((job) => job.status === 'running');
+  const queued = active.length - running.length;
+  const runningRemaining = running.map((job) => {
+    const started = Date.parse(job.started_at || '');
+    const elapsed = started ? Math.max(0, (Date.now() - started) / 1000) : 0;
+    return Math.max(5, average - elapsed);
+  });
+  const availableSlots = Math.max(1, slots - running.length);
+  const queuedTime = Math.ceil(queued / availableSlots) * average;
+  return Math.max(runningRemaining.length ? Math.max(...runningRemaining) : 0, queuedTime);
 }
 
 function renderJobGroup(groupId, bodyId, countId, jobs) {

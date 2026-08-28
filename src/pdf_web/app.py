@@ -376,6 +376,14 @@ async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
                 "job_id": job.job_id,
                 "name": job.file.original_name,
                 "created_at": job.created_at.isoformat(timespec="seconds"),
+                "started_at": (
+                    job.started_at.isoformat(timespec="seconds")
+                    if job.started_at else None
+                ),
+                "finished_at": (
+                    job.finished_at.isoformat(timespec="seconds")
+                    if job.finished_at else None
+                ),
                 "page_count": job.file.page_count,
                 "config_file": job.config_file,
                 "config_label": CONFIG_FILE_DETAILS.get(job.config_file, {}).get(
