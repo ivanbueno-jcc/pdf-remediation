@@ -12,6 +12,8 @@
   --warn-bg: rgba(138,90,0,.15);
   --bad-bg: rgba(165,34,34,.18);
   --accent-bg: rgba(28,79,139,.15);
+  --job-row-hover: rgba(28,79,139,.055);
+  --job-row-focus: rgba(28,79,139,.09);
   --radius: 8px;
   --space-1: 4px;
   --space-2: 8px;
@@ -34,6 +36,8 @@
     --ok: #61c98c;
     --warn: #e0b062;
     --bad: #ef8080;
+    --job-row-hover: rgba(111,168,224,.09);
+    --job-row-focus: rgba(111,168,224,.14);
     --section-shadow: 0 1px 2px rgba(0, 0, 0, .14), 0 6px 18px rgba(0, 0, 0, .1);
   }
 }
@@ -203,6 +207,18 @@ a.dl:hover { border-color: var(--accent); color: var(--accent); }
 a.dl[aria-disabled="true"] { opacity: .4; pointer-events: none; }
 tr.detail-row > td { background: rgba(127,127,127,.05); padding: 0; }
 .jobs-table tr.job-row-stripe > td { background: rgba(127,127,127,.045); }
+.jobs-table tr.job-row {
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+}
+.jobs-table tr.job-row > td { transition: background-color .15s ease; }
+@media (hover: hover) {
+  .jobs-table tr.job-row:hover > td { background-color: var(--job-row-hover); }
+}
+.jobs-table tr.job-row:focus-within {
+  outline-color: var(--accent);
+}
+.jobs-table tr.job-row:focus-within > td { background-color: var(--job-row-focus); }
 .job-detail { padding: var(--space-4) var(--space-4) var(--space-5) var(--space-7); }
 .job-detail h4 { margin: var(--space-5) 0 var(--space-2); font-size: 15px; font-weight: 650; color: var(--muted); }
 .job-detail h4:first-child { margin-top: 0; }
@@ -466,7 +482,14 @@ ol.stages li .detail { color: var(--muted); font-size: 13px; }
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--panel);
+    transition: background-color .15s ease;
   }
+  @media (hover: hover) {
+    .jobs-table tr.job-row:hover { background: var(--job-row-hover); }
+  }
+  .jobs-table tr.job-row:focus-within { background: var(--job-row-focus); }
+  .jobs-table tr.job-row:hover > td,
+  .jobs-table tr.job-row:focus-within > td { background: transparent; }
   .jobs-table tr.job-row[data-open="true"] { border-radius: var(--radius) var(--radius) 0 0; }
   .jobs-table tr.job-row > td { display: block; min-width: 0; padding: 0; border: 0; }
   .jobs-table td.name {
