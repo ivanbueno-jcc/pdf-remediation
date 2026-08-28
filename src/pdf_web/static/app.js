@@ -122,7 +122,6 @@ async function loadConfigs() {
   try {
     const payload = await (await fetch('/api/config-files')).json();
     if (payload.upload_limits) state.uploadLimits = payload.upload_limits;
-    renderUploadGuidance();
     select.innerHTML = '';
     const groups = new Map();
     payload.files.forEach((entry) => {
@@ -150,18 +149,10 @@ async function loadConfigs() {
     select.options[0].dataset.description =
       'Runs the full remediation preset for the broadest automatic accessibility repair coverage.';
     renderConfigDescription();
-    renderUploadGuidance();
   }
 }
 
 /* ---------- staging ---------- */
-
-function renderUploadGuidance() {
-  const limits = state.uploadLimits;
-  el('upload-guidance').textContent = 'PDF only · up to ' + limits.max_files +
-    ' files · ' + formatBytes(limits.max_file_bytes) + ' each · ' +
-    formatBytes(limits.max_submission_bytes) + ' total';
-}
 
 function acceptedItems() {
   return state.staged.filter((item) => item.status === 'accepted');
@@ -646,7 +637,16 @@ function updateJobRow(entry, job) {
 
   entry.outcome.className = 'outcome ' + (job.outcome ? outcomeTone(job.outcome) : 'pending');
   entry.outcome.textContent = job.outcome_label || 'Pending result';
-  entry.status.querySelectorAll('.muted').forEach((note) => note.remove());
+  entry.status.querySelectorAll('.muted, .retry-action').forEach((note) => note.remove());
+  if (canRetryJob(job)) {
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'retry-action';
+    retry.append(downloadIcon('retry'), 'Retry');
+    retry.setAttribute('aria-label', 'Stage processed PDF for ' + job.name);
+    retry.addEventListener('click', () => retryProcessedPdf(job, retry));
+    entry.status.appendChild(retry);
+  }
   if (job.error) {
     const note = document.createElement('div');
     note.className = 'muted';
@@ -746,6 +746,43 @@ function outcomeTone(outcome) {
   return 'bad';
 }
 
+function canRetryJob(job) {
+  return Boolean(job && job.has_pdf && job.status !== 'queued' && job.status !== 'running' &&
+    job.outcome && job.outcome !== 'remediated' && job.outcome !== 'already_compliant');
+}
+
+async function retryProcessedPdf(job, button) {
+  if (button.disabled || state.submitting) return;
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  try {
+    const response = await fetch('/api/jobs/' + encodeURIComponent(job.job_id) + '/pdf');
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(describeError(payload) || 'The processed PDF is unavailable.');
+    }
+    const blob = await response.blob();
+    const file = new File([blob], job.name, {
+      type: blob.type || 'application/pdf', lastModified: Date.now(),
+    });
+    const beforeCount = acceptedItems().length;
+    addFiles([file]);
+    if (acceptedItems().length > beforeCount) {
+      announceStatus(job.name + ' processed PDF added to staging.');
+      const reducedMotion = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el('submit-section').scrollIntoView({
+        behavior: reducedMotion ? 'auto' : 'smooth', block: 'start',
+      });
+    }
+  } catch (error) {
+    showSubmissionResult('Could not stage the processed PDF: ' + String(error.message || error), 'bad');
+  } finally {
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+  }
+}
+
 function validationValue(entry) {
   if (!entry) return { text: 'Pending', tone: 'pending' };
   if (entry.status === 'pass') return { text: 'Pass', tone: 'ok' };
@@ -796,6 +833,10 @@ function downloadIcon(name) {
       ['path', { d: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' }],
       ['polyline', { points: '7 10 12 15 17 10' }],
       ['line', { x1: '12', x2: '12', y1: '15', y2: '3' }],
+    ],
+    retry: [
+      ['path', { d: 'M3 12a9 9 0 1 0 3-6.7' }],
+      ['polyline', { points: '3 4 3 10 9 10' }],
     ],
   };
 
