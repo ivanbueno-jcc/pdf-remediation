@@ -11,18 +11,18 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 CONFIG_DIR = REPO_ROOT / "resources" / "configuration"
 VERAPDF_JAR = REPO_ROOT / "lib" / "greenfield-apps-1.28.0.jar"
 
-ALLOWED_CONFIG_FILES = ("default.json", "default-slim.json")
+ALLOWED_CONFIG_FILES = ("default.json", "default-slim.json",)
 DEFAULT_CONFIG_FILE = "default.json"
 CONFIG_FILE_DETAILS = {
     "default.json": {
-        "label": "Standard remediation",
+        "label": "Standard",
         "description": (
             "Runs the full remediation preset for the broadest automatic "
             "accessibility repair coverage."
         ),
     },
     "default-slim.json": {
-        "label": "Focused remediation",
+        "label": "Forms",
         "description": (
             "Uses a smaller, conservative preset for common structural and "
             "metadata repairs."
