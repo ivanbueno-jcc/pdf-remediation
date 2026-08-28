@@ -108,7 +108,7 @@ def max_concurrent_jobs() -> int:
     machine-capacity number. Kept low until the PDFix licence has been shown to
     permit several simultaneous authorizations.
     '''
-    return max(1, _read_int_env("PDF_WEB_MAX_CONCURRENT_JOBS", 2))
+    return max(1, _read_int_env("PDF_WEB_MAX_CONCURRENT_JOBS", 4))
 
 
 def max_running_jobs_per_user() -> int:

@@ -164,14 +164,23 @@ function acceptedItems() {
   return state.staged.filter((item) => item.status === 'accepted');
 }
 
-function announceSelectionErrors(errors) {
+function announceSelectionFeedback(errors, ignored) {
   const announcer = el('batch-announcer');
   announcer.textContent = '';
-  if (!errors.length) return;
+  if (!errors.length && !ignored.length) return;
   requestAnimationFrame(() => {
-    announcer.textContent = errors.length + (errors.length === 1
-      ? ' file needs attention. ' : ' files need attention. ') +
-      errors.map((error) => error.name + ': ' + error.reason).join(' ');
+    const messages = [];
+    if (errors.length) {
+      messages.push(errors.length + (errors.length === 1
+        ? ' file needs attention. ' : ' files need attention. ') +
+        errors.map((error) => error.name + ': ' + error.reason).join(' '));
+    }
+    if (ignored.length) {
+      messages.push(ignored.length + (ignored.length === 1
+        ? ' non-PDF file was ignored. ' : ' non-PDF files were ignored. ') +
+        ignored.map((file) => file.name).join(', ') + '.');
+    }
+    announcer.textContent = messages.join(' ');
   });
 }
 
@@ -179,13 +188,15 @@ function addFiles(fileList) {
   if (state.submitting) return;
   const previousCount = acceptedItems().length;
   const errors = [];
+  const ignored = [];
   let ready = acceptedItems();
   let totalBytes = ready.reduce((sum, item) => sum + item.file.size, 0);
   const limits = state.uploadLimits;
   Array.from(fileList).forEach((file) => {
     let reason = '';
     if (!file.name.toLowerCase().endsWith('.pdf')) {
-      reason = 'Only PDF files are accepted.';
+      ignored.push(file);
+      return;
     } else if (ready.some((item) => item.file.name === file.name && item.file.size === file.size)) {
       reason = 'This file is already in the batch.';
     } else if (file.size > limits.max_file_bytes) {
@@ -208,8 +219,13 @@ function addFiles(fileList) {
     ready.push(item);
     totalBytes += file.size;
   });
-  announceSelectionErrors(errors);
+  announceSelectionFeedback(errors, ignored);
   if (acceptedItems().length > previousCount) clearToast();
+  if (ignored.length) {
+    showToast(ignored.length === 1
+      ? '1 non-PDF file ignored.'
+      : ignored.length + ' non-PDF files ignored.', 'warn');
+  }
   renderStaged();
   updateSubmitState();
 }
