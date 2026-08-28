@@ -436,8 +436,8 @@ async function refreshQueue() {
     );
   }
   el('queue-summary').textContent = state.jobs.length
-    ? payload.your_running + ' of ' + payload.your_limit +
-      ' running · ' + payload.concurrency + ' processed at a time'
+    ? payload.your_running + '/' + payload.your_limit +
+      ' running · ' + payload.concurrency + ' concurrent'
     : '';
   renderJobs();
 
