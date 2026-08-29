@@ -1557,9 +1557,17 @@ function renderDetail(cell, job) {
   const wrap = document.createElement('div');
   wrap.className = 'job-detail';
 
+  const layout = document.createElement('div');
+  layout.className = 'job-detail-layout';
+
+  const sidebar = document.createElement('aside');
+  sidebar.className = 'job-detail-sidebar';
+
   const stagesHeading = document.createElement('h4');
+  stagesHeading.id = 'pipeline-stages-' + job.job_id;
   stagesHeading.textContent = 'Pipeline stages';
-  wrap.appendChild(stagesHeading);
+  sidebar.setAttribute('aria-labelledby', stagesHeading.id);
+  sidebar.appendChild(stagesHeading);
 
   const list = document.createElement('ol');
   list.className = 'stages';
@@ -1578,17 +1586,23 @@ function renderDetail(cell, job) {
     item.append(marker, label, detail);
     list.appendChild(item);
   });
-  wrap.appendChild(list);
+  sidebar.appendChild(list);
 
   (job.warnings || []).forEach((warning) => {
     const note = document.createElement('p');
     note.className = 'muted';
     note.textContent = warning;
-    wrap.appendChild(note);
+    sidebar.appendChild(note);
   });
 
-  appendViolationSection(wrap, job);
+  const violations = document.createElement('div');
+  violations.className = 'job-detail-violations';
+  violations.setAttribute('role', 'region');
+  violations.setAttribute('aria-label', 'Accessibility violations');
+  appendViolationSection(violations, job);
 
+  layout.append(sidebar, violations);
+  wrap.appendChild(layout);
   cell.appendChild(wrap);
   updateDetailHeight(cell.parentElement);
 }
@@ -1672,7 +1686,8 @@ function violationList(jobId, stage) {
 /*
  * Once both a before and an after report exist, show one diffed view instead
  * of two near-duplicate lists: what's still failing, what's new, and what
- * got fixed (collapsed, since it's not actionable).
+ * got fixed. Resolved violations open by default for remediated files so the
+ * successful changes are immediately visible.
  */
 function appendViolationSection(wrap, job) {
   const hasBefore = Boolean(job.before);
@@ -1683,7 +1698,7 @@ function appendViolationSection(wrap, job) {
     const heading = document.createElement('h4');
     heading.textContent = 'Accessibility violations';
     wrap.appendChild(heading);
-    wrap.appendChild(violationDiff(job.job_id));
+    wrap.appendChild(violationDiff(job.job_id, job.outcome === 'remediated'));
     return;
   }
 
@@ -1694,7 +1709,7 @@ function appendViolationSection(wrap, job) {
   wrap.appendChild(violationList(job.job_id, stage));
 }
 
-function violationDiff(jobId) {
+function violationDiff(jobId, expandResolved) {
   const container = document.createElement('div');
   container.className = 'violation-diff';
   container.innerHTML = '<p class="muted">Loading…</p>';
@@ -1739,6 +1754,7 @@ function violationDiff(jobId) {
     if (resolved.length) {
       const details = document.createElement('details');
       details.className = 'violation-collapse';
+      details.open = Boolean(expandResolved);
       const summaryToggle = document.createElement('summary');
       summaryToggle.textContent = 'Resolved (' + resolved.length + ')';
       details.append(summaryToggle, violationGroupList(resolved, 'ok'));

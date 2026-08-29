@@ -52,7 +52,7 @@ uv run web
 
 ![PDFix SDK Portal upload workspace with a private drag-and-drop area](docs/images/portal-upload.jpg)
 
-![PDFix SDK Portal results showing remediated and already-compliant files with before-and-after validation](docs/images/portal-results.jpg)
+![PDFix SDK Portal results showing remediated and already-compliant files with before-and-after validation](docs/images/portal-details.png)
 
 The portal runs locally without authentication by default. Shared deployments
 delegate sign-in to a trusted reverse proxy and keep each user's jobs private.

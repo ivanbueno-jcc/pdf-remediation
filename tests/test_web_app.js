@@ -26,7 +26,7 @@ function fakeElement() {
   };
 }
 
-function loadStagingCode() {
+function loadStagingCode(fetchImpl) {
   const elements = new Map();
   const document = {
     createElement: fakeElement,
@@ -40,6 +40,7 @@ function loadStagingCode() {
   const context = {
     console,
     document,
+    fetch: fetchImpl,
     requestAnimationFrame(callback) { callback(); },
     window: {
       clearTimeout() {},
@@ -53,7 +54,7 @@ function loadStagingCode() {
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(
-    functionsOnly + '\nglobalThis.testApi = { addFiles, filteredRecentJobs, readinessPresentation, shouldToggleJobRow, state };',
+    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, state };',
     context,
     { filename: appPath },
   );
@@ -128,4 +129,57 @@ test('job row clicks ignore interactive controls', () => {
   assert.equal(shouldToggleJobRow(target(false)), true);
   assert.equal(shouldToggleJobRow(target(true)), false);
   assert.equal(shouldToggleJobRow(null), true);
+});
+
+test('job details render pipeline stages beside the violations pane', () => {
+  const { renderDetail } = loadStagingCode();
+  const cell = fakeElement();
+  cell.parentElement = { querySelector() { return null; } };
+
+  renderDetail(cell, {
+    job_id: 'job-1',
+    stages: [{ name: 'initial_validation', status: 'ok', detail: 'Complete' }],
+    warnings: ['Review the source document.'],
+  });
+
+  const detail = cell.children[0];
+  const layout = detail.children[0];
+  const [sidebar, violations] = layout.children;
+  assert.equal(detail.className, 'job-detail');
+  assert.equal(layout.className, 'job-detail-layout');
+  assert.equal(sidebar.className, 'job-detail-sidebar');
+  assert.equal(sidebar.children[0].textContent, 'Pipeline stages');
+  assert.equal(sidebar.children[1].className, 'stages');
+  assert.equal(sidebar.children[2].textContent, 'Review the source document.');
+  assert.equal(violations.className, 'job-detail-violations');
+});
+
+test('resolved violations expand by default only for remediated files', async () => {
+  const before = {
+    profiles: {
+      wcag: { violations: [{ clause_test: '1.1.1-1', description: 'Missing text alternative' }] },
+    },
+  };
+  const after = { profiles: { wcag: { violations: [] } } };
+  const renderForOutcome = async (outcome) => {
+    let reportIndex = 0;
+    const reports = [before, after];
+    const fetchImpl = async () => ({
+      ok: true,
+      async json() { return reports[reportIndex++]; },
+    });
+    const { appendViolationSection } = loadStagingCode(fetchImpl);
+    const wrap = fakeElement();
+    appendViolationSection(wrap, {
+      job_id: 'job-1', before: true, after: true, outcome,
+    });
+    await new Promise((resolve) => setImmediate(resolve));
+    return wrap.children[1].children[0];
+  };
+
+  const remediated = await renderForOutcome('remediated');
+  const improved = await renderForOutcome('improved');
+  assert.equal(remediated.className, 'violation-collapse');
+  assert.equal(remediated.open, true);
+  assert.equal(improved.open, false);
 });
