@@ -172,8 +172,8 @@ jobs:
 
       - name: Deploy through Systems Manager Run Command
         run: |
-          callas_image="${PDF_CALLAS_FONT_IMAGE:-pdfix/font-fix-callas:v1.0.11}"
-          pdfix_image="${PDF_PDFIX_FONT_IMAGE:-pdfix/font-fix-pdfix:v1.0.9}"
+          callas_image="${PDF_CALLAS_FONT_IMAGE:-pdfix/font-fix-callas:latest}"
+          pdfix_image="${PDF_PDFIX_FONT_IMAGE:-pdfix/font-fix-pdfix:latest}"
           max_jobs="${PDF_WEB_MAX_CONCURRENT_JOBS:-4}"
           image="${{ steps.image.outputs.uri }}"
           registry="${image%%/*}"

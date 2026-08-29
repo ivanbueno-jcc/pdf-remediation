@@ -22,8 +22,8 @@ done
 : "${STORAGE_SHARE:?STORAGE_SHARE is required}"
 : "${WEB_HOSTNAME:?WEB_HOSTNAME is required}"
 
-PDF_CALLAS_FONT_IMAGE="${PDF_CALLAS_FONT_IMAGE:-pdfix/font-fix-callas:v1.0.11}"
-PDF_PDFIX_FONT_IMAGE="${PDF_PDFIX_FONT_IMAGE:-pdfix/font-fix-pdfix:v1.0.9}"
+PDF_CALLAS_FONT_IMAGE="${PDF_CALLAS_FONT_IMAGE:-pdfix/font-fix-callas:latest}"
+PDF_PDFIX_FONT_IMAGE="${PDF_PDFIX_FONT_IMAGE:-pdfix/font-fix-pdfix:latest}"
 
 DEPLOY_DIR=/opt/pdf-remediation
 DATA_ROOT=/mnt/pdf-data

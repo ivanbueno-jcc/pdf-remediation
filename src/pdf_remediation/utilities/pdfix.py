@@ -49,7 +49,7 @@ def pull_image(image_name: str, verbose: bool = False) -> None:
 def is_pdf_secured(input_pdf_path: str) -> bool:
     '''
     Check if a PDF file is secured.
-    
+
     :param input_pdf_path: Description
     :type input_pdf_path: str
     :return: Description
@@ -72,8 +72,14 @@ def is_pdf_secured(input_pdf_path: str) -> bool:
 
             font_issue_clauses = [
                 '7.21.4.1',
+                '7.21.3.1',
                 '7.21.3.2',
-                '7.21.4.2'
+                '7.21.3.3',
+                '7.21.4.2',
+                '7.21.8',
+                '7.21.7',
+                '7.21.6',
+                '7.21.5'
             ]
             has_font_violation = False
             for violation in rules:
@@ -92,7 +98,7 @@ def is_pdf_secured(input_pdf_path: str) -> bool:
 def get_page_count(input_pdf_path: str) -> list:
     '''
     Get page count of a PDF file.
-    
+
     :param input_pdf_path: Description
     :type input_pdf_path: str
     :return: Description
@@ -120,7 +126,7 @@ def get_page_count_multiprocess(
         relative_base_paths: list[Path] = None) -> dict:
     '''
     Multiprocess to get page counts for a list of PDF files.
-    
+
     :param workspace_folder_path: Description
     :type workspace_folder_path: Path
     :param file_paths: Description
@@ -182,7 +188,7 @@ def fix(
         reported_input_pdf_path: str | None = None) -> None:
     '''
     Wrapper for PDFix remediation command.
-    
+
     :param input_pdf_path: Description
     :type input_pdf_path: str
     :param output_pdf_path: Description
@@ -320,7 +326,7 @@ def font_fix_pdfix(
 def license_status() -> json:
     '''
     Display license information.
-    
+
     :return: Description
     :rtype: Any
     '''
@@ -347,7 +353,7 @@ def license_status() -> json:
 def license_activate(license_key: str) -> bool:
     '''
     Activate the license.
-    
+
     :param licenseKey: Description
     :type licenseKey: str
     :return: Description

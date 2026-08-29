@@ -432,7 +432,9 @@ def main(): # pylint: disable=too-many-locals, too-many-statements, too-many-bra
             if args.workspace_folder != "font-issues":
                 font_issue_clauses = [
                     '7.21.4.1',
+                    '7.21.3.1',
                     '7.21.3.2',
+                    '7.21.3.3',
                     '7.21.4.2',
                     '7.21.8',
                     '7.21.7',
