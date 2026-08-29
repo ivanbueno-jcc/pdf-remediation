@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest import mock
 
 from fastapi.testclient import TestClient
+from python_on_whales.exceptions import DockerException
 
 import pdf_web.app as web_app
 import pdf_web.config as web_config
@@ -71,15 +72,69 @@ class ManagedSecretTests(unittest.TestCase):
             with mock.patch.dict(os.environ, {
                 "ENV_CALLAS_LICENSE": "license",
                 "ENV_CALLAS_SECRET": "secret",
+                "PDFIX_LICENSE_NAME": "pdfix-name",
+                "PDFIX_LICENSE_KEY": "pdfix-key",
             }, clear=False):
                 Callas.font_fix(input_pdf, output_pdf, workspace)
 
+        command = run.call_args.args[1]
+        self.assertEqual(command, [
+            "fix",
+            "--name", "pdfix-name",
+            "--key", "pdfix-key",
+            "-i", "input.pdf",
+            "-o", "output.pdf",
+        ])
         options = run.call_args.kwargs
         self.assertEqual(options["envs"], {
             "ENV_CALLAS_LICENSE": "license",
             "ENV_CALLAS_SECRET": "secret",
         })
         self.assertNotIn("env_files", options)
+
+    @mock.patch("pdf_remediation.utilities.callas.docker.run")
+    def test_callas_requires_pdfix_credentials_for_current_worker(
+            self, run: mock.Mock) -> None:
+        '''Callas v1.0.12 initializes PDFix before invoking pdfaPilot.'''
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            input_pdf = workspace / "input.pdf"
+            output_pdf = workspace / "output.pdf"
+            input_pdf.write_bytes(b"%PDF-1.7\n")
+            with mock.patch.dict(os.environ, {
+                "ENV_CALLAS_LICENSE": "license",
+                "ENV_CALLAS_SECRET": "secret",
+                "PDFIX_LICENSE_NAME": "",
+                "PDFIX_LICENSE_KEY": "",
+            }, clear=False):
+                with self.assertRaisesRegex(RuntimeError, "PDFIX_LICENSE_NAME"):
+                    Callas.font_fix(input_pdf, output_pdf, workspace)
+
+        run.assert_not_called()
+
+    @mock.patch("pdf_remediation.utilities.callas.ensure_docker_desktop_running")
+    @mock.patch("pdf_remediation.utilities.callas.docker.run")
+    def test_callas_failure_does_not_expose_pdfix_key(
+            self, run: mock.Mock, _ensure: mock.Mock) -> None:
+        '''The vendor CLI requires a key argument, which must stay out of errors.'''
+        run.side_effect = DockerException(
+            ["docker", "run", "--key", "sensitive-pdfix-key"], 23
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            input_pdf = workspace / "input.pdf"
+            output_pdf = workspace / "output.pdf"
+            input_pdf.write_bytes(b"%PDF-1.7\n")
+            with mock.patch.dict(os.environ, {
+                "ENV_CALLAS_LICENSE": "license",
+                "ENV_CALLAS_SECRET": "secret",
+                "PDFIX_LICENSE_NAME": "pdfix-name",
+                "PDFIX_LICENSE_KEY": "sensitive-pdfix-key",
+            }, clear=False):
+                with self.assertRaises(RuntimeError) as raised:
+                    Callas.font_fix(input_pdf, output_pdf, workspace)
+
+        self.assertNotIn("sensitive-pdfix-key", str(raised.exception))
 
 
 class ReadinessTests(unittest.TestCase):
