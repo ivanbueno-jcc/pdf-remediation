@@ -50,7 +50,7 @@ uv run web
 # Open http://127.0.0.1:8000
 ```
 
-![PDFix SDK Portal upload workspace with a private drag-and-drop area](docs/images/portal-upload.jpg)
+![PDFix SDK Portal upload workspace with a private drag-and-drop area](docs/images/portal-upload.png)
 
 ![PDFix SDK Portal results showing remediated and already-compliant files with before-and-after validation](docs/images/portal-details.png)
 
