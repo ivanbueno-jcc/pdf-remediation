@@ -1,37 +1,25 @@
 # PDF Remediation Platform
 
-Turn inaccessible PDFs into publish-ready documents—with the same remediation
-pipeline available for large archives, on-demand browser uploads, and integrated
-systems.
+Make PDFs more accessible—one file or an entire archive.
 
-The PDF Remediation Platform helps accessibility, content, and engineering teams
-validate PDFs, apply automated repairs, re-validate the results, and retain the
-evidence needed for review. It evaluates documents against WCAG 2.2 and
-PDF/UA-1 profiles, preserves source folder structure in bulk workflows, and
-separates files that still need human attention.
+Validate. Remediate. Re-validate. Keep the evidence.
 
-> Automated remediation can resolve many common PDF accessibility defects, but
-> it does not guarantee conformance. The platform reports what passed, what
-> improved, and what still requires review.
+## Choose your workflow
+
+| Need | Use | Start |
+|---|---|---|
+| Process document collections | [Bulk remediation](#bulk-remediation) | `uv run go <project>` |
+| Let staff remediate on demand | [Web portal](#web-portal-for-on-demand-remediation) | `uv run web` |
+| Add remediation to another system | [Integration API](#api-for-integrated-systems) | `uv run pdf-api` |
 
 ![Animated demonstration of the PDF remediation workflow](resources/images/pdf_remediation_process_flow_presentation.gif)
 
-## Why teams use it
+> Automated remediation does not guarantee conformance. Every run shows what
+> passed, what improved, and what still needs review.
 
-- **One pipeline, three delivery models.** Process an archive, serve internal
-  users, or integrate remediation into an existing publishing workflow.
-- **Before-and-after evidence.** Every run validates before and after repair and
-  produces reports alongside the resulting PDF.
-- **Operationally honest outcomes.** Results distinguish remediated,
-  already-compliant, improved, unchanged, failed, and cancelled files.
-- **Exception-aware processing.** Font defects, secured documents, unreadable
-  PDFs, and validation failures are identified for targeted follow-up.
-- **Originals stay recoverable.** The single-PDF pipeline never modifies its
-  input; bulk projects retain their source collection and working history.
+## Quickstarts
 
-## Three ways to remediate
-
-### 1. Bulk remediation
+### Bulk remediation
 
 Built for document libraries, website archives, and multi-project programs.
 The batch workflow preserves directory structure, processes PDFs in chunks,
@@ -51,7 +39,7 @@ uv run readyset acme north-region public-records
 
 [Bulk remediation guide →](docs/bulk-remediation.md)
 
-### 2. Web portal for on-demand remediation
+### Web portal for on-demand remediation
 
 Give staff a private workspace where they can drop one or many PDFs, follow
 each file independently, compare validation results, and download the repaired
@@ -71,7 +59,7 @@ delegate sign-in to a trusted reverse proxy and keep each user's jobs private.
 
 [Web portal guide →](docs/web-portal.md)
 
-### 3. API for integrated systems
+### API for integrated systems
 
 Embed the single-PDF pipeline in publishing systems, CMS workflows, document
 services, or background automation. The HTTP API is asynchronous: submit a
@@ -92,6 +80,14 @@ curl -OJ "http://127.0.0.1:8100/api/pdf/<job-id>/pdf"
 Python applications can call the same pipeline in-process without HTTP.
 
 [API and Python integration guide →](docs/api.md)
+
+## Why teams use it
+
+- **Three delivery models.** One pipeline for archives, staff, and integrated systems.
+- **Before-and-after evidence.** Validation reports travel with every result.
+- **Clear outcomes.** See what passed, improved, failed, or still needs review.
+- **Built-in exception handling.** Route font, security, and validation issues for follow-up.
+- **Recoverable originals.** Keep source collections and working history intact.
 
 ## How it works
 
