@@ -12,8 +12,6 @@ Validate. Remediate. Re-validate. Keep the evidence.
 | Let staff remediate on demand | [Web portal](#web-portal-for-on-demand-remediation) | `uv run web` |
 | Add remediation to another system | [Integration API](#api-for-integrated-systems) | `uv run pdf-api` |
 
-![Animated demonstration of the PDF remediation workflow](docs/images/bulk.gif)
-
 > Automated remediation does not guarantee conformance. Every run shows what
 > passed, what improved, and what still needs review.
 
@@ -24,6 +22,8 @@ Validate. Remediate. Re-validate. Keep the evidence.
 Built for document libraries, website archives, and multi-project programs.
 The batch workflow preserves directory structure, processes PDFs in chunks,
 routes exceptions, and produces project-level audit reports.
+
+![Animated demonstration of the PDF remediation workflow](docs/images/bulk.gif)
 
 ```bash
 # Put PDFs in resources/projects/acme/source, then run the full workflow.
