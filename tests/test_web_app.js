@@ -53,7 +53,7 @@ function loadStagingCode() {
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(
-    functionsOnly + '\nglobalThis.testApi = { addFiles, filteredRecentJobs, state };',
+    functionsOnly + '\nglobalThis.testApi = { addFiles, filteredRecentJobs, readinessPresentation, state };',
     context,
     { filename: appPath },
   );
@@ -94,5 +94,29 @@ test('job filters only return matching recent jobs', () => {
   assert.deepEqual(
     Array.from(filteredRecentJobs(), (job) => job.job_id),
     ['recent-match'],
+  );
+});
+
+test('readiness presentation distinguishes ready, limited, and unavailable states', () => {
+  const { readinessPresentation } = loadStagingCode();
+
+  assert.deepEqual(
+    { ...readinessPresentation({ can_submit: true, checks: [] }, null) },
+    { tone: 'ready', label: 'System ready' },
+  );
+  assert.deepEqual(
+    { ...readinessPresentation({
+      can_submit: true,
+      checks: [{ ok: false, required: false }],
+    }, null) },
+    { tone: 'degraded', label: 'Limited availability' },
+  );
+  assert.deepEqual(
+    { ...readinessPresentation({ can_submit: false, checks: [] }, null) },
+    { tone: 'unavailable', label: 'System unavailable' },
+  );
+  assert.deepEqual(
+    { ...readinessPresentation({ can_submit: false, checks: [] }, 'Sign in') },
+    { tone: 'unavailable', label: 'Access unavailable' },
   );
 });

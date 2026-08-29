@@ -3,33 +3,77 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#090e1a" media="(prefers-color-scheme: dark)">
 <title>PDFix SDK Portal</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='17' fill='%234f46e5'/%3E%3Cpath d='M20 12h17l11 11v29H20zM37 12v12h11' fill='none' stroke='white' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<main>
+<div class="ambient-orb ambient-orb-one" aria-hidden="true"></div>
+<div class="ambient-orb ambient-orb-two" aria-hidden="true"></div>
+<main class="app-shell">
   <header class="app-header">
-    <h1>PDFix SDK Portal</h1>
-    <p class="muted" id="identity"></p>
+    <div class="brand-lockup">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40">
+          <path d="M12 5.5h11l7 7V32a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 10 32V8a2.5 2.5 0 0 1 2-2.45Z"/>
+          <path d="M23 5.5V13h7M15.5 20h9M15.5 25h9M15.5 30h5"/>
+          <path class="brand-spark" d="m30.5 22 .9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1Z"/>
+        </svg>
+      </span>
+      <div>
+        <h1>PDFix SDK Portal</h1>
+        <p class="brand-subtitle">Accessibility remediation workspace</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div id="readiness-badge" class="readiness-badge checking" role="status" aria-live="polite" aria-atomic="true">
+        <span class="readiness-dot" aria-hidden="true"></span>
+        <span id="readiness-label">Checking system</span>
+      </div>
+      <p class="muted" id="identity"></p>
+    </div>
   </header>
 
-  <section id="health-section">
-    <h2>Environment</h2>
+  <section id="health-section" class="health-panel">
+    <div class="section-heading compact-heading">
+      <span class="section-icon warning-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3 2.8 19a1.4 1.4 0 0 0 1.2 2h16a1.4 1.4 0 0 0 1.2-2L12 3Z"/><path d="M12 9v4.5M12 17h.01"/></svg>
+      </span>
+      <div><p class="eyebrow">System check</p><h2>Environment needs attention</h2></div>
+    </div>
     <div id="health-banner" class="banner hidden" role="alert" aria-atomic="true"></div>
     <div class="chips" id="health-chips"><span class="muted">Checking&hellip;</span></div>
   </section>
 
-  <section id="submit-section">
-    <h2>New files</h2>
+  <section id="submit-section" class="workspace-card is-empty">
+    <div class="section-heading workspace-heading">
+      <div>
+        <p class="eyebrow">New remediation</p>
+        <h2>Start with your PDFs</h2>
+        <p class="section-copy">Upload one or many documents. Each file is processed independently and keeps its own results.</p>
+      </div>
+      <span class="secure-note"><span aria-hidden="true">&#9679;</span> Private workspace</span>
+    </div>
     <div id="drop" tabindex="-1">
       <label>
-        <strong>Drop PDFs here</strong>
-        <span>or <u>browse</u> to choose files &mdash; one file per remediation</span>
+        <span class="drop-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>
+        </span>
+        <strong>Drop PDFs anywhere to begin</strong>
+        <span>or <span class="browse-link">choose files</span> from your computer</span>
+        <small>PDF only &middot; Up to 200 files &middot; 200 MB per file</small>
         <input type="file" id="file-input" multiple accept=".pdf,application/pdf">
       </label>
     </div>
     <details class="advanced-settings" id="advanced-settings">
-      <summary>Advanced settings</summary>
+      <summary><span class="settings-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M14 4v4M4 12h3M11 12h9M7 10v4M4 18h8M16 18h4M12 16v4"/></svg>
+      </span>Run options <span class="settings-hint">Recommended defaults are selected</span></summary>
       <div class="advanced-body">
         <p class="muted advanced-intro">The recommended defaults work for most documents.</p>
         <label class="field">
@@ -64,14 +108,14 @@
     </div>
   </section>
 
-  <section id="jobs-section" class="hidden">
-    <div id="jobs-stats" class="jobs-stats" aria-label="File statistics"></div>
+  <section id="jobs-section" class="activity-panel hidden">
     <div class="jobs-header">
       <div class="jobs-title">
-        <h2>Files</h2>
+        <div><p class="eyebrow">Workspace activity</p><h2>Your files</h2></div>
         <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
       </div>
     </div>
+    <div id="jobs-stats" class="jobs-stats" aria-label="File statistics"></div>
     <div id="job-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     <div class="job-group hidden" id="active-jobs-group">
       <h3>Active files <span class="group-count" id="active-jobs-count"></span></h3>
@@ -84,7 +128,10 @@
       <div class="recent-jobs-header">
         <h3>Recent files <span class="group-count" id="recent-jobs-count"></span></h3>
         <div class="job-filters">
-          <input type="search" id="job-search" placeholder="Search by filename" autocomplete="off" aria-label="Search recent files">
+          <div class="search-control">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input type="search" id="job-search" placeholder="Search files" autocomplete="off" aria-label="Search recent files">
+          </div>
           <select id="job-outcome-filter" aria-label="Recent file outcome">
             <option value="all">All outcomes</option>
             <option value="pending">Pending</option>

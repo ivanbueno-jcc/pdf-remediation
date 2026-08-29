@@ -42,6 +42,24 @@ function describeError(payload) {
   return 'Request failed.';
 }
 
+function readinessPresentation(health, authError) {
+  if (!health) return { tone: 'checking', label: 'Checking system' };
+  if (authError) return { tone: 'unavailable', label: 'Access unavailable' };
+  if (!health.can_submit) return { tone: 'unavailable', label: 'System unavailable' };
+  const missing = (health.checks || []).some((check) => !check.ok);
+  if (missing || health.recommend_skip_font_fix) {
+    return { tone: 'degraded', label: 'Limited availability' };
+  }
+  return { tone: 'ready', label: 'System ready' };
+}
+
+function renderReadiness() {
+  const presentation = readinessPresentation(state.health, state.authError);
+  const badge = el('readiness-badge');
+  badge.className = 'readiness-badge ' + presentation.tone;
+  el('readiness-label').textContent = presentation.label;
+}
+
 /* ---------- environment ---------- */
 
 async function loadHealth() {
@@ -77,6 +95,7 @@ function renderHealth() {
   const checks = state.health.checks || [];
   const missing = checks.filter((check) => !check.ok);
   const section = el('health-section');
+  renderReadiness();
 
   // Nothing to tell the user: hide the whole section rather than showing an
   // all-green checklist nobody needs to read.
@@ -244,6 +263,12 @@ function renderStaged() {
   const body = el('staged-body');
   body.innerHTML = '';
   const empty = state.staged.length === 0;
+  const workspace = el('submit-section');
+  workspace.classList.toggle('is-empty', empty);
+  workspace.classList.toggle('is-populated', !empty);
+  workspace.classList.toggle('is-submitting', state.submitting);
+  workspace.classList.toggle('has-errors', state.staged.some((item) => item.status === 'error'));
+  workspace.setAttribute('aria-busy', state.submitting ? 'true' : 'false');
   el('staged-table').classList.toggle('hidden', empty);
   el('batch-toolbar').classList.toggle('hidden', empty);
 
@@ -310,6 +335,9 @@ function updateSubmitState(message) {
   const submit = el('submit');
   submit.disabled = state.submitting || !(healthy && readyCount);
   submit.classList.toggle('is-submitting', state.submitting);
+  const workspace = el('submit-section');
+  workspace.classList.toggle('is-submitting', state.submitting);
+  workspace.setAttribute('aria-busy', state.submitting ? 'true' : 'false');
   const label = state.submitting ? 'Uploading…'
     : (readyCount === 1 ? 'Remediate 1 file'
       : (readyCount > 1 ? 'Remediate ' + readyCount + ' files' : 'Remediate'));
@@ -460,6 +488,9 @@ async function refreshQueue() {
   const eta = formatQueueEta(queueEtaSeconds(payload));
   const queueSummaryEl = el('queue-summary');
   const hasActiveFiles = state.jobs.some(isActiveJob);
+  jobsSection.classList.toggle('is-processing', hasActiveFiles);
+  jobsSection.classList.toggle('has-failures', state.jobs.some((job) => job.status === 'failed'));
+  jobsSection.classList.toggle('is-complete', !hasActiveFiles && state.jobs.length > 0);
   queueSummaryEl.textContent = eta ? queueSummary + ' · ' + eta : queueSummary;
   queueSummaryEl.classList.toggle('is-processing', hasActiveFiles);
   queueSummaryEl.setAttribute('aria-busy', hasActiveFiles ? 'true' : 'false');
