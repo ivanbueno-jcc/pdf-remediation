@@ -1,6 +1,6 @@
 # PDF Remediation Platform
 
-Make PDFs more accessible—one file or an entire archive.
+Make PDFs more accessible, from one file to an entire archive.
 
 Validate. Remediate. Re-validate. Keep the evidence.
 
