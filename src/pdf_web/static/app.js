@@ -565,10 +565,11 @@ function activeJobOrder(a, b) {
   return aCreated - bCreated;
 }
 
-function filteredJobs() {
+function filteredRecentJobs() {
   const query = state.jobSearch.trim().toLowerCase();
   const filter = state.jobOutcomeFilter;
   return state.jobs.filter((job) => {
+    if (isActiveJob(job)) return false;
     if (query && !String(job.name || '').toLowerCase().includes(query)) return false;
     if (filter === 'pending' && job.outcome) return false;
     if (filter !== 'all' && filter !== 'pending' && job.outcome !== filter) return false;
@@ -681,18 +682,19 @@ function renderJobStats() {
 }
 
 function renderJobs() {
-  const visible = filteredJobs();
-  const active = visible.filter(isActiveJob).sort(activeJobOrder);
-  const recent = visible.filter((job) => !isActiveJob(job));
-  const total = state.jobs.length;
+  const active = state.jobs.filter(isActiveJob).sort(activeJobOrder);
+  const allRecent = state.jobs.filter((job) => !isActiveJob(job));
+  const recent = filteredRecentJobs();
+  const visible = active.concat(recent);
   const empty = el('job-empty');
-  empty.classList.toggle('hidden', visible.length > 0);
-  empty.textContent = total
-    ? 'No files match the current search and outcome filter.'
-    : 'No files yet.';
+  empty.classList.toggle('hidden', recent.length > 0);
+  empty.textContent = 'No recent files match the current search and outcome filter.';
   renderJobStats();
   renderJobGroup('active-jobs-group', 'active-jobs-body', 'active-jobs-count', active);
   renderJobGroup('recent-jobs-group', 'recent-jobs-body', 'recent-jobs-count', recent);
+  // Keep the recent section and its filters available when a filter has no matches.
+  el('recent-jobs-group').classList.toggle('hidden', allRecent.length === 0);
+  el('recent-jobs-table').classList.toggle('hidden', recent.length === 0);
 
   // Drop rows for jobs that no longer exist or fell out of the current
   // search/outcome filter, so stale elements don't linger detached in memory.

@@ -53,7 +53,7 @@ function loadStagingCode() {
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(
-    functionsOnly + '\nglobalThis.testApi = { addFiles, state };',
+    functionsOnly + '\nglobalThis.testApi = { addFiles, filteredRecentJobs, state };',
     context,
     { filename: appPath },
   );
@@ -78,5 +78,21 @@ test('non-PDF selections are ignored instead of remaining staged', () => {
   assert.match(
     elements.get('toast-region').children[0].textContent,
     /1 non-PDF file ignored/,
+  );
+});
+
+test('job filters only return matching recent jobs', () => {
+  const { filteredRecentJobs, state } = loadStagingCode();
+  state.jobs = [
+    { job_id: 'running', name: 'quarterly-report.pdf', status: 'running', outcome: null },
+    { job_id: 'recent-match', name: 'quarterly-report.pdf', status: 'completed', outcome: 'remediated' },
+    { job_id: 'recent-other', name: 'invoice.pdf', status: 'completed', outcome: 'remediated' },
+  ];
+  state.jobSearch = 'quarterly';
+  state.jobOutcomeFilter = 'remediated';
+
+  assert.deepEqual(
+    Array.from(filteredRecentJobs(), (job) => job.job_id),
+    ['recent-match'],
   );
 });

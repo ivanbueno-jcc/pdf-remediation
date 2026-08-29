@@ -71,22 +71,8 @@
         <h2>Files</h2>
         <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
       </div>
-      <div class="job-filters">
-        <input type="search" id="job-search" placeholder="Search by filename" autocomplete="off" aria-label="Search files">
-        <select id="job-outcome-filter" aria-label="Outcome">
-          <option value="all">All outcomes</option>
-          <option value="pending">Pending</option>
-          <option value="already_compliant">Already compliant</option>
-          <option value="remediated">Remediated</option>
-          <option value="improved">Improved, still failing</option>
-          <option value="unchanged">Unchanged</option>
-          <option value="failed">Failed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
     </div>
     <div id="job-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
-    <p class="muted job-empty hidden" id="job-empty" role="status"></p>
     <div class="job-group hidden" id="active-jobs-group">
       <h3>Active files <span class="group-count" id="active-jobs-count"></span></h3>
       <table class="jobs-table">
@@ -95,8 +81,24 @@
       </table>
     </div>
     <div class="job-group hidden" id="recent-jobs-group">
-      <h3>Recent files <span class="group-count" id="recent-jobs-count"></span></h3>
-      <table class="jobs-table">
+      <div class="recent-jobs-header">
+        <h3>Recent files <span class="group-count" id="recent-jobs-count"></span></h3>
+        <div class="job-filters">
+          <input type="search" id="job-search" placeholder="Search by filename" autocomplete="off" aria-label="Search recent files">
+          <select id="job-outcome-filter" aria-label="Recent file outcome">
+            <option value="all">All outcomes</option>
+            <option value="pending">Pending</option>
+            <option value="already_compliant">Already compliant</option>
+            <option value="remediated">Remediated</option>
+            <option value="improved">Improved, still failing</option>
+            <option value="unchanged">Unchanged</option>
+            <option value="failed">Failed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+      <p class="muted job-empty hidden" id="job-empty" role="status"></p>
+      <table class="jobs-table" id="recent-jobs-table">
         <thead><tr><th>File</th><th>Status</th><th>Validation change</th><th>Downloads</th></tr></thead>
         <tbody id="recent-jobs-body"></tbody>
       </table>
