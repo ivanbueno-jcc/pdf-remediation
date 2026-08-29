@@ -12,7 +12,7 @@ Validate. Remediate. Re-validate. Keep the evidence.
 | Let staff remediate on demand | [Web portal](#web-portal-for-on-demand-remediation) | `uv run web` |
 | Add remediation to another system | [Integration API](#api-for-integrated-systems) | `uv run pdf-api` |
 
-![Animated demonstration of the PDF remediation workflow](resources/images/pdf_remediation_process_flow_presentation.gif)
+![Animated demonstration of the PDF remediation workflow](docs/images/bulk.gif)
 
 > Automated remediation does not guarantee conformance. Every run shows what
 > passed, what improved, and what still needs review.
