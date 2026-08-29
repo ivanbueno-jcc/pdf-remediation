@@ -1,0 +1,239 @@
+name: Deploy pdf_web to AWS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: pdf-web-aws-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: aws-production
+    timeout-minutes: 120
+    env:
+      AWS_CLOUDFORMATION_ROLE_ARN: ${{ vars.AWS_CLOUDFORMATION_ROLE_ARN }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_STACK_NAME: ${{ vars.AWS_STACK_NAME }}
+      PDF_CALLAS_FONT_IMAGE: ${{ vars.PDF_CALLAS_FONT_IMAGE }}
+      PDF_PDFIX_FONT_IMAGE: ${{ vars.PDF_PDFIX_FONT_IMAGE }}
+      PDF_WEB_MAX_CONCURRENT_JOBS: ${{ vars.PDF_WEB_MAX_CONCURRENT_JOBS }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version-file: pyproject.toml
+
+      - uses: astral-sh/setup-uv@v7
+
+      - name: Test and lint application
+        run: |
+          uv sync --frozen --dev
+          uv run python -m unittest discover -s tests -t . -v
+          uv run pylint $(git ls-files '*.py')
+
+      - name: Lint CloudFormation
+        run: uvx cfn-lint infra/aws/main.yaml
+
+      - name: Sign in to AWS with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+
+      - name: Validate and preview infrastructure
+        id: infrastructure
+        run: |
+          aws cloudformation validate-template \
+            --region "$AWS_REGION" \
+            --template-body file://infra/aws/main.yaml \
+            --no-cli-pager >/dev/null
+
+          change_set="github-${GITHUB_RUN_ID}"
+          aws cloudformation deploy \
+            --region "$AWS_REGION" \
+            --stack-name "$AWS_STACK_NAME" \
+            --template-file infra/aws/main.yaml \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --role-arn "$AWS_CLOUDFORMATION_ROLE_ARN" \
+            --change-set-name "$change_set" \
+            --no-execute-changeset \
+            --no-fail-on-empty-changeset \
+            --no-cli-pager
+
+          if aws cloudformation describe-change-set \
+              --region "$AWS_REGION" --stack-name "$AWS_STACK_NAME" \
+              --change-set-name "$change_set" --no-cli-pager \
+              >/tmp/pdf-web-change-set.json 2>/dev/null; then
+            change_status="$(jq -r .Status /tmp/pdf-web-change-set.json)"
+            change_reason="$(jq -r '.StatusReason // ""' /tmp/pdf-web-change-set.json)"
+            if [[ "$change_status" == CREATE_COMPLETE ]]; then
+              jq '{Status, Changes: [.Changes[]?.ResourceChange | {Action, LogicalResourceId, ResourceType, Replacement}]}' \
+                /tmp/pdf-web-change-set.json
+              aws cloudformation execute-change-set \
+                --region "$AWS_REGION" --stack-name "$AWS_STACK_NAME" \
+                --change-set-name "$change_set" --no-cli-pager
+              aws cloudformation wait stack-update-complete \
+                --region "$AWS_REGION" --stack-name "$AWS_STACK_NAME"
+            elif [[ "$change_status" == FAILED \
+                && ( "$change_reason" == *"didn't contain changes"* \
+                  || "$change_reason" == *"No updates"* ) ]]; then
+              echo "CloudFormation stack has no changes."
+              aws cloudformation delete-change-set \
+                --region "$AWS_REGION" --stack-name "$AWS_STACK_NAME" \
+                --change-set-name "$change_set" --no-cli-pager || true
+            else
+              jq '{Status, StatusReason}' /tmp/pdf-web-change-set.json >&2
+              exit 1
+            fi
+          else
+            echo "CloudFormation stack has no changes."
+          fi
+
+      - name: Read infrastructure outputs
+        id: infra
+        run: |
+          output() {
+            aws cloudformation describe-stacks \
+              --region "$AWS_REGION" --stack-name "$AWS_STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue | [0]" \
+              --output text
+          }
+          echo "access_point=$(output AccessPointId)" >> "$GITHUB_OUTPUT"
+          echo "cognito_domain=$(output CognitoDomain)" >> "$GITHUB_OUTPUT"
+          echo "ecr=$(output EcrRepositoryUri)" >> "$GITHUB_OUTPUT"
+          echo "filesystem=$(output FileSystemId)" >> "$GITHUB_OUTPUT"
+          echo "hostname=$(output WebHostname)" >> "$GITHUB_OUTPUT"
+          echo "instance=$(output InstanceId)" >> "$GITHUB_OUTPUT"
+          echo "secret=$(output RuntimeSecretArn)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push immutable application image
+        id: image
+        run: |
+          registry="${{ steps.infra.outputs.ecr }}"
+          registry="${registry%%/*}"
+          aws ecr get-login-password --region "$AWS_REGION" \
+            | docker login --username AWS --password-stdin "$registry"
+          image="${{ steps.infra.outputs.ecr }}:${GITHUB_SHA}"
+          docker buildx build \
+            --platform linux/amd64 \
+            --tag "$image" \
+            --file Dockerfile \
+            --push .
+          echo "uri=$image" >> "$GITHUB_OUTPUT"
+
+      - name: Verify production image contents
+        run: |
+          image="${{ steps.image.outputs.uri }}"
+          docker pull "$image" >/dev/null
+          docker run --rm --entrypoint sh "$image" -c '
+            set -eu
+            java -version >/dev/null 2>&1
+            docker --version >/dev/null
+            test -f /app/lib/greenfield-apps-1.28.0.jar
+            test -d /app/resources/configuration
+            test -d /app/src/pdf_web/static
+            test -f /opt/pdf-remediation-deploy/compose.yaml
+            test -f /opt/pdf-remediation-deploy/Caddyfile
+            test -f /opt/pdf-remediation-deploy/aws/compose.yaml
+            test -f /opt/pdf-remediation-deploy/aws/Caddyfile
+            test -x /opt/pdf-remediation-deploy/aws/deploy.sh
+            for path in /app/.env /app/infra /app/docs /app/scripts /app/tests \
+              /app/resources/font /app/resources/projects /app/resources/web-jobs; do
+              test ! -e "$path"
+            done
+          '
+
+      - name: Wait for Systems Manager
+        run: |
+          instance="${{ steps.infra.outputs.instance }}"
+          for _ in $(seq 1 60); do
+            status="$(aws ssm describe-instance-information \
+              --region "$AWS_REGION" \
+              --filters "Key=InstanceIds,Values=$instance" \
+              --query 'InstanceInformationList[0].PingStatus' \
+              --output text 2>/dev/null || true)"
+            if [[ "$status" == Online ]]; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "EC2 instance did not become available in Systems Manager." >&2
+          exit 1
+
+      - name: Deploy through Systems Manager Run Command
+        run: |
+          callas_image="${PDF_CALLAS_FONT_IMAGE:-pdfix/font-fix-callas:v1.0.11}"
+          pdfix_image="${PDF_PDFIX_FONT_IMAGE:-pdfix/font-fix-pdfix:v1.0.9}"
+          max_jobs="${PDF_WEB_MAX_CONCURRENT_JOBS:-4}"
+          image="${{ steps.image.outputs.uri }}"
+          registry="${image%%/*}"
+          instance="${{ steps.infra.outputs.instance }}"
+
+          parameters="$(jq -n \
+            --arg access_point "${{ steps.infra.outputs.access_point }}" \
+            --arg callas_image "$callas_image" \
+            --arg filesystem "${{ steps.infra.outputs.filesystem }}" \
+            --arg image "$image" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            --arg max_jobs "$max_jobs" \
+            --arg pdfix_image "$pdfix_image" \
+            --arg region "$AWS_REGION" \
+            --arg registry "$registry" \
+            --arg secret "${{ steps.infra.outputs.secret }}" \
+            --arg hostname "${{ steps.infra.outputs.hostname }}" \
+            '{commands: [
+              "set -eu",
+              ("aws ecr get-login-password --region " + $region + " | docker login --username AWS --password-stdin " + $registry + " >/dev/null"),
+              ("docker pull " + $image + " >/dev/null"),
+              ("asset_container=pdf-remediation-aws-deploy-" + $run_id),
+              "docker rm -f \"$asset_container\" >/dev/null 2>&1 || true",
+              ("docker create --name \"$asset_container\" " + $image + " >/dev/null"),
+              "docker cp \"$asset_container:/opt/pdf-remediation-deploy/aws/deploy.sh\" /tmp/pdf-remediation-aws-deploy.sh",
+              "docker rm \"$asset_container\" >/dev/null",
+              "chmod 0700 /tmp/pdf-remediation-aws-deploy.sh",
+              ("/tmp/pdf-remediation-aws-deploy.sh ACCESS_POINT_ID=" + $access_point + " APP_IMAGE=" + $image + " AWS_REGION=" + $region + " FILE_SYSTEM_ID=" + $filesystem + " SECRET_ARN=" + $secret + " WEB_HOSTNAME=" + $hostname + " PDF_CALLAS_FONT_IMAGE=" + $callas_image + " PDF_PDFIX_FONT_IMAGE=" + $pdfix_image + " PDF_WEB_MAX_CONCURRENT_JOBS=" + $max_jobs)
+            ]}')"
+
+          command_id="$(aws ssm send-command \
+            --region "$AWS_REGION" \
+            --instance-ids "$instance" \
+            --document-name AWS-RunShellScript \
+            --comment "Deploy pdf_web ${GITHUB_SHA}" \
+            --parameters "$parameters" \
+            --query Command.CommandId --output text)"
+
+          set +e
+          aws ssm wait command-executed \
+            --region "$AWS_REGION" --command-id "$command_id" \
+            --instance-id "$instance"
+          wait_status=$?
+          set -e
+          invocation="$(aws ssm get-command-invocation \
+            --region "$AWS_REGION" --command-id "$command_id" \
+            --instance-id "$instance" --output json)"
+          jq '{Status, ResponseCode, StandardOutputContent, StandardErrorContent}' \
+            <<<"$invocation"
+          [[ "$wait_status" == 0 && "$(jq -r .Status <<<"$invocation")" == Success ]]
+
+      - name: Public DNS, TLS, readiness, and Cognito smoke tests
+        run: |
+          base="https://${{ steps.infra.outputs.hostname }}"
+          curl --fail --silent --show-error --retry 18 --retry-delay 10 \
+            "$base/healthz" >/dev/null
+          curl --fail --silent --show-error --retry 18 --retry-delay 10 \
+            "$base/readyz" >/dev/null
+          headers="$(mktemp)"
+          status="$(curl --silent --show-error --dump-header "$headers" \
+            --output /dev/null --write-out '%{http_code}' "$base/")"
+          test "$status" = 302
+          grep -Fiq "${{ steps.infra.outputs.cognito_domain }}" "$headers"

@@ -1,0 +1,28 @@
+{
+	email {$ACME_EMAIL}
+	admin off
+}
+
+{$WEB_HOSTNAME} {
+	encode zstd gzip
+	reverse_proxy oauth2-proxy:4180 {
+		flush_interval -1
+		transport http {
+			keepalive 30s
+			response_header_timeout 4h
+		}
+	}
+}
+
+# Only oauth2-proxy can reach this unpublished listener. It authenticates the
+# request first; this hop then replaces the application proof header.
+:8080 {
+	reverse_proxy pdf-web:8000 {
+		header_up X-PDF-Web-Proxy-Secret {$PDF_WEB_PROXY_SECRET}
+		flush_interval -1
+		transport http {
+			keepalive 30s
+			response_header_timeout 4h
+		}
+	}
+}

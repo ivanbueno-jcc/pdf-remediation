@@ -156,11 +156,11 @@ Jobs run on a worker pool: `PDF_WEB_MAX_CONCURRENT_JOBS` (default 4) bounds the
 machine, and `PDF_WEB_MAX_RUNNING_JOBS_PER_USER` (default 4) stops one person
 holding all of it. Queueing is unlimited; only running is capped.
 
-For the production Azure VM deployment, including Entra authentication,
-Azure Files persistence, Bicep infrastructure, and GitHub Actions delivery,
-see [Deploy `pdf_web` to Azure](docs/azure-web-deployment.md). The deployment
-does not run the `pdf_api` HTTP service; `pdf_web` uses its pipeline package as
-an in-process library.
+For production VM deployments, see
+[Deploy `pdf_web` to Azure](docs/azure-web-deployment.md) and
+[Deploy `pdf_web` to AWS](docs/aws-web-deployment.md). Both deployments run
+only `pdf_web`; the `pdf_api` pipeline remains an in-process library rather
+than a separate HTTP service.
 
 ```bash
 uv run web

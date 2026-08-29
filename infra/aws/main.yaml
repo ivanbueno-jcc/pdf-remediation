@@ -1,0 +1,766 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Single-host AWS production deployment for pdf_web.
+
+Parameters:
+  NamePrefix:
+    Type: String
+    Default: pdfremed
+    AllowedPattern: '^[a-z][a-z0-9-]{2,11}$'
+    Description: Lowercase prefix used for named resources.
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Existing public Route 53 hosted zone ID.
+  HostedZoneName:
+    Type: String
+    AllowedPattern: '^([A-Za-z0-9-]+\.)+[A-Za-z]{2,63}$'
+    Description: Existing hosted zone name without a trailing dot.
+  WebDnsLabel:
+    Type: String
+    Default: pdf
+    AllowedPattern: '^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$'
+  AcmeEmail:
+    Type: String
+    AllowedPattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+    Description: ACME contact and CloudWatch alarm subscription email.
+  GitHubRepository:
+    Type: String
+    AllowedPattern: '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$'
+    Description: GitHub owner/repository allowed to assume the deployment role.
+  GitHubEnvironment:
+    Type: String
+    Default: aws-production
+  ExistingGitHubOidcProviderArn:
+    Type: String
+    Default: ''
+    Description: Existing token.actions.githubusercontent.com provider ARN, or empty to create one.
+  InstanceType:
+    Type: String
+    Default: m7i.2xlarge
+  RootVolumeSizeGiB:
+    Type: Number
+    Default: 256
+    MinValue: 128
+    MaxValue: 2048
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+  VpcCidr:
+    Type: String
+    Default: 10.42.0.0/16
+  PublicSubnetCidr:
+    Type: String
+    Default: 10.42.1.0/24
+
+Conditions:
+  CreateGitHubOidcProvider: !Equals [!Ref ExistingGitHubOidcProviderArn, '']
+
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${NamePrefix}-vpc'
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${NamePrefix}-igw'
+
+  VpcGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref Vpc
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs '']
+      CidrBlock: !Ref PublicSubnetCidr
+      MapPublicIpOnLaunch: false
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${NamePrefix}-public'
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${NamePrefix}-public'
+
+  PublicDefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VpcGatewayAttachment
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet
+
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Public HTTP and HTTPS only for pdf_web.
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref Vpc
+
+  EfsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: NFS from the pdf_web instance only.
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2049
+          ToPort: 2049
+          SourceSecurityGroupId: !Ref AppSecurityGroup
+      VpcId: !Ref Vpc
+
+  EcrRepository:
+    Type: AWS::ECR::Repository
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      EmptyOnDelete: false
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      ImageTagMutability: IMMUTABLE
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep the newest 30 immutable images",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 30
+                },
+                "action": {"type": "expire"}
+              }
+            ]
+          }
+      RepositoryName: !Sub '${NamePrefix}-pdf-remediation'
+
+  RuntimeSecret:
+    Type: AWS::SecretsManager::Secret
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Description: Runtime configuration for the AWS pdf_web deployment.
+      Name: !Sub '${NamePrefix}/pdf-web/runtime'
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+        InviteMessageTemplate:
+          EmailMessage: 'Your PDF Remediation username is {username} and temporary password is {####}.'
+          EmailSubject: PDF Remediation invitation
+        UnusedAccountValidityDays: 7
+      AutoVerifiedAttributes:
+        - email
+      DeletionProtection: ACTIVE
+      EnabledMfas:
+        - SOFTWARE_TOKEN_MFA
+      MfaConfiguration: OPTIONAL
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 14
+          PasswordHistorySize: 12
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+          TemporaryPasswordValidityDays: 7
+      Schema:
+        - AttributeDataType: String
+          Mutable: true
+          Name: email
+          Required: true
+      UsernameAttributes:
+        - email
+      UsernameConfiguration:
+        CaseSensitive: false
+      UserPoolName: !Sub '${NamePrefix}-pdf-web-users'
+      UserPoolTier: ESSENTIALS
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      AccessTokenValidity: 60
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+      CallbackURLs:
+        - !Sub 'https://${WebDnsLabel}.${HostedZoneName}/oauth2/callback'
+      ClientName: !Sub '${NamePrefix}-pdf-web'
+      EnableTokenRevocation: true
+      ExplicitAuthFlows:
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+      GenerateSecret: true
+      IdTokenValidity: 60
+      LogoutURLs:
+        - !Sub 'https://${WebDnsLabel}.${HostedZoneName}/'
+      PreventUserExistenceErrors: ENABLED
+      RefreshTokenValidity: 7
+      SupportedIdentityProviders:
+        - COGNITO
+      TokenValidityUnits:
+        AccessToken: minutes
+        IdToken: minutes
+        RefreshToken: days
+      UserPoolId: !Ref CognitoUserPool
+
+  CognitoDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Domain: !Sub '${NamePrefix}-${AWS::AccountId}-${AWS::Region}'
+      ManagedLoginVersion: 2
+      UserPoolId: !Ref CognitoUserPool
+
+  CognitoManagedLoginBranding:
+    Type: AWS::Cognito::ManagedLoginBranding
+    Properties:
+      ClientId: !Ref CognitoUserPoolClient
+      UseCognitoProvidedValues: true
+      UserPoolId: !Ref CognitoUserPool
+
+  CognitoAuthorizedGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Description: Users authorized to access pdf_web.
+      GroupName: pdf-web-users
+      Precedence: 0
+      UserPoolId: !Ref CognitoUserPool
+
+  CloudWatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      LogGroupName: !Sub '/pdf-remediation/${NamePrefix}/containers'
+      RetentionInDays: 30
+
+  Ec2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+      Policies:
+        - PolicyName: PdfWebRuntime
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: EcrAuthorization
+                Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: '*'
+              - Sid: EcrPull
+                Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:GetDownloadUrlForLayer
+                Resource: !GetAtt EcrRepository.Arn
+              - Sid: RuntimeSecret
+                Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: !Ref RuntimeSecret
+              - Sid: EfsClient
+                Effect: Allow
+                Action:
+                  - elasticfilesystem:ClientMount
+                  - elasticfilesystem:ClientWrite
+                Resource: '*'
+      Tags:
+        - Key: Name
+          Value: !Sub '${NamePrefix}-ec2-role'
+
+  Ec2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref Ec2Role
+
+  EfsFileSystem:
+    Type: AWS::EFS::FileSystem
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BackupPolicy:
+        Status: DISABLED
+      Encrypted: true
+      FileSystemPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: '*'
+            Resource: '*'
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+          - Sid: AllowApplicationRole
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt Ec2Role.Arn
+            Action:
+              - elasticfilesystem:ClientMount
+              - elasticfilesystem:ClientWrite
+            Resource: '*'
+      FileSystemTags:
+        - Key: Name
+          Value: !Sub '${NamePrefix}-pdf-data'
+      PerformanceMode: generalPurpose
+      ThroughputMode: elastic
+
+  EfsAccessPoint:
+    Type: AWS::EFS::AccessPoint
+    Properties:
+      FileSystemId: !Ref EfsFileSystem
+      PosixUser:
+        Gid: '10001'
+        Uid: '10001'
+      RootDirectory:
+        CreationInfo:
+          OwnerGid: '10001'
+          OwnerUid: '10001'
+          Permissions: '0770'
+        Path: /pdf-data
+
+  EfsMountTarget:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref EfsFileSystem
+      SecurityGroups:
+        - !Ref EfsSecurityGroup
+      SubnetId: !Ref PublicSubnet
+
+  ElasticIp:
+    Type: AWS::EC2::EIP
+    DependsOn: VpcGatewayAttachment
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${NamePrefix}-pdf-web'
+
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    DependsOn:
+      - EfsMountTarget
+      - PublicDefaultRoute
+    Properties:
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            DeleteOnTermination: true
+            Encrypted: true
+            VolumeSize: !Ref RootVolumeSizeGiB
+            VolumeType: gp3
+      IamInstanceProfile: !Ref Ec2InstanceProfile
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpPutResponseHopLimit: 1
+        HttpTokens: required
+      SecurityGroupIds:
+        - !Ref AppSecurityGroup
+      SubnetId: !Ref PublicSubnet
+      Tags:
+        - Key: Name
+          Value: !Sub '${NamePrefix}-pdf-web'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euo pipefail
+          dnf install -y docker amazon-efs-utils jq
+          install -d -m 0755 /etc/docker /usr/local/lib/docker/cli-plugins
+          cat > /etc/docker/daemon.json <<'JSON'
+          {
+            "log-driver": "json-file",
+            "log-opts": {"max-size": "100m", "max-file": "5"},
+            "live-restore": true
+          }
+          JSON
+          curl --fail --silent --show-error --location \
+            https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-linux-x86_64 \
+            --output /usr/local/lib/docker/cli-plugins/docker-compose
+          chmod 0755 /usr/local/lib/docker/cli-plugins/docker-compose
+          systemctl enable --now docker amazon-ssm-agent
+          install -d -m 0755 /mnt/pdf-data /srv/pdf-remediation/scratch /opt/pdf-remediation-aws
+          printf '%s\n' '${EfsFileSystem}:/ /mnt/pdf-data efs _netdev,noresvport,tls,iam,accesspoint=${EfsAccessPoint} 0 0' >> /etc/fstab
+          for attempt in $(seq 1 60); do
+            mount /mnt/pdf-data && break
+            if [ "$attempt" -eq 60 ]; then exit 1; fi
+            sleep 5
+          done
+          install -d -o 10001 -g 10001 -m 0770 \
+            /mnt/pdf-data/web /mnt/pdf-data/caddy/data /mnt/pdf-data/caddy/config \
+            /srv/pdf-remediation/scratch
+          curl --fail --silent --show-error --location \
+            https://amazoncloudwatch-agent-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm \
+            --output /tmp/amazon-cloudwatch-agent.rpm
+          rpm -U /tmp/amazon-cloudwatch-agent.rpm
+          cat > /opt/aws/amazon-cloudwatch-agent/etc/pdf-remediation.json <<'JSON'
+          {
+            "agent": {"metrics_collection_interval": 60, "run_as_user": "root"},
+            "logs": {
+              "logs_collected": {
+                "files": {
+                  "collect_list": [
+                    {
+                      "file_path": "/var/lib/docker/containers/*/*.log",
+                      "log_group_name": "${CloudWatchLogGroup}",
+                      "log_stream_name": "{instance_id}",
+                      "retention_in_days": 30
+                    }
+                  ]
+                }
+              }
+            },
+            "metrics": {
+              "append_dimensions": {"InstanceId": "${!aws:InstanceId}"},
+              "aggregation_dimensions": [["InstanceId"]],
+              "metrics_collected": {
+                "disk": {
+                  "measurement": ["used_percent"],
+                  "metrics_collection_interval": 60,
+                  "resources": ["/"]
+                },
+                "mem": {"measurement": ["mem_used_percent"], "metrics_collection_interval": 60}
+              }
+            }
+          }
+          JSON
+          /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+            -a fetch-config -m ec2 -s \
+            -c file:/opt/aws/amazon-cloudwatch-agent/etc/pdf-remediation.json
+          rm -f /tmp/amazon-cloudwatch-agent.rpm
+
+  ElasticIpAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt ElasticIp.AllocationId
+      InstanceId: !Ref Ec2Instance
+
+  DnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub '${WebDnsLabel}.${HostedZoneName}.'
+      ResourceRecords:
+        - !Ref ElasticIp
+      TTL: '60'
+      Type: A
+
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: pdf-web AWS alarms
+      Subscription:
+        - Endpoint: !Ref AcmeEmail
+          Protocol: email
+      TopicName: !Sub '${NamePrefix}-pdf-web-alarms'
+
+  StatusCheckAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !Ref AlarmTopic
+      AlarmDescription: EC2 instance status check is failing.
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref Ec2Instance
+      EvaluationPeriods: 2
+      MetricName: StatusCheckFailed
+      Namespace: AWS/EC2
+      Period: 300
+      Statistic: Maximum
+      Threshold: 0
+      TreatMissingData: breaching
+
+  CpuAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !Ref AlarmTopic
+      AlarmDescription: EC2 CPU has remained above 85 percent.
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref Ec2Instance
+      EvaluationPeriods: 3
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Period: 300
+      Statistic: Average
+      Threshold: 85
+      TreatMissingData: missing
+
+  DiskAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !Ref AlarmTopic
+      AlarmDescription: Root disk use has exceeded 90 percent.
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref Ec2Instance
+      EvaluationPeriods: 2
+      MetricName: disk_used_percent
+      Namespace: CWAgent
+      Period: 300
+      Statistic: Maximum
+      Threshold: 90
+      TreatMissingData: breaching
+
+  BackupVault:
+    Type: AWS::Backup::BackupVault
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BackupVaultName: !Sub '${NamePrefix}-pdf-data'
+      LockConfiguration:
+        MinRetentionDays: 30
+        MaxRetentionDays: 365
+
+  BackupRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: backup.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup
+        - arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores
+
+  BackupPlan:
+    Type: AWS::Backup::BackupPlan
+    Properties:
+      BackupPlan:
+        BackupPlanName: !Sub '${NamePrefix}-daily-30-days'
+        BackupPlanRule:
+          - CompletionWindowMinutes: 720
+            Lifecycle:
+              DeleteAfterDays: 30
+            RuleName: daily-efs
+            ScheduleExpression: cron(0 5 * * ? *)
+            StartWindowMinutes: 60
+            TargetBackupVault: !Ref BackupVault
+
+  BackupSelection:
+    Type: AWS::Backup::BackupSelection
+    Properties:
+      BackupPlanId: !Ref BackupPlan
+      BackupSelection:
+        IamRoleArn: !GetAtt BackupRole.Arn
+        Resources:
+          - !GetAtt EfsFileSystem.Arn
+        SelectionName: !Sub '${NamePrefix}-efs'
+
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateGitHubOidcProvider
+    Properties:
+      ClientIdList:
+        - sts.amazonaws.com
+      Url: https://token.actions.githubusercontent.com
+      Tags:
+        - Key: Name
+          Value: GitHub Actions
+
+  CloudFormationExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${NamePrefix}-cloudformation-execution'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ManagePdfWebStack
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - backup:*
+                  - cloudwatch:*
+                  - cognito-idp:*
+                  - ec2:*
+                  - ecr:*
+                  - elasticfilesystem:*
+                  - iam:*
+                  - logs:*
+                  - route53:*
+                  - secretsmanager:*
+                  - sns:*
+                  - ssm:GetParameter
+                Resource: '*'
+
+  GitHubDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${NamePrefix}-github-deploy'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !If
+                - CreateGitHubOidcProvider
+                - !Ref GitHubOidcProvider
+                - !Ref ExistingGitHubOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub 'repo:${GitHubRepository}:environment:${GitHubEnvironment}'
+      Policies:
+        - PolicyName: DeployPdfWeb
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: CloudFormation
+                Effect: Allow
+                Action:
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:DescribeStackResources
+                  - cloudformation:DescribeStacks
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:GetTemplateSummary
+                  - cloudformation:ListChangeSets
+                  - cloudformation:ValidateTemplate
+                Resource: '*'
+              - Sid: PassCloudFormationRole
+                Effect: Allow
+                Action: iam:PassRole
+                Resource: !GetAtt CloudFormationExecutionRole.Arn
+                Condition:
+                  StringEquals:
+                    iam:PassedToService: cloudformation.amazonaws.com
+              - Sid: EcrAuthorization
+                Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: '*'
+              - Sid: EcrPush
+                Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !GetAtt EcrRepository.Arn
+              - Sid: RunCommand
+                Effect: Allow
+                Action: ssm:SendCommand
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}::document/AWS-RunShellScript'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${Ec2Instance}'
+              - Sid: ReadCommandAndInstance
+                Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                  - ssm:DescribeInstanceInformation
+                  - ssm:GetCommandInvocation
+                  - ssm:ListCommandInvocations
+                Resource: '*'
+
+Outputs:
+  AccessPointId:
+    Value: !Ref EfsAccessPoint
+  AcmeEmail:
+    Value: !Ref AcmeEmail
+  CloudFormationExecutionRoleArn:
+    Value: !GetAtt CloudFormationExecutionRole.Arn
+  CognitoClientId:
+    Value: !Ref CognitoUserPoolClient
+  CognitoDomain:
+    Value: !Sub '${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com'
+  CognitoIssuerUrl:
+    Value: !Sub 'https://cognito-idp.${AWS::Region}.${AWS::URLSuffix}/${CognitoUserPool}'
+  CognitoUserPoolId:
+    Value: !Ref CognitoUserPool
+  EcrRepositoryUri:
+    Value: !GetAtt EcrRepository.RepositoryUri
+  FileSystemId:
+    Value: !Ref EfsFileSystem
+  GitHubDeployRoleArn:
+    Value: !GetAtt GitHubDeployRole.Arn
+  InstanceId:
+    Value: !Ref Ec2Instance
+  RuntimeSecretArn:
+    Value: !Ref RuntimeSecret
+  WebHostname:
+    Value: !Sub '${WebDnsLabel}.${HostedZoneName}'

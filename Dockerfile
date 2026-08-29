@@ -40,6 +40,7 @@ COPY --chown=pdfweb:pdfweb src ./src
 COPY --chown=pdfweb:pdfweb resources/configuration ./resources/configuration
 COPY --chown=pdfweb:pdfweb lib/greenfield-apps-1.28.0.jar ./lib/greenfield-apps-1.28.0.jar
 COPY --chown=pdfweb:pdfweb deploy/azure/compose.yaml deploy/azure/Caddyfile /opt/pdf-remediation-deploy/
+COPY --chown=pdfweb:pdfweb deploy/aws/compose.yaml deploy/aws/Caddyfile deploy/aws/deploy.sh /opt/pdf-remediation-deploy/aws/
 RUN uv sync --frozen --no-dev
 
 USER 10001:10001
