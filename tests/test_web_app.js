@@ -53,7 +53,7 @@ function loadStagingCode() {
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(
-    functionsOnly + '\nglobalThis.testApi = { addFiles, filteredRecentJobs, readinessPresentation, state };',
+    functionsOnly + '\nglobalThis.testApi = { addFiles, filteredRecentJobs, readinessPresentation, shouldToggleJobRow, state };',
     context,
     { filename: appPath },
   );
@@ -119,4 +119,13 @@ test('readiness presentation distinguishes ready, limited, and unavailable state
     { ...readinessPresentation({ can_submit: false, checks: [] }, 'Sign in') },
     { tone: 'unavailable', label: 'Access unavailable' },
   );
+});
+
+test('job row clicks ignore interactive controls', () => {
+  const { shouldToggleJobRow } = loadStagingCode();
+  const target = (interactive) => ({ closest() { return interactive ? {} : null; } });
+
+  assert.equal(shouldToggleJobRow(target(false)), true);
+  assert.equal(shouldToggleJobRow(target(true)), false);
+  assert.equal(shouldToggleJobRow(null), true);
 });

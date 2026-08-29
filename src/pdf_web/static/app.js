@@ -753,6 +753,13 @@ function animateJobRemoval(jobIds) {
   return new Promise((resolve) => setTimeout(resolve, 230));
 }
 
+function shouldToggleJobRow(target) {
+  if (!target || typeof target.closest !== 'function') return true;
+  return !target.closest(
+    'button, a, summary, input, select, textarea, label, [role="button"]'
+  );
+}
+
 function buildJobRow(job) {
   const row = document.createElement('tr');
   row.className = 'job-row job-row-enter';
@@ -832,14 +839,13 @@ function buildJobRow(job) {
     processingState, outcome, progressLive, status, validation, downloads, fileActions,
   };
 
-  fileName.classList.add('file-name-toggle');
-  fileName.addEventListener('click', () => {
-    toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure);
-  });
-
   // `entry.job` is refreshed on every poll via updateJobRow, so this closure
   // always acts on the latest data even though it's bound once at creation.
   disclosure.addEventListener('click', () => {
+    toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure);
+  });
+  row.addEventListener('click', (event) => {
+    if (!shouldToggleJobRow(event.target)) return;
     toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure);
   });
 
