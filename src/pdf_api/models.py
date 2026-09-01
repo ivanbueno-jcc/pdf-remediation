@@ -125,6 +125,7 @@ class PipelineResult:  # pylint: disable=too-many-instance-attributes
     output_pdf_path: Path | None = None
     before: dict[str, Any] | None = None
     after: dict[str, Any] | None = None
+    initially_secured: bool | None = None
     stages: list[StageOutcome] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     diagnostics: list[dict[str, str]] = field(default_factory=list)
@@ -142,6 +143,7 @@ class PipelineResult:  # pylint: disable=too-many-instance-attributes
             ),
             "before": self.before,
             "after": self.after,
+            "initially_secured": self.initially_secured,
             "stages": [stage.to_dict() for stage in self.stages],
             "warnings": self.warnings,
             "diagnostics": self.diagnostics,

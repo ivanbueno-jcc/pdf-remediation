@@ -425,6 +425,7 @@ async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
                 "jobs_ahead": RUNNER.jobs_ahead(job.job_id),
                 "before": summarize_report(job.result.before if job.result else None),
                 "after": summarize_report(job.result.after if job.result else None),
+                "initially_secured": job.initially_secured,
                 "has_pdf": job.artifact("pdf") is not None,
                 "error": job.error,
             }

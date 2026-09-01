@@ -346,9 +346,61 @@ class PipelineStageOptionTests(unittest.TestCase):
                 )
 
             run_fix.assert_not_called()
+            self.assertFalse(result.initially_secured)
             fix_stage = next(stage for stage in result.stages if stage.name == "fix")
             self.assertEqual(str(fix_stage.status), "skipped")
             self.assertEqual(fix_stage.detail, "Disabled by request.")
+
+    def test_secured_input_is_reported_before_the_unlock_stage(self) -> None:
+        '''Already-compliant secured files still retain their initial lock state.'''
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            input_pdf = root / "input.pdf"
+            input_pdf.write_bytes(b"%PDF-1.7\n")
+            passing = report({"wcag": ("pass", [])})
+            capabilities = mock.Mock()
+            capabilities.can_validate.return_value = True
+
+            with (
+                mock.patch("pdf_api.pipeline.cached_probe", return_value=capabilities),
+                mock.patch("pdf_api.pipeline.stages.validate", return_value=passing),
+                mock.patch(
+                    "pdf_api.pipeline.stages.is_secured",
+                    return_value="secured-needs-approval",
+                ),
+                mock.patch("pdf_api.pipeline.stages.unlock") as unlock,
+            ):
+                result = process_pdf(input_pdf, root / "output")
+
+            self.assertTrue(result.initially_secured)
+            self.assertEqual(result.status, PipelineStatus.ALREADY_COMPLIANT)
+            unlock.assert_not_called()
+
+    def test_secured_input_is_reported_when_unlocking_is_disabled(self) -> None:
+        '''A failed run still tells the job row that its input was secured.'''
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            input_pdf = root / "input.pdf"
+            input_pdf.write_bytes(b"%PDF-1.7\n")
+            failing = report({"wcag": ("fail", [violation("1", "1")])})
+            capabilities = mock.Mock()
+            capabilities.can_validate.return_value = True
+
+            with (
+                mock.patch("pdf_api.pipeline.cached_probe", return_value=capabilities),
+                mock.patch("pdf_api.pipeline.stages.validate", return_value=failing),
+                mock.patch(
+                    "pdf_api.pipeline.stages.is_secured",
+                    return_value="secured-cannot-process",
+                ),
+            ):
+                result = process_pdf(
+                    input_pdf, root / "output", PipelineOptions(attempt_unlock=False)
+                )
+
+            self.assertTrue(result.initially_secured)
+            self.assertEqual(result.status, PipelineStatus.FAILED)
+            self.assertIn("unlocking is disabled", result.error)
 
 
 if __name__ == "__main__":

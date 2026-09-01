@@ -7,13 +7,18 @@ const test = require('node:test');
 const vm = require('node:vm');
 
 function fakeElement() {
+  const classes = new Set();
   return {
     children: [],
     classList: {
-      add() {},
-      contains() { return false; },
-      remove() {},
-      toggle() {},
+      add(...names) { names.forEach((name) => classes.add(name)); },
+      contains(name) { return classes.has(name); },
+      remove(...names) { names.forEach((name) => classes.delete(name)); },
+      toggle(name, force) {
+        const enabled = force === undefined ? !classes.has(name) : force;
+        if (enabled) classes.add(name); else classes.delete(name);
+        return enabled;
+      },
     },
     dataset: {},
     addEventListener() {},
@@ -54,7 +59,7 @@ function loadStagingCode(fetchImpl) {
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(
-    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, state };',
+    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, buildJobRow, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, state, updateJobRow };',
     context,
     { filename: appPath },
   );
@@ -147,6 +152,42 @@ test('job row clicks ignore interactive controls', () => {
   assert.equal(shouldToggleJobRow(target(false)), true);
   assert.equal(shouldToggleJobRow(target(true)), false);
   assert.equal(shouldToggleJobRow(null), true);
+});
+
+test('job metadata marks only files that were initially secured', () => {
+  const { buildJobRow } = loadStagingCode();
+  const job = {
+    job_id: 'job-1', name: 'document.pdf', created_at: '2026-08-31T12:00:00',
+    page_count: 2, config_label: 'Standard', initially_secured: true,
+  };
+  const securedEntry = buildJobRow(job);
+  const securedMeta = securedEntry.row.children[0].children[0].children[1].children[1];
+  const marker = securedMeta.children.at(-1);
+
+  assert.equal(marker.className, 'job-meta-security');
+  assert.equal(marker.title, 'Initially secured');
+  assert.equal(marker.children[0].classList.contains('job-meta-lock'), true);
+
+  const plainEntry = buildJobRow({ ...job, initially_secured: false });
+  const plainMeta = plainEntry.row.children[0].children[0].children[1].children[1];
+  assert.equal(plainMeta.children.some((child) => child.className === 'job-meta-security'), false);
+});
+
+test('job metadata adds the lock when polling discovers initial security', () => {
+  const { buildJobRow, updateJobRow } = loadStagingCode();
+  const job = {
+    job_id: 'job-1', name: 'document.pdf', created_at: '2026-08-31T12:00:00',
+    page_count: 2, config_label: 'Standard', initially_secured: false,
+    status: 'running', outcome: null, outcome_label: null, before: null, after: null,
+    current_stage: 'validate_before', has_pdf: false,
+  };
+  const entry = buildJobRow(job);
+  entry.status.querySelectorAll = () => [];
+  updateJobRow(entry, { ...job, initially_secured: true });
+
+  assert.equal(
+    entry.meta.children.some((child) => child.className === 'job-meta-security'), true
+  );
 });
 
 test('job details render pipeline stages beside the violations pane', () => {

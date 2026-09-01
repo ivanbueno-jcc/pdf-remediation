@@ -119,6 +119,7 @@ class MetadataPersistenceTests(unittest.TestCase):
         job.finished_at = job.created_at + timedelta(minutes=4)
         job.stages = [{"name": "fix", "status": "ok", "detail": "Applied."}]
         add_completed_result(job, write_job_artifacts(job))
+        job.result.initially_secured = True
 
         save_meta(job)
         restored = load_meta(job.meta_path)
@@ -131,6 +132,7 @@ class MetadataPersistenceTests(unittest.TestCase):
         self.assertTrue(restored.attempt_fix)
         self.assertTrue(restored.skip_font_fix)
         self.assertTrue(restored.attempt_targeted_fixes)
+        self.assertTrue(restored.initially_secured)
         self.assertEqual(restored.stages, job.stages)
         self.assertEqual(restored.file.original_name, "Report v2.pdf")
 

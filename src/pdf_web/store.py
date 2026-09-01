@@ -204,6 +204,10 @@ def load_meta(meta_path: Path) -> Job | None:
         ),
         before=_read_report(job.output_dir / "before.json"),
         after=_read_report(job.output_dir / "after.json"),
+        initially_secured=(
+            payload.get("initially_secured")
+            if isinstance(payload.get("initially_secured"), bool) else None
+        ),
         warnings=list(payload.get("warnings") or []),
         diagnostics=list(payload.get("diagnostics") or []),
         error=payload.get("error"),

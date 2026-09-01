@@ -209,6 +209,16 @@ class Job:  # pylint: disable=too-many-instance-attributes
         '''
         return self.status in TERMINAL_STATUSES
 
+    @property
+    def initially_secured(self) -> bool:
+        '''Return whether the uploaded PDF was secured before processing.'''
+        if self.result is not None and self.result.initially_secured is not None:
+            return self.result.initially_secured
+        return any(
+            stage.get("name") == "unlock" and stage.get("status") == "ok"
+            for stage in self.stages
+        )
+
     def to_dict(self) -> dict[str, Any]:
         '''
         Return a JSON-serializable view for the browser.
@@ -241,6 +251,7 @@ class Job:  # pylint: disable=too-many-instance-attributes
             "outcome_label": outcome_label(self.outcome),
             "before": summarize_report(result.before if result else None),
             "after": summarize_report(result.after if result else None),
+            "initially_secured": self.initially_secured,
             "has_pdf": self.artifact("pdf") is not None,
             "warnings": list(result.warnings) if result else [],
             "diagnostics": list(result.diagnostics) if result else [],

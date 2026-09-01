@@ -41,7 +41,7 @@ class PipelineCancelled(Exception):
     '''
 
 
-class _Run:
+class _Run:  # pylint: disable=too-many-instance-attributes
     '''
     Mutable bookkeeping for one pipeline run.
     '''
@@ -61,6 +61,8 @@ class _Run:
         self.should_cancel = should_cancel
         self.stages: list[StageOutcome] = []
         self.warnings: list[str] = []
+        self.initial_security_status: str | None = None
+        self.initially_secured: bool | None = None
 
     def check_cancelled(self) -> None:
         '''
@@ -110,11 +112,13 @@ def process_pdf(  # pylint: disable=too-many-return-statements,too-many-argument
             status=PipelineStatus.FAILED, input_pdf_path=input_path, error=invalid
         )
 
+    _inspect_initial_security(run)
     capabilities = cached_probe()
     if not capabilities.can_validate():
         return PipelineResult(
             status=PipelineStatus.FAILED,
             input_pdf_path=input_path,
+            initially_secured=run.initially_secured,
             error=(
                 "Validation is unavailable: "
                 f"java={capabilities.detail['java']}, "
@@ -133,6 +137,7 @@ def process_pdf(  # pylint: disable=too-many-return-statements,too-many-argument
             input_pdf_path=input_path,
             stages=run.stages,
             warnings=run.warnings,
+            initially_secured=run.initially_secured,
             error="Cancelled.",
         )
     except Exception as error:  # pylint: disable=broad-exception-caught
@@ -141,6 +146,7 @@ def process_pdf(  # pylint: disable=too-many-return-statements,too-many-argument
             input_pdf_path=input_path,
             stages=run.stages,
             warnings=run.warnings,
+            initially_secured=run.initially_secured,
             error=f"{type(error).__name__}: {error}",
         )
 
@@ -229,7 +235,10 @@ def _maybe_unlock(run: _Run, scratch: Scratch, current: Path, name: str) -> Path
     Strip empty-password encryption when present and permitted.
     '''
     started = datetime.now()
-    status = stages.is_secured(current)
+    status = run.initial_security_status
+    if status is None:
+        status = stages.is_secured(current)
+        _remember_initial_security(run, status)
 
     if status == "pdfix-unable-to-open":
         raise RuntimeError("PDFix could not open this PDF.")
@@ -250,6 +259,24 @@ def _maybe_unlock(run: _Run, scratch: Scratch, current: Path, name: str) -> Path
         run.warnings.append(str(warning))
     run.record("unlock", StageStatus.OK, f"Security removed ({status}).", started)
     return unlocked_path
+
+
+def _inspect_initial_security(run: _Run) -> None:
+    '''Record input security without changing whether the pipeline can proceed.'''
+    try:
+        status = stages.is_secured(run.input_pdf)
+    except Exception:  # pylint: disable=broad-exception-caught
+        return
+    _remember_initial_security(run, status)
+
+
+def _remember_initial_security(run: _Run, status: str) -> None:
+    '''Store the raw status and its user-facing secured/unencrypted meaning.'''
+    run.initial_security_status = status
+    if status == "unsecured":
+        run.initially_secured = False
+    elif status.startswith("secured"):
+        run.initially_secured = True
 
 
 def _maybe_font_fix(  # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -386,6 +413,7 @@ def _finish(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         output_pdf_path=output_path,
         before=before,
         after=after,
+        initially_secured=run.initially_secured,
         stages=run.stages,
         warnings=run.warnings,
         diagnostics=scratch.collect_diagnostics(),

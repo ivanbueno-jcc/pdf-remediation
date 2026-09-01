@@ -323,6 +323,9 @@ class OwnershipRecordingTests(unittest.TestCase):
             files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
             data={"config_file": "default.json"},
         ).json()["jobs"][0]
+        self.store.get(created["job_id"]).stages.append({
+            "name": "unlock", "status": "ok", "detail": "Security removed."
+        })
 
         response = self.client.get("/api/queue", headers=headers(ALICE))
 
@@ -334,6 +337,7 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.assertEqual(job["name"], "Report.pdf")
         self.assertEqual(job["config_file"], "default.json")
         self.assertEqual(job["config_label"], "Standard")
+        self.assertTrue(job["initially_secured"])
         self.assertTrue(job["created_at"])
 
     def test_rejected_submission_returns_per_file_reasons(self) -> None:

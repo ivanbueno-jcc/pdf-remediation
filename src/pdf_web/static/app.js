@@ -766,6 +766,24 @@ function shouldToggleJobRow(target) {
   );
 }
 
+function renderJobMeta(meta, job) {
+  const metadata = [formatJobTimestamp(job.created_at), formatPageCount(job.page_count),
+    job.config_label || job.config_file]
+    .filter(Boolean);
+  const content = [metadata.join(' · ')];
+  if (job.initially_secured) {
+    const secured = document.createElement('span');
+    secured.className = 'job-meta-security';
+    secured.setAttribute('aria-label', 'Initially secured');
+    secured.title = 'Initially secured';
+    const lock = statusIcon('lock');
+    lock.classList.add('job-meta-lock');
+    secured.appendChild(lock);
+    content.push(' · ', secured);
+  }
+  meta.replaceChildren(...content);
+}
+
 function buildJobRow(job) {
   const row = document.createElement('tr');
   row.className = 'job-row job-row-enter';
@@ -793,15 +811,10 @@ function buildJobRow(job) {
   fileName.className = 'file-name';
   fileName.textContent = job.name;
   fileInfo.appendChild(fileName);
-  const metadata = [formatJobTimestamp(job.created_at), formatPageCount(job.page_count),
-    job.config_label || job.config_file]
-    .filter(Boolean);
-  if (metadata.length) {
-    const meta = document.createElement('div');
-    meta.className = 'job-meta';
-    meta.textContent = metadata.join(' · ');
-    fileInfo.appendChild(meta);
-  }
+  const meta = document.createElement('div');
+  meta.className = 'job-meta';
+  renderJobMeta(meta, job);
+  fileInfo.appendChild(meta);
   const fileActions = document.createElement('div');
   fileActions.className = 'file-actions';
   fileInfo.appendChild(fileActions);
@@ -842,7 +855,7 @@ function buildJobRow(job) {
 
   const entry = {
     job, row, detail, cell, disclosure,
-    processingState, outcome, progressLive, status, validation, downloads, fileActions,
+    processingState, outcome, progressLive, status, validation, downloads, fileActions, meta,
   };
 
   // `entry.job` is refreshed on every poll via updateJobRow, so this closure
@@ -864,6 +877,7 @@ function updateJobRow(entry, job) {
   entry.job = job;
   entry.row.dataset.status = job.status;
   entry.row.dataset.outcome = job.outcome || '';
+  renderJobMeta(entry.meta, job);
 
   const detailNote = processingDetail(job);
   const label = processingLabel(job.status);
@@ -1388,6 +1402,10 @@ function statusIcon(name) {
     pages: [
       ['path', { d: 'M5 4h9l3 3v13H5z' }],
       ['path', { d: 'M8 2h9l3 3v13h-2' }],
+    ],
+    lock: [
+      ['rect', { x: '5', y: '10', width: '14', height: '10', rx: '2' }],
+      ['path', { d: 'M8 10V7a4 4 0 0 1 8 0v3' }],
     ],
   };
 
