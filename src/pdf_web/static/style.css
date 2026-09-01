@@ -1022,23 +1022,25 @@ section {
 }
 .pipeline-hint { margin: 3px 0 12px; color: var(--muted); font-size: 11px; }
 .pipeline-stage-list {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 26px;
   margin: 0; padding: 0; list-style: none;
 }
 .pipeline-stage {
-  min-width: 0; padding: 13px;
+  position: relative; min-width: 0; padding: 13px;
   border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--line));
   border-radius: 11px; background: var(--panel-solid);
 }
-.stage-heading { display: flex; align-items: center; gap: 8px; }
-.stage-number {
-  display: inline-grid; place-items: center; flex: none; width: 24px; height: 24px;
-  border-radius: 50%; color: #fff; background: var(--accent);
-  font-size: 11px; font-weight: 850;
+.pipeline-stage:not(:last-child)::after {
+  content: '\2192'; position: absolute; z-index: 1; top: 50%; right: -23px;
+  display: grid; place-items: center; width: 20px; height: 20px;
+  color: var(--accent); background: var(--panel-subtle);
+  font-size: 17px; font-weight: 850; line-height: 1;
+  transform: translateY(-50%);
 }
+.stage-heading { display: flex; align-items: center; }
 .stage-heading label.check { flex: 1; min-width: 0; }
-.pipeline-stage .setting-help { margin: 8px 0 0 32px; }
-.preset-field { margin: 10px 0 0 32px; }
+.pipeline-stage .setting-help { margin: 8px 0 0 26px; }
+.preset-field { margin: 10px 0 0 26px; }
 .preset-field select:disabled { opacity: .55; cursor: not-allowed; }
 .validation-option {
   display: grid; grid-template-columns: 180px minmax(0, 1fr); align-items: center;
@@ -1236,7 +1238,11 @@ ol.stages li .marker { display: inline-grid; place-items: center; height: 20px; 
 
 @media (max-width: 900px) {
   body { padding-top: 30px; }
-  .pipeline-stage-list { grid-template-columns: 1fr 1fr; }
+  .pipeline-stage-list { grid-template-columns: 1fr; gap: 28px; }
+  .pipeline-stage:not(:last-child)::after {
+    content: '\2193'; top: auto; right: auto; bottom: -25px; left: 50%;
+    transform: translateX(-50%);
+  }
   .jobs-table th:nth-child(1) { width: 31%; }
   .jobs-table th:nth-child(2) { width: 26%; }
   .jobs-table th:nth-child(3) { width: 22%; }
@@ -1256,7 +1262,7 @@ ol.stages li .marker { display: inline-grid; place-items: center; height: 20px; 
   .advanced-settings[open] { padding: 0 13px; }
   .settings-hint { display: none; }
   .advanced-body { gap: 18px; }
-  .pipeline-stage-list { grid-template-columns: 1fr; gap: 10px; }
+  .pipeline-stage-list { gap: 28px; }
   .validation-option { grid-template-columns: 1fr; gap: 6px; }
   .validation-option .option-group-label { grid-row: auto; margin-bottom: 2px; }
   .submit-row { align-items: stretch; flex-direction: column; }

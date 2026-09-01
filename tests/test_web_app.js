@@ -71,14 +71,14 @@ test('Run options exposes each optional pipeline stage', () => {
   const html = fs.readFileSync(indexPath, 'utf8');
 
   [
-    ['attempt-unlock', 'Remove security', 1],
-    ['attempt-fix', 'Apply remediation', 2],
-    ['attempt-font-fix', 'Font repair', 3],
-    ['attempt-targeted-fixes', 'Targeted repairs', 4],
-  ].forEach(([id, label, stage]) => {
+    ['attempt-unlock', 'Remove security'],
+    ['attempt-fix', 'Apply remediation'],
+    ['attempt-font-fix', 'Font repair'],
+    ['attempt-targeted-fixes', 'Targeted repairs'],
+  ].forEach(([id, label]) => {
     assert.match(html, new RegExp('id="' + id + '" checked> ' + label));
-    assert.match(html, new RegExp('class="stage-number" aria-hidden="true">' + stage));
   });
+  assert.doesNotMatch(html, /class="stage-number"/);
   assert.match(html, /<legend>Pipeline stages<\/legend>/);
   assert.match(html, /<span class="field-heading">Preset<\/span>/);
   assert.match(html, /class="setting-option validation-option"/);
