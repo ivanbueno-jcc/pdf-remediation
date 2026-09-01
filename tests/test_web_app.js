@@ -59,7 +59,7 @@ function loadStagingCode(fetchImpl) {
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(
-    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, buildJobRow, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, state, updateJobRow };',
+    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, buildJobRow, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, state, updateJobRow, updateSubmitState, validationComparison, validationRequirementLabel };',
     context,
     { filename: appPath },
   );
@@ -82,6 +82,52 @@ test('Run options exposes each optional pipeline stage', () => {
   assert.match(html, /<legend>Pipeline stages<\/legend>/);
   assert.match(html, /<span class="field-heading">Preset<\/span>/);
   assert.match(html, /class="setting-option validation-option"/);
+  assert.match(html, /id="require-wcag" checked> WCAG/);
+  assert.match(html, /id="require-pdfua1"> PDF\/UA-1/);
+  assert.doesNotMatch(html, /id="strict"/);
+});
+
+test('Validation change stores each selected profile combination', () => {
+  const { validationRequirementLabel } = loadStagingCode();
+
+  assert.equal(validationRequirementLabel('wcag only'), 'WCAG');
+  assert.equal(validationRequirementLabel('pdfua1 only'), 'PDF/UA-1');
+  assert.equal(validationRequirementLabel('wcag and pdfua1'), 'WCAG • PDF/UA-1');
+});
+
+test('validation requirement is merged with the outcome pill', () => {
+  const { buildJobRow, updateJobRow } = loadStagingCode();
+  const job = {
+    job_id: 'job-1', name: 'document.pdf', created_at: '2026-08-31T12:00:00',
+    page_count: 2, config_label: 'Standard', initially_secured: false,
+    status: 'completed', outcome: 'remediated', outcome_label: 'Remediated',
+    validation_requirement: 'wcag and pdfua1', before: null, after: null,
+    current_stage: null, has_pdf: false,
+  };
+  const entry = buildJobRow(job);
+  entry.status.querySelectorAll = () => [];
+
+  updateJobRow(entry, job);
+
+  assert.equal(entry.validationRequirement.textContent, 'WCAG • PDF/UA-1');
+  assert.equal(entry.outcomeWrap.className, 'outcome-composite ok');
+  assert.equal(entry.outcomeWrap.children[0], entry.outcome);
+  assert.equal(entry.outcomeWrap.children[1], entry.validationRequirement);
+  assert.doesNotMatch(entry.validation.innerHTML, /validation-requirement/);
+});
+
+test('submission is disabled when neither validation profile is selected', () => {
+  const { addFiles, state, elements, updateSubmitState } = loadStagingCode();
+  state.health = { can_submit: true };
+  updateSubmitState();
+  elements.get('require-wcag').checked = false;
+  elements.get('require-pdfua1').checked = false;
+  addFiles([{ name: 'document.pdf', size: 25 }]);
+
+  updateSubmitState();
+
+  assert.equal(elements.get('submit').disabled, true);
+  assert.match(elements.get('submit-note').textContent, /Select WCAG, PDF\/UA-1/);
 });
 
 test('non-PDF selections are ignored instead of remaining staged', () => {

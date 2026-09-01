@@ -430,13 +430,52 @@ button.disclosure[aria-expanded="true"] .caret { transform: rotate(90deg); }
 .processing-state.cancelled { color: var(--warn); background: var(--warn-bg); }
 .outcome {
   display: inline-flex; align-items: center; gap: var(--space-1); min-height: 26px;
-  border: 1px solid var(--line); border-radius: 999px;
   padding: 2px 10px; font-size: 12px; font-weight: 650; white-space: nowrap;
 }
-.outcome.ok { border-color: var(--ok); color: var(--ok); background: var(--ok-bg); }
-.outcome.warn { border-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
-.outcome.bad { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
-.outcome.pending { color: var(--muted); background: rgba(127,127,127,.06); }
+.outcome-composite {
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-solid);
+}
+.outcome-composite.ok { border-color: var(--ok); }
+.outcome-composite.warn { border-color: var(--warn); }
+.outcome-composite.bad { border-color: var(--bad); }
+.outcome-composite .outcome { border-right: 1px solid var(--line); }
+.outcome-composite.ok .outcome {
+  border-right-color: color-mix(in srgb, var(--ok) 32%, var(--line));
+  color: var(--ok);
+  background: var(--ok-bg);
+}
+.outcome-composite.warn .outcome {
+  border-right-color: color-mix(in srgb, var(--warn) 32%, var(--line));
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+.outcome-composite.bad .outcome {
+  border-right-color: color-mix(in srgb, var(--bad) 32%, var(--line));
+  color: var(--bad);
+  background: var(--bad-bg);
+}
+.outcome-composite.pending .outcome {
+  color: var(--muted);
+  background: rgba(127,127,127,.06);
+}
+.validation-requirement {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 2px 9px;
+  color: var(--muted);
+  background: var(--panel-solid);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .025em;
+  line-height: 1;
+  white-space: nowrap;
+}
 .retry-action {
   display: inline-flex; align-items: center; gap: var(--space-1); margin-top: 0;
   min-height: var(--control-height); padding: 3px 0; border-color: transparent;
@@ -1048,6 +1087,8 @@ section {
 }
 .validation-option .option-group-label { grid-row: 1 / span 2; }
 .validation-option .setting-help { margin: 0 0 0 28px; }
+.validation-profile-options { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.validation-profile-options label.check { min-width: 110px; }
 label.check { min-height: 28px; font-size: 13px; font-weight: 650; }
 label.check input[type="checkbox"] { width: 18px; height: 18px; }
 
@@ -1265,6 +1306,7 @@ ol.stages li .marker { display: inline-grid; place-items: center; height: 20px; 
   .pipeline-stage-list { gap: 28px; }
   .validation-option { grid-template-columns: 1fr; gap: 6px; }
   .validation-option .option-group-label { grid-row: auto; margin-bottom: 2px; }
+  .validation-option .setting-help { margin-left: 28px; }
   .submit-row { align-items: stretch; flex-direction: column; }
   button.primary { width: 100%; }
   .jobs-title { align-items: flex-start; flex-direction: column; gap: 3px; }

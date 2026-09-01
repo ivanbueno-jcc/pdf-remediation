@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import tempfile
 import unittest
@@ -118,6 +119,8 @@ class MetadataPersistenceTests(unittest.TestCase):
         job.status = JobStatus.COMPLETED
         job.finished_at = job.created_at + timedelta(minutes=4)
         job.stages = [{"name": "fix", "status": "ok", "detail": "Applied."}]
+        job.require_wcag = True
+        job.require_pdfua1 = True
         add_completed_result(job, write_job_artifacts(job))
         job.result.initially_secured = True
 
@@ -132,6 +135,9 @@ class MetadataPersistenceTests(unittest.TestCase):
         self.assertTrue(restored.attempt_fix)
         self.assertTrue(restored.skip_font_fix)
         self.assertTrue(restored.attempt_targeted_fixes)
+        self.assertTrue(restored.require_wcag)
+        self.assertTrue(restored.require_pdfua1)
+        self.assertEqual(restored.validation_requirement, "wcag and pdfua1")
         self.assertTrue(restored.initially_secured)
         self.assertEqual(restored.stages, job.stages)
         self.assertEqual(restored.file.original_name, "Report v2.pdf")
@@ -161,6 +167,21 @@ class MetadataPersistenceTests(unittest.TestCase):
     def test_missing_file_returns_none(self) -> None:
         '''An absent metadata file is not an error.'''
         self.assertIsNone(load_meta(self.jobs_root / "absent.json"))
+
+    def test_legacy_strict_metadata_restores_both_profiles(self) -> None:
+        '''Jobs saved by the old strict checkbox retain their original gate.'''
+        job = make_job()
+        payload = job.to_dict()
+        payload.pop("require_wcag")
+        payload.pop("require_pdfua1")
+        payload["wcag_and_ua1_must_pass"] = True
+        job.meta_path.parent.mkdir(parents=True, exist_ok=True)
+        job.meta_path.write_text(json.dumps(payload), encoding="utf-8")
+
+        restored = load_meta(job.meta_path)
+
+        self.assertEqual(restored.required_profiles(), ("wcag", "ua1"))
+        self.assertEqual(restored.validation_requirement, "wcag and pdfua1")
 
 
 if __name__ == "__main__":

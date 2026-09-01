@@ -164,6 +164,8 @@ def _validate_inputs(input_path: Path, options: PipelineOptions) -> str | None:
             "Configuration not found under resources/configuration: "
             f"{options.config_file}"
         )
+    if not options.required_profiles():
+        return "Select at least one validation profile."
     return None
 
 
@@ -188,7 +190,8 @@ def _run_sequence(
                        error="veraPDF could not validate this file.")
 
     # 2. Already compliant: return it untouched rather than rewriting it.
-    if stages.meets_compliance_gate(before, options.wcag_and_ua1_must_pass):
+    required_profiles = options.required_profiles()
+    if stages.meets_compliance_gate(before, required_profiles):
         run.record("compliance_gate", StageStatus.OK, "Already compliant; no changes made.")
         destination = output_directory / name
         shutil.copy2(run.input_pdf, destination)
@@ -227,7 +230,10 @@ def _run_sequence(
 
     destination = output_directory / name
     replace_output_file(current, destination)
-    return _finish(run, scratch, _outcome_status(before, after), destination, before, after)
+    return _finish(
+        run, scratch, _outcome_status(before, after, required_profiles),
+        destination, before, after,
+    )
 
 
 def _maybe_unlock(run: _Run, scratch: Scratch, current: Path, name: str) -> Path:
@@ -374,20 +380,33 @@ def _maybe_targeted_fixes(
     return current, report
 
 
-def _outcome_status(before: dict[str, Any], after: dict[str, Any]) -> PipelineStatus:
+def _outcome_status(
+        before: dict[str, Any],
+        after: dict[str, Any],
+        required_profiles: tuple[str, ...] = ("wcag", "ua1")) -> PipelineStatus:
     '''
     Describe what the run achieved, comparing the two reports.
     '''
     if after.get("status") == "error":
         return PipelineStatus.FAILED
-    if after.get("passed"):
+    if stages.meets_compliance_gate(after, required_profiles):
         return PipelineStatus.REMEDIATED
 
-    before_count = int(before.get("failed_rules_count") or 0)
-    after_count = int(after.get("failed_rules_count") or 0)
+    before_count = _selected_failure_count(before, required_profiles)
+    after_count = _selected_failure_count(after, required_profiles)
     if after_count < before_count:
         return PipelineStatus.IMPROVED
     return PipelineStatus.UNCHANGED
+
+
+def _selected_failure_count(
+        report: dict[str, Any], required_profiles: tuple[str, ...]) -> int:
+    '''Count failures only in profiles selected as success requirements.'''
+    profiles = report.get("profiles", {})
+    return sum(
+        int(profiles.get(profile, {}).get("failed_rules_count") or 0)
+        for profile in required_profiles
+    )
 
 
 def _finish(  # pylint: disable=too-many-arguments,too-many-positional-arguments

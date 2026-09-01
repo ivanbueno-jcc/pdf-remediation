@@ -14,7 +14,11 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-from pdf_api.models import PipelineResult, PipelineStatus
+from pdf_api.models import (
+    PipelineResult,
+    PipelineStatus,
+    selected_validation_profiles,
+)
 from pdf_api.pipeline import artifact_path
 
 from .config import JOBS_ROOT, WEB_FOLDER_NAME
@@ -135,6 +139,8 @@ class Job:  # pylint: disable=too-many-instance-attributes
     skip_font_fix: bool = False
     attempt_targeted_fixes: bool = True
     wcag_and_ua1_must_pass: bool = False
+    require_wcag: bool = True
+    require_pdfua1: bool = False
     verbose: bool = False
     status: JobStatus = JobStatus.QUEUED
     stages: list[dict[str, Any]] = field(default_factory=list)
@@ -219,6 +225,26 @@ class Job:  # pylint: disable=too-many-instance-attributes
             for stage in self.stages
         )
 
+    def required_profiles(self) -> tuple[str, ...]:
+        '''Return the validation profiles selected when this job was submitted.'''
+        return selected_validation_profiles(
+            self.require_wcag,
+            self.require_pdfua1,
+            self.wcag_and_ua1_must_pass,
+        )
+
+    @property
+    def validation_requirement(self) -> str:
+        '''Return the user-facing label for this job's selected profiles.'''
+        profiles = self.required_profiles()
+        if profiles == ("wcag",):
+            return "wcag only"
+        if profiles == ("ua1",):
+            return "pdfua1 only"
+        if profiles == ("wcag", "ua1"):
+            return "wcag and pdfua1"
+        return "no validation profile"
+
     def to_dict(self) -> dict[str, Any]:
         '''
         Return a JSON-serializable view for the browser.
@@ -243,7 +269,10 @@ class Job:  # pylint: disable=too-many-instance-attributes
             "skip_font_fix": self.skip_font_fix,
             "attempt_font_fix": not self.skip_font_fix,
             "attempt_targeted_fixes": self.attempt_targeted_fixes,
-            "wcag_and_ua1_must_pass": self.wcag_and_ua1_must_pass,
+            "wcag_and_ua1_must_pass": len(self.required_profiles()) == 2,
+            "require_wcag": "wcag" in self.required_profiles(),
+            "require_pdfua1": "ua1" in self.required_profiles(),
+            "validation_requirement": self.validation_requirement,
             "verbose": self.verbose,
             "file": self.file.to_dict(),
             "stages": self.stages,

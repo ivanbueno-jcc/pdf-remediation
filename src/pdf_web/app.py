@@ -275,7 +275,9 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
         attempt_font_fix: bool | None = Form(None),
         attempt_targeted_fixes: bool = Form(True),
         skip_font_fix: bool = Form(False),
-        wcag_and_ua1_must_pass: bool = Form(False),
+        require_wcag: bool = Form(True),
+        require_pdfua1: bool = Form(False),
+        wcag_and_ua1_must_pass: bool | None = Form(None),
         verbose: bool = Form(False),
         user: str = CURRENT_USER) -> JSONResponse:
     '''
@@ -299,6 +301,13 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
     should_attempt_font_fix = (
         attempt_font_fix if attempt_font_fix is not None else not skip_font_fix
     )
+    if wcag_and_ua1_must_pass:
+        require_wcag = True
+        require_pdfua1 = True
+    if not require_wcag and not require_pdfua1:
+        raise HTTPException(
+            status_code=400, detail="Select WCAG, PDF/UA-1, or both."
+        )
 
     incoming = [upload for upload in files if upload.filename]
     if not incoming:
@@ -332,7 +341,8 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
                 attempt_fix=attempt_fix,
                 skip_font_fix=not should_attempt_font_fix,
                 attempt_targeted_fixes=attempt_targeted_fixes,
-                wcag_and_ua1_must_pass=wcag_and_ua1_must_pass,
+                require_wcag=require_wcag,
+                require_pdfua1=require_pdfua1,
                 verbose=verbose,
             )
             job.input_path.parent.mkdir(parents=True, exist_ok=True)
@@ -426,6 +436,7 @@ async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
                 "before": summarize_report(job.result.before if job.result else None),
                 "after": summarize_report(job.result.after if job.result else None),
                 "initially_secured": job.initially_secured,
+                "validation_requirement": job.validation_requirement,
                 "has_pdf": job.artifact("pdf") is not None,
                 "error": job.error,
             }
@@ -627,7 +638,8 @@ async def retry_job(
         attempt_fix=original.attempt_fix,
         skip_font_fix=skip_font_fix,
         attempt_targeted_fixes=original.attempt_targeted_fixes,
-        wcag_and_ua1_must_pass=original.wcag_and_ua1_must_pass,
+        require_wcag="wcag" in original.required_profiles(),
+        require_pdfua1="ua1" in original.required_profiles(),
         verbose=original.verbose,
     )
     job.input_path.parent.mkdir(parents=True, exist_ok=True)

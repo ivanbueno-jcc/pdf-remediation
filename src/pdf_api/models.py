@@ -34,6 +34,21 @@ DEFAULT_TARGETS: tuple[tuple[str, str], ...] = (
 )
 
 
+def selected_validation_profiles(
+        require_wcag: bool,
+        require_pdfua1: bool,
+        legacy_both: bool = False) -> tuple[str, ...]:
+    '''Return the normalized profile selection, including the legacy strict flag.'''
+    if legacy_both:
+        return ("wcag", "ua1")
+    profiles: list[str] = []
+    if require_wcag:
+        profiles.append("wcag")
+    if require_pdfua1:
+        profiles.append("ua1")
+    return tuple(profiles)
+
+
 class StageStatus(StrEnum):
     '''
     Outcome of one pipeline stage.
@@ -68,6 +83,8 @@ class PipelineOptions:  # pylint: disable=too-many-instance-attributes
 
     config_file: str = "default.json"
     wcag_and_ua1_must_pass: bool = False
+    require_wcag: bool = True
+    require_pdfua1: bool = False
     attempt_unlock: bool = True
     attempt_fix: bool = True
     attempt_font_fix: bool = True
@@ -75,6 +92,14 @@ class PipelineOptions:  # pylint: disable=too-many-instance-attributes
     targets: tuple[tuple[str, str], ...] = DEFAULT_TARGETS
     fix_timeout_seconds: int = 500
     font_fix_timeout_seconds: int = 600
+
+    def required_profiles(self) -> tuple[str, ...]:
+        '''Return the validation profiles that determine pipeline success.'''
+        return selected_validation_profiles(
+            self.require_wcag,
+            self.require_pdfua1,
+            self.wcag_and_ua1_must_pass,
+        )
 
 
 @dataclass

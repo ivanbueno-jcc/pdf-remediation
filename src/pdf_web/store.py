@@ -165,6 +165,14 @@ def load_meta(meta_path: Path) -> Job | None:
     if not isinstance(file_payload, dict):
         return None
 
+    legacy_both = bool(payload.get("wcag_and_ua1_must_pass"))
+    if "require_wcag" in payload or "require_pdfua1" in payload:
+        require_wcag = bool(payload.get("require_wcag"))
+        require_pdfua1 = bool(payload.get("require_pdfua1"))
+    else:
+        require_wcag = True
+        require_pdfua1 = legacy_both
+
     job = Job(
         job_id=job_id,
         created_at=_parse_datetime(payload.get("created_at")),
@@ -185,7 +193,8 @@ def load_meta(meta_path: Path) -> Job | None:
         attempt_fix=bool(payload.get("attempt_fix", True)),
         skip_font_fix=bool(payload.get("skip_font_fix")),
         attempt_targeted_fixes=bool(payload.get("attempt_targeted_fixes", True)),
-        wcag_and_ua1_must_pass=bool(payload.get("wcag_and_ua1_must_pass")),
+        require_wcag=require_wcag,
+        require_pdfua1=require_pdfua1,
         verbose=bool(payload.get("verbose")),
         status=_parse_status(payload.get("status")),
         outcome=payload.get("outcome"),

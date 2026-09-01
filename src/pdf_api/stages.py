@@ -48,18 +48,23 @@ def validate(pdf_path: Path) -> dict[str, Any]:
         return validate_pdf(str(pdf_path))
 
 
-def meets_compliance_gate(report: dict[str, Any], wcag_and_ua1_must_pass: bool) -> bool:
+def meets_compliance_gate(
+        report: dict[str, Any], required_profiles: tuple[str, ...] | bool) -> bool:
     '''
     Return whether a report satisfies the configured compliance gate.
 
-    Mirrors go.py's validation_passed_required_compliance: WCAG alone by
-    default, both profiles when the caller demands it.
+    Boolean input preserves the original API: false means WCAG-only and true
+    means both profiles. New callers pass their explicit profile selection.
     '''
+    if isinstance(required_profiles, bool):
+        required_profiles = (
+            ("wcag", "ua1") if required_profiles else ("wcag",)
+        )
     profiles = report.get("profiles", {})
-    wcag_passed = bool(profiles.get("wcag", {}).get("passed"))
-    if not wcag_and_ua1_must_pass:
-        return wcag_passed
-    return wcag_passed and bool(profiles.get("ua1", {}).get("passed"))
+    return bool(required_profiles) and all(
+        bool(profiles.get(profile, {}).get("passed"))
+        for profile in required_profiles
+    )
 
 
 def failing_clauses(report: dict[str, Any]) -> set[str]:

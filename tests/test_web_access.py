@@ -302,6 +302,42 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.assertTrue(job.skip_font_fix)
         self.assertFalse(job.attempt_targeted_fixes)
 
+    def test_submission_records_pdfua1_only_validation(self) -> None:
+        '''The selected profile and exact Validation change label are persisted.'''
+        response = self.client.post(
+            "/api/jobs",
+            headers=headers(ALICE),
+            files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
+            data={
+                "config_file": "default.json",
+                "require_wcag": "false",
+                "require_pdfua1": "true",
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        created = response.json()["jobs"][0]
+        job = self.store.get(created["job_id"])
+        self.assertFalse(job.require_wcag)
+        self.assertTrue(job.require_pdfua1)
+        self.assertEqual(created["validation_requirement"], "pdfua1 only")
+
+    def test_submission_rejects_an_empty_validation_requirement(self) -> None:
+        '''The server enforces the same at-least-one rule as the browser.'''
+        response = self.client.post(
+            "/api/jobs",
+            headers=headers(ALICE),
+            files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
+            data={
+                "config_file": "default.json",
+                "require_wcag": "false",
+                "require_pdfua1": "false",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["detail"], "Select WCAG, PDF/UA-1, or both.")
+
     def test_submitted_job_is_invisible_to_others(self) -> None:
         '''A freshly created job is private immediately, not once it finishes.'''
         created = self.client.post(
@@ -338,6 +374,7 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.assertEqual(job["config_file"], "default.json")
         self.assertEqual(job["config_label"], "Standard")
         self.assertTrue(job["initially_secured"])
+        self.assertEqual(job["validation_requirement"], "wcag only")
         self.assertTrue(job["created_at"])
 
     def test_rejected_submission_returns_per_file_reasons(self) -> None:

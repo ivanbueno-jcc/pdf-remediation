@@ -184,6 +184,20 @@ class ComplianceGateTests(unittest.TestCase):
         self.assertFalse(meets_compliance_gate(failing, False))
         self.assertFalse(meets_compliance_gate(failing, True))
 
+    def test_pdfua1_can_be_the_only_required_profile(self) -> None:
+        '''A PDF/UA-1-only run ignores a WCAG failure for its outcome gate.'''
+        ua1_only = report({
+            "ua1": ("pass", []),
+            "wcag": ("fail", [violation("7.1", "9")]),
+        })
+        self.assertTrue(meets_compliance_gate(ua1_only, ("ua1",)))
+        self.assertFalse(meets_compliance_gate(ua1_only, ("wcag", "ua1")))
+
+    def test_empty_profile_selection_never_passes(self) -> None:
+        '''An empty gate cannot accidentally mark a file compliant.'''
+        full = report({"ua1": ("pass", []), "wcag": ("pass", [])})
+        self.assertFalse(meets_compliance_gate(full, ()))
+
 
 class ClauseExtractionTests(unittest.TestCase):
     '''Font routing matches bare clauses; targeted fixes match clause-tests.'''
@@ -279,6 +293,49 @@ class OutcomeStatusTests(unittest.TestCase):
         after = {"status": "error", "passed": False, "failed_rules_count": 0, "profiles": {}}
         self.assertEqual(_outcome_status(before, after), PipelineStatus.FAILED)
 
+    def test_wcag_only_can_be_remediated_while_pdfua1_fails(self) -> None:
+        '''Only the selected WCAG profile determines this run's success.'''
+        failures = [violation("7.1", "9")]
+        before = report({"ua1": ("fail", failures), "wcag": ("fail", failures)})
+        after = report({"ua1": ("fail", failures), "wcag": ("pass", [])})
+        self.assertEqual(
+            _outcome_status(before, after, ("wcag",)),
+            PipelineStatus.REMEDIATED,
+        )
+
+    def test_pdfua1_only_can_be_remediated_while_wcag_fails(self) -> None:
+        '''Only the selected PDF/UA-1 profile determines this run's success.'''
+        failures = [violation("7.1", "9")]
+        before = report({"ua1": ("fail", failures), "wcag": ("fail", failures)})
+        after = report({"ua1": ("pass", []), "wcag": ("fail", failures)})
+        self.assertEqual(
+            _outcome_status(before, after, ("ua1",)),
+            PipelineStatus.REMEDIATED,
+        )
+
+    def test_both_profiles_must_pass_when_both_are_selected(self) -> None:
+        '''A partial pass is not remediated under the combined requirement.'''
+        failures = [violation("7.1", "9")]
+        before = report({"ua1": ("fail", failures), "wcag": ("fail", failures)})
+        after = report({"ua1": ("fail", failures), "wcag": ("pass", [])})
+        self.assertEqual(
+            _outcome_status(before, after, ("wcag", "ua1")),
+            PipelineStatus.IMPROVED,
+        )
+
+    def test_improvement_ignores_profiles_that_were_not_selected(self) -> None:
+        '''Progress outside the selected requirement does not change the outcome.'''
+        failures = [violation("7.1", "9")]
+        before = report({
+            "ua1": ("fail", [*failures, violation("5", "1")]),
+            "wcag": ("fail", failures),
+        })
+        after = report({"ua1": ("fail", failures), "wcag": ("fail", failures)})
+        self.assertEqual(
+            _outcome_status(before, after, ("wcag",)),
+            PipelineStatus.UNCHANGED,
+        )
+
 
 class InputValidationTests(unittest.TestCase):
     '''Bad requests are refused before any work starts.'''
@@ -314,6 +371,14 @@ class InputValidationTests(unittest.TestCase):
         '''
         message = _validate_inputs(self.pdf, PipelineOptions(config_file="nope.json"))
         self.assertIn("nope.json", message)
+
+    def test_rejects_an_empty_validation_requirement(self) -> None:
+        '''At least one profile must determine the result.'''
+        message = _validate_inputs(
+            self.pdf,
+            PipelineOptions(require_wcag=False, require_pdfua1=False),
+        )
+        self.assertIn("at least one validation profile", message)
 
 
 class PipelineStageOptionTests(unittest.TestCase):
@@ -375,6 +440,38 @@ class PipelineStageOptionTests(unittest.TestCase):
             self.assertTrue(result.initially_secured)
             self.assertEqual(result.status, PipelineStatus.ALREADY_COMPLIANT)
             unlock.assert_not_called()
+
+    def test_pdfua1_only_controls_the_already_compliant_outcome(self) -> None:
+        '''A selected PDF/UA-1 pass can return the original despite WCAG failure.'''
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            input_pdf = root / "input.pdf"
+            input_pdf.write_bytes(b"%PDF-1.7\n")
+            selected_passes = report({
+                "ua1": ("pass", []),
+                "wcag": ("fail", [violation("7.1", "9")]),
+            })
+            capabilities = mock.Mock()
+            capabilities.can_validate.return_value = True
+
+            with (
+                mock.patch("pdf_api.pipeline.cached_probe", return_value=capabilities),
+                mock.patch(
+                    "pdf_api.pipeline.stages.validate", return_value=selected_passes
+                ),
+                mock.patch(
+                    "pdf_api.pipeline.stages.is_secured", return_value="unsecured"
+                ),
+                mock.patch("pdf_api.pipeline.stages.run_fix") as run_fix,
+            ):
+                result = process_pdf(
+                    input_pdf,
+                    root / "output",
+                    PipelineOptions(require_wcag=False, require_pdfua1=True),
+                )
+
+            self.assertEqual(result.status, PipelineStatus.ALREADY_COMPLIANT)
+            run_fix.assert_not_called()
 
     def test_secured_input_is_reported_when_unlocking_is_disabled(self) -> None:
         '''A failed run still tells the job row that its input was secured.'''

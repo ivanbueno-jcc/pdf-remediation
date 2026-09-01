@@ -332,8 +332,9 @@ function renderStaged() {
 function updateSubmitState(message) {
   const healthy = Boolean(state.health && state.health.can_submit);
   const readyCount = acceptedItems().length;
+  const validationSelected = el('require-wcag').checked || el('require-pdfua1').checked;
   const submit = el('submit');
-  submit.disabled = state.submitting || !(healthy && readyCount);
+  submit.disabled = state.submitting || !(healthy && readyCount && validationSelected);
   submit.classList.toggle('is-submitting', state.submitting);
   const workspace = el('submit-section');
   workspace.classList.toggle('is-submitting', state.submitting);
@@ -352,6 +353,8 @@ function updateSubmitState(message) {
     (item) => item.status === 'error'
   ) ? 'Remove files that need attention or add a valid PDF.'
     : (state.staged.length ? 'Add another PDF to start a new batch.' : 'Add at least one PDF.');
+  else if (!validationSelected) el('submit-note').textContent =
+    'Select WCAG, PDF/UA-1, or both under Run options.';
   else el('submit-note').textContent = '';
 }
 
@@ -385,7 +388,8 @@ async function submitJobs() {
     'attempt_targeted_fixes',
     el('attempt-targeted-fixes').checked ? 'true' : 'false'
   );
-  form.append('wcag_and_ua1_must_pass', el('strict').checked ? 'true' : 'false');
+  form.append('require_wcag', el('require-wcag').checked ? 'true' : 'false');
+  form.append('require_pdfua1', el('require-pdfua1').checked ? 'true' : 'false');
 
   state.submitting = true;
   submitted.forEach((item) => {
@@ -826,13 +830,18 @@ function buildJobRow(job) {
   status.className = 'job-status';
   const stateStack = document.createElement('div');
   stateStack.className = 'job-state-stack';
+  const outcomeWrap = document.createElement('span');
+  outcomeWrap.className = 'outcome-composite pending';
   const outcome = document.createElement('span');
+  const validationRequirement = document.createElement('span');
+  validationRequirement.className = 'validation-requirement';
   const progressLive = document.createElement('span');
   progressLive.className = 'sr-only job-progress-live';
   progressLive.setAttribute('role', 'status');
   progressLive.setAttribute('aria-live', 'polite');
   progressLive.setAttribute('aria-atomic', 'true');
-  stateStack.append(processingState, outcome);
+  outcomeWrap.append(outcome, validationRequirement);
+  stateStack.append(processingState, outcomeWrap);
   stateStack.appendChild(progressLive);
   status.appendChild(stateStack);
 
@@ -855,7 +864,8 @@ function buildJobRow(job) {
 
   const entry = {
     job, row, detail, cell, disclosure,
-    processingState, outcome, progressLive, status, validation, downloads, fileActions, meta,
+    processingState, outcome, outcomeWrap, validationRequirement,
+    progressLive, status, validation, downloads, fileActions, meta,
   };
 
   // `entry.job` is refreshed on every poll via updateJobRow, so this closure
@@ -892,11 +902,16 @@ function updateJobRow(entry, job) {
     entry.progressLive.textContent = progressMessage;
   }
 
-  entry.outcome.className = 'outcome ' + (job.outcome ? outcomeTone(job.outcome) : 'pending');
+  const tone = job.outcome ? outcomeTone(job.outcome) : 'pending';
+  entry.outcomeWrap.className = 'outcome-composite ' + tone;
+  entry.outcome.className = 'outcome';
   entry.outcome.textContent = '';
   entry.outcome.append(
     statusIcon(outcomeStatusIcon(job.outcome)),
     job.outcome_label || 'Pending result'
+  );
+  entry.validationRequirement.textContent = validationRequirementLabel(
+    job.validation_requirement
   );
   entry.status.querySelectorAll('.muted').forEach((note) => note.remove());
   if (job.error) {
@@ -1325,8 +1340,19 @@ function validationValue(entry) {
   return { text: count + ' fail' + (count === 1 ? '' : 's'), tone: 'bad' };
 }
 
+function validationRequirementLabel(requirement) {
+  const labels = {
+    'wcag only': 'WCAG',
+    'pdfua1 only': 'PDF/UA-1',
+    'wcag and pdfua1': 'WCAG • PDF/UA-1',
+  };
+  return labels[requirement] || 'WCAG';
+}
+
 function validationComparison(before, after) {
-  if (!before && !after) return '<span class="muted">Waiting for validation…</span>';
+  if (!before && !after) {
+    return '<span class="muted">Waiting for validation…</span>';
+  }
   return '<div class="validation-summary">' + ['ua1', 'wcag'].map((profile) => {
     const label = profile === 'ua1' ? 'UA1' : 'WCAG';
     const beforeValue = validationValue(((before || {}).profiles || {})[profile]);
@@ -1858,6 +1884,9 @@ el('clear-staged').addEventListener('click', () => {
 el('config-select').addEventListener('change', renderConfigDescription);
 el('attempt-fix').addEventListener('change', (event) => {
   el('config-select').disabled = !event.target.checked;
+});
+['require-wcag', 'require-pdfua1'].forEach((id) => {
+  el(id).addEventListener('change', () => updateSubmitState());
 });
 el('job-search').addEventListener('input', (event) => {
   state.jobSearch = event.target.value;
