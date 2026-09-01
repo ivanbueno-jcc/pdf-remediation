@@ -280,6 +280,28 @@ class OwnershipRecordingTests(unittest.TestCase):
         job = self.store.get(created[0]["job_id"])
         self.assertEqual(job.submitted_by, ALICE)
 
+    def test_submission_records_selected_pipeline_stages(self) -> None:
+        '''Every Run options checkbox reaches the queued job.'''
+        response = self.client.post(
+            "/api/jobs",
+            headers=headers(ALICE),
+            files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
+            data={
+                "config_file": "default.json",
+                "attempt_unlock": "false",
+                "attempt_fix": "false",
+                "attempt_font_fix": "false",
+                "attempt_targeted_fixes": "false",
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        job = self.store.get(response.json()["jobs"][0]["job_id"])
+        self.assertFalse(job.attempt_unlock)
+        self.assertFalse(job.attempt_fix)
+        self.assertTrue(job.skip_font_fix)
+        self.assertFalse(job.attempt_targeted_fixes)
+
     def test_submitted_job_is_invisible_to_others(self) -> None:
         '''A freshly created job is private immediately, not once it finishes.'''
         created = self.client.post(

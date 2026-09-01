@@ -61,6 +61,24 @@ function loadStagingCode(fetchImpl) {
   return { ...context.testApi, elements };
 }
 
+test('Run options exposes each optional pipeline stage', () => {
+  const indexPath = path.join(__dirname, '..', 'src', 'pdf_web', 'static', 'index.html');
+  const html = fs.readFileSync(indexPath, 'utf8');
+
+  [
+    ['attempt-unlock', 'Remove security', 1],
+    ['attempt-fix', 'Apply remediation', 2],
+    ['attempt-font-fix', 'Font repair', 3],
+    ['attempt-targeted-fixes', 'Targeted repairs', 4],
+  ].forEach(([id, label, stage]) => {
+    assert.match(html, new RegExp('id="' + id + '" checked> ' + label));
+    assert.match(html, new RegExp('class="stage-number" aria-hidden="true">' + stage));
+  });
+  assert.match(html, /<legend>Pipeline stages<\/legend>/);
+  assert.match(html, /<span class="field-heading">Preset<\/span>/);
+  assert.match(html, /class="setting-option validation-option"/);
+});
+
 test('non-PDF selections are ignored instead of remaining staged', () => {
   const { addFiles, state, elements } = loadStagingCode();
   state.health = { can_submit: true };

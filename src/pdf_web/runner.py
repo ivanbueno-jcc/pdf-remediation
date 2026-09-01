@@ -280,7 +280,10 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         options = PipelineOptions(
             config_file=job.config_file,
             wcag_and_ua1_must_pass=job.wcag_and_ua1_must_pass,
+            attempt_unlock=job.attempt_unlock,
+            attempt_fix=job.attempt_fix,
             attempt_font_fix=not job.skip_font_fix,
+            attempt_targeted_fixes=job.attempt_targeted_fixes,
         )
 
         result = process_pdf(

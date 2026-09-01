@@ -181,7 +181,10 @@ def load_meta(meta_path: Path) -> Job | None:
         submitted_by=(
             normalize_user(payload.get("submitted_by")) or (legacy_job_owner() or "")
         ),
+        attempt_unlock=bool(payload.get("attempt_unlock", True)),
+        attempt_fix=bool(payload.get("attempt_fix", True)),
         skip_font_fix=bool(payload.get("skip_font_fix")),
+        attempt_targeted_fixes=bool(payload.get("attempt_targeted_fixes", True)),
         wcag_and_ua1_must_pass=bool(payload.get("wcag_and_ua1_must_pass")),
         verbose=bool(payload.get("verbose")),
         status=_parse_status(payload.get("status")),

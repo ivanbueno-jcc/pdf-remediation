@@ -5,6 +5,7 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from pdf_api.models import (
     DEFAULT_TARGETS,
@@ -13,7 +14,7 @@ from pdf_api.models import (
     PipelineOptions,
     PipelineStatus,
 )
-from pdf_api.pipeline import _outcome_status, _validate_inputs
+from pdf_api.pipeline import _outcome_status, _validate_inputs, process_pdf
 from pdf_api.scratch import scratch_workspace
 from pdf_api.stages import (
     failing_clause_tests,
@@ -313,6 +314,41 @@ class InputValidationTests(unittest.TestCase):
         '''
         message = _validate_inputs(self.pdf, PipelineOptions(config_file="nope.json"))
         self.assertIn("nope.json", message)
+
+
+class PipelineStageOptionTests(unittest.TestCase):
+    '''Each optional repair stage honors its pipeline option.'''
+
+    def test_core_remediation_can_be_skipped(self) -> None:
+        '''Disabling remediation records a skipped stage and never invokes PDFix.'''
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            input_pdf = root / "input.pdf"
+            input_pdf.write_bytes(b"%PDF-1.7\n")
+            failing = report({"wcag": ("fail", [violation("1", "1")])})
+            capabilities = mock.Mock()
+            capabilities.can_validate.return_value = True
+
+            with (
+                mock.patch("pdf_api.pipeline.cached_probe", return_value=capabilities),
+                mock.patch("pdf_api.pipeline.stages.validate", return_value=failing),
+                mock.patch("pdf_api.pipeline.stages.is_secured", return_value="unsecured"),
+                mock.patch("pdf_api.pipeline.stages.run_fix") as run_fix,
+            ):
+                result = process_pdf(
+                    input_pdf,
+                    root / "output",
+                    PipelineOptions(
+                        attempt_fix=False,
+                        attempt_font_fix=False,
+                        attempt_targeted_fixes=False,
+                    ),
+                )
+
+            run_fix.assert_not_called()
+            fix_stage = next(stage for stage in result.stages if stage.name == "fix")
+            self.assertEqual(str(fix_stage.status), "skipped")
+            self.assertEqual(fix_stage.detail, "Disabled by request.")
 
 
 if __name__ == "__main__":

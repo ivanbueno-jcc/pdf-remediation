@@ -69,6 +69,7 @@ class PipelineOptions:  # pylint: disable=too-many-instance-attributes
     config_file: str = "default.json"
     wcag_and_ua1_must_pass: bool = False
     attempt_unlock: bool = True
+    attempt_fix: bool = True
     attempt_font_fix: bool = True
     attempt_targeted_fixes: bool = True
     targets: tuple[tuple[str, str], ...] = DEFAULT_TARGETS

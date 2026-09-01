@@ -30,7 +30,9 @@ loopback, uses the local identity, and rejects non-loopback clients.
 ## User workflow
 
 1. Drop or choose one or more PDFs.
-2. Select a repair preset and, when needed, strict validation or font options.
+2. In Run options, choose whether to remove security, apply remediation with a
+   selected preset, repair fonts, and run targeted repairs. All four stages are
+   enabled by default; strict validation remains optional.
 3. Submit the collection. Each accepted PDF becomes its own job.
 4. Watch queued, running, and completed states in the workspace.
 5. Compare WCAG and UA1 before/after results.

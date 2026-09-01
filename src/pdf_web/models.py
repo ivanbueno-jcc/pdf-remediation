@@ -130,7 +130,10 @@ class Job:  # pylint: disable=too-many-instance-attributes
     config_file: str
     file: UploadedFile
     submitted_by: str = ""
+    attempt_unlock: bool = True
+    attempt_fix: bool = True
     skip_font_fix: bool = False
+    attempt_targeted_fixes: bool = True
     wcag_and_ua1_must_pass: bool = False
     verbose: bool = False
     status: JobStatus = JobStatus.QUEUED
@@ -225,7 +228,11 @@ class Job:  # pylint: disable=too-many-instance-attributes
             ),
             "status": str(self.status),
             "config_file": self.config_file,
+            "attempt_unlock": self.attempt_unlock,
+            "attempt_fix": self.attempt_fix,
             "skip_font_fix": self.skip_font_fix,
+            "attempt_font_fix": not self.skip_font_fix,
+            "attempt_targeted_fixes": self.attempt_targeted_fixes,
             "wcag_and_ua1_must_pass": self.wcag_and_ua1_must_pass,
             "verbose": self.verbose,
             "file": self.file.to_dict(),

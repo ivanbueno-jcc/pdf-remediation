@@ -77,16 +77,46 @@
       </span>Run options <span class="settings-hint">Recommended defaults are selected</span></summary>
       <div class="advanced-body">
         <p class="muted advanced-intro">The recommended defaults work for most documents.</p>
-        <label class="field">
-          <span class="field-heading">Presets</span>
-          <select id="config-select" aria-describedby="config-description"></select>
-          <span class="field-help" id="config-description"></span>
-        </label>
-        <div class="setting-option">
-          <label class="check"><input type="checkbox" id="skip-font-fix"> Skip font repair</label>
-          <p class="setting-help">Finishes without the optional Docker-based font repair stage. Font-related issues may remain.</p>
-        </div>
-        <div class="setting-option">
+        <fieldset class="pipeline-options">
+          <legend>Pipeline stages</legend>
+          <p class="pipeline-hint">Enabled stages run in this order.</p>
+          <ol class="pipeline-stage-list">
+            <li class="pipeline-stage">
+              <div class="stage-heading">
+                <span class="stage-number" aria-hidden="true">1</span>
+                <label class="check"><input type="checkbox" id="attempt-unlock" checked> Remove security</label>
+              </div>
+              <p class="setting-help">Removes supported PDF security before repair when needed.</p>
+            </li>
+            <li class="pipeline-stage remediation-option">
+              <div class="stage-heading">
+                <span class="stage-number" aria-hidden="true">2</span>
+                <label class="check"><input type="checkbox" id="attempt-fix" checked> Apply remediation</label>
+              </div>
+              <label class="field preset-field">
+                <span class="field-heading">Preset</span>
+                <select id="config-select" aria-describedby="config-description"></select>
+                <span class="field-help" id="config-description"></span>
+              </label>
+            </li>
+            <li class="pipeline-stage">
+              <div class="stage-heading">
+                <span class="stage-number" aria-hidden="true">3</span>
+                <label class="check"><input type="checkbox" id="attempt-font-fix" checked> Font repair</label>
+              </div>
+              <p class="setting-help">Repairs font-related issues when the optional Docker tools are available.</p>
+            </li>
+            <li class="pipeline-stage">
+              <div class="stage-heading">
+                <span class="stage-number" aria-hidden="true">4</span>
+                <label class="check"><input type="checkbox" id="attempt-targeted-fixes" checked> Targeted repairs</label>
+              </div>
+              <p class="setting-help">Applies focused follow-up fixes for specific remaining failures.</p>
+            </li>
+          </ol>
+        </fieldset>
+        <div class="setting-option validation-option">
+          <span class="option-group-label">Validation requirement</span>
           <label class="check"><input type="checkbox" id="strict"> Require both WCAG and PDF/UA-1 to pass</label>
           <p class="setting-help">Treats the file as successful only when both validation profiles pass.</p>
         </div>

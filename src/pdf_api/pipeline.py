@@ -196,9 +196,12 @@ def _run_sequence(
     run.check_cancelled()
 
     # 4. Fix with the requested configuration.
-    started = datetime.now()
-    current = stages.run_fix(scratch, current, options.config_file, options, name)
-    run.record("fix", StageStatus.OK, f"Applied {options.config_file}.", started)
+    if options.attempt_fix:
+        started = datetime.now()
+        current = stages.run_fix(scratch, current, options.config_file, options, name)
+        run.record("fix", StageStatus.OK, f"Applied {options.config_file}.", started)
+    else:
+        run.record("fix", StageStatus.SKIPPED, "Disabled by request.")
     run.check_cancelled()
 
     report = stages.validate(current)

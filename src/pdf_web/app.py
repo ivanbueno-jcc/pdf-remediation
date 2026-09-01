@@ -270,6 +270,10 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
 async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
         files: list[UploadFile] = File(...),
         config_file: str = Form(DEFAULT_CONFIG_FILE),
+        attempt_unlock: bool = Form(True),
+        attempt_fix: bool = Form(True),
+        attempt_font_fix: bool | None = Form(None),
+        attempt_targeted_fixes: bool = Form(True),
         skip_font_fix: bool = Form(False),
         wcag_and_ua1_must_pass: bool = Form(False),
         verbose: bool = Form(False),
@@ -289,6 +293,12 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
         raise HTTPException(
             status_code=400, detail=f"Configuration file is missing: {config_file}"
         )
+
+    # Keep accepting the original negative option for older clients while the
+    # browser uses the stage-aligned positive checkbox.
+    should_attempt_font_fix = (
+        attempt_font_fix if attempt_font_fix is not None else not skip_font_fix
+    )
 
     incoming = [upload for upload in files if upload.filename]
     if not incoming:
@@ -318,7 +328,10 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
                 config_file=config_file,
                 file=UploadedFile(original_name, stored_name, 0),
                 submitted_by=user,
-                skip_font_fix=skip_font_fix,
+                attempt_unlock=attempt_unlock,
+                attempt_fix=attempt_fix,
+                skip_font_fix=not should_attempt_font_fix,
+                attempt_targeted_fixes=attempt_targeted_fixes,
                 wcag_and_ua1_must_pass=wcag_and_ua1_must_pass,
                 verbose=verbose,
             )
@@ -609,7 +622,10 @@ async def retry_job(
             original.file.size_bytes,
         ),
         submitted_by=user,
+        attempt_unlock=original.attempt_unlock,
+        attempt_fix=original.attempt_fix,
         skip_font_fix=skip_font_fix,
+        attempt_targeted_fixes=original.attempt_targeted_fixes,
         wcag_and_ua1_must_pass=original.wcag_and_ua1_must_pass,
         verbose=original.verbose,
     )

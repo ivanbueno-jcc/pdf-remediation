@@ -378,7 +378,13 @@ async function submitJobs() {
   const form = new FormData();
   submitted.forEach((item) => form.append('files', item.file, item.file.name));
   form.append('config_file', el('config-select').value);
-  form.append('skip_font_fix', el('skip-font-fix').checked ? 'true' : 'false');
+  form.append('attempt_unlock', el('attempt-unlock').checked ? 'true' : 'false');
+  form.append('attempt_fix', el('attempt-fix').checked ? 'true' : 'false');
+  form.append('attempt_font_fix', el('attempt-font-fix').checked ? 'true' : 'false');
+  form.append(
+    'attempt_targeted_fixes',
+    el('attempt-targeted-fixes').checked ? 'true' : 'false'
+  );
   form.append('wcag_and_ua1_must_pass', el('strict').checked ? 'true' : 'false');
 
   state.submitting = true;
@@ -1832,6 +1838,9 @@ el('clear-staged').addEventListener('click', () => {
   updateSubmitState();
 });
 el('config-select').addEventListener('change', renderConfigDescription);
+el('attempt-fix').addEventListener('change', (event) => {
+  el('config-select').disabled = !event.target.checked;
+});
 el('job-search').addEventListener('input', (event) => {
   state.jobSearch = event.target.value;
   renderJobs();

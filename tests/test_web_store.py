@@ -127,7 +127,10 @@ class MetadataPersistenceTests(unittest.TestCase):
         self.assertEqual(restored.job_id, job.job_id)
         self.assertEqual(restored.status, JobStatus.COMPLETED)
         self.assertEqual(restored.config_file, "default-slim.json")
+        self.assertTrue(restored.attempt_unlock)
+        self.assertTrue(restored.attempt_fix)
         self.assertTrue(restored.skip_font_fix)
+        self.assertTrue(restored.attempt_targeted_fixes)
         self.assertEqual(restored.stages, job.stages)
         self.assertEqual(restored.file.original_name, "Report v2.pdf")
 
