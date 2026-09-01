@@ -117,6 +117,12 @@ test('validation requirement is merged with the outcome pill', () => {
   assert.equal(entry.outcomeWrap.className, 'outcome-composite ok');
   assert.equal(entry.outcomeWrap.children[0], entry.outcome);
   assert.equal(entry.outcomeWrap.children[1], entry.validationRequirement);
+  const stateStack = entry.status.children[0];
+  assert.equal(stateStack.children[0], entry.outcomeWrap);
+  assert.equal(stateStack.children[1], entry.processingState);
+  assert.equal(entry.processingState.textContent, 'Complete');
+  assert.equal(entry.processingState.children.length, 0);
+  assert.match(entry.processingState.className, /muted/);
   assert.doesNotMatch(entry.validation.innerHTML, /validation-requirement/);
 });
 

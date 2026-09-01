@@ -420,14 +420,11 @@ button.disclosure[aria-expanded="true"] .caret { transform: rotate(90deg); }
   gap: var(--space-1);
 }
 .processing-state {
-  display: inline-flex; align-items: center; gap: var(--space-1);
-  color: var(--muted); font-size: 12px; font-weight: 650; white-space: nowrap;
-  padding: var(--space-1) var(--space-3); border-radius: 999px; background: rgba(127,127,127,.1);
-  transition: background-color .25s ease, color .25s ease;
+  display: block; max-width: 100%; padding: 0 2px;
+  color: var(--muted); font-size: 11px; font-weight: 550; line-height: 1.35;
+  white-space: normal;
+  transition: color .25s ease;
 }
-.processing-state.completed, .processing-state.running { color: var(--accent); background: var(--accent-bg); }
-.processing-state.failed { color: var(--bad); background: var(--bad-bg); }
-.processing-state.cancelled { color: var(--warn); background: var(--warn-bg); }
 .outcome {
   display: inline-flex; align-items: center; gap: var(--space-1); min-height: 26px;
   padding: 2px 10px; font-size: 12px; font-weight: 650; white-space: nowrap;
@@ -1262,7 +1259,8 @@ button.small:hover:not(:disabled) { color: var(--accent); background: var(--acce
 .job-meta-security { display: inline-flex; align-items: center; vertical-align: -2px; }
 .job-meta-lock { width: 14px; height: 14px; color: var(--accent); stroke-width: 2; }
 button.disclosure { border-radius: 9px; }
-.processing-state, .outcome { min-height: 27px; padding: 3px 9px; font-size: 11px; }
+.outcome { min-height: 27px; padding: 3px 9px; font-size: 11px; }
+.processing-state { padding: 0 2px; font-size: 10px; }
 .validation-line { font-size: 13px; }
 .validation-profile { font-size: 10px; }
 .file-actions button, .retry-action { font-size: 12px; }

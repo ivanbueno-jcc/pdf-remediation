@@ -848,7 +848,7 @@ function buildJobRow(job) {
   progressLive.setAttribute('aria-live', 'polite');
   progressLive.setAttribute('aria-atomic', 'true');
   outcomeWrap.append(outcome, validationRequirement);
-  stateStack.append(processingState, outcomeWrap);
+  stateStack.append(outcomeWrap, processingState);
   stateStack.appendChild(progressLive);
   status.appendChild(stateStack);
 
@@ -900,9 +900,8 @@ function updateJobRow(entry, job) {
   const label = processingLabel(job.status);
   const progressMessage = isActiveJob(job)
     ? job.name + ': ' + label + (detailNote ? ', ' + detailNote : '') : '';
-  entry.processingState.className = 'processing-state ' + job.status;
-  entry.processingState.textContent = '';
-  entry.processingState.append(statusIcon(processingStatusIcon(job.status)), detailNote || label);
+  entry.processingState.className = 'processing-state muted ' + job.status;
+  entry.processingState.textContent = detailNote || label;
   if (detailNote) entry.processingState.setAttribute('aria-label', label + ': ' + detailNote);
   else entry.processingState.removeAttribute('aria-label');
   if (entry.progressLive.textContent !== progressMessage) {
@@ -920,10 +919,10 @@ function updateJobRow(entry, job) {
   entry.validationRequirement.textContent = validationRequirementLabel(
     job.validation_requirement
   );
-  entry.status.querySelectorAll('.muted').forEach((note) => note.remove());
+  entry.status.querySelectorAll('.job-error').forEach((note) => note.remove());
   if (job.error) {
     const note = document.createElement('div');
-    note.className = 'muted';
+    note.className = 'job-error muted';
     note.textContent = job.error;
     entry.status.appendChild(note);
   }
@@ -1079,11 +1078,6 @@ function renderJobRows(body, jobs) {
 function processingLabel(status) {
   return { queued: 'Queued', running: 'Running', completed: 'Complete',
            failed: 'Failed', cancelled: 'Cancelled' }[status] || status;
-}
-
-function processingStatusIcon(status) {
-  return { queued: 'clock', running: 'activity', completed: 'check',
-           failed: 'failed', cancelled: 'cancelled' }[status] || 'info';
 }
 
 function pipelineStageLabel(stage) {
