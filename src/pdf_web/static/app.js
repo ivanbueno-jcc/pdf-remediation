@@ -770,6 +770,13 @@ function shouldToggleJobRow(target) {
   );
 }
 
+function shouldTogglePipelineStage(target) {
+  if (!target || typeof target.closest !== 'function') return true;
+  return !target.closest(
+    'input, select, option, button, a, .stage-heading label'
+  );
+}
+
 function renderJobMeta(meta, job) {
   const metadata = [formatJobTimestamp(job.created_at), formatPageCount(job.page_count),
     job.config_label || job.config_file]
@@ -1884,6 +1891,14 @@ el('clear-staged').addEventListener('click', () => {
 el('config-select').addEventListener('change', renderConfigDescription);
 el('attempt-fix').addEventListener('change', (event) => {
   el('config-select').disabled = !event.target.checked;
+});
+document.querySelectorAll('.pipeline-stage').forEach((stage) => {
+  const checkbox = stage.querySelector('input[type="checkbox"]');
+  if (!checkbox) return;
+  stage.addEventListener('click', (event) => {
+    if (!shouldTogglePipelineStage(event.target)) return;
+    checkbox.click();
+  });
 });
 ['require-wcag', 'require-pdfua1'].forEach((id) => {
   el(id).addEventListener('change', () => updateSubmitState());

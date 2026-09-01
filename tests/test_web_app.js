@@ -59,7 +59,7 @@ function loadStagingCode(fetchImpl) {
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(
-    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, buildJobRow, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, state, updateJobRow, updateSubmitState, validationComparison, validationRequirementLabel };',
+    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, buildJobRow, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, shouldTogglePipelineStage, state, updateJobRow, updateSubmitState, validationComparison, validationRequirementLabel };',
     context,
     { filename: appPath },
   );
@@ -80,7 +80,11 @@ test('Run options exposes each optional pipeline stage', () => {
   });
   assert.doesNotMatch(html, /class="stage-number"/);
   assert.match(html, /<legend>Pipeline stages<\/legend>/);
-  assert.match(html, /<span class="field-heading">Preset<\/span>/);
+  assert.doesNotMatch(html, /pipeline-hint/);
+  assert.doesNotMatch(html, /class="field-heading">Preset/);
+  assert.match(html, /aria-label="Remediation preset"/);
+  assert.match(html, /class="config-tooltip-trigger"/);
+  assert.match(html, /id="config-description" role="tooltip"/);
   assert.match(html, /class="setting-option validation-option"/);
   assert.match(html, /id="require-wcag" checked> WCAG/);
   assert.match(html, /id="require-pdfua1"> PDF\/UA-1/);
@@ -198,6 +202,18 @@ test('job row clicks ignore interactive controls', () => {
   assert.equal(shouldToggleJobRow(target(false)), true);
   assert.equal(shouldToggleJobRow(target(true)), false);
   assert.equal(shouldToggleJobRow(null), true);
+});
+
+test('pipeline stage cards toggle outside their interactive controls', () => {
+  const { shouldTogglePipelineStage } = loadStagingCode();
+  const target = (selector) => ({ closest(candidate) {
+    return candidate.includes(selector) ? {} : null;
+  } });
+
+  assert.equal(shouldTogglePipelineStage(target('.other-content')), true);
+  assert.equal(shouldTogglePipelineStage(target('select')), false);
+  assert.equal(shouldTogglePipelineStage(target('.stage-heading label')), false);
+  assert.equal(shouldTogglePipelineStage(null), true);
 });
 
 test('job metadata marks only files that were initially secured', () => {

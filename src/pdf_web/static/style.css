@@ -1059,16 +1059,21 @@ section {
   color: var(--ink); font-size: 11px; font-weight: 800; letter-spacing: .08em;
   text-transform: uppercase;
 }
-.pipeline-hint { margin: 3px 0 12px; color: var(--muted); font-size: 11px; }
 .pipeline-stage-list {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 26px;
-  margin: 0; padding: 0; list-style: none;
+  margin: 10px 0 0; padding: 0; list-style: none;
 }
 .pipeline-stage {
   position: relative; min-width: 0; padding: 13px;
   border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--line));
-  border-radius: 11px; background: var(--panel-solid);
+  border-radius: 11px; background: var(--panel-solid); cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
 }
+.pipeline-stage:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+  background: color-mix(in srgb, var(--accent-bg) 24%, var(--panel-solid));
+}
+.pipeline-stage:has(input[type="checkbox"]:focus-visible) { box-shadow: var(--focus-ring); }
 .pipeline-stage:not(:last-child)::after {
   content: '\2192'; position: absolute; z-index: 1; top: 50%; right: -23px;
   display: grid; place-items: center; width: 20px; height: 20px;
@@ -1079,8 +1084,42 @@ section {
 .stage-heading { display: flex; align-items: center; }
 .stage-heading label.check { flex: 1; min-width: 0; }
 .pipeline-stage .setting-help { margin: 8px 0 0 26px; }
-.preset-field { margin: 10px 0 0 26px; }
+.preset-field {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  margin: 10px 0 0 26px;
+}
+.preset-control {
+  display: grid; grid-template-columns: minmax(0, 1fr) 28px;
+  align-items: center; gap: 7px;
+}
+.preset-field select { background: var(--panel-subtle); cursor: auto; }
 .preset-field select:disabled { opacity: .55; cursor: not-allowed; }
+.config-tooltip { position: relative; display: inline-flex; }
+button.config-tooltip-trigger {
+  display: grid; place-items: center; width: 28px; min-height: 28px; padding: 0;
+  border-radius: 50%; color: var(--muted); background: var(--panel-subtle);
+  font-size: 12px; font-weight: 800; line-height: 1;
+}
+button.config-tooltip-trigger:hover:not(:disabled) { color: var(--accent); transform: none; }
+.config-tooltip-content {
+  position: absolute; z-index: 12; top: calc(100% + 8px); right: 0;
+  width: min(240px, calc(100vw - 48px)); padding: 9px 11px;
+  border: 1px solid var(--line); border-radius: 9px;
+  color: var(--ink); background: var(--panel-solid);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .2);
+  font-size: 11px; font-weight: 550; line-height: 1.45;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity .15s ease, transform .15s ease, visibility .15s ease;
+}
+.config-tooltip-content::after {
+  content: ''; position: absolute; right: 8px; bottom: 100%;
+  border: 5px solid transparent; border-bottom-color: var(--line);
+}
+.config-tooltip:hover .config-tooltip-content,
+.config-tooltip:focus-within .config-tooltip-content {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
 .validation-option {
   display: grid; grid-template-columns: 180px minmax(0, 1fr); align-items: center;
   column-gap: 18px; row-gap: 1px; padding-top: 14px; border-top: 1px solid var(--line);

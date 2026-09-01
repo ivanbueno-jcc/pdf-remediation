@@ -79,7 +79,6 @@
         <p class="muted advanced-intro">The recommended defaults work for most documents.</p>
         <fieldset class="pipeline-options">
           <legend>Pipeline stages</legend>
-          <p class="pipeline-hint">Enabled stages follow the arrows.</p>
           <ol class="pipeline-stage-list">
             <li class="pipeline-stage">
               <div class="stage-heading">
@@ -91,11 +90,15 @@
               <div class="stage-heading">
                 <label class="check"><input type="checkbox" id="attempt-fix" checked> Apply remediation</label>
               </div>
-              <label class="field preset-field">
-                <span class="field-heading">Preset</span>
-                <select id="config-select" aria-describedby="config-description"></select>
-                <span class="field-help" id="config-description"></span>
-              </label>
+              <div class="field preset-field">
+                <div class="preset-control">
+                  <select id="config-select" aria-label="Remediation preset" aria-describedby="config-description"></select>
+                  <span class="config-tooltip">
+                    <button class="config-tooltip-trigger" type="button" aria-label="About the selected remediation preset" aria-describedby="config-description"><span aria-hidden="true">i</span></button>
+                    <span class="config-tooltip-content" id="config-description" role="tooltip"></span>
+                  </span>
+                </div>
+              </div>
             </li>
             <li class="pipeline-stage">
               <div class="stage-heading">
