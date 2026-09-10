@@ -1406,6 +1406,47 @@ ol.stages li .marker { display: inline-grid; place-items: center; height: 20px; 
   .batch-toolbar { align-items: center; }
 }
 
+@media (prefers-color-scheme: dark) {
+  .submit-stats,
+  .jobs-header {
+    border-bottom-color: #2c3b54;
+    background-color: #0d172b;
+  }
+  .submit-stats {
+    background-image:
+      radial-gradient(rgba(150, 170, 205, .1) .7px, transparent .8px),
+      radial-gradient(rgba(0, 0, 0, .16) .7px, transparent .8px);
+    background-position: 0 0, 9px 9px;
+    background-size: 18px 18px;
+  }
+  .jobs-header {
+    background-image:
+      repeating-linear-gradient(135deg, rgba(150, 170, 205, .1) 0, rgba(150, 170, 205, .1) 1px, transparent 1px, transparent 7px),
+      radial-gradient(circle at 18% 25%, rgba(150, 170, 205, .1), transparent 34%),
+      radial-gradient(circle at 82% 75%, rgba(0, 0, 0, .16), transparent 38%);
+  }
+  .submit-stats .job-stat {
+    border-color: #2a3a52;
+    background: #1a283c;
+    color: #f7f9fc;
+  }
+  .submit-stats .job-stat::after { background: rgba(125, 145, 178, .08); }
+  .submit-stats .job-stat-icon {
+    border-color: #43546d;
+    background: #2b3a50;
+    color: #d7e0ef;
+  }
+  .submit-stats .job-stat-label { color: #91a0b7; }
+  .submit-stats .job-stat:nth-child(2) { border-color: #146653; }
+  .submit-stats .job-stat:nth-child(2) .job-stat-icon {
+    border-color: #197a65; background: #183f45; color: #38d6a0;
+  }
+  .submit-stats .job-stat:nth-child(4) { border-color: #303d83; }
+  .submit-stats .job-stat:nth-child(4) .job-stat-icon {
+    border-color: #3e4ba0; background: #252d68; color: #8b88ff;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
