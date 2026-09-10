@@ -161,7 +161,7 @@ test('non-PDF selections are ignored instead of remaining staged', () => {
   );
 });
 
-test('job filters only return matching recent jobs', () => {
+test('job filters return active jobs before matching recent jobs', () => {
   const { filteredRecentJobs, state } = loadStagingCode();
   state.jobs = [
     { job_id: 'running', name: 'quarterly-report.pdf', status: 'running', outcome: null },
@@ -173,7 +173,7 @@ test('job filters only return matching recent jobs', () => {
 
   assert.deepEqual(
     Array.from(filteredRecentJobs(), (job) => job.job_id),
-    ['recent-match'],
+    ['running', 'recent-match'],
   );
 });
 

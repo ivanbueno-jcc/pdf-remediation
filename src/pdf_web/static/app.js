@@ -484,6 +484,7 @@ async function refreshQueue() {
   const shouldShowJobs = state.jobs.length > 0;
   const isEntering = shouldShowJobs && jobsSection.classList.contains('hidden');
   jobsSection.classList.toggle('hidden', !shouldShowJobs);
+  el('jobs-stats').classList.toggle('hidden', !shouldShowJobs);
   if (isEntering) {
     jobsSection.classList.remove('jobs-section-enter');
     void jobsSection.offsetWidth;
@@ -609,13 +610,14 @@ function activeJobOrder(a, b) {
 function filteredRecentJobs() {
   const query = state.jobSearch.trim().toLowerCase();
   const filter = state.jobOutcomeFilter;
-  return state.jobs.filter((job) => {
+  const recent = state.jobs.filter((job) => {
     if (isActiveJob(job)) return false;
     if (query && !String(job.name || '').toLowerCase().includes(query)) return false;
     if (filter === 'pending' && job.outcome) return false;
     if (filter !== 'all' && filter !== 'pending' && job.outcome !== filter) return false;
     return true;
   });
+  return state.jobs.filter(isActiveJob).sort(activeJobOrder).concat(recent);
 }
 
 function formatJobTimestamp(value) {
@@ -673,9 +675,8 @@ function queueEtaSeconds(payload) {
   return Math.max(runningRemaining.length ? Math.max(...runningRemaining) : 0, queuedTime);
 }
 
-function renderJobGroup(groupId, bodyId, countId, jobs) {
+function renderJobGroup(groupId, bodyId, jobs) {
   el(groupId).classList.toggle('hidden', jobs.length === 0);
-  el(countId).textContent = jobs.length ? '(' + jobs.length + ')' : '';
   renderJobRows(el(bodyId), jobs);
 }
 
@@ -723,18 +724,15 @@ function renderJobStats() {
 }
 
 function renderJobs() {
-  const active = state.jobs.filter(isActiveJob).sort(activeJobOrder);
-  const allRecent = state.jobs.filter((job) => !isActiveJob(job));
   const recent = filteredRecentJobs();
-  const visible = active.concat(recent);
+  const visible = recent;
   const empty = el('job-empty');
   empty.classList.toggle('hidden', recent.length > 0);
   empty.textContent = 'No recent files match the current search and outcome filter.';
   renderJobStats();
-  renderJobGroup('active-jobs-group', 'active-jobs-body', 'active-jobs-count', active);
-  renderJobGroup('recent-jobs-group', 'recent-jobs-body', 'recent-jobs-count', recent);
-  // Keep the recent section and its filters available when a filter has no matches.
-  el('recent-jobs-group').classList.toggle('hidden', allRecent.length === 0);
+  renderJobGroup('recent-jobs-group', 'recent-jobs-body', recent);
+  // Keep the section and its filters available when a filter has no matches.
+  el('recent-jobs-group').classList.toggle('hidden', state.jobs.length === 0);
   el('recent-jobs-table').classList.toggle('hidden', recent.length === 0);
 
   // Drop rows for jobs that no longer exist or fell out of the current
@@ -1046,9 +1044,8 @@ function renderJobRows(body, jobs) {
     }
     entry.row.classList.toggle('job-row-stripe', index % 2 === 1);
     updateJobRow(entry, job);
-    // appendChild on an already-attached node moves it (including across
-    // tbodies, e.g. active -> recent when a job finishes) instead of
-    // recreating it, which is what lets CSS transitions animate the change.
+    // Reusing the row preserves its expanded state and lets CSS transitions
+    // animate updates without recreating the DOM.
     body.appendChild(entry.row);
     body.appendChild(entry.detail);
     if (state.openJobId === job.job_id) {
