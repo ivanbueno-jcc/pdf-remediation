@@ -71,6 +71,17 @@
         <input type="file" id="file-input" multiple accept=".pdf,application/pdf">
       </label>
     </div>
+    <div id="batch-announcer" class="sr-only" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+    <div id="batch-toolbar" class="batch-toolbar hidden">
+      <p class="muted" id="staged-total" role="status" aria-live="polite" aria-atomic="true"></p>
+      <button class="small" id="clear-staged" type="button">Clear all</button>
+    </div>
+    <table id="staged-table" class="hidden">
+      <thead><tr><th>File</th><th>Size</th><th>State</th><th></th></tr></thead>
+      <tbody id="staged-body"></tbody>
+    </table>
+
     <details class="advanced-settings" id="advanced-settings">
       <summary><span class="settings-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M14 4v4M4 12h3M11 12h9M7 10v4M4 18h8M16 18h4M12 16v4"/></svg>
@@ -124,16 +135,6 @@
         </div>
       </div>
     </details>
-    <div id="batch-announcer" class="sr-only" role="alert" aria-live="assertive" aria-atomic="true"></div>
-
-    <div id="batch-toolbar" class="batch-toolbar hidden">
-      <p class="muted" id="staged-total" role="status" aria-live="polite" aria-atomic="true"></p>
-      <button class="small" id="clear-staged" type="button">Clear all</button>
-    </div>
-    <table id="staged-table" class="hidden">
-      <thead><tr><th>File</th><th>Size</th><th>State</th><th></th></tr></thead>
-      <tbody id="staged-body"></tbody>
-    </table>
 
     <div class="row submit-row">
       <button class="primary" id="submit" disabled>Remediate</button>

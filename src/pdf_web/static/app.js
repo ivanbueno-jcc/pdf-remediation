@@ -1117,8 +1117,16 @@ function outcomeStatusIcon(outcome) {
 }
 
 function canRetryJob(job) {
-  return Boolean(job && job.has_pdf && job.status !== 'queued' && job.status !== 'running' &&
-    job.outcome && job.outcome !== 'remediated' && job.outcome !== 'already_compliant');
+  if (!job || !job.has_pdf || job.status === 'queued' || job.status === 'running' || !job.outcome) {
+    return false;
+  }
+  if (job.outcome !== 'remediated' && job.outcome !== 'already_compliant') return true;
+
+  const profiles = (job.after || {}).profiles || {};
+  return ['ua1', 'wcag'].some((profile) => {
+    const result = profiles[profile];
+    return result && (result.status === 'fail' || result.status === 'error');
+  });
 }
 
 function canCancelJob(job) {

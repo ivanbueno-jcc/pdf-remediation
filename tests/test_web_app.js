@@ -59,7 +59,7 @@ function loadStagingCode(fetchImpl) {
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(
-    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, buildJobRow, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, shouldTogglePipelineStage, state, updateJobRow, updateSubmitState, validationComparison, validationRequirementLabel };',
+    functionsOnly + '\nglobalThis.testApi = { addFiles, appendViolationSection, buildJobRow, canRetryJob, filteredRecentJobs, readinessPresentation, renderDetail, shouldToggleJobRow, shouldTogglePipelineStage, state, updateJobRow, updateSubmitState, validationComparison, validationRequirementLabel };',
     context,
     { filename: appPath },
   );
@@ -97,6 +97,21 @@ test('Validation change stores each selected profile combination', () => {
   assert.equal(validationRequirementLabel('wcag only'), 'WCAG');
   assert.equal(validationRequirementLabel('pdfua1 only'), 'PDF/UA-1');
   assert.equal(validationRequirementLabel('wcag and pdfua1'), 'WCAG • PDF/UA-1');
+});
+
+test('retry action is available for validation failures on successful outcomes', () => {
+  const { canRetryJob } = loadStagingCode();
+  const base = {
+    has_pdf: true, status: 'completed', outcome: 'remediated',
+    after: { profiles: { ua1: { status: 'pass' }, wcag: { status: 'pass' } } },
+  };
+
+  assert.equal(canRetryJob(base), false);
+  assert.equal(canRetryJob({ ...base, after: { profiles: { ua1: { status: 'fail' } } } }), true);
+  assert.equal(canRetryJob({ ...base, outcome: 'already_compliant', after: {
+    profiles: { wcag: { status: 'error' } },
+  } }), true);
+  assert.equal(canRetryJob({ ...base, outcome: 'improved' }), true);
 });
 
 test('validation requirement is merged with the outcome pill', () => {
