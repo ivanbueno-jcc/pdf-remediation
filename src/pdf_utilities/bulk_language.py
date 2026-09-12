@@ -151,6 +151,9 @@ def process_directory(directory: str, set_mode: bool = False) -> dict[str, Any]:
 
     report_path = _write_report(report_directory, rows)
     counts = Counter(row["status"] for row in rows)
+    language_tally = Counter(
+        row["language"] for row in rows if row["status"] != "error"
+    )
     return {
         "input_directory": str(input_directory),
         "report_path": str(report_path),
@@ -159,6 +162,7 @@ def process_directory(directory: str, set_mode: bool = False) -> dict[str, Any]:
         "success": counts["success"],
         "no_language": counts["no_language"],
         "errors": counts["error"],
+        "language_tally": dict(sorted(language_tally.items())),
     }
 
 
@@ -186,6 +190,12 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  Language detected: {result['success']}")
     print(f"  No language set: {result['no_language']}")
     print(f"  Errors: {result['errors']}")
+    print("  Language tally:")
+    if result["language_tally"]:
+        for language, count in result["language_tally"].items():
+            print(f"    {language}: {count}")
+    else:
+        print("    (none)")
     print(f"  Report: {result['report_path']}")
     return 0 if result["errors"] == 0 else 1
 
