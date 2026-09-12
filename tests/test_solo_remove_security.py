@@ -20,7 +20,7 @@ from pdfixsdk import (  # pylint: disable=wrong-import-position
     PdfStandardSecurityParams,
     kSaveFull,
 )
-from pdf_worker import solo_remove_security  # pylint: disable=wrong-import-position
+from pdf_worker import pdfix_helpers, solo_remove_security  # pylint: disable=wrong-import-position
 
 
 def create_pdf(pdf_path: Path, secured: bool) -> None:
@@ -114,7 +114,7 @@ class SoloRemoveSecurityTests(unittest.TestCase):
             self.assertIn("empty password", result["error"])
             self.assertFalse(output_path.exists())
 
-    @mock.patch.object(solo_remove_security, "load_dotenv")
+    @mock.patch.object(pdfix_helpers, "load_dotenv")
     @mock.patch.object(solo_remove_security, "GetPdfix")
     def test_passes_configured_license_to_pdfix(
             self,
@@ -122,7 +122,7 @@ class SoloRemoveSecurityTests(unittest.TestCase):
             load_dotenv: mock.Mock) -> None:
         '''Configured account credentials are passed before the PDF is opened.'''
         with tempfile.TemporaryDirectory() as temp_dir, mock.patch.dict(
-                solo_remove_security.os.environ,
+                pdfix_helpers.os.environ,
                 {
                     "PDFIX_LICENSE_NAME": "test-license-name",
                     "PDFIX_LICENSE_KEY": "test-license-key",

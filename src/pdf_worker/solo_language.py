@@ -4,15 +4,14 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-import shutil
 import sys
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from dotenv import load_dotenv
 from pdfixsdk import GetPdfix, kSaveFull
+
+from pdf_worker.pdfix_helpers import authorize_pdfix, validate_pdf_input
 
 
 NO_LANGUAGE = "no language set"
@@ -28,23 +27,9 @@ def get_pdfix_error(pdfix: Any) -> str:
     return error if error and error != "No error." else "Unknown PDFix error"
 
 
-def authorize_pdfix(pdfix: Any) -> None:
-    '''Authorize PDFix when credentials are configured.'''
-    load_dotenv()
-    license_name = os.getenv("PDFIX_LICENSE_NAME")
-    license_key = os.getenv("PDFIX_LICENSE_KEY")
-    if license_name and license_key:
-        pdfix.GetAccountAuthorization().Authorize(license_name, license_key)
-
-
 def validate_input(pdf_input_path: Path) -> None:
     '''Validate an input PDF path.'''
-    if not pdf_input_path.is_file():
-        raise SoloLanguageError(f"Input PDF not found: {pdf_input_path}")
-    if pdf_input_path.suffix.lower() != ".pdf":
-        raise SoloLanguageError(
-            f"Input file must use a .pdf extension: {pdf_input_path}"
-        )
+    validate_pdf_input(pdf_input_path, SoloLanguageError)
 
 
 def validate_output(pdf_input_path: Path, pdf_output_path: Path) -> None:

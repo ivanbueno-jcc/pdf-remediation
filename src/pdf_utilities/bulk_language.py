@@ -47,8 +47,8 @@ def _progress(current: int, total: int, width: int = 30) -> None:
     else:
         fraction = current / total
     completed = int(width * fraction)
-    bar = "#" * completed + "-" * (width - completed)
-    print(f"\r[{bar}] {current}/{total}", end="", file=sys.stderr, flush=True)
+    progress_display = "#" * completed + "-" * (width - completed)
+    print(f"\r[{progress_display}] {current}/{total}", end="", file=sys.stderr, flush=True)
     if current == total:
         print(file=sys.stderr)
 
@@ -104,6 +104,32 @@ def _write_report(report_directory: Path, rows: Iterable[dict[str, str]]) -> Pat
     return report_path
 
 
+def _prepare_files(
+        source_files: list[Path], input_directory: Path,
+        report_directory: Path, set_mode: bool) -> list[Path]:
+    '''Copy source files into the report set, setting mapped languages when requested.'''
+    if not set_mode:
+        return source_files
+
+    files_directory = report_directory / "files"
+    copied_files: list[Path] = []
+    for source_path in source_files:
+        destination_path = files_directory / source_path.relative_to(input_directory)
+        destination_path.parent.mkdir(parents=True, exist_ok=True)
+        mapped_language = _language_for_filename(source_path)
+        if mapped_language is None:
+            shutil.copy2(source_path, destination_path)
+        else:
+            result = set_document_language(
+                str(source_path), str(destination_path), mapped_language
+            )
+            if result["exit_code"] != 0:
+                # Keep the source file available in the report set when editing fails.
+                shutil.copy2(source_path, destination_path)
+        copied_files.append(destination_path)
+    return copied_files
+
+
 def process_directory(directory: str, set_mode: bool = False) -> dict[str, Any]:
     '''Detect, optionally set, and report languages for all PDFs.'''
     input_directory = Path(directory).expanduser().resolve()
@@ -112,26 +138,7 @@ def process_directory(directory: str, set_mode: bool = False) -> dict[str, Any]:
 
     source_files = pdf_files(input_directory)
     report_directory = _result_path(input_directory)
-    files = source_files
-    if set_mode:
-        copied_files: list[Path] = []
-        files_directory = report_directory / "files"
-        for source_path in source_files:
-            destination_path = files_directory / source_path.relative_to(input_directory)
-            destination_path.parent.mkdir(parents=True, exist_ok=True)
-            mapped_language = _language_for_filename(source_path)
-            if mapped_language is None:
-                shutil.copy2(source_path, destination_path)
-            else:
-                result = set_document_language(
-                    str(source_path), str(destination_path), mapped_language
-                )
-                if result["exit_code"] != 0:
-                    # Keep the source file available in the report set even when
-                    # metadata editing fails.
-                    shutil.copy2(source_path, destination_path)
-            copied_files.append(destination_path)
-        files = copied_files
+    files = _prepare_files(source_files, input_directory, report_directory, set_mode)
 
     rows: list[dict[str, str]] = []
     _progress(0, len(files))

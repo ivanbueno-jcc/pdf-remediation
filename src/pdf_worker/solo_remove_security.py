@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import shutil
 import sys
 from datetime import datetime
@@ -12,8 +11,9 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from dotenv import load_dotenv
 from pdfixsdk import GetPdfix, kFieldSignature, kSaveFull
+
+from pdf_worker.pdfix_helpers import authorize_pdfix, validate_pdf_input
 
 
 class SoloRemoveSecurityError(RuntimeError):
@@ -31,15 +31,6 @@ def get_pdfix_error(pdfix: Any) -> str:
     if error and error != "No error.":
         return error
     return "Unknown PDFix error"
-
-
-def authorize_pdfix(pdfix: Any) -> None:
-    '''Authorize PDFix with the account license configured in the environment.'''
-    load_dotenv()
-    license_name = os.getenv("PDFIX_LICENSE_NAME")
-    license_key = os.getenv("PDFIX_LICENSE_KEY")
-    if license_name and license_key:
-        pdfix.GetAccountAuthorization().Authorize(license_name, license_key)
 
 
 # pylint: disable=too-many-positional-arguments,too-many-arguments
@@ -76,12 +67,7 @@ def build_result(
 
 def validate_inputs(pdf_input_path: Path, pdf_output_path: Path) -> None:
     '''Validate CLI inputs before PDFix work starts.'''
-    if not pdf_input_path.is_file():
-        raise SoloRemoveSecurityError(f"Input PDF not found: {pdf_input_path}")
-    if pdf_input_path.suffix.lower() != ".pdf":
-        raise SoloRemoveSecurityError(
-            f"Input file must use a .pdf extension: {pdf_input_path}"
-        )
+    validate_pdf_input(pdf_input_path, SoloRemoveSecurityError)
     if pdf_output_path.suffix.lower() != ".pdf":
         raise SoloRemoveSecurityError(
             f"Output file must use a .pdf extension: {pdf_output_path}"
