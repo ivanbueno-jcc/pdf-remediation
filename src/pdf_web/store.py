@@ -36,6 +36,7 @@ class JobStore:
         self._events: dict[str, list[dict[str, Any]]] = {}
         self._order: list[str] = []
         self._owner_order: dict[str, list[str]] = {}
+        self._owner_positions: dict[str, dict[str, int]] = {}
 
     def add(self, job: Job) -> None:
         '''
@@ -45,7 +46,10 @@ class JobStore:
             self._jobs[job.job_id] = job
             self._events[job.job_id] = []
             self._order.append(job.job_id)
-            self._owner_order.setdefault(job.submitted_by, []).append(job.job_id)
+            owner_ids = self._owner_order.setdefault(job.submitted_by, [])
+            owner_positions = self._owner_positions.setdefault(job.submitted_by, {})
+            owner_positions[job.job_id] = len(owner_ids)
+            owner_ids.append(job.job_id)
 
     def get(self, job_id: str) -> Job | None:
         '''
@@ -72,10 +76,15 @@ class JobStore:
                 self._order.remove(job_id)
             if job is not None:
                 owner_jobs = self._owner_order.get(job.submitted_by, [])
-                if job_id in owner_jobs:
-                    owner_jobs.remove(job_id)
+                owner_positions = self._owner_positions.get(job.submitted_by, {})
+                position = owner_positions.pop(job_id, None)
+                if position is not None:
+                    owner_jobs.pop(position)
+                    for index in range(position, len(owner_jobs)):
+                        owner_positions[owner_jobs[index]] = index
                 if not owner_jobs:
                     self._owner_order.pop(job.submitted_by, None)
+                    self._owner_positions.pop(job.submitted_by, None)
             return job
 
     def list_jobs_for_user(
@@ -90,10 +99,10 @@ class JobStore:
             if cursor is None:
                 position = total - 1
             else:
-                try:
-                    position = owner_ids.index(cursor) - 1
-                except ValueError as error:
-                    raise ValueError("Invalid queue cursor.") from error
+                cursor_position = self._owner_positions.get(user, {}).get(cursor)
+                if cursor_position is None:
+                    raise ValueError("Invalid queue cursor.")
+                position = cursor_position - 1
 
             page_ids: list[str] = []
             while position >= 0 and (limit is None or len(page_ids) < limit):

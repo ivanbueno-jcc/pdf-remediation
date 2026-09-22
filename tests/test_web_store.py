@@ -84,6 +84,21 @@ class JobStoreTests(unittest.TestCase):
                 self.job.submitted_by, "20260827-160000-abc123", limit=1
             )
 
+    def test_removing_a_job_updates_later_owner_cursors(self) -> None:
+        '''Deleting a job keeps the indexed cursor positions consistent.'''
+        middle = make_job("20260827-130000-abc123", submitted_by=self.job.submitted_by)
+        newest = make_job("20260827-140000-def456", submitted_by=self.job.submitted_by)
+        self.store.add(middle)
+        self.store.add(newest)
+        self.store.remove(middle.job_id)
+
+        jobs, total, _ = self.store.list_jobs_for_user(
+            self.job.submitted_by, cursor=newest.job_id, limit=10
+        )
+
+        self.assertEqual([job.job_id for job in jobs], [self.job.job_id])
+        self.assertEqual(total, 2)
+
     def test_remove_drops_job_and_events(self) -> None:
         '''Removing a job clears its event stream too.'''
         self.store.append_log(self.job.job_id, "line")
