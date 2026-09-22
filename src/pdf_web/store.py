@@ -80,7 +80,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
         '''
         with self._lock:
             job = self._jobs.get(job_id)
-            return self._snapshot_locked(job) if job is not None else None
+        return self._snapshot(job) if job is not None else None
 
     def get_mutable(self, job_id: str) -> Job | None:
         '''Return the live job for internal runner/store mutation only.'''
@@ -88,14 +88,15 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             return self._jobs.get(job_id)
 
     @staticmethod
-    def _snapshot_locked(job: Job) -> Job:
-        '''Copy a job while its state lock is held.'''
-        snapshot = copy.copy(job)
-        snapshot.file = copy.deepcopy(job.file)
-        snapshot.stages = copy.deepcopy(job.stages)
-        snapshot.result = copy.deepcopy(job.result)
-        snapshot.state_lock = threading.RLock()
-        return snapshot
+    def _snapshot(job: Job) -> Job:
+        '''Copy a job consistently without holding the registry lock.'''
+        with job.state_lock:
+            snapshot = copy.copy(job)
+            snapshot.file = copy.deepcopy(job.file)
+            snapshot.stages = copy.deepcopy(job.stages)
+            snapshot.result = copy.deepcopy(job.result)
+            snapshot.state_lock = threading.RLock()
+            return snapshot
 
     def snapshot(self, job_id: str) -> Job | None:
         '''Return one lock-consistent, detached job snapshot.'''
@@ -104,20 +105,22 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
     def list_snapshots(self, owner: str) -> list[Job]:
         '''Return detached snapshots for one owner, newest first.'''
         with self._lock:
-            return [
-                self._snapshot_locked(self._jobs[job_id])
+            jobs = [
+                self._jobs[job_id]
                 for job_id in reversed(self._owner_order.get(owner, []))
             ]
+        return [self._snapshot(job) for job in jobs]
 
     def list_jobs(self) -> list[Job]:
         '''
         Return all known jobs, newest first.
         '''
         with self._lock:
-            return [
-                self._snapshot_locked(self._jobs[job_id])
+            jobs = [
+                self._jobs[job_id]
                 for job_id in reversed(self._order)
             ]
+        return [self._snapshot(job) for job in jobs]
 
     def remove(self, job_id: str) -> Job | None:
         '''
@@ -234,9 +237,9 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             while position >= 0 and (limit is None or len(page_ids) < limit):
                 page_ids.append(owner_ids[position])
                 position -= 1
-            jobs = [self._snapshot_locked(self._jobs[job_id]) for job_id in page_ids]
+            jobs = [self._jobs[job_id] for job_id in page_ids]
             next_cursor = page_ids[-1] if position >= 0 else None
-            return jobs, total, next_cursor
+        return [self._snapshot(job) for job in jobs], total, next_cursor
 
     def emit(self, job_id: str, event_type: str, payload: dict[str, Any]) -> None:
         '''
