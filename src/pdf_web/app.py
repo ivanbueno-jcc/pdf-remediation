@@ -238,21 +238,18 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
     List known jobs, newest first.
     '''
     jobs = []
-    for job in STORE.list_jobs():
-        with job.state_lock:
-            if job.submitted_by != user:
-                continue
-            jobs.append({
-                "job_id": job.job_id,
-                "status": str(job.status),
-                "queued": job.status == JobStatus.QUEUED,
-                "created_at": job.created_at.isoformat(timespec="seconds"),
-                "page_count": job.file.page_count,
-                "name": job.file.original_name,
-                "outcome": job.outcome,
-                "outcome_label": outcome_label(job.outcome),
-                "config_file": job.config_file,
-            })
+    for job in STORE.list_snapshots(user):
+        jobs.append({
+            "job_id": job.job_id,
+            "status": str(job.status),
+            "queued": job.status == JobStatus.QUEUED,
+            "created_at": job.created_at.isoformat(timespec="seconds"),
+            "page_count": job.file.page_count,
+            "name": job.file.original_name,
+            "outcome": job.outcome,
+            "outcome_label": outcome_label(job.outcome),
+            "config_file": job.config_file,
+        })
     return {"jobs": jobs}
 
 
@@ -483,7 +480,7 @@ async def job_events(
                     idle_seconds = 0.0
                     yield ": keepalive\n\n"
 
-                job = STORE.get(job_id)
+                job = STORE.snapshot(job_id)
                 if job is not None and job.is_terminal():
                     yield _format_sse({
                         "cursor": cursor,
@@ -656,7 +653,7 @@ async def retry_job(
 @app.delete("/api/jobs")
 async def delete_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
     '''Delete every terminal job owned by the current user.'''
-    jobs = [job for job in STORE.list_jobs() if job.submitted_by == user]
+    jobs = STORE.list_snapshots(user)
     deleted: list[str] = []
     skipped: list[str] = []
     for job in jobs:
@@ -711,7 +708,7 @@ def _require_job(job_id: str, user: str) -> Job:
     """
     if not is_valid_job_id(job_id):
         raise HTTPException(status_code=404, detail="Unknown job.")
-    job = STORE.get(job_id)
+    job = STORE.snapshot(job_id)
     if job is None or job.submitted_by != user:
         raise HTTPException(status_code=404, detail="Unknown job.")
     return job

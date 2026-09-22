@@ -31,9 +31,21 @@ class JobStoreTests(unittest.TestCase):
 
     def test_round_trips_a_job(self) -> None:
         '''A registered job is retrievable and listed.'''
-        self.assertIs(self.store.get(self.job.job_id), self.job)
+        snapshot = self.store.get(self.job.job_id)
+        self.assertIsNot(snapshot, self.job)
+        self.assertEqual(snapshot.job_id, self.job.job_id)
         self.assertEqual([job.job_id for job in self.store.list_jobs()],
                          [self.job.job_id])
+
+    def test_snapshot_mutation_does_not_change_the_live_job(self) -> None:
+        '''Nested request data is detached from the runner-owned object.'''
+        snapshot = self.store.snapshot(self.job.job_id)
+        snapshot.stages.append({"name": "request-only"})
+        snapshot.file.original_name = "changed.pdf"
+
+        live = self.store.get_mutable(self.job.job_id)
+        self.assertEqual(live.stages, [])
+        self.assertEqual(live.file.original_name, self.job.file.original_name)
 
     def test_lists_newest_first(self) -> None:
         '''The job list is ordered newest first without re-sorting.'''

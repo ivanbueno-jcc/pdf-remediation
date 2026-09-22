@@ -220,7 +220,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                 return False
 
         if queued:
-            job = self._store.get(job_id)
+            job = self._store.get_mutable(job_id)
             if job is not None:
                 self._finish_cancelled(job, "Cancelled before it started.")
         return True
@@ -295,7 +295,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         '''
         Run one claimed job, or finalize it if it can no longer run.
         '''
-        job = self._store.get(job_id)
+        job = self._store.get_mutable(job_id)
         if job is None or job.is_terminal():
             return
         if self._stopping or self._is_cancelled(job_id):

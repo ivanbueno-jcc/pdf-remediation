@@ -140,8 +140,8 @@ class AccessControlTests(unittest.TestCase):
         self.assertEqual(payload["skipped"], [active.job_id])
         self.assertIsNone(self.store.get(self.job.job_id))
         self.assertIsNone(self.store.get(second.job_id))
-        self.assertIs(self.store.get(active.job_id), active)
-        self.assertIs(self.store.get(foreign.job_id), foreign)
+        self.assertEqual(self.store.get(active.job_id).job_id, active.job_id)
+        self.assertEqual(self.store.get(foreign.job_id).job_id, foreign.job_id)
         self.assertFalse(self.job.base_path.exists())
         self.assertFalse(second.base_path.exists())
         self.assertTrue(foreign.base_path.exists())
@@ -404,7 +404,7 @@ class OwnershipRecordingTests(unittest.TestCase):
             files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
             data={"config_file": "default.json"},
         ).json()["jobs"][0]
-        self.store.get(created["job_id"]).stages.append({
+        self.store.get_mutable(created["job_id"]).stages.append({
             "name": "unlock", "status": "ok", "detail": "Security removed."
         })
 
