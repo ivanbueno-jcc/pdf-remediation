@@ -50,6 +50,7 @@ class QueuePositionTests(SchedulerTestCase):
             self.runner.pending_job_ids(),
             ("20260827-120000-aaaaaa", "20260827-120001-bbbbbb", "20260827-120002-cccccc"),
         )
+        # pylint: disable=protected-access
         self.assertEqual(self.runner._claim_next(), "20260827-120000-aaaaaa")
 
     def test_batch_preserves_fifo_order_after_existing_jobs(self) -> None:
