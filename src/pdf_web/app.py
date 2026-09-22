@@ -452,6 +452,21 @@ async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
     }
 
 
+@app.get("/api/jobs/{job_id}/details")
+async def job_details(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER) -> dict[str, Any]:
+    '''
+    Return the job detail view without its event history.
+
+    The event stream is exposed separately. Keeping it out of this response
+    prevents the expandable detail panel from downloading the entire log ring
+    buffer just to render stages and validation results.
+    '''
+    job = _require_job(job_id, user)
+    return job.to_dict()
+
+
 @app.get("/api/jobs/{job_id}")
 async def get_job(
         job_id: str = JOB_ID_PATH,

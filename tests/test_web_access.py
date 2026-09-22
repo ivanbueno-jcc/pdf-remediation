@@ -25,6 +25,7 @@ SECRET = "s3cret"
 # matching owner check, it shows up here as a leak rather than in production.
 JOB_ENDPOINTS = (
     "",
+    "/details",
     "/log",
     "/download",
     "/original",
@@ -165,6 +166,16 @@ class AccessControlTests(unittest.TestCase):
             "GET", self._url("/events"), headers=headers(BOB)
         ) as response:
             self.assertEqual(response.status_code, 404)
+
+    def test_details_response_omits_event_history(self) -> None:
+        '''The detail panel does not need the job's accumulated event log.'''
+        self.store.emit(self.job.job_id, "log", {"line": "private pipeline output"})
+
+        response = self.client.get(self._url("/details"), headers=headers(ALICE))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("events", response.json())
+        self.assertIn("stages", response.json())
 
 
 class AuthenticationTests(unittest.TestCase):

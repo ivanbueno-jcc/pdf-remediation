@@ -1621,7 +1621,7 @@ async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
   setDetailExpanded(detailRow, true);
 
   try {
-    const response = await fetch('/api/jobs/' + job.job_id);
+    const response = await fetch('/api/jobs/' + job.job_id + '/details');
     if (!response.ok) throw new Error('Details request failed.');
     const detailJob = await response.json();
     renderDetail(cell, detailJob);
