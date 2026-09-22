@@ -197,7 +197,6 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             job = self._store.get(job_id)
             if job is not None:
                 self._finish_cancelled(job, "Cancelled before it started.")
-            self._announce_queue_positions()
         return True
 
     def _is_cancelled(self, job_id: str) -> bool:
@@ -262,7 +261,6 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                 print(f"{APP_NAME}: worker error on {job_id}: {error}")
             finally:
                 self._release(job_id)
-                self._announce_queue_positions()
 
     def _dispatch(self, job_id: str) -> None:
         '''
@@ -346,15 +344,6 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             self._log(job, f"[ERROR] Could not persist job metadata: {error}")
         self._store.emit(job.job_id, "status", {"status": str(job.status)})
         self._store.emit(job.job_id, "done", {"status": str(job.status)})
-
-    def _announce_queue_positions(self) -> None:
-        '''
-        Tell each waiting job its new position after the queue advances.
-        '''
-        with self._condition:
-            positions = list(enumerate(self._pending))
-        for index, pending_id in positions:
-            self._store.emit(pending_id, "queue", {"jobs_ahead": index})
 
     def _log(self, job: Job, line: str) -> None:
         '''
