@@ -42,7 +42,7 @@ from .identity import (
     header_diagnostic_enabled,
     resolve_user,
 )
-from .models import Job, JobStatus, UploadedFile, outcome_label
+from .models import Job, JobAccessSnapshot, JobStatus, UploadedFile, outcome_label
 from .job_views import queue_payload
 from .runner import PipelineRunner
 from .submission import prepare_uploaded_job, validate_options
@@ -68,6 +68,7 @@ ASSET_VERSION_PATH = PathParam(..., pattern=r"^[0-9a-f]{12}$")
 
 STORE = JobStore()
 RUNNER = PipelineRunner(STORE)
+QUEUE_PAGE_SIZE = 100
 
 
 @asynccontextmanager
@@ -297,23 +298,43 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
     total_bytes = 0
     accepted_jobs: list[Job] = []
 
-    for upload in incoming:
-        original_name = upload.filename or "upload.pdf"
-        job, error, size = await prepare_uploaded_job(
-            upload, options, user, created_at, taken_ids, taken_names, total_bytes,
-            _new_job_id,
-        )
-        if error is not None or job is None:
-            rejected.append({"original_name": original_name, "reason": error or "Upload rejected."})
-            continue
-        total_bytes += size
+    try:
+        for upload in incoming:
+            original_name = upload.filename or "upload.pdf"
+            job, error, size = await prepare_uploaded_job(
+                upload, options, user, created_at, taken_ids, taken_names, total_bytes,
+                _new_job_id,
+            )
+            if error is not None or job is None:
+                rejected.append({
+                    "original_name": original_name,
+                    "reason": error or "Upload rejected.",
+                })
+                continue
+            total_bytes += size
+            accepted_jobs.append(job)
 
-        STORE.add(job)
-        save_meta(job)
-        accepted_jobs.append(job)
-        accepted.append({
-            **job.to_dict(),
-        })
+        # Complete all disk work before making any job visible to the runner or
+        # connected clients. A failure here leaves no registered jobs behind.
+        for job in accepted_jobs:
+            save_meta(job)
+
+        registered_ids: list[str] = []
+        try:
+            for job in accepted_jobs:
+                STORE.add(job)
+                registered_ids.append(job.job_id)
+            jobs_ahead = RUNNER.submit_batch(
+                tuple(job.job_id for job in accepted_jobs), user
+            )
+        except Exception:
+            for job_id in registered_ids:
+                STORE.remove(job_id)
+            raise
+        accepted = [{**job.to_dict()} for job in accepted_jobs]
+    except Exception:
+        await _remove_submission_jobs(accepted_jobs)
+        raise
 
     if not accepted:
         return JSONResponse(status_code=400, content={
@@ -323,9 +344,6 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
             "rejected": rejected,
         })
 
-    jobs_ahead = RUNNER.submit_batch(
-        tuple(job.job_id for job in accepted_jobs), user
-    )
     for payload, ahead in zip(accepted, jobs_ahead):
         payload["jobs_ahead"] = ahead
 
@@ -335,6 +353,16 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
         "concurrency": max_concurrent_jobs(),
         "your_limit": max_running_jobs_per_user(),
     })
+
+
+async def _remove_submission_jobs(jobs: list[Job]) -> None:
+    '''Remove prepared job directories after a failed submission commit.'''
+    if not jobs:
+        return
+    await asyncio.gather(*(
+        asyncio.to_thread(shutil.rmtree, job.base_path, True)
+        for job in jobs
+    ))
 
 
 @app.get("/api/queue")
@@ -406,7 +434,7 @@ async def queue_events(
                     return
                 if first:
                     yield "event: queue\ndata: " + json.dumps(
-                        _queue_snapshot(user, limit=None), separators=(",", ":")
+                        _queue_snapshot(user, limit=QUEUE_PAGE_SIZE), separators=(",", ":")
                     ) + "\n\n"
                     first = False
                 try:
@@ -462,32 +490,14 @@ async def job_details(
         job_id: str = JOB_ID_PATH,
         user: str = CURRENT_USER) -> dict[str, Any]:
     '''
-    Return the job detail view without its event history.
+    Return the job detail view without the live queue stream.
 
-    The event stream is exposed separately. Keeping it out of this response
-    prevents the expandable detail panel from downloading the entire log ring
-    buffer just to render stages and validation results.
+    Live updates are delivered through the owner-scoped queue SSE stream.
+    Keeping that stream out of this response makes the expandable detail panel
+    independent of connection-level event state.
     '''
-    job = _require_job(job_id, user)
+    job = _require_job_snapshot(job_id, user)
     return job.to_dict()
-
-
-@app.get("/api/jobs/{job_id}")
-async def get_job(
-        job_id: str = JOB_ID_PATH,
-        since: int = 0,
-        user: str = CURRENT_USER) -> dict[str, Any]:
-    '''
-    Return a job's state, optionally with events recorded after a cursor.
-    '''
-    job = _require_job(job_id, user)
-    cursor, events = STORE.events_since(job_id, since)
-    return {
-        **job.to_dict(),
-        "cursor": cursor,
-        "events": events,
-        "jobs_ahead": RUNNER.jobs_ahead(job_id),
-    }
 
 
 @app.get("/api/jobs/{job_id}/log")
@@ -497,7 +507,7 @@ async def job_log(
     '''
     Download the captured pipeline log.
     '''
-    job = _require_job(job_id, user)
+    job = _require_job_access(job_id, user)
     log_path = _require_file(job.log_path)
     return FileResponse(
         log_path,
@@ -513,12 +523,15 @@ async def download_bundle(
     '''
     Download every artifact for a job as one ZIP archive.
     '''
-    job = _require_job(job_id, user)
+    job = _require_job_access(job_id, user)
     if not job.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
 
     if not job.bundle_path.is_file():
-        await asyncio.to_thread(build_bundle, job, job.bundle_path)
+        bundle_job = STORE.snapshot(job_id)
+        if bundle_job is None:
+            raise HTTPException(status_code=404, detail="Not found.")
+        await asyncio.to_thread(build_bundle, bundle_job, job.bundle_path)
 
     bundle_path = _require_file(job.bundle_path)
     return FileResponse(
@@ -533,7 +546,7 @@ async def open_original(
         job_id: str = JOB_ID_PATH,
         user: str = CURRENT_USER) -> FileResponse:
     '''Open the original uploaded PDF in the browser.'''
-    job = _require_job(job_id, user)
+    job = _require_job_access(job_id, user)
     path = _require_file(job.input_path)
     return FileResponse(
         path,
@@ -550,7 +563,7 @@ async def download_artifact(
     '''
     Download the remediated PDF or one of the two validation reports.
     '''
-    job = _require_job(job_id, user)
+    job = _require_job_access(job_id, user)
     path = job.artifact(artifact)
     if path is None:
         raise HTTPException(status_code=404, detail=f"No {artifact} for this job.")
@@ -558,8 +571,8 @@ async def download_artifact(
     _require_file(path)
     if artifact == "pdf":
         return FileResponse(path, media_type="application/pdf",
-                            filename=job.file.original_name)
-    stem = Path(job.file.original_name).stem
+                            filename=job.original_name)
+    stem = Path(job.original_name).stem
     return FileResponse(path, media_type="application/json",
                         filename=f"{stem}-{artifact}.json")
 
@@ -574,7 +587,7 @@ async def cancel_job(
     Without this, a mistaken batch cannot be stopped: it holds the submitter's
     only slot and everyone queued behind it waits for work nobody wants.
     '''
-    job = _require_job(job_id, user)
+    job = _require_job_access(job_id, user)
     if job.is_terminal():
         raise HTTPException(
             status_code=409,
@@ -598,7 +611,7 @@ async def retry_job(
     '''
     Re-run a finished job's PDF without asking the browser to upload it again.
     '''
-    original = _require_job(job_id, user)
+    original = _require_job_access(job_id, user)
     if not original.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
     if not original.input_path.is_file():
@@ -614,9 +627,9 @@ async def retry_job(
         created_at=datetime.now(),
         config_file=original.config_file,
         file=UploadedFile(
-            original.file.original_name,
-            original.file.stored_name,
-            original.file.size_bytes,
+            original.original_name,
+            original.stored_name,
+            original.size_bytes,
         ),
         submitted_by=user,
         attempt_unlock=original.attempt_unlock,
@@ -661,7 +674,7 @@ async def delete_job(
     '''
     Delete a finished job and everything it produced.
     '''
-    job = _require_job(job_id, user)
+    job = _require_job_access(job_id, user)
     if not job.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
 
@@ -687,13 +700,23 @@ def _new_job_id(taken: set[str]) -> str:
         return candidate
 
 
-def _require_job(job_id: str, user: str) -> Job:
+def _require_job_access(job_id: str, user: str) -> JobAccessSnapshot:
     """
     Return a job owned by the given user, or raise a 404.
 
     Someone else's job is reported as missing rather than forbidden, so job
     identifiers cannot be probed for existence.
     """
+    if not is_valid_job_id(job_id):
+        raise HTTPException(status_code=404, detail="Unknown job.")
+    job = STORE.access_snapshot(job_id)
+    if job is None or job.submitted_by != user:
+        raise HTTPException(status_code=404, detail="Unknown job.")
+    return job
+
+
+def _require_job_snapshot(job_id: str, user: str) -> Job:
+    '''Return a full job snapshot for responses that need complete state.'''
     if not is_valid_job_id(job_id):
         raise HTTPException(status_code=404, detail="Unknown job.")
     job = STORE.snapshot(job_id)

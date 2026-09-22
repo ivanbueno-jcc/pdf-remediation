@@ -123,6 +123,69 @@ class QueueJobSnapshot:  # pylint: disable=too-many-instance-attributes
     error: str | None
 
 
+@dataclass(frozen=True)
+class JobAccessSnapshot:  # pylint: disable=too-many-instance-attributes
+    '''Small immutable view used to authorize and serve job file operations.'''
+
+    job_id: str
+    submitted_by: str
+    status: JobStatus
+    original_name: str
+    stored_name: str
+    size_bytes: int
+    config_file: str
+    attempt_unlock: bool
+    attempt_fix: bool
+    skip_font_fix: bool
+    attempt_targeted_fixes: bool
+    require_wcag: bool
+    require_pdfua1: bool
+    verbose: bool
+    output_pdf_path: Path | None
+
+    @property
+    def base_path(self) -> Path:
+        '''Return the directory holding this job's files.'''
+        return JOBS_ROOT / self.job_id
+
+    @property
+    def input_path(self) -> Path:
+        '''Return the uploaded PDF path.'''
+        return self.base_path / "input" / self.stored_name
+
+    @property
+    def output_dir(self) -> Path:
+        '''Return the pipeline output directory.'''
+        return self.base_path / "output"
+
+    @property
+    def web_path(self) -> Path:
+        '''Return the web-artifact directory.'''
+        return self.base_path / WEB_FOLDER_NAME
+
+    @property
+    def log_path(self) -> Path:
+        '''Return the captured pipeline log path.'''
+        return self.web_path / "pipeline.log"
+
+    @property
+    def bundle_path(self) -> Path:
+        '''Return the cached bundle path.'''
+        return self.web_path / "bundle.zip"
+
+    def artifact(self, name: str) -> Path | None:
+        '''Return an existing output artifact, if available.'''
+        return artifact_path(self.output_dir, name, self.output_pdf_path)
+
+    def is_terminal(self) -> bool:
+        '''Return whether the job has finished.'''
+        return self.status in TERMINAL_STATUSES
+
+    def required_profiles(self) -> tuple[str, ...]:
+        '''Return the validation profiles selected for this job.'''
+        return selected_validation_profiles(self.require_wcag, self.require_pdfua1, False)
+
+
 def summarize_report(report: dict[str, Any] | None) -> dict[str, Any] | None:
     '''
     Reduce a validation report to what the job list renders.

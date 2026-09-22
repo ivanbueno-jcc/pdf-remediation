@@ -1,5 +1,5 @@
 '''
-Thread-safe registry of remediation jobs and their event streams.
+Thread-safe registry of remediation jobs and owner update notifications.
 '''
 
 from __future__ import annotations
@@ -14,12 +14,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from pdf_api.models import PipelineResult, PipelineStatus
+from pdf_api.models import PipelineResult, PipelineStatus, selected_validation_profiles
+from pdf_api.pipeline import artifact_path
 
-from .config import JOBS_ROOT, LOG_RING_BUFFER_LINES, job_ttl_hours
+from .config import JOBS_ROOT, job_ttl_hours
 from .identity import legacy_job_owner, normalize_user
 from .models import (
     Job,
+    JobAccessSnapshot,
     JobStatus,
     QueueJobSnapshot,
     UploadedFile,
@@ -27,7 +29,6 @@ from .models import (
 )
 
 JOB_ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
-PROGRESS_LINE_PATTERN = re.compile(r"^\s*\d+%\|")
 
 
 class OwnerUpdateQueue:
@@ -60,7 +61,7 @@ class OwnerUpdateQueue:
 
 class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
     '''
-    Hold jobs in memory, record their events, and persist completed metadata.
+    Hold jobs in memory and persist completed metadata.
     '''
 
     def __init__(self) -> None:
@@ -69,7 +70,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         '''
         self._lock = threading.Lock()
         self._jobs: dict[str, Job] = {}
-        self._events: dict[str, list[dict[str, Any]]] = {}
         self._order: list[str] = []
         self._owner_order: dict[str, list[str]] = {}
         self._owner_positions: dict[str, dict[str, int]] = {}
@@ -119,7 +119,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         '''
         with self._lock:
             self._jobs[job.job_id] = job
-            self._events[job.job_id] = []
             self._order.append(job.job_id)
             owner_ids = self._owner_order.setdefault(job.submitted_by, [])
             owner_positions = self._owner_positions.setdefault(job.submitted_by, {})
@@ -159,6 +158,25 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         '''Copy only fields needed for one queue row.'''
         with job.state_lock:
             result = job.result
+            stages = job.stages
+            profiles = selected_validation_profiles(
+                job.require_wcag, job.require_pdfua1, job.wcag_and_ua1_must_pass
+            )
+            if profiles == ("wcag",):
+                validation_requirement = "wcag only"
+            elif profiles == ("ua1",):
+                validation_requirement = "pdfua1 only"
+            elif profiles == ("wcag", "ua1"):
+                validation_requirement = "wcag and pdfua1"
+            else:
+                validation_requirement = "no validation profile"
+            if result is not None and result.initially_secured is not None:
+                initially_secured = bool(result.initially_secured)
+            else:
+                initially_secured = any(
+                    stage.get("name") == "unlock" and stage.get("status") == "ok"
+                    for stage in stages
+                )
             return QueueJobSnapshot(
                 job_id=job.job_id,
                 name=job.file.original_name,
@@ -169,13 +187,16 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 config_file=job.config_file,
                 status=job.status,
                 outcome=job.outcome,
-                stages_done=len(job.stages),
-                current_stage=job.stages[-1]["name"] if job.stages else None,
+                stages_done=len(stages),
+                current_stage=stages[-1]["name"] if stages else None,
                 before=summarize_report(result.before if result else None),
                 after=summarize_report(result.after if result else None),
-                initially_secured=job.initially_secured,
-                validation_requirement=job.validation_requirement,
-                has_pdf=job.artifact("pdf") is not None,
+                initially_secured=initially_secured,
+                validation_requirement=validation_requirement,
+                has_pdf=artifact_path(
+                    job.output_dir, "pdf",
+                    result.output_pdf_path if result else None,
+                ) is not None,
                 error=job.error,
             )
 
@@ -197,6 +218,32 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
     def snapshot(self, job_id: str) -> Job | None:
         '''Return one lock-consistent, detached job snapshot.'''
         return self.get(job_id)
+
+    def access_snapshot(self, job_id: str) -> JobAccessSnapshot | None:
+        '''Return scalar job state for authorization and file operations.'''
+        with self._lock:
+            job = self._jobs.get(job_id)
+        if job is None:
+            return None
+        with job.state_lock:
+            result = job.result
+            return JobAccessSnapshot(
+                job_id=job.job_id,
+                submitted_by=job.submitted_by,
+                status=job.status,
+                original_name=job.file.original_name,
+                stored_name=job.file.stored_name,
+                size_bytes=job.file.size_bytes,
+                config_file=job.config_file,
+                attempt_unlock=job.attempt_unlock,
+                attempt_fix=job.attempt_fix,
+                skip_font_fix=job.skip_font_fix,
+                attempt_targeted_fixes=job.attempt_targeted_fixes,
+                require_wcag=job.require_wcag,
+                require_pdfua1=job.require_pdfua1,
+                verbose=job.verbose,
+                output_pdf_path=result.output_pdf_path if result else None,
+            )
 
     def list_snapshots(self, owner: str) -> list[Job]:
         '''Return detached snapshots for one owner, newest first.'''
@@ -224,7 +271,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         '''
         with self._lock:
             job = self._jobs.pop(job_id, None)
-            self._events.pop(job_id, None)
             if job_id in self._order:
                 self._order.remove(job_id)
             if job is not None:
@@ -292,7 +338,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             self,
             user: str,
             cursor: str | None = None,
-            limit: int | None = None) -> tuple[list[Job], int, str | None]:
+            limit: int | None = None) -> tuple[list[QueueJobSnapshot], int, str | None]:
         '''Return one newest-first page without scanning other users' jobs.'''
         with self._lock:
             owner_ids = self._owner_order.get(user, [])
@@ -313,22 +359,14 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             next_cursor = page_ids[-1] if position >= 0 else None
         return [self._queue_snapshot(job) for job in jobs], total, next_cursor
 
-    def emit(self, job_id: str, event_type: str, payload: dict[str, Any]) -> None:
+    def emit(self, job_id: str, event_type: str, _payload: dict[str, Any]) -> None:
         '''
-        Append one event to a job's stream.
+        Publish a state change to owner-scoped subscribers.
         '''
         with self._lock:
-            events = self._events.get(job_id)
-            if events is None:
-                return
             job = self._jobs.get(job_id)
             if job is None:
                 return
-            events.append({
-                "cursor": len(events) + 1,
-                "type": event_type,
-                "payload": payload,
-            })
             update_type = (
                 "queue-changed" if event_type == "status" else "job-updated"
             )
@@ -336,42 +374,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 job.submitted_by, update_type, job_id
             )
         self._publish_owner_update(job.submitted_by, update, subscribers)
-
-    def append_log(self, job_id: str, line: str) -> None:
-        '''
-        Append one output line, collapsing consecutive progress-bar redraws.
-        '''
-        with self._lock:
-            events = self._events.get(job_id)
-            if events is None:
-                return
-            if (
-                events
-                and events[-1]["type"] == "log"
-                and PROGRESS_LINE_PATTERN.match(line)
-                and PROGRESS_LINE_PATTERN.match(events[-1]["payload"].get("line", ""))
-            ):
-                events[-1]["payload"]["line"] = line
-                return
-            events.append({
-                "cursor": len(events) + 1,
-                "type": "log",
-                "payload": {"line": line},
-            })
-            if len(events) > LOG_RING_BUFFER_LINES * 2:
-                del events[:LOG_RING_BUFFER_LINES]
-
-    def events_since(self, job_id: str, cursor: int) -> tuple[int, list[dict[str, Any]]]:
-        '''
-        Return events recorded after the given cursor.
-        '''
-        with self._lock:
-            events = self._events.get(job_id, [])
-            pending = [event for event in events if event["cursor"] > cursor]
-            latest = events[-1]["cursor"] if events else cursor
-            return latest, pending
-
-
 
 def is_valid_job_id(job_id: str) -> bool:
     '''

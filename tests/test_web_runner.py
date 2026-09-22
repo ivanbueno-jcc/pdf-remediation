@@ -208,16 +208,6 @@ class CancellationTests(SchedulerTestCase):
         # pylint: disable=protected-access
         self.assertEqual(self.runner._claim_next(), "20260827-120001-bbbbbb")
 
-    def test_queue_position_changes_are_not_recorded_as_events(self) -> None:
-        '''Queue positions come from the queue endpoint, not per-job broadcasts.'''
-        self.add("20260827-120000-aaaaaa", ALICE)
-        self.add("20260827-120001-bbbbbb", ALICE)
-
-        self.runner.cancel("20260827-120000-aaaaaa")
-
-        _, events = self.store.events_since("20260827-120001-bbbbbb", 0)
-        self.assertEqual(events, [])
-
     def test_cancelling_a_running_job_sets_the_flag(self) -> None:
         '''The pipeline checks this between stages.'''
         self.add("20260827-120000-aaaaaa", ALICE)

@@ -25,7 +25,6 @@ SECRET = "s3cret"
 # Every path that exposes a job's contents. If a new one is added without a
 # matching owner check, it shows up here as a leak rather than in production.
 JOB_ENDPOINTS = (
-    "",
     "/details",
     "/log",
     "/download",
@@ -106,9 +105,9 @@ class AccessControlTests(unittest.TestCase):
 
     def test_refusal_is_indistinguishable_from_absence(self) -> None:
         '''404 rather than 403, so job identifiers cannot be probed.'''
-        existing = self.client.get(self._url(""), headers=headers(BOB))
+        existing = self.client.get(self._url("/details"), headers=headers(BOB))
         missing = self.client.get(
-            "/api/jobs/20260827-120000-ffffff", headers=headers(BOB)
+            "/api/jobs/20260827-120000-ffffff/details", headers=headers(BOB)
         )
         self.assertEqual(existing.status_code, missing.status_code)
         self.assertEqual(existing.json(), missing.json())
@@ -118,7 +117,7 @@ class AccessControlTests(unittest.TestCase):
         response = self.client.delete(self._url(""), headers=headers(BOB))
         self.assertEqual(response.status_code, 404)
         self.assertEqual(
-            self.client.get(self._url(""), headers=headers(ALICE)).status_code, 200
+            self.client.get(self._url("/details"), headers=headers(ALICE)).status_code, 200
         )
         self.assertTrue(self.job.log_path.is_file())
 
@@ -394,7 +393,7 @@ class OwnershipRecordingTests(unittest.TestCase):
             data={"config_file": "default.json"},
         ).json()["jobs"][0]
         response = self.client.get(
-            f"/api/jobs/{created['job_id']}", headers=headers(BOB)
+            f"/api/jobs/{created['job_id']}/details", headers=headers(BOB)
         )
         self.assertEqual(response.status_code, 404)
 

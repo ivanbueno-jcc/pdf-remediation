@@ -1,4 +1,4 @@
-'''Tests for the job registry, event stream, and metadata persistence.'''
+'''Tests for the job registry, owner updates, and metadata persistence.'''
 
 from __future__ import annotations
 
@@ -142,64 +142,6 @@ class JobStoreTests(unittest.TestCase):
 
         self.assertEqual([job.job_id for job in jobs], [self.job.job_id])
         self.assertEqual(total, 2)
-
-    def test_remove_drops_job_and_events(self) -> None:
-        '''Removing a job clears its event stream too.'''
-        self.store.append_log(self.job.job_id, "line")
-        self.store.remove(self.job.job_id)
-        self.assertIsNone(self.store.get(self.job.job_id))
-        self.assertEqual(self.store.events_since(self.job.job_id, 0), (0, []))
-
-    def test_cursor_returns_only_new_events(self) -> None:
-        '''Clients resume from a cursor without replaying what they have.'''
-        for index in range(3):
-            self.store.append_log(self.job.job_id, f"line {index}")
-        cursor, events = self.store.events_since(self.job.job_id, 0)
-        self.assertEqual(cursor, 3)
-        self.assertEqual(len(events), 3)
-
-        self.store.append_log(self.job.job_id, "line 3")
-        cursor, events = self.store.events_since(self.job.job_id, cursor)
-        self.assertEqual(len(events), 1)
-        self.assertEqual(events[0]["payload"]["line"], "line 3")
-
-    def test_cursor_is_stable_when_nothing_new(self) -> None:
-        '''Polling an idle job yields no events and the same cursor.'''
-        self.store.append_log(self.job.job_id, "only line")
-        cursor, _ = self.store.events_since(self.job.job_id, 0)
-        again, events = self.store.events_since(self.job.job_id, cursor)
-        self.assertEqual(again, cursor)
-        self.assertEqual(events, [])
-
-    def test_collapses_consecutive_progress_redraws(self) -> None:
-        '''A progress bar must not flood the event log with thousands of lines.'''
-        for percent in range(0, 101, 10):
-            self.store.append_log(self.job.job_id, f" {percent}%|####| 1/10")
-        _, events = self.store.events_since(self.job.job_id, 0)
-        self.assertEqual(len(events), 1)
-        self.assertIn("100%", events[0]["payload"]["line"])
-
-    def test_keeps_ordinary_lines_between_progress_lines(self) -> None:
-        '''Only adjacent progress lines collapse; real output is preserved.'''
-        self.store.append_log(self.job.job_id, " 10%|##| 1/10")
-        self.store.append_log(self.job.job_id, "[INFO] something happened")
-        self.store.append_log(self.job.job_id, " 90%|#########| 9/10")
-        _, events = self.store.events_since(self.job.job_id, 0)
-        self.assertEqual(len(events), 3)
-
-    def test_typed_events_are_recorded(self) -> None:
-        '''Step and status events carry their payload to the browser.'''
-        self.store.emit(self.job.job_id, "step", {"step": 2, "name": "fix"})
-        _, events = self.store.events_since(self.job.job_id, 0)
-        self.assertEqual(events[0]["type"], "step")
-        self.assertEqual(events[0]["payload"]["step"], 2)
-
-    def test_events_for_unknown_job_are_dropped(self) -> None:
-        '''Writing to a removed job neither raises nor resurrects it.'''
-        self.store.append_log("20200101-000000-abcdef", "line")
-        self.store.emit("20200101-000000-abcdef", "step", {})
-        self.assertEqual(self.store.events_since("20200101-000000-abcdef", 0), (0, []))
-
 
 class MetadataPersistenceTests(unittest.TestCase):
     '''Persisted metadata is what makes download links survive a restart.'''

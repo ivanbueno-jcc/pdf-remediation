@@ -144,3 +144,7 @@ async def prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-p
         if job is not None:
             shutil.rmtree(job.base_path, ignore_errors=True)
         return None, str(error), 0
+    except Exception:
+        if job is not None:
+            shutil.rmtree(job.base_path, ignore_errors=True)
+        raise

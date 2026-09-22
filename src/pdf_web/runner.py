@@ -392,9 +392,8 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
 
     def _log(self, job: Job, line: str) -> None:
         '''
-        Record one line in the event stream and the on-disk log.
+        Record one output line in the on-disk log.
         '''
-        self._store.append_log(job.job_id, line)
         try:
             job.log_path.parent.mkdir(parents=True, exist_ok=True)
             with job.log_path.open("a", encoding="utf-8") as handle:

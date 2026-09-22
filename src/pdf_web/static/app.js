@@ -992,7 +992,7 @@ function buildJobRow(job) {
     progressLive, status, validation, downloads, fileActions, meta,
   };
 
-  // `entry.job` is refreshed on every poll via updateJobRow, so this closure
+  // `entry.job` is refreshed on every live SSE update, so this closure
   // always acts on the latest data even though it's bound once at creation.
   disclosure.addEventListener('click', () => {
     toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure);
@@ -1191,7 +1191,7 @@ function renderJobRows(body, jobs) {
     entry.row.classList.toggle('job-row-stripe', index % 2 === 1);
     updateJobRow(entry, job);
     expectedNodes.push(entry.row, entry.detail);
-    // Do not reload an already-open detail panel on every queue poll. That
+    // Do not reload an already-open detail panel on every queue update. That
     // replaces its contents with a loading state and causes visible flicker.
     if (state.openJobId === job.job_id && entry.row.dataset.open !== 'true') {
       toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure, true);
