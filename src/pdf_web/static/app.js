@@ -519,7 +519,6 @@ function removeQueueJob(jobId) {
 }
 
 function startLiveUpdates() {
-  loadQueueSnapshot();
   if (state.queueStream) return;
   const stream = new EventSource('/api/queue/events');
   state.queueStream = stream;
