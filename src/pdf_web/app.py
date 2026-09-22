@@ -346,11 +346,8 @@ async def queue_view(
     '''
     Summarize one page of the caller's jobs.
 
-    A browser watching twenty jobs cannot open twenty event streams: it would
-    exhaust the per-origin connection limit and starve the rest of the page. So
-    the list view polls this, and the detail view keeps the single stream. The
-    cursor is the last job id returned, so new jobs added at the front do not
-    shift later pages while a client is reading them.
+    Return a paginated fallback snapshot. Live browsers use the owner-scoped
+    SSE endpoint below after their initial load.
     '''
     return _queue_snapshot(user, cursor, limit)
 
@@ -379,6 +376,18 @@ def _queue_snapshot(
     }
 
 
+def _queue_meta(user: str) -> dict[str, Any]:
+    '''Build queue metadata without copying any job results.'''
+    your_running, has_active = RUNNER.user_activity(user)
+    return {
+        "concurrency": max_concurrent_jobs(),
+        "your_limit": max_running_jobs_per_user(),
+        "your_running": your_running,
+        "all_terminal": not has_active,
+        "total_jobs": STORE.owner_job_count(user),
+    }
+
+
 @app.get("/api/queue/events")
 async def queue_events(
         request: Request,
@@ -388,19 +397,49 @@ async def queue_events(
     async def event_stream() -> AsyncIterator[str]:
         '''Wait on store changes instead of polling the queue endpoint.'''
         version = STORE.owner_version(user)
+        first = True
         while True:
             if await request.is_disconnected():
                 return
-            yield "event: queue\ndata: " + json.dumps(
-                _queue_snapshot(user, limit=None), separators=(",", ":")
-            ) + "\n\n"
-            next_version = await asyncio.to_thread(
+            if first:
+                yield "event: queue\ndata: " + json.dumps(
+                    _queue_snapshot(user, limit=None), separators=(",", ":")
+                ) + "\n\n"
+                first = False
+            next_version, updates = await asyncio.to_thread(
                 STORE.wait_for_owner_change, user, version, SSE_KEEPALIVE_SECONDS
             )
             if next_version == version:
                 yield ": keepalive\n\n"
-            else:
-                version = next_version
+                continue
+            version = next_version
+            changed_ids = {
+                job_id for _, update_type, job_id in updates
+                if update_type != "job-removed"
+            }
+            if any(update_type == "queue-changed" for _, update_type, _ in updates):
+                changed_ids.update(STORE.active_job_ids(user))
+            positions = RUNNER.pending_positions_for(changed_ids)
+            latest: dict[str, str] = {}
+            for _, update_type, job_id in updates:
+                if update_type != "queue-changed":
+                    latest[job_id] = update_type
+            for job_id in changed_ids:
+                latest.setdefault(job_id, "job-updated")
+            for job_id, update_type in latest.items():
+                if update_type == "job-removed":
+                    payload = {"job_id": job_id}
+                else:
+                    job = STORE.snapshot(job_id)
+                    if job is None:
+                        continue
+                    payload = queue_payload(job, positions)
+                yield "event: " + update_type + "\ndata: " + json.dumps(
+                    payload, separators=(",", ":")
+                ) + "\n\n"
+            yield "event: queue-meta\ndata: " + json.dumps(
+                _queue_meta(user), separators=(",", ":")
+            ) + "\n\n"
 
     return StreamingResponse(
         event_stream(),

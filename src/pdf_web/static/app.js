@@ -16,6 +16,7 @@ const state = {
   openDownloadJobId: null,
   queueStream: null,
   jobs: [],
+  queueMeta: {},
   jobRows: new Map(),
   cancellingJobs: new Set(),
   jobStatusSnapshot: null,
@@ -464,7 +465,8 @@ async function loadQueueSnapshot() {
 }
 
 function applyQueuePayload(payload) {
-
+  state.queueMeta = { ...payload };
+  delete state.queueMeta.jobs;
   const jobs = payload.jobs || [];
   const activeJobIds = new Set(jobs.filter(canCancelJob).map((job) => job.job_id));
   state.cancellingJobs.forEach((jobId) => {
@@ -502,6 +504,20 @@ function applyQueuePayload(payload) {
   // Nothing is moving, so stop asking.
 }
 
+function applyQueueJob(job) {
+  const jobs = state.jobs.filter((item) => item.job_id !== job.job_id);
+  jobs.push(job);
+  jobs.sort((left, right) => right.created_at.localeCompare(left.created_at));
+  applyQueuePayload({ ...state.queueMeta, jobs });
+}
+
+function removeQueueJob(jobId) {
+  applyQueuePayload({
+    ...state.queueMeta,
+    jobs: state.jobs.filter((job) => job.job_id !== jobId),
+  });
+}
+
 function startLiveUpdates() {
   loadQueueSnapshot();
   if (state.queueStream) return;
@@ -509,6 +525,19 @@ function startLiveUpdates() {
   state.queueStream = stream;
   stream.addEventListener('queue', (event) => {
     try { applyQueuePayload(JSON.parse(event.data)); } catch (error) { /* retry */ }
+  });
+  stream.addEventListener('job-added', (event) => {
+    try { applyQueueJob(JSON.parse(event.data)); } catch (error) { /* retry */ }
+  });
+  stream.addEventListener('job-updated', (event) => {
+    try { applyQueueJob(JSON.parse(event.data)); } catch (error) { /* retry */ }
+  });
+  stream.addEventListener('job-removed', (event) => {
+    try { removeQueueJob(JSON.parse(event.data).job_id); } catch (error) { /* retry */ }
+  });
+  stream.addEventListener('queue-meta', (event) => {
+    try { applyQueuePayload({ ...JSON.parse(event.data), jobs: state.jobs }); }
+    catch (error) { /* retry */ }
   });
   stream.onerror = () => {
     if (state.queueStream !== stream) return;

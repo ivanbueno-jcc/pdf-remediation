@@ -39,11 +39,18 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
         self._owner_order: dict[str, list[str]] = {}
         self._owner_positions: dict[str, dict[str, int]] = {}
         self._owner_versions: dict[str, int] = {}
+        self._owner_updates: dict[str, list[tuple[int, str, str]]] = {}
         self._condition = threading.Condition(self._lock)
 
-    def _touch_owner_locked(self, owner: str) -> None:
-        '''Advance an owner's live-update version and wake its stream.'''
-        self._owner_versions[owner] = self._owner_versions.get(owner, 0) + 1
+    def _touch_owner_locked(
+            self, owner: str, update_type: str, job_id: str) -> None:
+        '''Record an owner's live update and wake its stream.'''
+        version = self._owner_versions.get(owner, 0) + 1
+        self._owner_versions[owner] = version
+        updates = self._owner_updates.setdefault(owner, [])
+        updates.append((version, update_type, job_id))
+        if len(updates) > 1000:
+            del updates[:-1000]
         self._condition.notify_all()
 
     def add(self, job: Job) -> None:
@@ -58,7 +65,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             owner_positions = self._owner_positions.setdefault(job.submitted_by, {})
             owner_positions[job.job_id] = len(owner_ids)
             owner_ids.append(job.job_id)
-            self._touch_owner_locked(job.submitted_by)
+            self._touch_owner_locked(job.submitted_by, "job-added", job.job_id)
 
     def get(self, job_id: str) -> Job | None:
         '''
@@ -125,7 +132,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
                 if not owner_jobs:
                     self._owner_order.pop(job.submitted_by, None)
                     self._owner_positions.pop(job.submitted_by, None)
-                self._touch_owner_locked(job.submitted_by)
+                self._touch_owner_locked(job.submitted_by, "job-removed", job.job_id)
             return job
 
     def owner_version(self, owner: str) -> int:
@@ -133,14 +140,47 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
         with self._lock:
             return self._owner_versions.get(owner, 0)
 
-    def wait_for_owner_change(self, owner: str, version: int, timeout: float) -> int:
-        '''Wait until an owner changes, returning its latest version.'''
+    def wait_for_owner_change(
+            self, owner: str, version: int, timeout: float
+    ) -> tuple[int, list[tuple[int, str, str]]]:
+        '''Wait until an owner changes, returning its latest version and updates.'''
         with self._condition:
             self._condition.wait_for(
                 lambda: self._owner_versions.get(owner, 0) != version,
                 timeout=timeout,
             )
-            return self._owner_versions.get(owner, 0)
+            latest = self._owner_versions.get(owner, 0)
+            return latest, self._owner_updates_since_locked(owner, version)
+
+    def active_job_ids(self, owner: str) -> tuple[str, ...]:
+        '''Return queued or running IDs for an owner without copying results.'''
+        with self._lock:
+            active: list[str] = []
+            for job_id in self._owner_order.get(owner, []):
+                job = self._jobs[job_id]
+                with job.state_lock:
+                    if job.status in (JobStatus.QUEUED, JobStatus.RUNNING):
+                        active.append(job_id)
+            return tuple(active)
+
+    def _owner_updates_since_locked(
+            self, owner: str, version: int) -> list[tuple[int, str, str]]:
+        '''Return retained owner updates after a version.'''
+        return [
+            update for update in self._owner_updates.get(owner, [])
+            if update[0] > version
+        ]
+
+    def owner_updates_since(
+            self, owner: str, version: int) -> list[tuple[int, str, str]]:
+        '''Return retained live updates after a version.'''
+        with self._lock:
+            return self._owner_updates_since_locked(owner, version)
+
+    def owner_job_count(self, owner: str) -> int:
+        '''Return the number of jobs owned by a user.'''
+        with self._lock:
+            return len(self._owner_order.get(owner, []))
 
     def list_jobs_for_user(
             self,
@@ -183,7 +223,10 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
                 "type": event_type,
                 "payload": payload,
             })
-            self._touch_owner_locked(job.submitted_by)
+            update_type = (
+                "queue-changed" if event_type == "status" else "job-updated"
+            )
+            self._touch_owner_locked(job.submitted_by, update_type, job_id)
 
     def append_log(self, job_id: str, line: str) -> None:
         '''

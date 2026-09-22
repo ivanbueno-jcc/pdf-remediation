@@ -47,6 +47,17 @@ class JobStoreTests(unittest.TestCase):
         self.assertEqual(live.stages, [])
         self.assertEqual(live.file.original_name, self.job.file.original_name)
 
+    def test_owner_updates_are_incremental_and_typed(self) -> None:
+        '''Live clients receive job changes instead of another full snapshot.'''
+        version = self.store.owner_version(self.job.submitted_by)
+        self.store.emit(self.job.job_id, "stage", {"name": "validate"})
+        latest, updates = self.store.wait_for_owner_change(
+            self.job.submitted_by, version, 0
+        )
+
+        self.assertGreater(latest, version)
+        self.assertEqual(updates[-1][1:], ("job-updated", self.job.job_id))
+
     def test_lists_newest_first(self) -> None:
         '''The job list is ordered newest first without re-sorting.'''
         second = make_job("20260827-160000-abc123")
