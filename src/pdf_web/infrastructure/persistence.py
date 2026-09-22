@@ -109,6 +109,7 @@ def load_meta(meta_path: Path) -> JobRecord | None:
         finished_at=_parse_optional_datetime(payload.get("finished_at")),
         stages=list(payload.get("stages") or []),
         page_count=spec.file.page_count,
+        has_pdf=False,
     )
     jobs_root = meta_path.parent.parent.parent
     job = JobRecord(spec, state, JobPaths(job_id, stored_name, jobs_root))
@@ -125,6 +126,7 @@ def load_meta(meta_path: Path) -> JobRecord | None:
         diagnostics=list(payload.get("diagnostics") or []),
         error=payload.get("error"),
     )
+    state.has_pdf = job.artifact("pdf") is not None
     return job
 
 

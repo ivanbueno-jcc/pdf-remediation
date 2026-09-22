@@ -50,6 +50,15 @@ class JobStoreTests(unittest.TestCase):
         self.assertEqual(response["stages"], [
             {"name": "fix", "metadata": {"attempt": 1}}
         ])
+
+    def test_queue_projection_uses_cached_pdf_availability(self) -> None:
+        """Refreshing a queue row must not touch the filesystem."""
+        self.job.state.has_pdf = True
+
+        with mock.patch.object(Path, "is_file", side_effect=AssertionError("filesystem probe")):
+            snapshot = self.store.queue_snapshot(self.job.job_id)
+
+        self.assertTrue(snapshot.has_pdf)
         self.assertEqual([job.job_id for job in self.store.list_jobs()],
                          [self.job.job_id])
 

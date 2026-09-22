@@ -66,3 +66,4 @@ def add_completed_result(job: JobRecord, pdf_path: Path) -> None:
         before={"status": "fail", "passed": False, "failed_rules_count": 1, "profiles": {}},
         after={"status": "pass", "passed": True, "failed_rules_count": 0, "profiles": {}},
     )
+    job.state.has_pdf = pdf_path.is_file()

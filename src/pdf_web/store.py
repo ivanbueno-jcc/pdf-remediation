@@ -11,7 +11,6 @@ from contextlib import contextmanager
 from typing import Any, Iterator
 
 from pdf_api.models import selected_validation_profiles
-from pdf_api.pipeline import artifact_path
 
 from .infrastructure.notifications import OwnerUpdateQueue
 # These names are re-exported as the historical persistence API.
@@ -180,7 +179,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
     def _queue_snapshot(job: JobRecord) -> QueueJobSnapshot:  # pylint: disable=too-many-locals
         '''Copy only fields needed for one queue row.'''
         with job.state.lock:
-            spec, state, paths = job.spec, job.state, job.paths
+            spec, state = job.spec, job.state
             result = state.result
             stages = state.stages
             profiles = selected_validation_profiles(
@@ -213,13 +212,10 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             before = summarize_report(result.before if result else None)
             after = summarize_report(result.after if result else None)
             error = state.error
-            output_dir = paths.output_dir
-            output_pdf_path = result.output_pdf_path if result else None
+            has_pdf = state.has_pdf
             stages_done = len(stages)
             current_stage = stages[-1]["name"] if stages else None
 
-        # Filesystem checks can be slow and do not need the mutable job lock.
-        has_pdf = artifact_path(output_dir, "pdf", output_pdf_path) is not None
         return QueueJobSnapshot(
             job_id=job_id,
             name=name,

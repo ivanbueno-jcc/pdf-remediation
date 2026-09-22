@@ -20,7 +20,7 @@ from datetime import datetime
 from typing import Any
 
 from pdf_api.models import PipelineOptions, PipelineStatus
-from pdf_api.pipeline import process_pdf
+from pdf_api.pipeline import artifact_path, process_pdf
 
 from . import APP_NAME
 from .config import max_concurrent_jobs, max_running_jobs_per_user
@@ -359,12 +359,16 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             on_event=lambda stage: self._on_stage(job, stage),
             should_cancel=lambda: self._is_cancelled(job.spec.job_id),
         )
+        has_pdf = artifact_path(
+            job.paths.output_dir, "pdf", result.output_pdf_path
+        ) is not None
 
         with job.state.lock:
             job.state.result = result
             job.state.outcome = str(result.status)
             job.state.status = status_for(result.status)
             job.state.error = result.error
+            job.state.has_pdf = has_pdf
             warnings = list(result.warnings)
         for warning in warnings:
             self._log(job, f"[WARN] {warning}")

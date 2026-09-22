@@ -248,6 +248,7 @@ class JobState:  # pylint: disable=too-many-instance-attributes
     outcome: str | None = None
     error: str | None = None
     page_count: int | None = None
+    has_pdf: bool = False
     lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
     bundle_lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
@@ -337,7 +338,7 @@ class JobSerializer:  # pylint: disable=too-few-public-methods
                 "before": summarize_report(result.before if result else None),
                 "after": summarize_report(result.after if result else None),
                 "initially_secured": job.initially_secured,
-                "has_pdf": job.artifact("pdf") is not None,
+                "has_pdf": state.has_pdf,
                 "warnings": list(result.warnings) if result else [],
                 "diagnostics": list(result.diagnostics) if result else [],
                 "error": state.error,
@@ -366,6 +367,7 @@ class JobRecord:  # pylint: disable=too-many-public-methods
             outcome=self.state.outcome,
             error=self.state.error,
             page_count=self.state.page_count,
+            has_pdf=self.state.has_pdf,
         )
         return JobRecord(snapshot_spec, snapshot_state, self.paths)
 
