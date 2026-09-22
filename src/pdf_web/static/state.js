@@ -10,7 +10,7 @@
     health: null, authError: null, openJobId: null, openDownloadJobId: null,
     queueStream: null, jobs: [], jobIndex: new Map(), jobPositions: new Map(),
     queueMeta: {}, jobRows: new Map(), activeJobCount: 0, failedJobCount: 0,
-    queueEta: null, queueGeneration: null,
+    queueEta: null, queueEtaTimer: null, queueGeneration: null,
     jobStats: { processed: 0, wcag: 0, ua1: 0, totalPages: 0, processedPages: 0 },
     cancellingJobs: new Set(), jobStatusSnapshot: null, jobSearch: '',
     jobOutcomeFilter: 'all', toastTimer: null, toastFadeTimer: null,

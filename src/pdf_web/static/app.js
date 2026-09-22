@@ -448,7 +448,6 @@ function applyQueuePayload(payload) {
   state.failedJobCount = jobs.filter((job) => job.status === 'failed').length;
   state.jobStats = jobs.reduce((stats, job) => addJobStats(stats, job, 1),
     { processed: 0, wcag: 0, ua1: 0, totalPages: 0, processedPages: 0 });
-  state.queueEta = queueEtaSeconds(payload);
   state.queueGeneration = payload.queue_generation;
   updateQueuePresentation(payload);
   renderJobs();
@@ -470,11 +469,8 @@ function updateQueuePresentation(payload) {
       'animationend', () => jobsSection.classList.remove('jobs-section-enter'), { once: true }
     );
   }
-  const queueSummary = state.jobs.length
-    ? payload.your_running + '/' + payload.your_limit + ' running'
-    : '';
+  state.queueEta = queueEtaSeconds({ ...payload, jobs: state.jobs });
   const eta = formatQueueEta(state.queueEta);
-  const queueSummaryEl = el('queue-summary');
   const queuedJobs = state.jobs.filter((job) => job.status === 'queued').length;
   const runningJobs = state.jobs.filter((job) => job.status === 'running').length;
   const activeJobs = queuedJobs + runningJobs;
@@ -486,17 +482,23 @@ function updateQueuePresentation(payload) {
   queueProgress.setAttribute('aria-valuemax', String(activeJobs));
   queueProgress.setAttribute('aria-valuenow', String(runningJobs));
   queueProgress.setAttribute('aria-valuetext', runningJobs + ' running, ' +
-    queuedJobs + ' queued');
+    queuedJobs + ' queued' + (eta ? ', ' + eta : ''));
   el('queue-progress-fill').style.width = progressPercent + '%';
   el('queue-progress-label').textContent = runningJobs + ' running · ' +
-    queuedJobs + ' queued';
+    queuedJobs + ' queued' + (eta ? ' · ' + eta : '');
   const hasActiveFiles = state.activeJobCount > 0;
+  if (hasActiveFiles && state.queueEtaTimer === null) {
+    state.queueEtaTimer = window.setInterval(() => {
+      updateQueuePresentation({ ...state.queueMeta, jobs: state.jobs });
+    }, 1000);
+  } else if (!hasActiveFiles && state.queueEtaTimer !== null) {
+    window.clearInterval(state.queueEtaTimer);
+    state.queueEtaTimer = null;
+  }
   jobsSection.classList.toggle('is-processing', hasActiveFiles);
   jobsSection.classList.toggle('has-failures', state.failedJobCount > 0);
   jobsSection.classList.toggle('is-complete', !hasActiveFiles && state.jobs.length > 0);
-  queueSummaryEl.textContent = eta ? queueSummary + ' · ' + eta : queueSummary;
-  queueSummaryEl.classList.toggle('is-processing', hasActiveFiles);
-  queueSummaryEl.setAttribute('aria-busy', hasActiveFiles ? 'true' : 'false');
+  queueProgress.setAttribute('aria-busy', hasActiveFiles ? 'true' : 'false');
 }
 
 function applyQueueJob(job) {
