@@ -87,6 +87,9 @@ class QueuePositionTests(SchedulerTestCase):
         self.assertEqual(claimed, "20260827-120000-aaaaaa")
         self.assertEqual(self.runner.user_activity(ALICE), (1, True))
 
+        self.runner._release(claimed)  # pylint: disable=protected-access
+        self.assertEqual(self.runner.user_activity(ALICE), (0, False))
+
 
 class PerUserCapTests(SchedulerTestCase):
     '''One user must not be able to hold the whole pool.'''

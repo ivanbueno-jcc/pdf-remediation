@@ -46,6 +46,8 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         self._pending: list[str] = []
         self._running: dict[str, str] = {}
         self._owners: dict[str, str] = {}
+        self._pending_by_owner: Counter[str] = Counter()
+        self._running_by_owner: Counter[str] = Counter()
         self._cancelled: set[str] = set()
         self._stopping = False
         self._threads: list[threading.Thread] = []
@@ -114,6 +116,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             for job_id in job_ids:
                 self._pending.insert(0, job_id)
                 self._owners[job_id] = owner
+                self._pending_by_owner[owner] += 1
             positions = [len(job_ids) - index - 1 for index in range(len(job_ids))]
             self._condition.notify_all()
         return positions
@@ -135,11 +138,8 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
     def user_activity(self, owner: str) -> tuple[int, bool]:
         '''Return running count and whether the user still has active work.'''
         with self._condition:
-            running = sum(1 for value in self._running.values() if value == owner)
-            pending = any(
-                self._owners.get(job_id) == owner for job_id in self._pending
-            )
-            return running, bool(running or pending)
+            running = self._running_by_owner[owner]
+            return running, bool(running or self._pending_by_owner[owner])
 
     def pending_job_ids(self) -> tuple[str, ...]:
         '''
@@ -185,7 +185,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             ahead = (
                 self._pending.index(job_id) if job_id in self._pending else None
             )
-            yours = sum(1 for value in self._running.values() if value == owner)
+            yours = self._running_by_owner[owner]
             return {
                 "jobs_ahead": 0 if job_id in self._running else ahead,
                 "your_running": yours,
@@ -211,7 +211,9 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                 return True
             if job_id in self._pending:
                 self._pending.remove(job_id)
-                self._owners.pop(job_id, None)
+                owner = self._owners.pop(job_id, None)
+                if owner is not None:
+                    self._pending_by_owner[owner] -= 1
                 self._condition.notify_all()
                 queued = True
             else:
@@ -245,13 +247,14 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                     return None
 
                 limit = max_running_jobs_per_user()
-                running_per_owner = Counter(self._running.values())
 
                 for job_id in self._pending:
                     owner = self._owners.get(job_id, "")
-                    if running_per_owner[owner] < limit:
+                    if self._running_by_owner[owner] < limit:
                         self._pending.remove(job_id)
+                        self._pending_by_owner[owner] -= 1
                         self._running[job_id] = owner
+                        self._running_by_owner[owner] += 1
                         return job_id
 
                 # Nothing queued, or everything queued belongs to somebody at
@@ -264,8 +267,10 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         Give back a job's slot and wake anyone its owner's cap was blocking.
         '''
         with self._condition:
-            self._running.pop(job_id, None)
+            owner = self._running.pop(job_id, None)
             self._owners.pop(job_id, None)
+            if owner is not None:
+                self._running_by_owner[owner] -= 1
             self._cancelled.discard(job_id)
             self._condition.notify_all()
 
