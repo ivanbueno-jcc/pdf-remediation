@@ -166,7 +166,14 @@
     <div id="job-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     <div class="job-group hidden" id="recent-jobs-group">
       <p class="muted job-empty hidden" id="job-empty" role="status"></p>
-      <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="queue-progress-row">
+        <div class="queue-progress" id="queue-progress" role="progressbar"
+             aria-label="Queued files processed" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+          <span class="queue-progress-fill" id="queue-progress-fill"></span>
+        </div>
+        <span class="queue-progress-label muted" id="queue-progress-label"></span>
+        <p class="muted" id="queue-summary" role="status" aria-live="polite" aria-atomic="true"></p>
+      </div>
       <table class="jobs-table" id="recent-jobs-table">
         <thead><tr><th>File</th><th>Status</th><th>Validation change</th><th>Downloads</th></tr></thead>
         <tbody id="recent-jobs-body"></tbody>

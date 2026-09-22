@@ -355,6 +355,17 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         with self._lock:
             return len(self._owner_order.get(owner, []))
 
+    def owner_processed_job_count(self, owner: str) -> int:
+        '''Return the number of terminal jobs owned by a user.'''
+        with self._lock:
+            job_ids = tuple(self._owner_order.get(owner, []))
+            processed = 0
+            for job_id in job_ids:
+                state = self._jobs[job_id].state
+                with state.lock:
+                    processed += state.status not in (JobStatus.QUEUED, JobStatus.RUNNING)
+            return processed
+
     def subscribe_owner(
             self, owner: str
     ) -> tuple[int, OwnerUpdateQueue]:

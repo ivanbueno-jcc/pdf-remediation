@@ -475,6 +475,21 @@ function updateQueuePresentation(payload) {
     : '';
   const eta = formatQueueEta(state.queueEta);
   const queueSummaryEl = el('queue-summary');
+  const queuedJobs = state.jobs.filter((job) => job.status === 'queued').length;
+  const runningJobs = state.jobs.filter((job) => job.status === 'running').length;
+  const activeJobs = queuedJobs + runningJobs;
+  const progressPercent = activeJobs ? Math.round((runningJobs / activeJobs) * 100) : 0;
+  const showQueueProgress = activeJobs > 0;
+  const queueProgressRow = document.querySelector('.queue-progress-row');
+  queueProgressRow.classList.toggle('hidden', !showQueueProgress);
+  const queueProgress = el('queue-progress');
+  queueProgress.setAttribute('aria-valuemax', String(activeJobs));
+  queueProgress.setAttribute('aria-valuenow', String(runningJobs));
+  queueProgress.setAttribute('aria-valuetext', runningJobs + ' running, ' +
+    queuedJobs + ' queued');
+  el('queue-progress-fill').style.width = progressPercent + '%';
+  el('queue-progress-label').textContent = runningJobs + ' running · ' +
+    queuedJobs + ' queued';
   const hasActiveFiles = state.activeJobCount > 0;
   jobsSection.classList.toggle('is-processing', hasActiveFiles);
   jobsSection.classList.toggle('has-failures', state.failedJobCount > 0);

@@ -1200,7 +1200,31 @@ button.small:hover:not(:disabled) { color: var(--accent); background: var(--acce
 }
 .jobs-title { min-width: 0; }
 .jobs-title h2 { margin: 0; }
-#queue-summary { margin: 0 0 10px; text-align: right; font-size: 12px; font-weight: 650; }
+.queue-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.queue-progress {
+  width: 88px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+.queue-progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width .25s ease;
+}
+.queue-progress-label { font-size: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#queue-summary { margin: 0 0 0 auto; text-align: right; font-size: 12px; font-weight: 650; }
 .jobs-stats {
   gap: 12px;
   margin-bottom: 28px;

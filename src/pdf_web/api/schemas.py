@@ -80,6 +80,7 @@ class QueuePageResponse(BaseModel):
     your_running: int
     all_terminal: bool
     total_jobs: int
+    processed_jobs: int
     queue_generation: int
     next_cursor: str | None = None
     jobs: list[QueueJobResponse]

@@ -122,6 +122,7 @@ def _queue_snapshot(
         "your_running": your_running,
         "all_terminal": not has_active,
         "total_jobs": total_jobs,
+        "processed_jobs": runtime.store.owner_processed_job_count(owner),
         "queue_generation": runtime.runner.queue_generation(),
         "next_cursor": next_cursor,
         "jobs": [queue_payload(job, pending) for job in jobs],
@@ -138,6 +139,7 @@ def _queue_meta(owner: str) -> dict[str, Any]:
         "your_running": your_running,
         "all_terminal": not has_active,
         "total_jobs": runtime.store.owner_job_count(owner),
+        "processed_jobs": runtime.store.owner_processed_job_count(owner),
         "queue_generation": runtime.runner.queue_generation(),
     }
 
