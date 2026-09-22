@@ -528,10 +528,11 @@ async def download_bundle(
         raise HTTPException(status_code=409, detail="The job is still running.")
 
     if not job.bundle_path.is_file():
-        bundle_job = STORE.snapshot(job_id)
-        if bundle_job is None:
-            raise HTTPException(status_code=404, detail="Not found.")
-        await asyncio.to_thread(build_bundle, bundle_job, job.bundle_path)
+        with STORE.bundle_snapshot(job_id) as bundle_job:
+            if bundle_job is None:
+                raise HTTPException(status_code=404, detail="Not found.")
+            if not job.bundle_path.is_file():
+                await asyncio.to_thread(build_bundle, bundle_job, job.bundle_path)
 
     bundle_path = _require_file(job.bundle_path)
     return FileResponse(
@@ -654,7 +655,7 @@ async def retry_job(
 @app.delete("/api/jobs")
 async def delete_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
     '''Delete every terminal job owned by the current user.'''
-    jobs = STORE.list_snapshots(user)
+    jobs = STORE.list_access_snapshots(user)
     deleted: list[str] = []
     skipped: list[str] = []
     for job in jobs:

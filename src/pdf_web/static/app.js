@@ -1,6 +1,7 @@
 'use strict';
 
 const SSE_RECONNECT_MS = 2000;
+const MAX_TERMINAL_QUEUE_JOBS = 100;
 
 const state = {
   staged: [],
@@ -529,8 +530,7 @@ function applyQueueJob(job) {
   if (!previous || index < 0) {
     const jobs = state.jobs.slice();
     jobs.push(job);
-    jobs.sort((left, right) => right.created_at.localeCompare(left.created_at));
-    applyQueuePayload({ ...state.queueMeta, jobs });
+    applyQueuePayload({ ...state.queueMeta, jobs: retainQueueWindow(jobs) });
     return;
   }
 
@@ -681,6 +681,15 @@ function announceJobChange(job) {
 
 function isActiveJob(job) {
   return job.status === 'queued' || job.status === 'running';
+}
+
+function retainQueueWindow(jobs) {
+  const active = jobs.filter(isActiveJob);
+  const terminal = jobs.filter((job) => !isActiveJob(job))
+    .slice(0, MAX_TERMINAL_QUEUE_JOBS);
+  return active.concat(terminal).sort(
+    (left, right) => right.created_at.localeCompare(left.created_at)
+  );
 }
 
 function isVisibleJob(job) {

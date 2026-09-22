@@ -8,6 +8,7 @@ import json
 import zipfile
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from .models import Job, outcome_label
 
@@ -28,30 +29,35 @@ def build_bundle(job: Job, destination: Path) -> Path:
     Write the downloadable ZIP for a job, replacing any cached copy atomically.
     '''
     destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path = destination.with_name(f"{destination.name}.partial")
+    temporary_path = destination.with_name(
+        f"{destination.name}.{uuid4().hex}.partial"
+    )
     folder = _entry_name(Path(job.file.original_name).stem)
 
-    with zipfile.ZipFile(
-        temporary_path, "w", zipfile.ZIP_DEFLATED, compresslevel=6
-    ) as archive:
-        archive.writestr(
-            f"{folder}/manifest.json",
-            json.dumps(build_manifest(job), indent=2, default=str),
-        )
-        if job.log_path.is_file():
-            archive.write(job.log_path, f"{folder}/pipeline.log")
+    try:
+        with zipfile.ZipFile(
+            temporary_path, "w", zipfile.ZIP_DEFLATED, compresslevel=6
+        ) as archive:
+            archive.writestr(
+                f"{folder}/manifest.json",
+                json.dumps(build_manifest(job), indent=2, default=str),
+            )
+            if job.log_path.is_file():
+                archive.write(job.log_path, f"{folder}/pipeline.log")
 
-        pdf_path = job.artifact("pdf")
-        if pdf_path is not None:
-            archive.write(pdf_path, f"{folder}/{_entry_name(job.file.original_name)}")
+            pdf_path = job.artifact("pdf")
+            if pdf_path is not None:
+                archive.write(pdf_path, f"{folder}/{_entry_name(job.file.original_name)}")
 
-        for artifact in ("before", "after"):
-            path = job.artifact(artifact)
-            if path is not None:
-                archive.write(path, f"{folder}/{artifact}.json")
+            for artifact in ("before", "after"):
+                path = job.artifact(artifact)
+                if path is not None:
+                    archive.write(path, f"{folder}/{artifact}.json")
 
-    temporary_path.replace(destination)
-    return destination
+        temporary_path.replace(destination)
+        return destination
+    finally:
+        temporary_path.unlink(missing_ok=True)
 
 
 def _entry_name(name: str) -> str:

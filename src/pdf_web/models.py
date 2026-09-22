@@ -239,6 +239,9 @@ class Job:  # pylint: disable=too-many-instance-attributes
     state_lock: threading.RLock = field(
         default_factory=threading.RLock, repr=False, compare=False
     )
+    bundle_lock: threading.Lock = field(
+        default_factory=threading.Lock, repr=False, compare=False
+    )
 
     @property
     def base_path(self) -> Path:

@@ -10,9 +10,10 @@ import json
 import re
 import shutil
 import threading
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from pdf_api.models import PipelineResult, PipelineStatus, selected_validation_profiles
 from pdf_api.pipeline import artifact_path
@@ -151,10 +152,22 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             snapshot.stages = copy.deepcopy(job.stages)
             snapshot.result = copy.deepcopy(job.result)
             snapshot.state_lock = threading.RLock()
+            snapshot.bundle_lock = threading.Lock()
             return snapshot
 
+    @contextmanager
+    def bundle_snapshot(self, job_id: str) -> Iterator[Job | None]:
+        '''Serialize bundle creation for one live job.'''
+        with self._lock:
+            job = self._jobs.get(job_id)
+        if job is None:
+            yield None
+            return
+        with job.bundle_lock:
+            yield self._snapshot(job)
+
     @staticmethod
-    def _queue_snapshot(job: Job) -> QueueJobSnapshot:
+    def _queue_snapshot(job: Job) -> QueueJobSnapshot:  # pylint: disable=too-many-locals
         '''Copy only fields needed for one queue row.'''
         with job.state_lock:
             result = job.result
@@ -177,28 +190,44 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                     stage.get("name") == "unlock" and stage.get("status") == "ok"
                     for stage in stages
                 )
-            return QueueJobSnapshot(
-                job_id=job.job_id,
-                name=job.file.original_name,
-                page_count=job.file.page_count,
-                created_at=job.created_at,
-                started_at=job.started_at,
-                finished_at=job.finished_at,
-                config_file=job.config_file,
-                status=job.status,
-                outcome=job.outcome,
-                stages_done=len(stages),
-                current_stage=stages[-1]["name"] if stages else None,
-                before=summarize_report(result.before if result else None),
-                after=summarize_report(result.after if result else None),
-                initially_secured=initially_secured,
-                validation_requirement=validation_requirement,
-                has_pdf=artifact_path(
-                    job.output_dir, "pdf",
-                    result.output_pdf_path if result else None,
-                ) is not None,
-                error=job.error,
-            )
+            job_id = job.job_id
+            name = job.file.original_name
+            page_count = job.file.page_count
+            created_at = job.created_at
+            started_at = job.started_at
+            finished_at = job.finished_at
+            config_file = job.config_file
+            status = job.status
+            outcome = job.outcome
+            before = summarize_report(result.before if result else None)
+            after = summarize_report(result.after if result else None)
+            error = job.error
+            output_dir = job.output_dir
+            output_pdf_path = result.output_pdf_path if result else None
+            stages_done = len(stages)
+            current_stage = stages[-1]["name"] if stages else None
+
+        # Filesystem checks can be slow and do not need the mutable job lock.
+        has_pdf = artifact_path(output_dir, "pdf", output_pdf_path) is not None
+        return QueueJobSnapshot(
+            job_id=job_id,
+            name=name,
+            page_count=page_count,
+            created_at=created_at,
+            started_at=started_at,
+            finished_at=finished_at,
+            config_file=config_file,
+            status=status,
+            outcome=outcome,
+            stages_done=stages_done,
+            current_stage=current_stage,
+            before=before,
+            after=after,
+            initially_secured=initially_secured,
+            validation_requirement=validation_requirement,
+            has_pdf=has_pdf,
+            error=error,
+        )
 
     def queue_snapshot(self, job_id: str) -> QueueJobSnapshot | None:
         '''Return one compact queue projection.'''
@@ -223,8 +252,11 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         '''Return scalar job state for authorization and file operations.'''
         with self._lock:
             job = self._jobs.get(job_id)
-        if job is None:
-            return None
+        return self._access_snapshot(job) if job is not None else None
+
+    @staticmethod
+    def _access_snapshot(job: Job) -> JobAccessSnapshot:
+        '''Copy only scalar state and paths needed by file operations.'''
         with job.state_lock:
             result = job.result
             return JobAccessSnapshot(
@@ -244,6 +276,15 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 verbose=job.verbose,
                 output_pdf_path=result.output_pdf_path if result else None,
             )
+
+    def list_access_snapshots(self, owner: str) -> list[JobAccessSnapshot]:
+        '''Return compact access projections for one owner, newest first.'''
+        with self._lock:
+            jobs = [
+                self._jobs[job_id]
+                for job_id in reversed(self._owner_order.get(owner, []))
+            ]
+        return [self._access_snapshot(job) for job in jobs]
 
     def list_snapshots(self, owner: str) -> list[Job]:
         '''Return detached snapshots for one owner, newest first.'''
