@@ -345,8 +345,9 @@ async def queue_view(
     '''
     Summarize one page of the caller's jobs.
 
-    Return a paginated fallback snapshot. Live browsers use the owner-scoped
-    SSE endpoint below after their initial load.
+    Return a paginated HTTP snapshot for non-streaming clients and recovery
+    actions. Live browsers receive their initial state and updates from the
+    owner-scoped SSE endpoint below.
     '''
     return _queue_snapshot(user, cursor, limit)
 
