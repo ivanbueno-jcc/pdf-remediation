@@ -142,6 +142,28 @@ test('validation requirement is merged with the outcome pill', () => {
   assert.doesNotMatch(entry.validation.innerHTML, /validation-requirement/);
 });
 
+test('unchanged job rows retain their rendered action controls', () => {
+  const { buildJobRow, updateJobRow } = loadStagingCode();
+  const job = {
+    job_id: 'job-1', name: 'document.pdf', created_at: '2026-08-31T12:00:00',
+    page_count: 2, config_label: 'Standard', initially_secured: false,
+    status: 'completed', outcome: 'remediated', outcome_label: 'Remediated',
+    validation_requirement: 'wcag only', before: null, after: null,
+    current_stage: null, jobs_ahead: null, has_pdf: false, error: null,
+  };
+  const entry = buildJobRow(job);
+  entry.status.querySelectorAll = () => [];
+
+  updateJobRow(entry, job);
+  const actions = entry.fileActions.children;
+  const downloads = entry.downloads.children;
+
+  updateJobRow(entry, { ...job });
+
+  assert.equal(entry.fileActions.children, actions);
+  assert.equal(entry.downloads.children, downloads);
+});
+
 test('submission is disabled when neither validation profile is selected', () => {
   const { addFiles, state, elements, updateSubmitState } = loadStagingCode();
   state.health = { can_submit: true };

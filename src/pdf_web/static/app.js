@@ -913,10 +913,35 @@ function buildJobRow(job) {
   return entry;
 }
 
+function jobRowFingerprint(job) {
+  return JSON.stringify({
+    name: job.name,
+    created_at: job.created_at,
+    page_count: job.page_count,
+    config_label: job.config_label,
+    config_file: job.config_file,
+    initially_secured: job.initially_secured,
+    status: job.status,
+    outcome: job.outcome,
+    outcome_label: job.outcome_label,
+    validation_requirement: job.validation_requirement,
+    current_stage: job.current_stage,
+    jobs_ahead: job.jobs_ahead,
+    before: job.before,
+    after: job.after,
+    has_pdf: job.has_pdf,
+    error: job.error,
+    cancelling: state.cancellingJobs.has(job.job_id),
+  });
+}
+
 function updateJobRow(entry, job) {
   const previousStatus = entry.row.dataset.status;
   const previousOutcome = entry.row.dataset.outcome;
+  const fingerprint = jobRowFingerprint(job);
   entry.job = job;
+  if (entry.renderFingerprint === fingerprint) return;
+  entry.renderFingerprint = fingerprint;
   entry.row.dataset.status = job.status;
   entry.row.dataset.outcome = job.outcome || '';
   renderJobMeta(entry.meta, job);
