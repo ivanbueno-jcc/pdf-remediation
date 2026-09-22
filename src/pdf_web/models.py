@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
+import threading
 from typing import Any
 
 from pdf_api.models import (
@@ -149,6 +150,9 @@ class Job:  # pylint: disable=too-many-instance-attributes
     result: PipelineResult | None = None
     outcome: str | None = None
     error: str | None = None
+    state_lock: threading.RLock = field(
+        default_factory=threading.RLock, repr=False, compare=False
+    )
 
     @property
     def base_path(self) -> Path:
@@ -203,86 +207,92 @@ class Job:  # pylint: disable=too-many-instance-attributes
         '''
         Return one downloadable artifact, if the pipeline produced it.
         '''
-        return artifact_path(
-            self.output_dir,
-            name,
-            self.result.output_pdf_path if self.result else None,
-        )
+        with self.state_lock:
+            return artifact_path(
+                self.output_dir,
+                name,
+                self.result.output_pdf_path if self.result else None,
+            )
 
     def is_terminal(self) -> bool:
         '''
         Return whether the job has finished.
         '''
-        return self.status in TERMINAL_STATUSES
+        with self.state_lock:
+            return self.status in TERMINAL_STATUSES
 
     @property
     def initially_secured(self) -> bool:
         '''Return whether the uploaded PDF was secured before processing.'''
-        if self.result is not None and self.result.initially_secured is not None:
-            return self.result.initially_secured
-        return any(
-            stage.get("name") == "unlock" and stage.get("status") == "ok"
-            for stage in self.stages
-        )
+        with self.state_lock:
+            if self.result is not None and self.result.initially_secured is not None:
+                return self.result.initially_secured
+            return any(
+                stage.get("name") == "unlock" and stage.get("status") == "ok"
+                for stage in self.stages
+            )
 
     def required_profiles(self) -> tuple[str, ...]:
         '''Return the validation profiles selected when this job was submitted.'''
-        return selected_validation_profiles(
-            self.require_wcag,
-            self.require_pdfua1,
-            self.wcag_and_ua1_must_pass,
-        )
+        with self.state_lock:
+            return selected_validation_profiles(
+                self.require_wcag,
+                self.require_pdfua1,
+                self.wcag_and_ua1_must_pass,
+            )
 
     @property
     def validation_requirement(self) -> str:
         '''Return the user-facing label for this job's selected profiles.'''
-        profiles = self.required_profiles()
-        if profiles == ("wcag",):
-            return "wcag only"
-        if profiles == ("ua1",):
-            return "pdfua1 only"
-        if profiles == ("wcag", "ua1"):
-            return "wcag and pdfua1"
-        return "no validation profile"
+        with self.state_lock:
+            profiles = self.required_profiles()
+            if profiles == ("wcag",):
+                return "wcag only"
+            if profiles == ("ua1",):
+                return "pdfua1 only"
+            if profiles == ("wcag", "ua1"):
+                return "wcag and pdfua1"
+            return "no validation profile"
 
     def to_dict(self) -> dict[str, Any]:
         '''
         Return a JSON-serializable view for the browser.
         '''
-        result = self.result
-        return {
-            "job_id": self.job_id,
-            "submitted_by": self.submitted_by,
-            "created_at": self.created_at.isoformat(timespec="seconds"),
-            "started_at": (
-                self.started_at.isoformat(timespec="seconds")
-                if self.started_at else None
-            ),
-            "finished_at": (
-                self.finished_at.isoformat(timespec="seconds")
-                if self.finished_at else None
-            ),
-            "status": str(self.status),
-            "config_file": self.config_file,
-            "attempt_unlock": self.attempt_unlock,
-            "attempt_fix": self.attempt_fix,
-            "skip_font_fix": self.skip_font_fix,
-            "attempt_font_fix": not self.skip_font_fix,
-            "attempt_targeted_fixes": self.attempt_targeted_fixes,
-            "wcag_and_ua1_must_pass": len(self.required_profiles()) == 2,
-            "require_wcag": "wcag" in self.required_profiles(),
-            "require_pdfua1": "ua1" in self.required_profiles(),
-            "validation_requirement": self.validation_requirement,
-            "verbose": self.verbose,
-            "file": self.file.to_dict(),
-            "stages": self.stages,
-            "outcome": self.outcome,
-            "outcome_label": outcome_label(self.outcome),
-            "before": summarize_report(result.before if result else None),
-            "after": summarize_report(result.after if result else None),
-            "initially_secured": self.initially_secured,
-            "has_pdf": self.artifact("pdf") is not None,
-            "warnings": list(result.warnings) if result else [],
-            "diagnostics": list(result.diagnostics) if result else [],
-            "error": self.error,
-        }
+        with self.state_lock:
+            result = self.result
+            return {
+                "job_id": self.job_id,
+                "submitted_by": self.submitted_by,
+                "created_at": self.created_at.isoformat(timespec="seconds"),
+                "started_at": (
+                    self.started_at.isoformat(timespec="seconds")
+                    if self.started_at else None
+                ),
+                "finished_at": (
+                    self.finished_at.isoformat(timespec="seconds")
+                    if self.finished_at else None
+                ),
+                "status": str(self.status),
+                "config_file": self.config_file,
+                "attempt_unlock": self.attempt_unlock,
+                "attempt_fix": self.attempt_fix,
+                "skip_font_fix": self.skip_font_fix,
+                "attempt_font_fix": not self.skip_font_fix,
+                "attempt_targeted_fixes": self.attempt_targeted_fixes,
+                "wcag_and_ua1_must_pass": len(self.required_profiles()) == 2,
+                "require_wcag": "wcag" in self.required_profiles(),
+                "require_pdfua1": "ua1" in self.required_profiles(),
+                "validation_requirement": self.validation_requirement,
+                "verbose": self.verbose,
+                "file": self.file.to_dict(),
+                "stages": self.stages,
+                "outcome": self.outcome,
+                "outcome_label": outcome_label(self.outcome),
+                "before": summarize_report(result.before if result else None),
+                "after": summarize_report(result.after if result else None),
+                "initially_secured": self.initially_secured,
+                "has_pdf": self.artifact("pdf") is not None,
+                "warnings": list(result.warnings) if result else [],
+                "diagnostics": list(result.diagnostics) if result else [],
+                "error": self.error,
+            }

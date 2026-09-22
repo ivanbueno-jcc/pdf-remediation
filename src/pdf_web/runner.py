@@ -280,20 +280,21 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         '''
         Run the pipeline for one job and record what it produced.
         '''
-        job.status = JobStatus.RUNNING
-        job.started_at = datetime.now()
-        self._store.emit(job.job_id, "status", {"status": str(job.status)})
-        self._log(job, f"Processing {job.file.original_name}")
-
-        options = PipelineOptions(
-            config_file=job.config_file,
-            require_wcag="wcag" in job.required_profiles(),
-            require_pdfua1="ua1" in job.required_profiles(),
-            attempt_unlock=job.attempt_unlock,
-            attempt_fix=job.attempt_fix,
-            attempt_font_fix=not job.skip_font_fix,
-            attempt_targeted_fixes=job.attempt_targeted_fixes,
-        )
+        with job.state_lock:
+            job.status = JobStatus.RUNNING
+            job.started_at = datetime.now()
+            filename = job.file.original_name
+            options = PipelineOptions(
+                config_file=job.config_file,
+                require_wcag="wcag" in job.required_profiles(),
+                require_pdfua1="ua1" in job.required_profiles(),
+                attempt_unlock=job.attempt_unlock,
+                attempt_fix=job.attempt_fix,
+                attempt_font_fix=not job.skip_font_fix,
+                attempt_targeted_fixes=job.attempt_targeted_fixes,
+            )
+        self._store.emit(job.job_id, "status", {"status": str(JobStatus.RUNNING)})
+        self._log(job, f"Processing {filename}")
 
         result = process_pdf(
             job.input_path,
@@ -303,11 +304,13 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             should_cancel=lambda: self._is_cancelled(job.job_id),
         )
 
-        job.result = result
-        job.outcome = str(result.status)
-        job.status = status_for(result.status)
-        job.error = result.error
-        for warning in result.warnings:
+        with job.state_lock:
+            job.result = result
+            job.outcome = str(result.status)
+            job.status = status_for(result.status)
+            job.error = result.error
+            warnings = list(result.warnings)
+        for warning in warnings:
             self._log(job, f"[WARN] {warning}")
         self._finish(job)
 
@@ -316,7 +319,8 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         Record one stage as the pipeline finishes it.
         '''
         payload = stage.to_dict()
-        job.stages.append(payload)
+        with job.state_lock:
+            job.stages.append(payload)
         self._log(
             job,
             f"{payload['name']}: {payload['status']}"
@@ -328,16 +332,18 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         '''
         Mark a job cancelled without having run the pipeline.
         '''
-        job.status = JobStatus.CANCELLED
-        job.outcome = str(PipelineStatus.CANCELLED)
-        job.error = message
+        with job.state_lock:
+            job.status = JobStatus.CANCELLED
+            job.outcome = str(PipelineStatus.CANCELLED)
+            job.error = message
         self._finish(job)
 
     def _finish(self, job: Job) -> None:
         '''
         Persist a finished job and announce it.
         '''
-        job.finished_at = datetime.now()
+        with job.state_lock:
+            job.finished_at = datetime.now()
         try:
             save_meta(job)
         except OSError as error:

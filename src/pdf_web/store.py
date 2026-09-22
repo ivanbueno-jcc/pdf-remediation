@@ -130,18 +130,19 @@ def save_meta(job: Job) -> None:
     """
     Persist a job's metadata so downloads survive a server restart.
     """
-    job.web_path.mkdir(parents=True, exist_ok=True)
-    payload = job.to_dict()
-    result = job.result
-    payload["output_pdf_path"] = (
-        result.output_pdf_path.relative_to(job.base_path).as_posix()
-        if result and result.output_pdf_path
-        and result.output_pdf_path.is_relative_to(job.base_path)
-        else None
-    )
-    job.meta_path.write_text(
-        json.dumps(payload, indent=2, default=str), encoding="utf-8"
-    )
+    with job.state_lock:
+        job.web_path.mkdir(parents=True, exist_ok=True)
+        payload = job.to_dict()
+        result = job.result
+        payload["output_pdf_path"] = (
+            result.output_pdf_path.relative_to(job.base_path).as_posix()
+            if result and result.output_pdf_path
+            and result.output_pdf_path.is_relative_to(job.base_path)
+            else None
+        )
+        job.meta_path.write_text(
+            json.dumps(payload, indent=2, default=str), encoding="utf-8"
+        )
 
 
 def load_meta(meta_path: Path) -> Job | None:

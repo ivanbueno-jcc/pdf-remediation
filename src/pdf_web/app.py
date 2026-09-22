@@ -9,6 +9,7 @@ import hashlib
 import json
 import shutil
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
@@ -76,6 +77,20 @@ ASSET_VERSION_PATH = PathParam(..., pattern=r"^[0-9a-f]{12}$")
 
 STORE = JobStore()
 RUNNER = PipelineRunner(STORE)
+
+
+@dataclass(frozen=True)
+class SubmissionOptions:  # pylint: disable=too-many-instance-attributes
+    '''Validated options shared by every file in one submission.'''
+
+    config_file: str
+    attempt_unlock: bool
+    attempt_fix: bool
+    skip_font_fix: bool
+    attempt_targeted_fixes: bool
+    require_wcag: bool
+    require_pdfua1: bool
+    verbose: bool
 
 
 @asynccontextmanager
@@ -309,9 +324,12 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
     '''
     List known jobs, newest first.
     '''
-    return {
-        "jobs": [
-            {
+    jobs = []
+    for job in STORE.list_jobs():
+        with job.state_lock:
+            if job.submitted_by != user:
+                continue
+            jobs.append({
                 "job_id": job.job_id,
                 "status": str(job.status),
                 "queued": job.status == JobStatus.QUEUED,
@@ -321,11 +339,137 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
                 "outcome": job.outcome,
                 "outcome_label": outcome_label(job.outcome),
                 "config_file": job.config_file,
-            }
-            for job in STORE.list_jobs()
-            if job.submitted_by == user
-        ]
-    }
+            })
+    return {"jobs": jobs}
+
+
+def _validate_submission_options(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        config_file: str,
+        attempt_unlock: bool,
+        attempt_fix: bool,
+        attempt_font_fix: bool | None,
+        skip_font_fix: bool,
+        attempt_targeted_fixes: bool,
+        require_wcag: bool,
+        require_pdfua1: bool,
+        wcag_and_ua1_must_pass: bool | None,
+        verbose: bool) -> SubmissionOptions:
+    '''Validate form options once before processing any uploaded file.'''
+    if config_file not in ALLOWED_CONFIG_FILES:
+        raise HTTPException(
+            status_code=400, detail=f"Unknown configuration file: {config_file}"
+        )
+    if not (CONFIG_DIR / config_file).is_file():
+        raise HTTPException(
+            status_code=400, detail=f"Configuration file is missing: {config_file}"
+        )
+
+    should_attempt_font_fix = (
+        attempt_font_fix if attempt_font_fix is not None else not skip_font_fix
+    )
+    if wcag_and_ua1_must_pass:
+        require_wcag = True
+        require_pdfua1 = True
+    if not require_wcag and not require_pdfua1:
+        raise HTTPException(
+            status_code=400, detail="Select WCAG, PDF/UA-1, or both."
+        )
+
+    return SubmissionOptions(
+        config_file=config_file,
+        attempt_unlock=attempt_unlock,
+        attempt_fix=attempt_fix,
+        skip_font_fix=not should_attempt_font_fix,
+        attempt_targeted_fixes=attempt_targeted_fixes,
+        require_wcag=require_wcag,
+        require_pdfua1=require_pdfua1,
+        verbose=verbose,
+    )
+
+
+async def _prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        upload: UploadFile,
+        options: SubmissionOptions,
+        user: str,
+        created_at: datetime,
+        taken_ids: set[str],
+        taken_names: set[str],
+        previous_bytes: int) -> tuple[Job | None, str | None, int]:
+    '''Write and validate one upload, returning a rejected-file reason if needed.'''
+    original_name = upload.filename or "upload.pdf"
+    job: Job | None = None
+    try:
+        stored_name = sanitize_upload_name(original_name, taken_names)
+        job = Job(
+            job_id=_new_job_id(taken_ids),
+            created_at=created_at,
+            config_file=options.config_file,
+            file=UploadedFile(original_name, stored_name, 0),
+            submitted_by=user,
+            attempt_unlock=options.attempt_unlock,
+            attempt_fix=options.attempt_fix,
+            skip_font_fix=options.skip_font_fix,
+            attempt_targeted_fixes=options.attempt_targeted_fixes,
+            require_wcag=options.require_wcag,
+            require_pdfua1=options.require_pdfua1,
+            verbose=options.verbose,
+        )
+        job.input_path.parent.mkdir(parents=True, exist_ok=True)
+        job.web_path.mkdir(parents=True, exist_ok=True)
+
+        size = await asyncio.to_thread(
+            write_upload_stream, _iterate_upload(upload),
+            job.input_path, original_name
+        )
+        if not looks_like_pdf(job.input_path):
+            raise UploadError(f"File is not a PDF: {original_name}")
+
+        page_count = await asyncio.to_thread(get_pdf_page_count, job.input_path)
+        if previous_bytes + size > MAX_SUBMISSION_BYTES:
+            raise UploadError(
+                f"Submission exceeds the {MAX_SUBMISSION_BYTES} byte limit."
+            )
+        with job.state_lock:
+            job.file.page_count = page_count
+            job.file.size_bytes = size
+        return job, None, size
+    except UploadError as error:
+        if job is not None:
+            shutil.rmtree(job.base_path, ignore_errors=True)
+        return None, str(error), 0
+
+
+def _queue_job_payload(job: Job, pending_positions: dict[str, int]) -> dict[str, Any]:
+    '''Build one queue row from one consistent locked job state.'''
+    with job.state_lock:
+        return {
+            "job_id": job.job_id,
+            "name": job.file.original_name,
+            "created_at": job.created_at.isoformat(timespec="seconds"),
+            "started_at": job.started_at.isoformat(timespec="seconds")
+            if job.started_at else None,
+            "finished_at": job.finished_at.isoformat(timespec="seconds")
+            if job.finished_at else None,
+            "page_count": job.file.page_count,
+            "config_file": job.config_file,
+            "config_label": CONFIG_FILE_DETAILS.get(job.config_file, {}).get(
+                "label", job.config_file
+            ),
+            "status": str(job.status),
+            "outcome": job.outcome,
+            "outcome_label": outcome_label(job.outcome),
+            "stages_done": len(job.stages),
+            "current_stage": job.stages[-1]["name"] if job.stages else None,
+            "jobs_ahead": pending_positions.get(
+                job.job_id, 0 if job.status == JobStatus.RUNNING else None
+            ),
+            "before": summarize_report(job.result.before if job.result else None),
+            "after": summarize_report(job.result.after if job.result else None),
+            "initially_secured": job.initially_secured,
+            "validation_requirement": job.validation_requirement,
+            "has_pdf": job.artifact("pdf") is not None,
+            "error": job.error,
+        }
 
 
 @app.post("/api/jobs", status_code=201)
@@ -349,27 +493,11 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
     submission, so nineteen good PDFs still run when the twentieth is a
     spreadsheet.
     '''
-    if config_file not in ALLOWED_CONFIG_FILES:
-        raise HTTPException(
-            status_code=400, detail=f"Unknown configuration file: {config_file}"
-        )
-    if not (CONFIG_DIR / config_file).is_file():
-        raise HTTPException(
-            status_code=400, detail=f"Configuration file is missing: {config_file}"
-        )
-
-    # Keep accepting the original negative option for older clients while the
-    # browser uses the stage-aligned positive checkbox.
-    should_attempt_font_fix = (
-        attempt_font_fix if attempt_font_fix is not None else not skip_font_fix
+    options = _validate_submission_options(
+        config_file, attempt_unlock, attempt_fix, attempt_font_fix, skip_font_fix,
+        attempt_targeted_fixes, require_wcag, require_pdfua1,
+        wcag_and_ua1_must_pass, verbose,
     )
-    if wcag_and_ua1_must_pass:
-        require_wcag = True
-        require_pdfua1 = True
-    if not require_wcag and not require_pdfua1:
-        raise HTTPException(
-            status_code=400, detail="Select WCAG, PDF/UA-1, or both."
-        )
 
     incoming = [upload for upload in files if upload.filename]
     if not incoming:
@@ -391,47 +519,13 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
 
     for upload in incoming:
         original_name = upload.filename or "upload.pdf"
-        job = None
-        try:
-            stored_name = sanitize_upload_name(original_name, taken_names)
-            job = Job(
-                job_id=_new_job_id(taken_ids),
-                created_at=created_at,
-                config_file=config_file,
-                file=UploadedFile(original_name, stored_name, 0),
-                submitted_by=user,
-                attempt_unlock=attempt_unlock,
-                attempt_fix=attempt_fix,
-                skip_font_fix=not should_attempt_font_fix,
-                attempt_targeted_fixes=attempt_targeted_fixes,
-                require_wcag=require_wcag,
-                require_pdfua1=require_pdfua1,
-                verbose=verbose,
-            )
-            job.input_path.parent.mkdir(parents=True, exist_ok=True)
-            job.web_path.mkdir(parents=True, exist_ok=True)
-
-            size = await asyncio.to_thread(
-                write_upload_stream, _iterate_upload(upload),
-                job.input_path, original_name
-            )
-            if not looks_like_pdf(job.input_path):
-                raise UploadError(f"File is not a PDF: {original_name}")
-
-            job.file.page_count = await asyncio.to_thread(
-                get_pdf_page_count, job.input_path
-            )
-            total_bytes += size
-            if total_bytes > MAX_SUBMISSION_BYTES:
-                raise UploadError(
-                    f"Submission exceeds the {MAX_SUBMISSION_BYTES} byte limit."
-                )
-            job.file.size_bytes = size
-        except UploadError as error:
-            if job is not None:
-                shutil.rmtree(job.base_path, ignore_errors=True)
-            rejected.append({"original_name": original_name, "reason": str(error)})
+        job, error, size = await _prepare_uploaded_job(
+            upload, options, user, created_at, taken_ids, taken_names, total_bytes
+        )
+        if error is not None or job is None:
+            rejected.append({"original_name": original_name, "reason": error or "Upload rejected."})
             continue
+        total_bytes += size
 
         STORE.add(job)
         save_meta(job)
@@ -476,7 +570,11 @@ async def queue_view(
     cursor is the last job id returned, so new jobs added at the front do not
     shift later pages while a client is reading them.
     '''
-    all_jobs = [job for job in STORE.list_jobs() if job.submitted_by == user]
+    all_jobs = []
+    for job in STORE.list_jobs():
+        with job.state_lock:
+            if job.submitted_by == user:
+                all_jobs.append(job)
     start = 0
     if cursor is not None:
         try:
@@ -499,41 +597,7 @@ async def queue_view(
         "all_terminal": all(job.is_terminal() for job in all_jobs),
         "total_jobs": len(all_jobs),
         "next_cursor": next_cursor,
-        "jobs": [
-            {
-                "job_id": job.job_id,
-                "name": job.file.original_name,
-                "created_at": job.created_at.isoformat(timespec="seconds"),
-                "started_at": (
-                    job.started_at.isoformat(timespec="seconds")
-                    if job.started_at else None
-                ),
-                "finished_at": (
-                    job.finished_at.isoformat(timespec="seconds")
-                    if job.finished_at else None
-                ),
-                "page_count": job.file.page_count,
-                "config_file": job.config_file,
-                "config_label": CONFIG_FILE_DETAILS.get(job.config_file, {}).get(
-                    "label", job.config_file
-                ),
-                "status": str(job.status),
-                "outcome": job.outcome,
-                "outcome_label": outcome_label(job.outcome),
-                "stages_done": len(job.stages),
-                "current_stage": job.stages[-1]["name"] if job.stages else None,
-                "jobs_ahead": pending_positions.get(
-                    job.job_id, 0 if job.status == JobStatus.RUNNING else None
-                ),
-                "before": summarize_report(job.result.before if job.result else None),
-                "after": summarize_report(job.result.after if job.result else None),
-                "initially_secured": job.initially_secured,
-                "validation_requirement": job.validation_requirement,
-                "has_pdf": job.artifact("pdf") is not None,
-                "error": job.error,
-            }
-            for job in jobs
-        ],
+        "jobs": [_queue_job_payload(job, pending_positions) for job in jobs],
     }
 
 
