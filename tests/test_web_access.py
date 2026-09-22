@@ -61,6 +61,7 @@ class AccessControlTests(unittest.TestCase):
         self.enterContext(mock.patch.object(web_app, "STORE", self.store))
         self.runner = mock.Mock(queue_depth=mock.Mock(return_value=0),
                                 running_count=mock.Mock(return_value=0),
+                                pending_job_ids=mock.Mock(return_value=()),
                                 jobs_ahead=mock.Mock(return_value=None),
                                 submit=mock.Mock(return_value=0),
                                 submit_batch=mock.Mock(return_value=[0]))
@@ -270,12 +271,13 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.enterContext(mock.patch.object(web_app, "JOBS_ROOT", self.jobs_root))
         self.store = JobStore()
         self.enterContext(mock.patch.object(web_app, "STORE", self.store))
-        self.enterContext(mock.patch.object(
-            web_app, "RUNNER",
-            mock.Mock(submit=mock.Mock(return_value=0),
-                      submit_batch=mock.Mock(return_value=[0]),
-                      jobs_ahead=mock.Mock(return_value=None))
-        ))
+        self.runner = mock.Mock(
+            submit=mock.Mock(return_value=0),
+            submit_batch=mock.Mock(return_value=[0]),
+            pending_job_ids=mock.Mock(return_value=()),
+            jobs_ahead=mock.Mock(return_value=None),
+        )
+        self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
         self.client = TestClient(web_app.app)
 
     def test_submission_records_the_caller(self) -> None:
@@ -390,6 +392,33 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.assertTrue(job["initially_secured"])
         self.assertEqual(job["validation_requirement"], "wcag only")
         self.assertTrue(job["created_at"])
+
+    def test_queue_is_paginated_and_precomputes_positions(self) -> None:
+        '''Queue positions are calculated once and pages have stable cursors.'''
+        first = make_job("20260827-130000-aaaaaa", submitted_by=ALICE)
+        second = make_job("20260827-130001-bbbbbb", submitted_by=ALICE)
+        self.store.add(first)
+        self.store.add(second)
+        self.runner.pending_job_ids.return_value = (second.job_id, first.job_id)
+
+        response = self.client.get(
+            "/api/queue?limit=1", headers=headers(ALICE)
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["total_jobs"], 2)
+        self.assertEqual(len(payload["jobs"]), 1)
+        self.assertEqual(payload["jobs"][0]["jobs_ahead"], 0)
+        self.assertIsNotNone(payload["next_cursor"])
+
+        next_response = self.client.get(
+            "/api/queue?limit=1&cursor=" + payload["next_cursor"],
+            headers=headers(ALICE),
+        )
+        self.assertEqual(next_response.status_code, 200)
+        self.assertEqual(len(next_response.json()["jobs"]), 1)
+        self.assertEqual(next_response.json()["jobs"][0]["jobs_ahead"], 1)
 
     def test_rejected_submission_returns_per_file_reasons(self) -> None:
         '''The browser can keep rejected files in the batch with their reason.'''

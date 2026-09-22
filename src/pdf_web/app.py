@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, AsyncIterator
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi import Path as PathParam
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response, StreamingResponse
 
@@ -401,21 +401,42 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
 
 
 @app.get("/api/queue")
-async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
+async def queue_view(
+        cursor: str | None = Query(None),
+        limit: int = Query(100, ge=1, le=200),
+        user: str = CURRENT_USER) -> dict[str, Any]:
     '''
-    Summarize the caller's jobs in one small payload.
+    Summarize one page of the caller's jobs.
 
     A browser watching twenty jobs cannot open twenty event streams: it would
     exhaust the per-origin connection limit and starve the rest of the page. So
-    the list view polls this, and the detail view keeps the single stream.
+    the list view polls this, and the detail view keeps the single stream. The
+    cursor is the last job id returned, so new jobs added at the front do not
+    shift later pages while a client is reading them.
     '''
-    jobs = [job for job in STORE.list_jobs() if job.submitted_by == user]
-    running = sum(1 for job in jobs if job.status == JobStatus.RUNNING)
+    all_jobs = [job for job in STORE.list_jobs() if job.submitted_by == user]
+    start = 0
+    if cursor is not None:
+        try:
+            start = next(index + 1 for index, job in enumerate(all_jobs)
+                         if job.job_id == cursor)
+        except StopIteration as error:
+            raise HTTPException(status_code=400, detail="Invalid queue cursor.") from error
+
+    jobs = all_jobs[start:start + limit]
+    next_cursor = jobs[-1].job_id if start + limit < len(all_jobs) else None
+    pending_positions = {
+        job_id: index for index, job_id in enumerate(RUNNER.pending_job_ids())
+    }
     return {
         "concurrency": max_concurrent_jobs(),
         "your_limit": max_running_jobs_per_user(),
-        "your_running": running,
-        "all_terminal": all(job.is_terminal() for job in jobs),
+        "your_running": sum(
+            1 for job in all_jobs if job.status == JobStatus.RUNNING
+        ),
+        "all_terminal": all(job.is_terminal() for job in all_jobs),
+        "total_jobs": len(all_jobs),
+        "next_cursor": next_cursor,
         "jobs": [
             {
                 "job_id": job.job_id,
@@ -439,7 +460,9 @@ async def queue_view(user: str = CURRENT_USER) -> dict[str, Any]:
                 "outcome_label": outcome_label(job.outcome),
                 "stages_done": len(job.stages),
                 "current_stage": job.stages[-1]["name"] if job.stages else None,
-                "jobs_ahead": RUNNER.jobs_ahead(job.job_id),
+                "jobs_ahead": pending_positions.get(
+                    job.job_id, 0 if job.status == JobStatus.RUNNING else None
+                ),
                 "before": summarize_report(job.result.before if job.result else None),
                 "after": summarize_report(job.result.after if job.result else None),
                 "initially_secured": job.initially_secured,

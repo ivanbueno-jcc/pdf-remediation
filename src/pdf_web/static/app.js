@@ -468,9 +468,22 @@ function stopPolling() {
 async function refreshQueue() {
   let payload;
   try {
-    const response = await fetch('/api/queue');
-    if (!response.ok) { stopPolling(); return; }
-    payload = await response.json();
+    const jobs = [];
+    let cursor = null;
+    let firstPage = null;
+    do {
+      const params = new URLSearchParams({ limit: '100' });
+      if (cursor) params.set('cursor', cursor);
+      const response = await fetch('/api/queue?' + params.toString());
+      if (!response.ok) { stopPolling(); return; }
+      const page = await response.json();
+      if (!firstPage) firstPage = page;
+      jobs.push(...(page.jobs || []));
+      const nextCursor = page.next_cursor || null;
+      if (nextCursor === cursor) break;
+      cursor = nextCursor;
+    } while (cursor);
+    payload = { ...firstPage, jobs };
   } catch (error) { return; }
 
   const jobs = payload.jobs || [];
