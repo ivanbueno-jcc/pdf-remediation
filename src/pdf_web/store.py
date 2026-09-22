@@ -14,7 +14,8 @@ from pdf_api.models import selected_validation_profiles
 from pdf_api.pipeline import artifact_path
 
 from .infrastructure.notifications import OwnerUpdateQueue
-from .infrastructure.persistence import (
+# These names are re-exported as the historical persistence API.
+from .infrastructure.persistence import (  # pylint: disable=unused-import
     is_valid_job_id,
     load_meta,
     load_persisted_jobs,
@@ -22,12 +23,21 @@ from .infrastructure.persistence import (
     sweep_expired_jobs,
 )
 from .models import (
-    Job,
+    JobRecord,
     JobAccessSnapshot,
     JobStatus,
     QueueJobSnapshot,
     summarize_report,
 )
+
+__all__ = [
+    "JobStore",
+    "is_valid_job_id",
+    "load_meta",
+    "load_persisted_jobs",
+    "save_meta",
+    "sweep_expired_jobs",
+]
 
 
 class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
@@ -40,7 +50,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         Create an empty store.
         '''
         self._lock = threading.Lock()
-        self._jobs: dict[str, Job] = {}
+        self._jobs: dict[str, JobRecord] = {}
         self._order: list[str] = []
         self._owner_order: dict[str, list[str]] = {}
         self._owner_positions: dict[str, dict[str, int]] = {}
@@ -84,13 +94,13 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 if not subscribers_for_owner:
                     self._owner_subscribers.pop(owner, None)
 
-    def add(self, job: Job) -> None:
+    def add(self, job: JobRecord) -> None:
         '''
         Register a new job.
         '''
         self.add_batch((job,))
 
-    def add_batch(self, jobs: tuple[Job, ...], notify: bool = True) -> None:
+    def add_batch(self, jobs: tuple[JobRecord, ...], notify: bool = True) -> None:
         '''Register jobs together, optionally delaying owner notifications.'''
         notifications: list[
             tuple[
@@ -100,17 +110,19 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         ] = []
         with self._lock:
             for job in jobs:
-                self._jobs[job.job_id] = job
-                self._order.append(job.job_id)
-                owner_ids = self._owner_order.setdefault(job.submitted_by, [])
-                owner_positions = self._owner_positions.setdefault(job.submitted_by, {})
-                owner_positions[job.job_id] = len(owner_ids)
-                owner_ids.append(job.job_id)
+                job_id = job.spec.job_id
+                owner = job.spec.submitted_by
+                self._jobs[job_id] = job
+                self._order.append(job_id)
+                owner_ids = self._owner_order.setdefault(owner, [])
+                owner_positions = self._owner_positions.setdefault(owner, {})
+                owner_positions[job_id] = len(owner_ids)
+                owner_ids.append(job_id)
                 if notify:
                     update, subscribers = self._touch_owner_locked(
-                        job.submitted_by, "job-added", job.job_id
+                        owner, "job-added", job_id
                     )
-                    notifications.append((job.submitted_by, update, subscribers))
+                    notifications.append((owner, update, subscribers))
         for owner, update, subscribers in notifications:
             self._publish_owner_update(owner, update, subscribers)
 
@@ -128,13 +140,13 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 if job is None:
                     continue
                 update, subscribers = self._touch_owner_locked(
-                    job.submitted_by, "job-added", job_id
+                    job.spec.submitted_by, "job-added", job_id
                 )
-                notifications.append((job.submitted_by, update, subscribers))
+                notifications.append((job.spec.submitted_by, update, subscribers))
         for owner, update, subscribers in notifications:
             self._publish_owner_update(owner, update, subscribers)
 
-    def get(self, job_id: str) -> Job | None:
+    def get(self, job_id: str) -> JobRecord | None:
         '''
         Return a detached snapshot by identifier.
         '''
@@ -142,22 +154,16 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             job = self._jobs.get(job_id)
         return self._snapshot(job) if job is not None else None
 
-    def get_mutable(self, job_id: str) -> Job | None:
+    def get_mutable(self, job_id: str) -> JobRecord | None:
         '''Return the live job for internal runner/store mutation only.'''
         with self._lock:
             return self._jobs.get(job_id)
 
     @staticmethod
-    def _snapshot(job: Job) -> Job:
+    def _snapshot(job: JobRecord) -> JobRecord:
         '''Copy a job consistently without holding the registry lock.'''
-        with job.state_lock:
-            snapshot = copy.copy(job)
-            snapshot.file = copy.deepcopy(job.file)
-            snapshot.stages = copy.deepcopy(job.stages)
-            snapshot.result = copy.deepcopy(job.result)
-            snapshot.state_lock = threading.RLock()
-            snapshot.bundle_lock = threading.Lock()
-            return snapshot
+        with job.state.lock:
+            return copy.copy(job)
 
     @contextmanager
     def job_artifact_lock(self, job_id: str) -> Iterator[bool]:
@@ -167,17 +173,18 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         if job is None:
             yield False
             return
-        with job.bundle_lock:
+        with job.state.bundle_lock:
             yield True
 
     @staticmethod
-    def _queue_snapshot(job: Job) -> QueueJobSnapshot:  # pylint: disable=too-many-locals
+    def _queue_snapshot(job: JobRecord) -> QueueJobSnapshot:  # pylint: disable=too-many-locals
         '''Copy only fields needed for one queue row.'''
-        with job.state_lock:
-            result = job.result
-            stages = job.stages
+        with job.state.lock:
+            spec, state, paths = job.spec, job.state, job.paths
+            result = state.result
+            stages = state.stages
             profiles = selected_validation_profiles(
-                job.require_wcag, job.require_pdfua1, job.wcag_and_ua1_must_pass
+                spec.require_wcag, spec.require_pdfua1, spec.wcag_and_ua1_must_pass
             )
             if profiles == ("wcag",):
                 validation_requirement = "wcag only"
@@ -194,19 +201,19 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                     stage.get("name") == "unlock" and stage.get("status") == "ok"
                     for stage in stages
                 )
-            job_id = job.job_id
-            name = job.file.original_name
-            page_count = job.file.page_count
-            created_at = job.created_at
-            started_at = job.started_at
-            finished_at = job.finished_at
-            config_file = job.config_file
-            status = job.status
-            outcome = job.outcome
+            job_id = spec.job_id
+            name = spec.file.original_name
+            page_count = state.page_count
+            created_at = spec.created_at
+            started_at = state.started_at
+            finished_at = state.finished_at
+            config_file = spec.config_file
+            status = state.status
+            outcome = state.outcome
             before = summarize_report(result.before if result else None)
             after = summarize_report(result.after if result else None)
-            error = job.error
-            output_dir = job.output_dir
+            error = state.error
+            output_dir = paths.output_dir
             output_pdf_path = result.output_pdf_path if result else None
             stages_done = len(stages)
             current_stage = stages[-1]["name"] if stages else None
@@ -248,7 +255,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             ]
         return [self._queue_snapshot(job) for job in jobs]
 
-    def snapshot(self, job_id: str) -> Job | None:
+    def snapshot(self, job_id: str) -> JobRecord | None:
         '''Return one lock-consistent, detached job snapshot.'''
         return self.get(job_id)
 
@@ -259,25 +266,26 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         return self._access_snapshot(job) if job is not None else None
 
     @staticmethod
-    def _access_snapshot(job: Job) -> JobAccessSnapshot:
+    def _access_snapshot(job: JobRecord) -> JobAccessSnapshot:
         '''Copy only scalar state and paths needed by file operations.'''
-        with job.state_lock:
-            result = job.result
+        with job.state.lock:
+            spec, state = job.spec, job.state
+            result = state.result
             return JobAccessSnapshot(
-                job_id=job.job_id,
-                submitted_by=job.submitted_by,
-                status=job.status,
-                original_name=job.file.original_name,
-                stored_name=job.file.stored_name,
-                size_bytes=job.file.size_bytes,
-                config_file=job.config_file,
-                attempt_unlock=job.attempt_unlock,
-                attempt_fix=job.attempt_fix,
-                skip_font_fix=job.skip_font_fix,
-                attempt_targeted_fixes=job.attempt_targeted_fixes,
-                require_wcag=job.require_wcag,
-                require_pdfua1=job.require_pdfua1,
-                verbose=job.verbose,
+                job_id=spec.job_id,
+                submitted_by=spec.submitted_by,
+                status=state.status,
+                original_name=spec.file.original_name,
+                stored_name=spec.file.stored_name,
+                size_bytes=spec.file.size_bytes,
+                config_file=spec.config_file,
+                attempt_unlock=spec.attempt_unlock,
+                attempt_fix=spec.attempt_fix,
+                skip_font_fix=spec.skip_font_fix,
+                attempt_targeted_fixes=spec.attempt_targeted_fixes,
+                require_wcag=spec.require_wcag,
+                require_pdfua1=spec.require_pdfua1,
+                verbose=spec.verbose,
                 output_pdf_path=result.output_pdf_path if result else None,
             )
 
@@ -290,7 +298,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             ]
         return [self._access_snapshot(job) for job in jobs]
 
-    def list_jobs(self) -> list[Job]:
+    def list_jobs(self) -> list[JobRecord]:
         '''
         Return all known jobs, newest first.
         '''
@@ -301,7 +309,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             ]
         return [self._snapshot(job) for job in jobs]
 
-    def remove(self, job_id: str, notify: bool = True) -> Job | None:
+    def remove(self, job_id: str, notify: bool = True) -> JobRecord | None:
         '''
         Drop a job from the registry.
         '''
@@ -310,19 +318,20 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             if job_id in self._order:
                 self._order.remove(job_id)
             if job is not None:
-                owner_jobs = self._owner_order.get(job.submitted_by, [])
-                owner_positions = self._owner_positions.get(job.submitted_by, {})
+                owner = job.spec.submitted_by
+                owner_jobs = self._owner_order.get(owner, [])
+                owner_positions = self._owner_positions.get(owner, {})
                 position = owner_positions.pop(job_id, None)
                 if position is not None:
                     owner_jobs.pop(position)
                     for index in range(position, len(owner_jobs)):
                         owner_positions[owner_jobs[index]] = index
                 if not owner_jobs:
-                    self._owner_order.pop(job.submitted_by, None)
-                    self._owner_positions.pop(job.submitted_by, None)
+                    self._owner_order.pop(owner, None)
+                    self._owner_positions.pop(owner, None)
                 if notify:
                     update, subscribers = self._touch_owner_locked(
-                        job.submitted_by, "job-removed", job.job_id
+                        owner, "job-removed", job.spec.job_id
                     )
                 else:
                     update = None
@@ -331,7 +340,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 update = None
                 subscribers = []
         if update is not None:
-            self._publish_owner_update(job.submitted_by, update, subscribers)
+            self._publish_owner_update(job.spec.submitted_by, update, subscribers)
         return job
 
     def active_job_ids(self, owner: str) -> tuple[str, ...]:
@@ -340,8 +349,8 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             active: list[str] = []
             for job_id in self._owner_order.get(owner, []):
                 job = self._jobs[job_id]
-                with job.state_lock:
-                    if job.status in (JobStatus.QUEUED, JobStatus.RUNNING):
+                with job.state.lock:
+                    if job.state.status in (JobStatus.QUEUED, JobStatus.RUNNING):
                         active.append(job_id)
             return tuple(active)
 
@@ -411,6 +420,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 "queue-changed" if event_type == "status" else "job-updated"
             )
             update, subscribers = self._touch_owner_locked(
-                job.submitted_by, update_type, job_id
+                job.spec.submitted_by, update_type, job_id
             )
-        self._publish_owner_update(job.submitted_by, update, subscribers)
+        self._publish_owner_update(job.spec.submitted_by, update, subscribers)

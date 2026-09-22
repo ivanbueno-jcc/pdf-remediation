@@ -13,9 +13,17 @@ from fastapi import HTTPException, UploadFile
 from .config import (
     ALLOWED_CONFIG_FILES,
     CONFIG_DIR,
+    JOBS_ROOT,
     MAX_SUBMISSION_BYTES,
 )
-from .models import Job, JobProcessingOptions, UploadedFile
+from .models import (
+    JobPaths,
+    JobProcessingOptions,
+    JobRecord,
+    JobSpec,
+    JobState,
+    UploadedFile,
+)
 from .uploads import (
     UploadError,
     looks_like_pdf,
@@ -91,13 +99,13 @@ async def prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-p
         taken_ids: set[str],
         taken_names: set[str],
         previous_bytes: int,
-        new_job_id: Callable[[set[str]], str]) -> tuple[Job | None, str | None, int]:
+        new_job_id: Callable[[set[str]], str]) -> tuple[JobRecord | None, str | None, int]:
     '''Write and validate one upload, returning a rejection reason if needed.'''
     original_name = upload.filename or "upload.pdf"
-    job: Job | None = None
+    job: JobRecord | None = None
     try:
         stored_name = sanitize_upload_name(original_name, taken_names)
-        job = Job(
+        spec = JobSpec(
             job_id=new_job_id(taken_ids),
             created_at=created_at,
             config_file=options.config_file,
@@ -111,28 +119,34 @@ async def prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-p
             require_pdfua1=options.require_pdfua1,
             verbose=options.verbose,
         )
-        job.input_path.parent.mkdir(parents=True, exist_ok=True)
-        job.web_path.mkdir(parents=True, exist_ok=True)
+        job = JobRecord(
+            spec, JobState(), JobPaths(spec.job_id, stored_name, JOBS_ROOT)
+        )
+        job.paths.input_path.parent.mkdir(parents=True, exist_ok=True)
+        job.paths.web_path.mkdir(parents=True, exist_ok=True)
 
         size = await asyncio.to_thread(
             write_upload_stream, _iterate_upload(upload),
-            job.input_path, original_name
+            job.paths.input_path, original_name
         )
-        if not looks_like_pdf(job.input_path):
+        if not looks_like_pdf(job.paths.input_path):
             raise UploadError(f"File is not a PDF: {original_name}")
 
         if previous_bytes + size > MAX_SUBMISSION_BYTES:
             raise UploadError(
                 f"Submission exceeds the {MAX_SUBMISSION_BYTES} byte limit."
             )
-        with job.state_lock:
-            job.file = replace(job.file, size_bytes=size)
+        with job.state.lock:
+            job.spec = replace(
+                job.spec,
+                file=replace(job.spec.file, size_bytes=size),
+            )
         return job, None, size
     except UploadError as error:
         if job is not None:
-            shutil.rmtree(job.base_path, ignore_errors=True)
+            shutil.rmtree(job.paths.base_path, ignore_errors=True)
         return None, str(error), 0
     except Exception:
         if job is not None:
-            shutil.rmtree(job.base_path, ignore_errors=True)
+            shutil.rmtree(job.paths.base_path, ignore_errors=True)
         raise

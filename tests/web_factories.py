@@ -7,7 +7,8 @@ from pathlib import Path
 
 from pdf_api.models import PipelineResult, PipelineStatus
 
-from pdf_web.models import Job, JobStatus, UploadedFile
+from pdf_web import models as web_models
+from pdf_web.models import JobPaths, JobRecord, JobSpec, JobState, JobStatus, UploadedFile
 
 DEFAULT_CREATED_AT = datetime(2026, 8, 27, 12, 0, 0)
 
@@ -18,22 +19,24 @@ def make_job(  # pylint: disable=too-many-arguments,too-many-positional-argument
         status: JobStatus = JobStatus.QUEUED,
         config_file: str = "default-slim.json",
         original_name: str = "Report v2.pdf",
-        stored_name: str = "Report_v2.pdf") -> Job:
+        stored_name: str = "Report_v2.pdf") -> JobRecord:
     '''
     Build a job for one PDF, with no on-disk artifacts.
     '''
-    return Job(
+    spec = JobSpec(
         job_id=job_id,
         created_at=DEFAULT_CREATED_AT,
         config_file=config_file,
         file=UploadedFile(original_name, stored_name, 1234),
         submitted_by=submitted_by,
         skip_font_fix=True,
-        status=status,
     )
+    state = JobState(status=status, page_count=None)
+    paths = JobPaths(job_id, stored_name, web_models.JOBS_ROOT)
+    return JobRecord(spec, state, paths)
 
 
-def write_job_artifacts(job: Job) -> Path:
+def write_job_artifacts(job: JobRecord) -> Path:
     '''
     Create the log, remediated PDF, and reports a finished job leaves behind.
     '''
@@ -51,7 +54,7 @@ def write_job_artifacts(job: Job) -> Path:
     return pdf_path
 
 
-def add_completed_result(job: Job, pdf_path: Path) -> None:
+def add_completed_result(job: JobRecord, pdf_path: Path) -> None:
     '''
     Attach a pipeline result describing a successfully remediated file.
     '''

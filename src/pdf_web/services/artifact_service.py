@@ -8,7 +8,7 @@ from pathlib import Path
 from fastapi import HTTPException
 
 from ..bundle import build_bundle
-from ..models import JobAccessSnapshot
+from ..models import JobAccessSnapshot, JobRecord
 from ..store import JobStore
 
 
@@ -26,14 +26,17 @@ class JobArtifactService:
             raise HTTPException(status_code=404, detail="Not found.")
         return resolved
 
-    async def bundle(self, job: JobAccessSnapshot) -> Path:
+    async def bundle(self, job: JobAccessSnapshot | JobRecord) -> Path:
         '''Build the cached ZIP under the same lock used by deletion.'''
         with self._store.job_artifact_lock(job.job_id) as exists:
             if not exists:
                 raise HTTPException(status_code=404, detail="Not found.")
-            if not job.bundle_path.is_file():
+            bundle_path = (
+                job.paths.bundle_path if isinstance(job, JobRecord) else job.bundle_path
+            )
+            if not bundle_path.is_file():
                 snapshot = self._store.snapshot(job.job_id)
                 if snapshot is None:
                     raise HTTPException(status_code=404, detail="Not found.")
-                await asyncio.to_thread(build_bundle, snapshot, job.bundle_path)
-        return self.require_file(job.bundle_path)
+                await asyncio.to_thread(build_bundle, snapshot, bundle_path)
+        return self.require_file(bundle_path)

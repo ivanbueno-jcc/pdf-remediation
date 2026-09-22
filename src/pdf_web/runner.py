@@ -24,7 +24,7 @@ from pdf_api.pipeline import process_pdf
 
 from . import APP_NAME
 from .config import max_concurrent_jobs, max_running_jobs_per_user
-from .models import Job, JobStatus, status_for
+from .models import JobRecord, JobStatus, status_for
 from .store import JobStore, save_meta
 from .uploads import get_pdf_page_count
 
@@ -319,101 +319,101 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
 
     # -- execution -------------------------------------------------------
 
-    def _run_job(self, job: Job) -> None:
+    def _run_job(self, job: JobRecord) -> None:
         '''
         Run the pipeline for one job and record what it produced.
         '''
-        with job.state_lock:
-            job.status = JobStatus.RUNNING
-            job.started_at = datetime.now()
-            filename = job.file.original_name
+        with job.state.lock:
+            job.state.status = JobStatus.RUNNING
+            job.state.started_at = datetime.now()
+            filename = job.spec.file.original_name
             options = PipelineOptions(
-                config_file=job.config_file,
+                config_file=job.spec.config_file,
                 require_wcag="wcag" in job.required_profiles(),
                 require_pdfua1="ua1" in job.required_profiles(),
-                attempt_unlock=job.attempt_unlock,
-                attempt_fix=job.attempt_fix,
-                attempt_font_fix=not job.skip_font_fix,
-                attempt_targeted_fixes=job.attempt_targeted_fixes,
+                attempt_unlock=job.spec.attempt_unlock,
+                attempt_fix=job.spec.attempt_fix,
+                attempt_font_fix=not job.spec.skip_font_fix,
+                attempt_targeted_fixes=job.spec.attempt_targeted_fixes,
             )
-        self._store.emit(job.job_id, "status", {"status": str(JobStatus.RUNNING)})
+        self._store.emit(job.spec.job_id, "status", {"status": str(JobStatus.RUNNING)})
         self._log(job, f"Processing {filename}")
 
         # Page count is display metadata. Calculate it after the upload has
         # already been accepted and queued so PDFix initialization cannot hold
         # the browser request open or reject an otherwise valid submission.
-        page_count = get_pdf_page_count(job.input_path)
+        page_count = get_pdf_page_count(job.paths.input_path)
         if page_count is not None:
-            with job.state_lock:
-                job.page_count = page_count
+            with job.state.lock:
+                job.state.page_count = page_count
             try:
                 save_meta(job)
             except OSError as error:
                 self._log(job, f"[WARN] Could not persist page count: {error}")
-            self._store.emit(job.job_id, "metadata", {"page_count": page_count})
+            self._store.emit(job.spec.job_id, "metadata", {"page_count": page_count})
 
         result = process_pdf(
-            job.input_path,
-            job.output_dir,
+            job.paths.input_path,
+            job.paths.output_dir,
             options,
             on_event=lambda stage: self._on_stage(job, stage),
-            should_cancel=lambda: self._is_cancelled(job.job_id),
+            should_cancel=lambda: self._is_cancelled(job.spec.job_id),
         )
 
-        with job.state_lock:
-            job.result = result
-            job.outcome = str(result.status)
-            job.status = status_for(result.status)
-            job.error = result.error
+        with job.state.lock:
+            job.state.result = result
+            job.state.outcome = str(result.status)
+            job.state.status = status_for(result.status)
+            job.state.error = result.error
             warnings = list(result.warnings)
         for warning in warnings:
             self._log(job, f"[WARN] {warning}")
         self._finish(job)
 
-    def _on_stage(self, job: Job, stage) -> None:
+    def _on_stage(self, job: JobRecord, stage) -> None:
         '''
         Record one stage as the pipeline finishes it.
         '''
         payload = stage.to_dict()
-        with job.state_lock:
-            job.stages.append(payload)
+        with job.state.lock:
+            job.state.stages.append(payload)
         self._log(
             job,
             f"{payload['name']}: {payload['status']}"
             + (f" - {payload['detail']}" if payload["detail"] else "")
         )
-        self._store.emit(job.job_id, "stage", payload)
+        self._store.emit(job.spec.job_id, "stage", payload)
 
-    def _finish_cancelled(self, job: Job, message: str) -> None:
+    def _finish_cancelled(self, job: JobRecord, message: str) -> None:
         '''
         Mark a job cancelled without having run the pipeline.
         '''
-        with job.state_lock:
-            job.status = JobStatus.CANCELLED
-            job.outcome = str(PipelineStatus.CANCELLED)
-            job.error = message
+        with job.state.lock:
+            job.state.status = JobStatus.CANCELLED
+            job.state.outcome = str(PipelineStatus.CANCELLED)
+            job.state.error = message
         self._finish(job)
 
-    def _finish(self, job: Job) -> None:
+    def _finish(self, job: JobRecord) -> None:
         '''
         Persist a finished job and announce it.
         '''
-        with job.state_lock:
-            job.finished_at = datetime.now()
+        with job.state.lock:
+            job.state.finished_at = datetime.now()
         try:
             save_meta(job)
         except OSError as error:
             self._log(job, f"[ERROR] Could not persist job metadata: {error}")
-        self._store.emit(job.job_id, "status", {"status": str(job.status)})
-        self._store.emit(job.job_id, "done", {"status": str(job.status)})
+        self._store.emit(job.spec.job_id, "status", {"status": str(job.state.status)})
+        self._store.emit(job.spec.job_id, "done", {"status": str(job.state.status)})
 
-    def _log(self, job: Job, line: str) -> None:
+    def _log(self, job: JobRecord, line: str) -> None:
         '''
         Record one output line in the on-disk log.
         '''
         try:
-            job.log_path.parent.mkdir(parents=True, exist_ok=True)
-            with job.log_path.open("a", encoding="utf-8") as handle:
+            job.paths.log_path.parent.mkdir(parents=True, exist_ok=True)
+            with job.paths.log_path.open("a", encoding="utf-8") as handle:
                 handle.write(f"{line}\n")
         except OSError:
             pass

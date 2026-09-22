@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 
 import pdf_web.app as web_app
 from pdf_web.config import MAX_FILE_BYTES, MAX_FILES, MAX_SUBMISSION_BYTES
-from pdf_web.models import Job, JobStatus
+from pdf_web.models import JobRecord, JobStatus
 from pdf_web.runner import PipelineRunner
 from pdf_web.store import JobStore
 from tests.web_factories import add_completed_result, make_job, write_job_artifacts
@@ -73,7 +73,7 @@ class AccessControlTests(unittest.TestCase):
         self.client = TestClient(web_app.app)
         self.job = self._make_job("20260827-120000-aaaaaa", ALICE)
 
-    def _make_job(self, job_id: str, owner: str) -> Job:
+    def _make_job(self, job_id: str, owner: str) -> JobRecord:
         '''
         Create a completed job on disk and register it.
         '''
@@ -506,7 +506,7 @@ class CancellationTests(unittest.TestCase):
         self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
         self.client = TestClient(web_app.app)
 
-    def _queued_job(self, job_id: str, owner: str) -> Job:
+    def _queued_job(self, job_id: str, owner: str) -> JobRecord:
         '''Register a queued job and put it in the runner's queue.'''
         job = make_job(job_id=job_id, submitted_by=owner, status=JobStatus.QUEUED)
         job.web_path.mkdir(parents=True, exist_ok=True)

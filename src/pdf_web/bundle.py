@@ -10,21 +10,21 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from .models import Job, outcome_label
+from .models import JobRecord, outcome_label
 
 MAX_ENTRY_NAME = 120
 
 
-def build_manifest(job: Job) -> dict[str, Any]:
+def build_manifest(job: JobRecord) -> dict[str, Any]:
     '''
     Describe the job and what the pipeline did, for the archive.
     '''
     payload = job.to_dict()
-    payload["outcome_label"] = outcome_label(job.outcome)
+    payload["outcome_label"] = outcome_label(job.state.outcome)
     return payload
 
 
-def build_bundle(job: Job, destination: Path) -> Path:
+def build_bundle(job: JobRecord, destination: Path) -> Path:
     '''
     Write the downloadable ZIP for a job, replacing any cached copy atomically.
     '''
@@ -32,7 +32,7 @@ def build_bundle(job: Job, destination: Path) -> Path:
     temporary_path = destination.with_name(
         f"{destination.name}.{uuid4().hex}.partial"
     )
-    folder = _entry_name(Path(job.file.original_name).stem)
+    folder = _entry_name(Path(job.spec.file.original_name).stem)
 
     try:
         with zipfile.ZipFile(
@@ -42,12 +42,14 @@ def build_bundle(job: Job, destination: Path) -> Path:
                 f"{folder}/manifest.json",
                 json.dumps(build_manifest(job), indent=2, default=str),
             )
-            if job.log_path.is_file():
-                archive.write(job.log_path, f"{folder}/pipeline.log")
+            if job.paths.log_path.is_file():
+                archive.write(job.paths.log_path, f"{folder}/pipeline.log")
 
             pdf_path = job.artifact("pdf")
             if pdf_path is not None:
-                archive.write(pdf_path, f"{folder}/{_entry_name(job.file.original_name)}")
+                archive.write(
+                    pdf_path, f"{folder}/{_entry_name(job.spec.file.original_name)}"
+                )
 
             for artifact in ("before", "after"):
                 path = job.artifact(artifact)

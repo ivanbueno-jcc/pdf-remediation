@@ -9,7 +9,7 @@ happened to it: which stages ran, which were skipped, and why.
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass, field, fields, replace
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
@@ -302,148 +302,272 @@ class JobSerializer:  # pylint: disable=too-few-public-methods
     @staticmethod
     def from_record(job: "JobRecord") -> dict[str, Any]:
         """Project a job record into its public JSON representation."""
-        with job.state_lock:
-            result = job.result
+        with job.state.lock:
+            spec = job.spec
+            state = job.state
+            result = state.result
+            stages = copy.deepcopy(state.stages)
             profiles = job.required_profiles()
             return {
-                "job_id": job.job_id,
-                "submitted_by": job.submitted_by,
-                "created_at": job.created_at.isoformat(timespec="seconds"),
+                "job_id": spec.job_id,
+                "submitted_by": spec.submitted_by,
+                "created_at": spec.created_at.isoformat(timespec="seconds"),
                 "started_at": (
-                    job.started_at.isoformat(timespec="seconds") if job.started_at else None
+                    state.started_at.isoformat(timespec="seconds") if state.started_at else None
                 ),
                 "finished_at": (
-                    job.finished_at.isoformat(timespec="seconds") if job.finished_at else None
+                    state.finished_at.isoformat(timespec="seconds") if state.finished_at else None
                 ),
-                "status": str(job.status),
-                "config_file": job.config_file,
-                "attempt_unlock": job.attempt_unlock,
-                "attempt_fix": job.attempt_fix,
-                "skip_font_fix": job.skip_font_fix,
-                "attempt_font_fix": not job.skip_font_fix,
-                "attempt_targeted_fixes": job.attempt_targeted_fixes,
+                "status": str(state.status),
+                "config_file": spec.config_file,
+                "attempt_unlock": spec.attempt_unlock,
+                "attempt_fix": spec.attempt_fix,
+                "skip_font_fix": spec.skip_font_fix,
+                "attempt_font_fix": not spec.skip_font_fix,
+                "attempt_targeted_fixes": spec.attempt_targeted_fixes,
                 "wcag_and_ua1_must_pass": len(profiles) == 2,
                 "require_wcag": "wcag" in profiles,
                 "require_pdfua1": "ua1" in profiles,
                 "validation_requirement": job.validation_requirement,
-                "verbose": job.verbose,
-                "file": job.file.to_dict(),
-                "stages": job.stages,
-                "outcome": job.outcome,
-                "outcome_label": outcome_label(job.outcome),
+                "verbose": spec.verbose,
+                "file": replace(spec.file, page_count=state.page_count).to_dict(),
+                "stages": stages,
+                "outcome": state.outcome,
+                "outcome_label": outcome_label(state.outcome),
                 "before": summarize_report(result.before if result else None),
                 "after": summarize_report(result.after if result else None),
                 "initially_secured": job.initially_secured,
                 "has_pdf": job.artifact("pdf") is not None,
                 "warnings": list(result.warnings) if result else [],
                 "diagnostics": list(result.diagnostics) if result else [],
-                "error": job.error,
+                "error": state.error,
             }
 
 
-class JobRecord:
+class JobRecord:  # pylint: disable=too-many-public-methods
     '''Composition root for a job's immutable spec, mutable state, and paths.'''
 
-    _SPEC_FIELDS = frozenset(item.name for item in fields(JobSpec))
-    _STATE_FIELDS = frozenset(item.name for item in fields(JobState))
-
-    def __init__(self, job_id: str, created_at: datetime, config_file: str,
-                 file: UploadedFile, **values: Any) -> None:
-        spec_values = {
-            name: values.pop(name) for name in tuple(values)
-            if name in self._SPEC_FIELDS
-        }
-        state_values = {
-            name: values.pop(name) for name in tuple(values)
-            if name in self._STATE_FIELDS
-        }
-        # Locks are always fresh; snapshots must never share synchronization primitives.
-        values.pop("state_lock", None)
-        values.pop("bundle_lock", None)
-        page_count = file.page_count
-        object.__setattr__(self, "spec", JobSpec(
-            job_id, created_at, config_file, replace(file, page_count=None), **spec_values
-        ))
-        state_values.setdefault("page_count", page_count)
-        object.__setattr__(self, "state", JobState(**state_values))
-        object.__setattr__(
-            self, "paths", JobPaths(job_id, file.stored_name, root=JOBS_ROOT)
-        )
-        if values:
-            raise TypeError(f"Unexpected job fields: {', '.join(values)}")
-
-    def __getattr__(self, name: str) -> Any:
-        if name == "file":
-            return replace(self.spec.file, page_count=self.state.page_count)
-        if name in self._SPEC_FIELDS:
-            return getattr(self.spec, name)
-        if name in self._STATE_FIELDS:
-            return getattr(self.state, name)
-        if name == "state_lock":
-            return self.state.lock
-        if name in {
-            "base_path", "input_path", "output_dir", "web_path", "log_path",
-            "meta_path", "bundle_path",
-        }:
-            return getattr(self.paths, name)
-        raise AttributeError(name)
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name in {"spec", "state", "paths"}:
-            object.__setattr__(self, name, value)
-        elif name == "file":
-            object.__setattr__(
-                self, "spec", replace(self.spec, file=replace(value, page_count=None))
-            )
-            object.__setattr__(self.state, "page_count", value.page_count)
-        elif name == "page_count":
-            object.__setattr__(self.state, "page_count", value)
-        elif name in self._SPEC_FIELDS:
-            object.__setattr__(self, "spec", replace(self.spec, **{name: value}))
-        elif name in self._STATE_FIELDS:
-            object.__setattr__(self.state, name, value)
-        elif name == "state_lock":
-            object.__setattr__(self.state, "lock", value)
-        elif name == "bundle_lock":
-            object.__setattr__(self.state, "bundle_lock", value)
-        else:
-            object.__setattr__(self, name, value)
+    def __init__(self, spec: JobSpec, state: JobState | None = None,
+                 paths: JobPaths | None = None) -> None:
+        """Create a record from its explicitly owned value objects."""
+        self.spec = replace(spec, file=replace(spec.file, page_count=None))
+        self.state = state or JobState(page_count=spec.file.page_count)
+        self.paths = paths or JobPaths(spec.job_id, spec.file.stored_name, JOBS_ROOT)
 
     def __copy__(self) -> "JobRecord":
         '''Create a detached state snapshot with independent synchronization.'''
-        state_values = {
-            name: copy.deepcopy(getattr(self.state, name))
-            for name in self._STATE_FIELDS
-            if name not in {"lock", "bundle_lock"}
-        }
-        return JobRecord(
-            self.job_id, self.created_at, self.config_file,
-            copy.deepcopy(self.file),
-            **{name: getattr(self, name) for name in self._SPEC_FIELDS if name not in {
-                "job_id", "created_at", "config_file", "file"
-            }},
-            **state_values,
+        snapshot_spec = replace(self.spec, file=copy.deepcopy(self.spec.file))
+        snapshot_state = JobState(
+            status=self.state.status,
+            stages=copy.deepcopy(self.state.stages),
+            started_at=self.state.started_at,
+            finished_at=self.state.finished_at,
+            result=copy.deepcopy(self.state.result),
+            outcome=self.state.outcome,
+            error=self.state.error,
+            page_count=self.state.page_count,
         )
+        return JobRecord(snapshot_spec, snapshot_state, self.paths)
+
+    # Temporary, explicit migration accessors. Production code uses spec/state/paths.
+    @property
+    def job_id(self) -> str:
+        """Compatibility view of ``spec.job_id``."""
+        return self.spec.job_id
 
     @property
-    def state_lock(self) -> threading.RLock:
-        """Return the lock protecting mutable job state."""
-        return self.state.lock
+    def created_at(self) -> datetime:
+        """Compatibility view of ``spec.created_at``."""
+        return self.spec.created_at
 
     @property
-    def bundle_lock(self) -> threading.Lock:
-        """Return the lock serializing archive generation."""
-        return self.state.bundle_lock
+    def config_file(self) -> str:
+        """Compatibility view of ``spec.config_file``."""
+        return self.spec.config_file
+
+    @property
+    def file(self) -> UploadedFile:
+        """Return file metadata with its mutable page-count projection."""
+        return replace(self.spec.file, page_count=self.state.page_count)
+
+    @file.setter
+    def file(self, value: UploadedFile) -> None:
+        self.spec = replace(self.spec, file=replace(value, page_count=None))
+        self.state.page_count = value.page_count
+
+    @property
+    def submitted_by(self) -> str:
+        """Compatibility view of ``spec.submitted_by``."""
+        return self.spec.submitted_by
+
+    @submitted_by.setter
+    def submitted_by(self, value: str) -> None:
+        self.spec = replace(self.spec, submitted_by=value)
+
+    @property
+    def status(self) -> JobStatus:
+        """Compatibility view of ``state.status``."""
+        return self.state.status
+
+    @status.setter
+    def status(self, value: JobStatus) -> None:
+        self.state.status = value
+
+    @property
+    def stages(self) -> list[dict[str, Any]]:
+        """Compatibility view of ``state.stages``."""
+        return self.state.stages
+
+    @stages.setter
+    def stages(self, value: list[dict[str, Any]]) -> None:
+        self.state.stages = value
+
+    @property
+    def started_at(self) -> datetime | None:
+        """Compatibility view of ``state.started_at``."""
+        return self.state.started_at
+
+    @started_at.setter
+    def started_at(self, value: datetime | None) -> None:
+        self.state.started_at = value
+
+    @property
+    def finished_at(self) -> datetime | None:
+        """Compatibility view of ``state.finished_at``."""
+        return self.state.finished_at
+
+    @finished_at.setter
+    def finished_at(self, value: datetime | None) -> None:
+        self.state.finished_at = value
+
+    @property
+    def result(self) -> PipelineResult | None:
+        """Compatibility view of ``state.result``."""
+        return self.state.result
+
+    @result.setter
+    def result(self, value: PipelineResult | None) -> None:
+        self.state.result = value
+
+    @property
+    def outcome(self) -> str | None:
+        """Compatibility view of ``state.outcome``."""
+        return self.state.outcome
+
+    @outcome.setter
+    def outcome(self, value: str | None) -> None:
+        self.state.outcome = value
+
+    @property
+    def error(self) -> str | None:
+        """Compatibility view of ``state.error``."""
+        return self.state.error
+
+    @error.setter
+    def error(self, value: str | None) -> None:
+        self.state.error = value
+
+    @property
+    def page_count(self) -> int | None:
+        """Compatibility view of ``state.page_count``."""
+        return self.state.page_count
+
+    @page_count.setter
+    def page_count(self, value: int | None) -> None:
+        self.state.page_count = value
+
+    @property
+    def attempt_unlock(self) -> bool:
+        """Compatibility view of ``spec.attempt_unlock``."""
+        return self.spec.attempt_unlock
+
+    @property
+    def attempt_fix(self) -> bool:
+        """Compatibility view of ``spec.attempt_fix``."""
+        return self.spec.attempt_fix
+
+    @property
+    def skip_font_fix(self) -> bool:
+        """Compatibility view of ``spec.skip_font_fix``."""
+        return self.spec.skip_font_fix
+
+    @property
+    def attempt_targeted_fixes(self) -> bool:
+        """Compatibility view of ``spec.attempt_targeted_fixes``."""
+        return self.spec.attempt_targeted_fixes
+
+    @property
+    def wcag_and_ua1_must_pass(self) -> bool:
+        """Compatibility view of ``spec.wcag_and_ua1_must_pass``."""
+        return self.spec.wcag_and_ua1_must_pass
+
+    @property
+    def require_wcag(self) -> bool:
+        """Compatibility view of ``spec.require_wcag``."""
+        return self.spec.require_wcag
+
+    @require_wcag.setter
+    def require_wcag(self, value: bool) -> None:
+        self.spec = replace(self.spec, require_wcag=value)
+
+    @property
+    def require_pdfua1(self) -> bool:
+        """Compatibility view of ``spec.require_pdfua1``."""
+        return self.spec.require_pdfua1
+
+    @require_pdfua1.setter
+    def require_pdfua1(self, value: bool) -> None:
+        self.spec = replace(self.spec, require_pdfua1=value)
+
+    @property
+    def verbose(self) -> bool:
+        """Compatibility view of ``spec.verbose``."""
+        return self.spec.verbose
+
+    @property
+    def base_path(self) -> Path:
+        """Compatibility view of ``paths.base_path``."""
+        return self.paths.base_path
+
+    @property
+    def input_path(self) -> Path:
+        """Compatibility view of ``paths.input_path``."""
+        return self.paths.input_path
+
+    @property
+    def output_dir(self) -> Path:
+        """Compatibility view of ``paths.output_dir``."""
+        return self.paths.output_dir
+
+    @property
+    def web_path(self) -> Path:
+        """Compatibility view of ``paths.web_path``."""
+        return self.paths.web_path
+
+    @property
+    def log_path(self) -> Path:
+        """Compatibility view of ``paths.log_path``."""
+        return self.paths.log_path
+
+    @property
+    def meta_path(self) -> Path:
+        """Compatibility view of ``paths.meta_path``."""
+        return self.paths.meta_path
+
+    @property
+    def bundle_path(self) -> Path:
+        """Compatibility view of ``paths.bundle_path``."""
+        return self.paths.bundle_path
 
     @property
     def initially_secured(self) -> bool:
         """Report whether the source PDF required and completed unlocking."""
-        with self.state_lock:
-            if self.result is not None and self.result.initially_secured is not None:
-                return self.result.initially_secured
+        with self.state.lock:
+            if self.state.result is not None and self.state.result.initially_secured is not None:
+                return self.state.result.initially_secured
             return any(
                 stage.get("name") == "unlock" and stage.get("status") == "ok"
-                for stage in self.stages
+                for stage in self.state.stages
             )
 
     @property
@@ -460,27 +584,24 @@ class JobRecord:
 
     def artifact(self, name: str) -> Path | None:
         """Resolve an available artifact path by its public artifact name."""
-        with self.state_lock:
+        with self.state.lock:
             return artifact_path(
-                self.output_dir, name,
-                self.result.output_pdf_path if self.result else None,
+                self.paths.output_dir, name,
+                self.state.result.output_pdf_path if self.state.result else None,
             )
 
     def is_terminal(self) -> bool:
         """Return whether processing has reached a terminal state."""
-        with self.state_lock:
-            return self.status in TERMINAL_STATUSES
+        with self.state.lock:
+            return self.state.status in TERMINAL_STATUSES
 
     def required_profiles(self) -> tuple[str, ...]:
         """Return validation profiles required by this job's specification."""
         return selected_validation_profiles(
-            self.require_wcag, self.require_pdfua1, self.wcag_and_ua1_must_pass
+            self.spec.require_wcag, self.spec.require_pdfua1,
+            self.spec.wcag_and_ua1_must_pass,
         )
 
     def to_dict(self) -> dict[str, Any]:
-        '''Compatibility serializer; API endpoints use explicit Pydantic schemas.'''
+        '''Build the persisted response projection.'''
         return JobSerializer.from_record(self)
-
-
-# Transition alias for the runner/store APIs while callers adopt JobRecord.
-Job = JobRecord

@@ -9,13 +9,13 @@ import shutil
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from pdf_api.models import PipelineResult, PipelineStatus
 
 from ..config import JOBS_ROOT, job_ttl_hours
 from ..identity import legacy_job_owner, normalize_user
-from ..models import Job, JobStatus, UploadedFile
+from ..models import JobPaths, JobRecord, JobSpec, JobState, JobStatus, UploadedFile
 
 if TYPE_CHECKING:
     from ..store import JobStore
@@ -24,27 +24,28 @@ _JOB_ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 
 
 def is_valid_job_id(job_id: str) -> bool:
+    '''Return whether a job ID matches the filesystem-safe identifier format.'''
     return bool(_JOB_ID_PATTERN.match(job_id or ""))
 
 
-def save_meta(job: Job) -> None:
+def save_meta(job: JobRecord) -> None:
     '''Atomically persist a consistent job response and pipeline output path.'''
-    with job.state_lock:
-        job.web_path.mkdir(parents=True, exist_ok=True)
+    with job.state.lock:
+        job.paths.web_path.mkdir(parents=True, exist_ok=True)
         payload = job.to_dict()
-        result = job.result
+        result = job.state.result
         payload["output_pdf_path"] = (
-            result.output_pdf_path.relative_to(job.base_path).as_posix()
+            result.output_pdf_path.relative_to(job.paths.base_path).as_posix()
             if result and result.output_pdf_path
-            and result.output_pdf_path.is_relative_to(job.base_path)
+            and result.output_pdf_path.is_relative_to(job.paths.base_path)
             else None
         )
-        metadata_path = job.meta_path
+        metadata_path = job.paths.meta_path
         serialized = json.dumps(payload, indent=2, default=str)
         temporary_path: Path | None = None
         try:
             with tempfile.NamedTemporaryFile(
-                mode="w", encoding="utf-8", dir=job.web_path,
+                mode="w", encoding="utf-8", dir=job.paths.web_path,
                 prefix=f"{metadata_path.name}.", suffix=".partial", delete=False,
             ) as handle:
                 temporary_path = Path(handle.name)
@@ -60,7 +61,7 @@ def save_meta(job: Job) -> None:
                     pass
 
 
-def load_meta(meta_path: Path) -> Job | None:
+def load_meta(meta_path: Path) -> JobRecord | None:
     '''Load one metadata record, rejecting malformed and legacy batch records.'''
     try:
         payload = json.loads(meta_path.read_text(encoding="utf-8"))
@@ -78,13 +79,14 @@ def load_meta(meta_path: Path) -> Job | None:
     else:
         require_wcag, require_pdfua1 = True, legacy_both
 
-    job = Job(
+    stored_name = file_payload.get("stored_name", "")
+    spec = JobSpec(
         job_id=job_id,
         created_at=_parse_datetime(payload.get("created_at")),
         config_file=payload.get("config_file", ""),
         file=UploadedFile(
             original_name=file_payload.get("original_name", ""),
-            stored_name=file_payload.get("stored_name", ""),
+            stored_name=stored_name,
             size_bytes=int(file_payload.get("size_bytes") or 0),
             page_count=(int(file_payload["page_count"])
                         if file_payload.get("page_count") is not None else None),
@@ -94,23 +96,29 @@ def load_meta(meta_path: Path) -> Job | None:
         attempt_fix=bool(payload.get("attempt_fix", True)),
         skip_font_fix=bool(payload.get("skip_font_fix")),
         attempt_targeted_fixes=bool(payload.get("attempt_targeted_fixes", True)),
+        wcag_and_ua1_must_pass=legacy_both,
         require_wcag=require_wcag,
         require_pdfua1=require_pdfua1,
         verbose=bool(payload.get("verbose")),
+    )
+    state = JobState(
         status=_parse_status(payload.get("status")),
         outcome=payload.get("outcome"),
         error=payload.get("error"),
+        started_at=_parse_optional_datetime(payload.get("started_at")),
+        finished_at=_parse_optional_datetime(payload.get("finished_at")),
+        stages=list(payload.get("stages") or []),
+        page_count=spec.file.page_count,
     )
-    job.started_at = _parse_optional_datetime(payload.get("started_at"))
-    job.finished_at = _parse_optional_datetime(payload.get("finished_at"))
-    job.stages = list(payload.get("stages") or [])
+    jobs_root = meta_path.parent.parent.parent
+    job = JobRecord(spec, state, JobPaths(job_id, stored_name, jobs_root))
     output_relative = payload.get("output_pdf_path")
-    job.result = PipelineResult(
+    state.result = PipelineResult(
         status=_parse_pipeline_status(payload.get("outcome")),
-        input_pdf_path=job.input_path,
-        output_pdf_path=job.base_path / output_relative if output_relative else None,
-        before=_read_report(job.output_dir / "before.json"),
-        after=_read_report(job.output_dir / "after.json"),
+        input_pdf_path=job.paths.input_path,
+        output_pdf_path=job.paths.base_path / output_relative if output_relative else None,
+        before=_read_report(job.paths.output_dir / "before.json"),
+        after=_read_report(job.paths.output_dir / "after.json"),
         initially_secured=(payload.get("initially_secured")
                            if isinstance(payload.get("initially_secured"), bool) else None),
         warnings=list(payload.get("warnings") or []),
@@ -135,9 +143,9 @@ def load_persisted_jobs(store: "JobStore") -> tuple[int, int]:
         if job is None:
             continue
         if not job.is_terminal():
-            job.status = JobStatus.FAILED
-            job.error = job.error or "Server restarted while this job was running."
-        if not job.submitted_by:
+            job.state.status = JobStatus.FAILED
+            job.state.error = job.state.error or "Server restarted while this job was running."
+        if not job.spec.submitted_by:
             unowned += 1
         store.add(job)
         loaded += 1

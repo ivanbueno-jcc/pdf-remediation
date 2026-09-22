@@ -13,6 +13,7 @@ class OwnerUpdateQueue:
         self._pending: dict[str, tuple[str, str]] = {}
 
     def publish(self, update: tuple[str, str]) -> None:
+        '''Coalesce one update by job ID and wake a waiting consumer.'''
         update_type, job_id = update
         previous = self._pending.get(job_id)
         if previous is None or update_type == "job-removed":
@@ -25,6 +26,7 @@ class OwnerUpdateQueue:
             self._wake.put_nowait(None)
 
     async def get_batch(self) -> list[tuple[str, str]]:
+        '''Wait until updates are available and return the pending batch.'''
         await self._wake.get()
         updates = list(self._pending.values())
         self._pending.clear()

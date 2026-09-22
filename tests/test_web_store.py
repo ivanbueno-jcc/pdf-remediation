@@ -12,7 +12,7 @@ from datetime import timedelta
 from pathlib import Path
 from unittest import mock
 
-from pdf_web.models import JobStatus
+from pdf_web.models import JobSerializer, JobStatus
 from pdf_web.store import (
     JobStore, load_meta, load_persisted_jobs, save_meta, sweep_expired_jobs,
 )
@@ -38,6 +38,18 @@ class JobStoreTests(unittest.TestCase):
         snapshot = self.store.get(self.job.job_id)
         self.assertIsNot(snapshot, self.job)
         self.assertEqual(snapshot.job_id, self.job.job_id)
+
+    def test_serialized_stages_are_detached_from_live_job_state(self) -> None:
+        """Response data must not change after the state lock is released."""
+        self.job.state.stages = [{"name": "fix", "metadata": {"attempt": 1}}]
+
+        response = JobSerializer.from_record(self.job)
+        self.job.state.stages[0]["metadata"]["attempt"] = 2
+        self.job.state.stages.append({"name": "validate"})
+
+        self.assertEqual(response["stages"], [
+            {"name": "fix", "metadata": {"attempt": 1}}
+        ])
         self.assertEqual([job.job_id for job in self.store.list_jobs()],
                          [self.job.job_id])
 
@@ -250,8 +262,12 @@ class RetentionSweepTests(unittest.TestCase):
             tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         ))
         self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
-        self.enterContext(mock.patch("pdf_web.store.JOBS_ROOT", self.jobs_root))
-        self.enterContext(mock.patch("pdf_web.store.job_ttl_hours", return_value=1))
+        self.enterContext(mock.patch(
+            "pdf_web.infrastructure.persistence.JOBS_ROOT", self.jobs_root
+        ))
+        self.enterContext(mock.patch(
+            "pdf_web.infrastructure.persistence.job_ttl_hours", return_value=1
+        ))
         self.store = JobStore()
         self.job = make_job(status=JobStatus.COMPLETED)
         self.job.base_path.mkdir(parents=True)
@@ -308,7 +324,9 @@ class LegacyJobLoadingTests(unittest.TestCase):
             tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         ))
         self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
-        self.enterContext(mock.patch("pdf_web.store.JOBS_ROOT", self.jobs_root))
+        self.enterContext(mock.patch(
+            "pdf_web.infrastructure.persistence.JOBS_ROOT", self.jobs_root
+        ))
         self.enterContext(mock.patch.dict(
             os.environ, {"PDF_WEB_PROXY_SECRET": "s3cret"}
         ))

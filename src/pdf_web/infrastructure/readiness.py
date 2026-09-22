@@ -24,10 +24,12 @@ _READINESS_CACHE_LOCK = threading.Lock()
 
 
 def _check(name: str, ok: bool, required: bool, detail: str) -> dict[str, Any]:
+    '''Build one named readiness or capability check.'''
     return {"name": name, "ok": ok, "required": required, "detail": detail}
 
 
 def describe(capabilities: Capabilities) -> list[dict[str, Any]]:
+    '''Convert detected capabilities into user-facing readiness checks.'''
     detail = capabilities.detail
     return [
         _check("Java", capabilities.java, True, detail["java"]),
@@ -40,6 +42,7 @@ def describe(capabilities: Capabilities) -> list[dict[str, Any]]:
 
 
 def collect_health() -> dict[str, Any]:
+    '''Summarize optional and required runtime capabilities for health routes.'''
     capabilities = cached_probe()
     checks = describe(capabilities)
     blocking = [check["name"] for check in checks if check["required"] and not check["ok"]]
@@ -92,9 +95,15 @@ def _probe_readiness() -> dict[str, Any]:
         _check("Java", capabilities.java, True, capabilities.detail["java"]),
         _check("veraPDF", capabilities.verapdf_jar, True, capabilities.detail["verapdf_jar"]),
         _check("Configs", configs_ok, True, str(CONFIG_DIR)),
-        _check("PDFix license", capabilities.pdfix_licence, True, capabilities.detail["pdfix_licence"]),
+        _check(
+            "PDFix license", capabilities.pdfix_licence, True,
+            capabilities.detail["pdfix_licence"],
+        ),
         _check("Docker", capabilities.docker, True, capabilities.detail["docker"]),
-        _check("Callas license", capabilities.callas_licence, True, capabilities.detail["callas_licence"]),
+        _check(
+            "Callas license", capabilities.callas_licence, True,
+            capabilities.detail["callas_licence"],
+        ),
         _check("Callas image", callas_ok, True, callas_detail),
         _check("PDFix font image", pdfix_ok, True, pdfix_detail),
         _check("Jobs volume", jobs_ok, True, jobs_detail),
@@ -120,5 +129,6 @@ def collect_readiness(force: bool = False) -> dict[str, Any]:
 
 
 def cached_health(force: bool = False) -> dict[str, Any]:
+    '''Refresh capability probes when requested and return health data.'''
     cached_probe(force=force)
     return collect_health()

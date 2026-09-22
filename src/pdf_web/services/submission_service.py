@@ -7,7 +7,7 @@ from typing import Callable
 
 from fastapi import UploadFile
 
-from ..models import Job
+from ..models import JobRecord
 from ..runner import PipelineRunner
 from ..store import JobStore
 from .job_service import JobWorkflow
@@ -26,13 +26,13 @@ class SubmissionService:
             options: SubmissionOptions,
             owner: str,
             new_job_id: Callable[[set[str]], str],
-    ) -> tuple[list[Job], list[dict[str, str]]]:
+    ) -> tuple[list[JobRecord], list[dict[str, str]]]:
         """Validate uploads and stage accepted jobs, cleaning up on failure."""
         created_at = datetime.now()
         ids: set[str] = set()
         names: set[str] = set()
         total_bytes = 0
-        accepted: list[Job] = []
+        accepted: list[JobRecord] = []
         rejected: list[dict[str, str]] = []
         try:
             for upload in uploads:
@@ -53,6 +53,6 @@ class SubmissionService:
             raise
         return accepted, rejected
 
-    async def commit(self, jobs: list[Job], owner: str) -> list[int]:
+    async def commit(self, jobs: list[JobRecord], owner: str) -> list[int]:
         '''Persist and enqueue the prepared batch as one visible operation.'''
         return await self._workflow.commit_submission(jobs, owner)
