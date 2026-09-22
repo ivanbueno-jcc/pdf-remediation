@@ -5,7 +5,7 @@ The pipeline is a library call rather than a subprocess, so progress arrives as
 structured stage events instead of being parsed out of console banners, and
 cancellation is a flag the pipeline checks between stages.
 
-Concurrency is capped twice: by machine capacity, and per user. A plain LIFO
+Concurrency is capped twice: by machine capacity, and per user. A plain FIFO
 queue cannot express the second cap, because when the job at the head belongs
 to somebody already at their limit the next eligible job has to start without
 that head job losing its place. Hence a list plus a condition variable.
@@ -103,24 +103,27 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
 
     def submit(self, job_id: str, owner: str) -> int:
         '''
-        Queue a job newest-first and return how many queued jobs are ahead of it.
+        Queue a job FIFO and return how many queued jobs are ahead of it.
         '''
         return self.submit_batch((job_id,), owner)[0]
 
     def submit_batch(self, job_ids: tuple[str, ...], owner: str) -> list[int]:
         '''
-        Queue a submission atomically, newest job first.
+        Queue a submission atomically, preserving FIFO submission order.
 
         The batch must be visible to the scheduler as one operation; otherwise
         a worker can start the first uploaded file before later files arrive.
         '''
         with self._condition:
+            first_position = len(self._pending)
             for job_id in job_ids:
-                self._pending.insert(0, job_id)
+                self._pending.append(job_id)
                 self._owners[job_id] = owner
                 self._pending_by_owner[owner] += 1
             self._rebuild_pending_positions_locked()
-            positions = [len(job_ids) - index - 1 for index in range(len(job_ids))]
+            positions = [
+                first_position + index for index in range(len(job_ids))
+            ]
             self._condition.notify_all()
         return positions
 
@@ -146,7 +149,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
 
     def pending_job_ids(self) -> tuple[str, ...]:
         '''
-        Return the queued jobs newest-first, in the order they will be considered.
+        Return the queued jobs oldest-first, in the order they will be considered.
         '''
         with self._condition:
             return tuple(self._pending)
@@ -245,7 +248,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
 
     def _claim_next(self) -> str | None:
         '''
-        Take the newest queued job whose owner is below the running cap.
+        Take the oldest queued job whose owner is below the running cap.
 
         Scanning in order and taking the first eligible entry is what lets a
         capped user be skipped without their jobs losing their place.

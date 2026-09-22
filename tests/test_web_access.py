@@ -526,7 +526,7 @@ class CancellationTests(unittest.TestCase):
         '''A cancelled job must not still be occupying the line.'''
         first = self._queued_job("20260827-120000-aaaaaa", ALICE)
         second = self._queued_job("20260827-120001-bbbbbb", BOB)
-        self.assertEqual(self.runner.jobs_ahead(second.job_id), 0)
+        self.assertEqual(self.runner.jobs_ahead(second.job_id), 1)
 
         self.client.post(f"/api/jobs/{first.job_id}/cancel", headers=headers(ALICE))
 

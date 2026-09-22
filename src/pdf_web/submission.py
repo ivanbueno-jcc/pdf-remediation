@@ -15,7 +15,7 @@ from .config import (
     CONFIG_DIR,
     MAX_SUBMISSION_BYTES,
 )
-from .models import Job, UploadedFile
+from .models import Job, JobProcessingOptions, UploadedFile
 from .uploads import (
     UploadError,
     get_pdf_page_count,
@@ -26,17 +26,8 @@ from .uploads import (
 
 
 @dataclass(frozen=True)
-class SubmissionOptions:  # pylint: disable=too-many-instance-attributes
+class SubmissionOptions(JobProcessingOptions):
     '''Validated options shared by every file in one submission.'''
-
-    config_file: str
-    attempt_unlock: bool
-    attempt_fix: bool
-    skip_font_fix: bool
-    attempt_targeted_fixes: bool
-    require_wcag: bool
-    require_pdfua1: bool
-    verbose: bool
 
 
 def validate_options(  # pylint: disable=too-many-arguments,too-many-positional-arguments

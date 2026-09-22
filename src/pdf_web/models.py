@@ -124,15 +124,9 @@ class QueueJobSnapshot:  # pylint: disable=too-many-instance-attributes
 
 
 @dataclass(frozen=True)
-class JobAccessSnapshot:  # pylint: disable=too-many-instance-attributes
-    '''Small immutable view used to authorize and serve job file operations.'''
+class JobProcessingOptions:  # pylint: disable=too-many-instance-attributes
+    '''Immutable pipeline options shared by jobs and submission validation.'''
 
-    job_id: str
-    submitted_by: str
-    status: JobStatus
-    original_name: str
-    stored_name: str
-    size_bytes: int
     config_file: str
     attempt_unlock: bool
     attempt_fix: bool
@@ -141,6 +135,18 @@ class JobAccessSnapshot:  # pylint: disable=too-many-instance-attributes
     require_wcag: bool
     require_pdfua1: bool
     verbose: bool
+
+
+@dataclass(frozen=True)
+class JobAccessSnapshot(JobProcessingOptions):  # pylint: disable=too-many-instance-attributes
+    '''Small immutable view used to authorize and serve job file operations.'''
+
+    job_id: str
+    submitted_by: str
+    status: JobStatus
+    original_name: str
+    stored_name: str
+    size_bytes: int
     output_pdf_path: Path | None
 
     @property
