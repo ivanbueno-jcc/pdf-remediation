@@ -66,8 +66,8 @@ class QueuePositionTests(SchedulerTestCase):
         '''A job that is not waiting reports nothing rather than zero.'''
         self.assertIsNone(self.runner.jobs_ahead("20260827-120000-aaaaaa"))
 
-    def test_selected_pending_positions_stop_after_page_jobs(self) -> None:
-        '''The queue endpoint need not materialize positions for every job.'''
+    def test_selected_pending_positions_use_the_current_queue_index(self) -> None:
+        '''Queue positions are direct lookups after one structural rebuild.'''
         self.runner.submit("20260827-120000-aaaaaa", ALICE)
         self.runner.submit("20260827-120001-bbbbbb", BOB)
         self.runner.submit("20260827-120002-cccccc", ALICE)
@@ -76,6 +76,17 @@ class QueuePositionTests(SchedulerTestCase):
             self.runner.pending_positions_for({"20260827-120001-bbbbbb"}),
             {"20260827-120001-bbbbbb": 1},
         )
+
+    def test_queue_generation_changes_only_when_order_changes(self) -> None:
+        '''State updates do not rebuild the pending-position index.'''
+        initial = self.runner.queue_generation()
+        self.runner.submit("20260827-120000-aaaaaa", ALICE)
+        after_submit = self.runner.queue_generation()
+        self.assertGreater(after_submit, initial)
+        self.runner.pending_positions_for({"20260827-120000-aaaaaa"})
+        self.assertEqual(self.runner.queue_generation(), after_submit)
+        self.runner.cancel("20260827-120000-aaaaaa")
+        self.assertGreater(self.runner.queue_generation(), after_submit)
 
     def test_user_activity_tracks_pending_and_running_jobs(self) -> None:
         '''Active polling state is scoped to the requesting owner.'''

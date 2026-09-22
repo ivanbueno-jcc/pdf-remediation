@@ -64,6 +64,7 @@ class AccessControlTests(unittest.TestCase):
                                 running_count=mock.Mock(return_value=0),
                                 pending_job_ids=mock.Mock(return_value=()),
                                 pending_positions_for=mock.Mock(return_value={}),
+                                queue_generation=mock.Mock(return_value=0),
                                 user_activity=mock.Mock(return_value=(0, False)),
                                 jobs_ahead=mock.Mock(return_value=None),
                                 submit=mock.Mock(return_value=0),
@@ -303,6 +304,7 @@ class OwnershipRecordingTests(unittest.TestCase):
             submit_batch=mock.Mock(return_value=[0]),
             pending_job_ids=mock.Mock(return_value=()),
             pending_positions_for=mock.Mock(return_value={}),
+            queue_generation=mock.Mock(return_value=0),
             user_activity=mock.Mock(return_value=(0, False)),
             jobs_ahead=mock.Mock(return_value=None),
         )

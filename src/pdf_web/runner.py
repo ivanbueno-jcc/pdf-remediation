@@ -44,6 +44,8 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         # poll for it.
         self._condition = threading.Condition()
         self._pending: list[str] = []
+        self._pending_positions: dict[str, int] = {}
+        self._queue_generation = 0
         self._running: dict[str, str] = {}
         self._owners: dict[str, str] = {}
         self._pending_by_owner: Counter[str] = Counter()
@@ -117,6 +119,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                 self._pending.insert(0, job_id)
                 self._owners[job_id] = owner
                 self._pending_by_owner[owner] += 1
+            self._rebuild_pending_positions_locked()
             positions = [len(job_ids) - index - 1 for index in range(len(job_ids))]
             self._condition.notify_all()
         return positions
@@ -149,18 +152,25 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             return tuple(self._pending)
 
     def pending_positions_for(self, job_ids: Collection[str]) -> dict[str, int]:
-        '''Return positions for selected queued jobs, stopping when all are found.'''
-        wanted = set(job_ids)
-        if not wanted:
-            return {}
+        '''Return selected queue positions from the current index.'''
         with self._condition:
-            positions: dict[str, int] = {}
-            for position, job_id in enumerate(self._pending):
-                if job_id in wanted:
-                    positions[job_id] = position
-                    if len(positions) == len(wanted):
-                        break
-            return positions
+            return {
+                job_id: self._pending_positions[job_id]
+                for job_id in job_ids
+                if job_id in self._pending_positions
+            }
+
+    def queue_generation(self) -> int:
+        '''Return the generation of the pending queue ordering.'''
+        with self._condition:
+            return self._queue_generation
+
+    def _rebuild_pending_positions_locked(self) -> None:
+        '''Refresh positions once after a structural queue mutation.'''
+        self._pending_positions = {
+            job_id: position for position, job_id in enumerate(self._pending)
+        }
+        self._queue_generation += 1
 
     def jobs_ahead(self, job_id: str) -> int | None:
         '''
@@ -172,9 +182,9 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         with self._condition:
             if job_id in self._running:
                 return 0
-            if job_id not in self._pending:
+            if job_id not in self._pending_positions:
                 return None
-            return self._pending.index(job_id)
+            return self._pending_positions[job_id]
 
     def queue_status(self, job_id: str, owner: str) -> dict[str, Any]:
         '''
@@ -182,9 +192,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         '''
         with self._condition:
             limit = max_running_jobs_per_user()
-            ahead = (
-                self._pending.index(job_id) if job_id in self._pending else None
-            )
+            ahead = self._pending_positions.get(job_id)
             yours = self._running_by_owner[owner]
             return {
                 "jobs_ahead": 0 if job_id in self._running else ahead,
@@ -214,6 +222,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                 owner = self._owners.pop(job_id, None)
                 if owner is not None:
                     self._pending_by_owner[owner] -= 1
+                self._rebuild_pending_positions_locked()
                 self._condition.notify_all()
                 queued = True
             else:
@@ -255,6 +264,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                         self._pending_by_owner[owner] -= 1
                         self._running[job_id] = owner
                         self._running_by_owner[owner] += 1
+                        self._rebuild_pending_positions_locked()
                         return job_id
 
                 # Nothing queued, or everything queued belongs to somebody at
