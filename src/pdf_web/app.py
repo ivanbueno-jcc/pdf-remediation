@@ -395,52 +395,60 @@ async def queue_events(
         user: str = CURRENT_USER):
     '''Stream owner-scoped queue snapshots whenever job state changes.'''
 
-    async def event_stream() -> AsyncIterator[str]:
+    async def event_stream() -> AsyncIterator[str]:  # pylint: disable=too-many-branches
         '''Wait on store changes instead of polling the queue endpoint.'''
-        version = STORE.owner_version(user)
+        subscriber_id, updates_queue = STORE.subscribe_owner(user)
         first = True
-        while True:
-            if await request.is_disconnected():
-                return
-            if first:
-                yield "event: queue\ndata: " + json.dumps(
-                    _queue_snapshot(user, limit=None), separators=(",", ":")
+        try:
+            while True:
+                if await request.is_disconnected():
+                    return
+                if first:
+                    yield "event: queue\ndata: " + json.dumps(
+                        _queue_snapshot(user, limit=None), separators=(",", ":")
+                    ) + "\n\n"
+                    first = False
+                try:
+                    updates = [await asyncio.wait_for(
+                        updates_queue.get(), timeout=SSE_KEEPALIVE_SECONDS
+                    )]
+                except asyncio.TimeoutError:
+                    yield ": keepalive\n\n"
+                    continue
+                while True:
+                    try:
+                        updates.append(updates_queue.get_nowait())
+                    except asyncio.QueueEmpty:
+                        break
+                changed_ids = {
+                    job_id for _, update_type, job_id in updates
+                    if update_type != "job-removed"
+                }
+                if any(update_type == "queue-changed" for _, update_type, _ in updates):
+                    changed_ids.update(STORE.active_job_ids(user))
+                positions = RUNNER.pending_positions_for(changed_ids)
+                latest: dict[str, str] = {}
+                for _, update_type, job_id in updates:
+                    if update_type != "queue-changed":
+                        latest[job_id] = update_type
+                for job_id in changed_ids:
+                    latest.setdefault(job_id, "job-updated")
+                for job_id, update_type in latest.items():
+                    if update_type == "job-removed":
+                        payload = {"job_id": job_id}
+                    else:
+                        job = STORE.snapshot(job_id)
+                        if job is None:
+                            continue
+                        payload = queue_payload(job, positions)
+                    yield "event: " + update_type + "\ndata: " + json.dumps(
+                        payload, separators=(",", ":")
+                    ) + "\n\n"
+                yield "event: queue-meta\ndata: " + json.dumps(
+                    _queue_meta(user), separators=(",", ":")
                 ) + "\n\n"
-                first = False
-            next_version, updates = await asyncio.to_thread(
-                STORE.wait_for_owner_change, user, version, SSE_KEEPALIVE_SECONDS
-            )
-            if next_version == version:
-                yield ": keepalive\n\n"
-                continue
-            version = next_version
-            changed_ids = {
-                job_id for _, update_type, job_id in updates
-                if update_type != "job-removed"
-            }
-            if any(update_type == "queue-changed" for _, update_type, _ in updates):
-                changed_ids.update(STORE.active_job_ids(user))
-            positions = RUNNER.pending_positions_for(changed_ids)
-            latest: dict[str, str] = {}
-            for _, update_type, job_id in updates:
-                if update_type != "queue-changed":
-                    latest[job_id] = update_type
-            for job_id in changed_ids:
-                latest.setdefault(job_id, "job-updated")
-            for job_id, update_type in latest.items():
-                if update_type == "job-removed":
-                    payload = {"job_id": job_id}
-                else:
-                    job = STORE.snapshot(job_id)
-                    if job is None:
-                        continue
-                    payload = queue_payload(job, positions)
-                yield "event: " + update_type + "\ndata: " + json.dumps(
-                    payload, separators=(",", ":")
-                ) + "\n\n"
-            yield "event: queue-meta\ndata: " + json.dumps(
-                _queue_meta(user), separators=(",", ":")
-            ) + "\n\n"
+        finally:
+            STORE.unsubscribe_owner(user, subscriber_id)
 
     return StreamingResponse(
         event_stream(),

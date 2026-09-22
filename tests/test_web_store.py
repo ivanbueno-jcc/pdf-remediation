@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import tempfile
@@ -70,6 +71,21 @@ class JobStoreTests(unittest.TestCase):
         self.assertEqual(events[0]["type"], "stage")
         self.assertTrue(exists)
         self.assertFalse(terminal)
+
+    def test_owner_subscriber_receives_updates_without_blocking_threads(self) -> None:
+        '''Owner updates are delivered through an async queue.'''
+        async def exercise() -> tuple[str, str]:
+            subscriber_id, updates = self.store.subscribe_owner(self.job.submitted_by)
+            try:
+                self.store.emit(self.job.job_id, "stage", {"name": "validate"})
+                await asyncio.sleep(0)
+                return updates.get_nowait()[1:]
+            finally:
+                self.store.unsubscribe_owner(self.job.submitted_by, subscriber_id)
+
+        self.assertEqual(
+            asyncio.run(exercise()), ("job-updated", self.job.job_id)
+        )
 
     def test_lists_newest_first(self) -> None:
         '''The job list is ordered newest first without re-sorting.'''

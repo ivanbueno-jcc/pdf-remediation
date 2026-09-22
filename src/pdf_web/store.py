@@ -4,8 +4,9 @@ Thread-safe registry of remediation jobs and their event streams.
 
 from __future__ import annotations
 
-import json
 import copy
+import asyncio
+import json
 import re
 import shutil
 import threading
@@ -40,6 +41,10 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
         self._owner_positions: dict[str, dict[str, int]] = {}
         self._owner_versions: dict[str, int] = {}
         self._owner_updates: dict[str, list[tuple[int, str, str]]] = {}
+        self._owner_subscribers: dict[
+            str, dict[int, tuple[asyncio.AbstractEventLoop, asyncio.Queue]]
+        ] = {}
+        self._next_subscriber_id = 0
         self._condition = threading.Condition(self._lock)
 
     def _touch_owner_locked(
@@ -52,6 +57,8 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
         if len(updates) > 1000:
             del updates[:-1000]
         self._condition.notify_all()
+        for loop, queue in self._owner_subscribers.get(owner, {}).values():
+            loop.call_soon_threadsafe(queue.put_nowait, (version, update_type, job_id))
 
     def add(self, job: Job) -> None:
         '''
@@ -181,6 +188,30 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
         '''Return the number of jobs owned by a user.'''
         with self._lock:
             return len(self._owner_order.get(owner, []))
+
+    def subscribe_owner(
+            self, owner: str
+    ) -> tuple[int, asyncio.Queue[tuple[int, str, str]]]:
+        '''Register an async subscriber for owner-scoped live updates.'''
+        queue: asyncio.Queue[tuple[int, str, str]] = asyncio.Queue()
+        loop = asyncio.get_running_loop()
+        with self._lock:
+            subscriber_id = self._next_subscriber_id
+            self._next_subscriber_id += 1
+            self._owner_subscribers.setdefault(owner, {})[subscriber_id] = (
+                loop, queue
+            )
+        return subscriber_id, queue
+
+    def unsubscribe_owner(self, owner: str, subscriber_id: int) -> None:
+        '''Remove an async owner subscriber.'''
+        with self._lock:
+            subscribers = self._owner_subscribers.get(owner)
+            if subscribers is None:
+                return
+            subscribers.pop(subscriber_id, None)
+            if not subscribers:
+                self._owner_subscribers.pop(owner, None)
 
     def list_jobs_for_user(
             self,
