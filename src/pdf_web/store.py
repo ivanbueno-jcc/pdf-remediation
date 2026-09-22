@@ -118,17 +118,51 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         '''
         Register a new job.
         '''
+        self.add_batch((job,))
+
+    def add_batch(self, jobs: tuple[Job, ...], notify: bool = True) -> None:
+        '''Register jobs together, optionally delaying owner notifications.'''
+        notifications: list[
+            tuple[
+                str, tuple[str, str],
+                list[tuple[int, asyncio.AbstractEventLoop, OwnerUpdateQueue]],
+            ]
+        ] = []
         with self._lock:
-            self._jobs[job.job_id] = job
-            self._order.append(job.job_id)
-            owner_ids = self._owner_order.setdefault(job.submitted_by, [])
-            owner_positions = self._owner_positions.setdefault(job.submitted_by, {})
-            owner_positions[job.job_id] = len(owner_ids)
-            owner_ids.append(job.job_id)
-            update, subscribers = self._touch_owner_locked(
-                job.submitted_by, "job-added", job.job_id
-            )
-        self._publish_owner_update(job.submitted_by, update, subscribers)
+            for job in jobs:
+                self._jobs[job.job_id] = job
+                self._order.append(job.job_id)
+                owner_ids = self._owner_order.setdefault(job.submitted_by, [])
+                owner_positions = self._owner_positions.setdefault(job.submitted_by, {})
+                owner_positions[job.job_id] = len(owner_ids)
+                owner_ids.append(job.job_id)
+                if notify:
+                    update, subscribers = self._touch_owner_locked(
+                        job.submitted_by, "job-added", job.job_id
+                    )
+                    notifications.append((job.submitted_by, update, subscribers))
+        for owner, update, subscribers in notifications:
+            self._publish_owner_update(owner, update, subscribers)
+
+    def publish_job_added(self, job_ids: tuple[str, ...]) -> None:
+        '''Publish additions after an external scheduler commit succeeds.'''
+        notifications: list[
+            tuple[
+                str, tuple[str, str],
+                list[tuple[int, asyncio.AbstractEventLoop, OwnerUpdateQueue]],
+            ]
+        ] = []
+        with self._lock:
+            for job_id in job_ids:
+                job = self._jobs.get(job_id)
+                if job is None:
+                    continue
+                update, subscribers = self._touch_owner_locked(
+                    job.submitted_by, "job-added", job_id
+                )
+                notifications.append((job.submitted_by, update, subscribers))
+        for owner, update, subscribers in notifications:
+            self._publish_owner_update(owner, update, subscribers)
 
     def get(self, job_id: str) -> Job | None:
         '''
@@ -156,15 +190,15 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             return snapshot
 
     @contextmanager
-    def bundle_snapshot(self, job_id: str) -> Iterator[Job | None]:
-        '''Serialize bundle creation for one live job.'''
+    def job_artifact_lock(self, job_id: str) -> Iterator[bool]:
+        '''Serialize bundle creation and deletion for one live job.'''
         with self._lock:
             job = self._jobs.get(job_id)
         if job is None:
-            yield None
+            yield False
             return
         with job.bundle_lock:
-            yield self._snapshot(job)
+            yield True
 
     @staticmethod
     def _queue_snapshot(job: Job) -> QueueJobSnapshot:  # pylint: disable=too-many-locals
@@ -286,15 +320,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             ]
         return [self._access_snapshot(job) for job in jobs]
 
-    def list_snapshots(self, owner: str) -> list[Job]:
-        '''Return detached snapshots for one owner, newest first.'''
-        with self._lock:
-            jobs = [
-                self._jobs[job_id]
-                for job_id in reversed(self._owner_order.get(owner, []))
-            ]
-        return [self._snapshot(job) for job in jobs]
-
     def list_jobs(self) -> list[Job]:
         '''
         Return all known jobs, newest first.
@@ -306,7 +331,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             ]
         return [self._snapshot(job) for job in jobs]
 
-    def remove(self, job_id: str) -> Job | None:
+    def remove(self, job_id: str, notify: bool = True) -> Job | None:
         '''
         Drop a job from the registry.
         '''
@@ -325,9 +350,13 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 if not owner_jobs:
                     self._owner_order.pop(job.submitted_by, None)
                     self._owner_positions.pop(job.submitted_by, None)
-                update, subscribers = self._touch_owner_locked(
-                    job.submitted_by, "job-removed", job.job_id
-                )
+                if notify:
+                    update, subscribers = self._touch_owner_locked(
+                        job.submitted_by, "job-removed", job.job_id
+                    )
+                else:
+                    update = None
+                    subscribers = []
             else:
                 update = None
                 subscribers = []

@@ -321,15 +321,16 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
 
         registered_ids: list[str] = []
         try:
-            for job in accepted_jobs:
-                STORE.add(job)
-                registered_ids.append(job.job_id)
+            job_ids = tuple(job.job_id for job in accepted_jobs)
+            STORE.add_batch(tuple(accepted_jobs), notify=False)
+            registered_ids.extend(job_ids)
             jobs_ahead = RUNNER.submit_batch(
-                tuple(job.job_id for job in accepted_jobs), user
+                job_ids, user
             )
+            STORE.publish_job_added(job_ids)
         except Exception:
             for job_id in registered_ids:
-                STORE.remove(job_id)
+                STORE.remove(job_id, notify=False)
             raise
         accepted = [{**job.to_dict()} for job in accepted_jobs]
     except Exception:
@@ -527,12 +528,14 @@ async def download_bundle(
     if not job.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
 
-    if not job.bundle_path.is_file():
-        with STORE.bundle_snapshot(job_id) as bundle_job:
+    with STORE.job_artifact_lock(job_id) as job_exists:
+        if not job_exists:
+            raise HTTPException(status_code=404, detail="Not found.")
+        if not job.bundle_path.is_file():
+            bundle_job = STORE.snapshot(job_id)
             if bundle_job is None:
                 raise HTTPException(status_code=404, detail="Not found.")
-            if not job.bundle_path.is_file():
-                await asyncio.to_thread(build_bundle, bundle_job, job.bundle_path)
+            await asyncio.to_thread(build_bundle, bundle_job, job.bundle_path)
 
     bundle_path = _require_file(job.bundle_path)
     return FileResponse(
@@ -645,10 +648,17 @@ async def retry_job(
     job.web_path.mkdir(parents=True, exist_ok=True)
     await asyncio.to_thread(shutil.copy2, original.input_path, job.input_path)
 
-    STORE.add(job)
     save_meta(job)
+    try:
+        STORE.add_batch((job,), notify=False)
+        jobs_ahead = RUNNER.submit(job.job_id, user)
+        STORE.publish_job_added((job.job_id,))
+    except Exception:
+        STORE.remove(job.job_id, notify=False)
+        await asyncio.to_thread(shutil.rmtree, job.base_path, True)
+        raise
     return JSONResponse(status_code=201, content={
-        **job.to_dict(), "jobs_ahead": RUNNER.submit(job.job_id, user)
+        **job.to_dict(), "jobs_ahead": jobs_ahead
     })
 
 
@@ -662,8 +672,9 @@ async def delete_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
         if not job.is_terminal():
             skipped.append(job.job_id)
             continue
-        STORE.remove(job.job_id)
-        await asyncio.to_thread(shutil.rmtree, job.base_path, True)
+        with STORE.job_artifact_lock(job.job_id):
+            STORE.remove(job.job_id)
+            await asyncio.to_thread(shutil.rmtree, job.base_path, True)
         deleted.append(job.job_id)
     return {"deleted": deleted, "skipped": skipped}
 
@@ -679,8 +690,9 @@ async def delete_job(
     if not job.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
 
-    STORE.remove(job_id)
-    await asyncio.to_thread(shutil.rmtree, job.base_path, True)
+    with STORE.job_artifact_lock(job_id):
+        STORE.remove(job_id)
+        await asyncio.to_thread(shutil.rmtree, job.base_path, True)
     return {"job_id": job_id, "deleted": True}
 
 
