@@ -14,6 +14,7 @@ that head job losing its place. Hence a list plus a condition variable.
 from __future__ import annotations
 
 import threading
+import time
 from collections.abc import Collection
 from collections import Counter
 from datetime import datetime
@@ -23,7 +24,11 @@ from pdf_api.models import PipelineOptions, PipelineStatus
 from pdf_api.pipeline import artifact_path, process_pdf
 
 from . import APP_NAME
-from .config import max_concurrent_jobs, max_running_jobs_per_user
+from .config import (
+    job_timeout_seconds,
+    max_concurrent_jobs,
+    max_running_jobs_per_user,
+)
 from .models import JobRecord, JobStatus, status_for
 from .store import JobStore, save_meta
 from .uploads import get_pdf_page_count
@@ -164,6 +169,14 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                 if job_id in self._pending_positions
             }
 
+    def active_job_ids(self, owner: str) -> tuple[str, ...]:
+        '''Return only this owner's queued and running IDs from scheduler state.'''
+        with self._condition:
+            return tuple(
+                job_id for job_id in self._pending + list(self._running)
+                if self._owners.get(job_id) == owner
+            )
+
     def queue_generation(self) -> int:
         '''Return the generation of the pending queue ordering.'''
         with self._condition:
@@ -301,6 +314,11 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             except Exception as error:  # pylint: disable=broad-exception-caught
                 # A worker that dies takes a slice of capacity with it and
                 # nothing reports the loss, so no job may kill its thread.
+                # Finalize the job before continuing so an unexpected pipeline
+                # exception cannot leave it permanently marked as running.
+                job = self._store.get_mutable(job_id)
+                if job is not None and not job.is_terminal():
+                    self._finish_failed(job, f"{type(error).__name__}: {error}")
                 print(f"{APP_NAME}: worker error on {job_id}: {error}")
             finally:
                 self._release(job_id)
@@ -327,6 +345,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             job.state.status = JobStatus.RUNNING
             job.state.started_at = datetime.now()
             filename = job.spec.file.original_name
+            deadline = time.monotonic() + job_timeout_seconds()
             options = PipelineOptions(
                 config_file=job.spec.config_file,
                 require_wcag="wcag" in job.required_profiles(),
@@ -339,26 +358,47 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         self._store.emit(job.spec.job_id, "status", {"status": str(JobStatus.RUNNING)})
         self._log(job, f"Processing {filename}")
 
-        # Page count is display metadata. Calculate it after the upload has
-        # already been accepted and queued so PDFix initialization cannot hold
-        # the browser request open or reject an otherwise valid submission.
-        page_count = get_pdf_page_count(job.paths.input_path)
-        if page_count is not None:
-            with job.state.lock:
-                job.state.page_count = page_count
-            try:
-                save_meta(job)
-            except OSError as error:
-                self._log(job, f"[WARN] Could not persist page count: {error}")
-            self._store.emit(job.spec.job_id, "metadata", {"page_count": page_count})
+        timed_out = False
 
-        result = process_pdf(
-            job.paths.input_path,
-            job.paths.output_dir,
-            options,
-            on_event=lambda stage: self._on_stage(job, stage),
-            should_cancel=lambda: self._is_cancelled(job.spec.job_id),
-        )
+        def should_cancel() -> bool:
+            nonlocal timed_out
+            if time.monotonic() >= deadline:
+                timed_out = True
+                return True
+            return self._is_cancelled(job.spec.job_id)
+
+        try:
+            # Page count is display metadata. Calculate it after the upload has
+            # already been accepted and queued so PDFix initialization cannot
+            # hold the browser request open or reject an otherwise valid
+            # submission.
+            page_count = get_pdf_page_count(job.paths.input_path)
+            if page_count is not None:
+                with job.state.lock:
+                    job.state.page_count = page_count
+                try:
+                    save_meta(job)
+                except OSError as error:
+                    self._log(job, f"[WARN] Could not persist page count: {error}")
+                self._store.emit(job.spec.job_id, "metadata", {"page_count": page_count})
+
+            result = process_pdf(
+                job.paths.input_path,
+                job.paths.output_dir,
+                options,
+                on_event=lambda stage: self._on_stage(job, stage),
+                should_cancel=should_cancel,
+            )
+        except Exception as error:  # pylint: disable=broad-exception-caught
+            self._finish_failed(job, f"{type(error).__name__}: {error}")
+            raise
+
+        if timed_out or time.monotonic() >= deadline:
+            result.status = PipelineStatus.FAILED
+            result.error = (
+                f"Job exceeded the configured timeout of "
+                f"{job_timeout_seconds()} seconds."
+            )
         has_pdf = artifact_path(
             job.paths.output_dir, "pdf", result.output_pdf_path
         ) is not None
@@ -398,12 +438,21 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             job.state.error = message
         self._finish(job)
 
+    def _finish_failed(self, job: JobRecord, message: str) -> None:
+        '''Mark a job failed when the runner cannot obtain a pipeline result.'''
+        with job.state.lock:
+            job.state.status = JobStatus.FAILED
+            job.state.outcome = str(PipelineStatus.FAILED)
+            job.state.error = message
+        self._finish(job)
+
     def _finish(self, job: JobRecord) -> None:
         '''
         Persist a finished job and announce it.
         '''
         with job.state.lock:
             job.state.finished_at = datetime.now()
+        self._store.mark_processed(job.spec.job_id)
         try:
             save_meta(job)
         except OSError as error:

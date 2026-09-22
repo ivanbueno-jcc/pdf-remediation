@@ -53,6 +53,8 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
         self._order: list[str] = []
         self._owner_order: dict[str, list[str]] = {}
         self._owner_positions: dict[str, dict[str, int]] = {}
+        self._owner_processed_counts: dict[str, int] = {}
+        self._processed_job_ids: set[str] = set()
         self._owner_subscribers: dict[
             str, dict[int, tuple[asyncio.AbstractEventLoop, OwnerUpdateQueue]]
         ] = {}
@@ -115,8 +117,12 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 self._order.append(job_id)
                 owner_ids = self._owner_order.setdefault(owner, [])
                 owner_positions = self._owner_positions.setdefault(owner, {})
+                self._owner_processed_counts.setdefault(owner, 0)
                 owner_positions[job_id] = len(owner_ids)
                 owner_ids.append(job_id)
+                if job.is_terminal():
+                    self._processed_job_ids.add(job_id)
+                    self._owner_processed_counts[owner] += 1
                 if notify:
                     update, subscribers = self._touch_owner_locked(
                         owner, "job-added", job_id
@@ -322,9 +328,13 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                     owner_jobs.pop(position)
                     for index in range(position, len(owner_jobs)):
                         owner_positions[owner_jobs[index]] = index
+                if job_id in self._processed_job_ids:
+                    self._processed_job_ids.remove(job_id)
+                    self._owner_processed_counts[owner] -= 1
                 if not owner_jobs:
                     self._owner_order.pop(owner, None)
                     self._owner_positions.pop(owner, None)
+                    self._owner_processed_counts.pop(owner, None)
                 if notify:
                     update, subscribers = self._touch_owner_locked(
                         owner, "job-removed", job.spec.job_id
@@ -358,13 +368,21 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
     def owner_processed_job_count(self, owner: str) -> int:
         '''Return the number of terminal jobs owned by a user.'''
         with self._lock:
-            job_ids = tuple(self._owner_order.get(owner, []))
-            processed = 0
-            for job_id in job_ids:
-                state = self._jobs[job_id].state
-                with state.lock:
-                    processed += state.status not in (JobStatus.QUEUED, JobStatus.RUNNING)
-            return processed
+            return self._owner_processed_counts.get(owner, 0)
+
+    def mark_processed(self, job_id: str) -> None:
+        '''Increment the terminal-job counter once for a completed job.'''
+        with self._lock:
+            if job_id in self._processed_job_ids:
+                return
+            job = self._jobs.get(job_id)
+            if job is None:
+                return
+            owner = job.spec.submitted_by
+            self._processed_job_ids.add(job_id)
+            self._owner_processed_counts[owner] = (
+                self._owner_processed_counts.get(owner, 0) + 1
+            )
 
     def subscribe_owner(
             self, owner: str

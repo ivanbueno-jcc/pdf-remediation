@@ -183,7 +183,7 @@ async def queue_events(request: Request, user: str = CURRENT_USER):
                     if update_type != "job-removed"
                 }
                 if any(update_type == "queue-changed" for update_type, _ in updates):
-                    changed_ids.update(runtime.store.active_job_ids(user))
+                    changed_ids.update(runtime.runner.active_job_ids(user))
                 positions = runtime.runner.pending_positions_for(changed_ids)
                 latest: dict[str, str] = {}
                 for update_type, job_id in updates:

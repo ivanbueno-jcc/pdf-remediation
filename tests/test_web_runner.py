@@ -300,6 +300,40 @@ class PageCountExecutionTests(SchedulerTestCase):
         process.assert_called_once()
         self.assertEqual(persist.call_count, 2)
 
+    def test_pipeline_exception_is_recorded_as_terminal_failure(self) -> None:
+        '''Unexpected pipeline errors do not strand a job in the running state.'''
+        job = make_job(job_id="20260827-120012-cccccc", submitted_by=ALICE)
+        self.store.add(job)
+
+        with mock.patch("pdf_web.runner.get_pdf_page_count", return_value=None), \
+                mock.patch("pdf_web.runner.process_pdf", side_effect=RuntimeError("boom")), \
+                mock.patch("pdf_web.runner.save_meta"):
+            with self.assertRaisesRegex(RuntimeError, "boom"):
+                self.runner._run_job(job)  # pylint: disable=protected-access
+
+        self.assertEqual(job.status, JobStatus.FAILED)
+        self.assertEqual(job.outcome, str(PipelineStatus.FAILED))
+        self.assertEqual(job.error, "RuntimeError: boom")
+
+    def test_configured_timeout_marks_result_as_failed(self) -> None:
+        '''A pipeline result that crosses the deadline is reported as timed out.'''
+        job = make_job(job_id="20260827-120013-dddddd", submitted_by=ALICE)
+        self.store.add(job)
+        result = PipelineResult(
+            status=PipelineStatus.REMEDIATED,
+            input_pdf_path=job.input_path,
+        )
+
+        with mock.patch("pdf_web.runner.get_pdf_page_count", return_value=None), \
+                mock.patch("pdf_web.runner.job_timeout_seconds", return_value=0), \
+                mock.patch("pdf_web.runner.process_pdf", return_value=result), \
+                mock.patch("pdf_web.runner.save_meta"):
+            self.runner._run_job(job)  # pylint: disable=protected-access
+
+        self.assertEqual(job.status, JobStatus.FAILED)
+        self.assertEqual(job.outcome, str(PipelineStatus.FAILED))
+        self.assertIn("configured timeout of 0 seconds", job.error)
+
     def test_page_count_failure_does_not_prevent_processing(self) -> None:
         '''Page count is display metadata and cannot reject or fail a job.'''
         job = make_job(job_id="20260827-120011-bbbbbb", submitted_by=ALICE)
