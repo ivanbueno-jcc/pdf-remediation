@@ -267,7 +267,7 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
 
 
 @app.post("/api/jobs", status_code=201)
-async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
+async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches,too-many-statements
         files: list[UploadFile] = File(...),
         config_file: str = Form(DEFAULT_CONFIG_FILE),
         attempt_unlock: bool = Form(True),
