@@ -17,7 +17,7 @@ from pdf_api.models import PipelineResult, PipelineStatus
 
 from .config import JOBS_ROOT, LOG_RING_BUFFER_LINES, job_ttl_hours
 from .identity import legacy_job_owner, normalize_user
-from .models import Job, JobStatus, UploadedFile
+from .models import Job, JobStatus, TERMINAL_STATUSES, UploadedFile
 
 JOB_ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 PROGRESS_LINE_PATTERN = re.compile(r"^\s*\d+%\|")
@@ -243,6 +243,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
                 and PROGRESS_LINE_PATTERN.match(events[-1]["payload"].get("line", ""))
             ):
                 events[-1]["payload"]["line"] = line
+                self._condition.notify_all()
                 return
             events.append({
                 "cursor": len(events) + 1,
@@ -251,6 +252,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             })
             if len(events) > LOG_RING_BUFFER_LINES * 2:
                 del events[:LOG_RING_BUFFER_LINES]
+            self._condition.notify_all()
 
     def events_since(self, job_id: str, cursor: int) -> tuple[int, list[dict[str, Any]]]:
         '''
@@ -261,6 +263,31 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             pending = [event for event in events if event["cursor"] > cursor]
             latest = events[-1]["cursor"] if events else cursor
             return latest, pending
+
+    def wait_for_job_events(
+            self, job_id: str, cursor: int, timeout: float
+    ) -> tuple[int, list[dict[str, Any]], bool, bool]:
+        '''Wait for job events, removal, terminal state, or a keepalive timeout.'''
+        with self._condition:
+            def changed() -> bool:
+                events = self._events.get(job_id)
+                return (
+                    events is None
+                    or (events and events[-1]["cursor"] > cursor)
+                )
+
+            self._condition.wait_for(changed, timeout=timeout)
+            events = self._events.get(job_id)
+            if events is None:
+                return cursor, [], False, False
+            pending = [event for event in events if event["cursor"] > cursor]
+            latest = events[-1]["cursor"] if events else cursor
+            job = self._jobs.get(job_id)
+            terminal = False
+            if job is not None:
+                with job.state_lock:
+                    terminal = job.status in TERMINAL_STATUSES
+            return latest, pending, True, terminal
 
 
 def is_valid_job_id(job_id: str) -> bool:

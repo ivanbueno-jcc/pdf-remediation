@@ -33,7 +33,6 @@ from .config import (
     max_concurrent_jobs,
     max_running_jobs_per_user,
     SSE_KEEPALIVE_SECONDS,
-    SSE_POLL_SECONDS,
 )
 from .environment import cached_health, collect_readiness
 from .assets import serve_asset, serve_index, serve_versioned_asset
@@ -499,38 +498,36 @@ async def job_events(
     _require_job(job_id, user)
 
     async def event_stream() -> AsyncIterator[str]:
-        '''
-        Poll the store and forward new events to the browser.
-        '''
+        '''Wait for store notifications and forward new events to the browser.'''
         cursor = since
-        idle_seconds = 0.0
         while True:
             if await request.is_disconnected():
                 return
 
-            cursor, events = STORE.events_since(job_id, cursor)
-            if events:
-                idle_seconds = 0.0
-                for event in events:
-                    yield _format_sse(event)
-                    if event["type"] == "done":
-                        return
-            else:
-                idle_seconds += SSE_POLL_SECONDS
-                if idle_seconds >= SSE_KEEPALIVE_SECONDS:
-                    idle_seconds = 0.0
-                    yield ": keepalive\n\n"
-
-                job = STORE.snapshot(job_id)
-                if job is not None and job.is_terminal():
-                    yield _format_sse({
-                        "cursor": cursor,
-                        "type": "done",
-                        "payload": {"status": str(job.status)},
-                    })
+            cursor, events, exists, terminal = await asyncio.to_thread(
+                STORE.wait_for_job_events,
+                job_id,
+                cursor,
+                SSE_KEEPALIVE_SECONDS,
+            )
+            if not exists:
+                return
+            for event in events:
+                yield _format_sse(event)
+                if event["type"] == "done":
                     return
-
-            await asyncio.sleep(SSE_POLL_SECONDS)
+            if terminal:
+                job = STORE.snapshot(job_id)
+                if job is None:
+                    return
+                yield _format_sse({
+                    "cursor": cursor,
+                    "type": "done",
+                    "payload": {"status": str(job.status)},
+                })
+                return
+            if not events:
+                yield ": keepalive\n\n"
 
     return StreamingResponse(
         event_stream(),

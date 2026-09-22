@@ -58,6 +58,19 @@ class JobStoreTests(unittest.TestCase):
         self.assertGreater(latest, version)
         self.assertEqual(updates[-1][1:], ("job-updated", self.job.job_id))
 
+    def test_job_event_wait_returns_events_without_polling(self) -> None:
+        '''A job stream can block until its cursor advances.'''
+        self.store.emit(self.job.job_id, "stage", {"name": "validate"})
+
+        cursor, events, exists, terminal = self.store.wait_for_job_events(
+            self.job.job_id, 0, 0
+        )
+
+        self.assertEqual(cursor, 1)
+        self.assertEqual(events[0]["type"], "stage")
+        self.assertTrue(exists)
+        self.assertFalse(terminal)
+
     def test_lists_newest_first(self) -> None:
         '''The job list is ordered newest first without re-sorting.'''
         second = make_job("20260827-160000-abc123")
