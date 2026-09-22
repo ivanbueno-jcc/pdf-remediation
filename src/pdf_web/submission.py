@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import shutil
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from typing import Callable
 
@@ -126,7 +126,7 @@ async def prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-p
                 f"Submission exceeds the {MAX_SUBMISSION_BYTES} byte limit."
             )
         with job.state_lock:
-            job.file.size_bytes = size
+            job.file = replace(job.file, size_bytes=size)
         return job, None, size
     except UploadError as error:
         if job is not None:

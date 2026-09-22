@@ -1,56 +1,14 @@
 'use strict';
 
-const SSE_RECONNECT_MS = 2000;
-const SSE_MAX_RECONNECT_MS = 60000;
 const MAX_TERMINAL_QUEUE_JOBS = 100;
 
-const state = {
-  staged: [],
-  submitting: false,
-  uploadLimits: {
-    max_files: 200,
-    max_file_bytes: 200 * 1024 * 1024,
-    max_submission_bytes: 2 * 1024 * 1024 * 1024,
-  },
-  health: null,
-  authError: null,
-  openJobId: null,
-  openDownloadJobId: null,
-  queueStream: null,
-  queueReconnectDelay: SSE_RECONNECT_MS,
-  jobs: [],
-  jobIndex: new Map(),
-  jobPositions: new Map(),
-  queueMeta: {},
-  jobRows: new Map(),
-  activeJobCount: 0,
-  failedJobCount: 0,
-  queueEta: null,
-  queueGeneration: null,
-  jobStats: { processed: 0, wcag: 0, ua1: 0, totalPages: 0, processedPages: 0 },
-  cancellingJobs: new Set(),
-  jobStatusSnapshot: null,
-  jobSearch: '',
-  jobOutcomeFilter: 'all',
-  toastTimer: null,
-  toastFadeTimer: null,
-};
+const state = window.PdfWebState;
+const { el, formatBytes, describeError } = window.PdfWebDom;
+const { validationValue, validationRequirementLabel, mergeViolations } = window.PdfWebJobDetail;
 
-const el = (id) => document.getElementById(id);
-
-function formatBytes(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  const units = ['KB', 'MB', 'GB'];
-  let value = bytes / 1024, index = 0;
-  while (value >= 1024 && index < units.length - 1) { value /= 1024; index += 1; }
-  return value.toFixed(value >= 10 ? 0 : 1) + ' ' + units[index];
-}
-
-function describeError(payload) {
-  const detail = payload && payload.detail;
-  if (typeof detail === 'string') return detail;
-  if (Array.isArray(detail)) return detail.map((e) => e.msg || JSON.stringify(e)).join('; ');
-  return 'Request failed.';
+function apiRequest(path, options) {
+  const client = typeof window !== 'undefined' ? window.PdfWebApi : null;
+  return client ? client.request(path, options) : fetch(path, options);
 }
 
 function readinessPresentation(health, authError) {
@@ -75,7 +33,7 @@ function renderReadiness() {
 
 async function loadHealth() {
   try {
-    const response = await fetch('/api/health');
+    const response = await apiRequest('/api/health');
     if (response.status === 401 || response.status === 403) {
       const payload = await response.json().catch(() => ({}));
       state.authError = describeError(payload);
@@ -157,7 +115,7 @@ function renderConfigDescription() {
 async function loadConfigs() {
   const select = el('config-select');
   try {
-    const payload = await (await fetch('/api/config-files')).json();
+    const payload = await (await apiRequest('/api/config-files')).json();
     if (payload.upload_limits) state.uploadLimits = payload.upload_limits;
     select.innerHTML = '';
     const groups = new Map();
@@ -224,19 +182,13 @@ function addFiles(fileList) {
   let totalBytes = ready.reduce((sum, item) => sum + item.file.size, 0);
   const limits = state.uploadLimits;
   Array.from(fileList).forEach((file) => {
-    let reason = '';
-    if (!file.name.toLowerCase().endsWith('.pdf')) {
+    const validation = window.PdfWebUploadStaging.validate(
+      file, ready, limits, totalBytes, formatBytes
+    );
+    let reason = validation.reason || '';
+    if (validation.ignored) {
       ignored.push(file);
       return;
-    } else if (ready.some((item) => item.file.name === file.name && item.file.size === file.size)) {
-      reason = 'This file is already in the batch.';
-    } else if (file.size > limits.max_file_bytes) {
-      reason = 'File exceeds the ' + formatBytes(limits.max_file_bytes) + ' per-file limit.';
-    } else if (ready.length >= limits.max_files) {
-      reason = 'The batch already contains the maximum of ' + limits.max_files + ' files.';
-    } else if (totalBytes + file.size > limits.max_submission_bytes) {
-      reason = 'Adding it would exceed the ' +
-        formatBytes(limits.max_submission_bytes) + ' batch limit.';
     }
 
     if (reason) {
@@ -414,7 +366,7 @@ async function submitJobs() {
 
   let payload;
   try {
-    const response = await fetch('/api/jobs', { method: 'POST', body: form });
+    const response = await apiRequest('/api/jobs', { method: 'POST', body: form });
     payload = await response.json();
     if (!response.ok) {
       const rejected = payload.rejected || [];
@@ -468,7 +420,7 @@ async function submitJobs() {
 
 async function loadQueueSnapshot() {
   try {
-    const response = await fetch('/api/queue?limit=100');
+    const response = await apiRequest('/api/queue?limit=100');
     if (!response.ok) return false;
     applyQueuePayload(await response.json());
     return true;
@@ -566,43 +518,20 @@ function removeQueueJob(jobId) {
 
 function startLiveUpdates() {
   if (state.queueStream || state.authError) return;
-  const stream = new EventSource('/api/queue/events');
-  state.queueStream = stream;
-  stream.onopen = () => {
-    state.queueReconnectDelay = SSE_RECONNECT_MS;
-  };
-  stream.addEventListener('queue', (event) => {
-    try { applyQueuePayload(JSON.parse(event.data)); } catch (error) { /* retry */ }
-  });
-  stream.addEventListener('job-added', (event) => {
-    try { applyQueueJob(JSON.parse(event.data)); } catch (error) { /* retry */ }
-  });
-  stream.addEventListener('job-updated', (event) => {
-    try { applyQueueJob(JSON.parse(event.data)); } catch (error) { /* retry */ }
-  });
-  stream.addEventListener('job-removed', (event) => {
-    try { removeQueueJob(JSON.parse(event.data).job_id); } catch (error) { /* retry */ }
-  });
-  stream.addEventListener('queue-meta', (event) => {
-    try {
-      const payload = JSON.parse(event.data);
+  state.queueStream = window.PdfWebLiveUpdates.connect({
+    queue: applyQueuePayload,
+    jobAdded: applyQueueJob,
+    jobUpdated: applyQueueJob,
+    jobRemoved: (payload) => removeQueueJob(payload.job_id),
+    queueMeta(payload) {
       const generationChanged = payload.queue_generation !== undefined &&
         payload.queue_generation !== state.queueGeneration;
       state.queueMeta = { ...state.queueMeta, ...payload };
       state.queueGeneration = payload.queue_generation;
       updateQueuePresentation(state.queueMeta);
       if (generationChanged) renderJobs();
-    }
-    catch (error) { /* retry */ }
+    },
   });
-  stream.onerror = () => {
-    if (state.queueStream !== stream) return;
-    stream.close();
-    state.queueStream = null;
-    const delay = state.queueReconnectDelay;
-    state.queueReconnectDelay = Math.min(delay * 2, SSE_MAX_RECONNECT_MS);
-    setTimeout(startLiveUpdates, delay);
-  };
 }
 
 function announceStatus(message) {
@@ -687,17 +616,10 @@ function announceJobChange(job) {
   }
 }
 
-function isActiveJob(job) {
-  return job.status === 'queued' || job.status === 'running';
-}
+function isActiveJob(job) { return window.PdfWebQueueView.isActive(job); }
 
 function retainQueueWindow(jobs) {
-  const active = jobs.filter(isActiveJob);
-  const terminal = jobs.filter((job) => !isActiveJob(job))
-    .slice(0, MAX_TERMINAL_QUEUE_JOBS);
-  return active.concat(terminal).sort(
-    (left, right) => right.created_at.localeCompare(left.created_at)
-  );
+  return window.PdfWebQueueView.retainWindow(jobs, MAX_TERMINAL_QUEUE_JOBS);
 }
 
 function isVisibleJob(job) {
@@ -741,35 +663,7 @@ function formatQueueEta(seconds) {
   return minutes + 'm' + (remainder ? ' ' + remainder + 's' : '') + ' left';
 }
 
-function queueEtaSeconds(payload) {
-  const jobs = payload.jobs || [];
-  const active = jobs.filter(isActiveJob);
-  if (!active.length) return null;
-
-  const durations = jobs.map((job) => {
-    if (job.status !== 'completed') return null;
-    const started = Date.parse(job.started_at || '');
-    const finished = Date.parse(job.finished_at || '');
-    if (!started || !finished || finished <= started) return null;
-    return (finished - started) / 1000;
-  }).filter((duration) => duration !== null && Number.isFinite(duration) && duration > 0);
-  const average = durations.length
-    ? durations.reduce((total, duration) => total + duration, 0) / durations.length : 60;
-
-  const configuredSlots = [Number(payload.concurrency), Number(payload.your_limit)]
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const slots = configuredSlots.length ? Math.max(1, Math.min(...configuredSlots)) : 1;
-  const running = active.filter((job) => job.status === 'running');
-  const queued = active.length - running.length;
-  const runningRemaining = running.map((job) => {
-    const started = Date.parse(job.started_at || '');
-    const elapsed = started ? Math.max(0, (Date.now() - started) / 1000) : 0;
-    return Math.max(5, average - elapsed);
-  });
-  const availableSlots = Math.max(1, slots - running.length);
-  const queuedTime = Math.ceil(queued / availableSlots) * average;
-  return Math.max(runningRemaining.length ? Math.max(...runningRemaining) : 0, queuedTime);
-}
+function queueEtaSeconds(payload) { return window.PdfWebQueueView.etaSeconds(payload); }
 
 function renderJobGroup(groupId, bodyId, jobs) {
   el(groupId).classList.toggle('hidden', jobs.length === 0);
@@ -1317,7 +1211,7 @@ async function retryProcessedPdf(job, button) {
   button.disabled = true;
   button.setAttribute('aria-busy', 'true');
   try {
-    const response = await fetch('/api/jobs/' + encodeURIComponent(job.job_id) + '/pdf');
+    const response = await apiRequest('/api/jobs/' + encodeURIComponent(job.job_id) + '/pdf');
     if (!response.ok) {
       const payload = await response.json().catch(() => ({}));
       throw new Error(describeError(payload) || 'The processed PDF is unavailable.');
@@ -1355,7 +1249,7 @@ async function cancelJob(job, button) {
   button.setAttribute('aria-label', 'Cancelling ' + job.name);
   button.replaceChildren(downloadIcon('spinner'), 'Cancelling');
   try {
-    const response = await fetch('/api/jobs/' + encodeURIComponent(job.job_id) + '/cancel', {
+    const response = await apiRequest('/api/jobs/' + encodeURIComponent(job.job_id) + '/cancel', {
       method: 'POST',
     });
     if (!response.ok) {
@@ -1381,7 +1275,7 @@ async function deleteJob(job, button) {
   button.disabled = true;
   button.setAttribute('aria-busy', 'true');
   try {
-    const response = await fetch('/api/jobs/' + encodeURIComponent(job.job_id), {
+    const response = await apiRequest('/api/jobs/' + encodeURIComponent(job.job_id), {
       method: 'DELETE',
     });
     if (!response.ok) {
@@ -1425,32 +1319,7 @@ function confirmCancel(job) {
 }
 
 function confirmAction(titleText, copyText, confirmText) {
-  const dialog = el('delete-dialog');
-  const title = el('delete-dialog-title');
-  const copy = el('delete-dialog-copy');
-  const confirm = el('delete-confirm');
-  const cancel = el('delete-cancel');
-  title.textContent = titleText;
-  copy.textContent = copyText;
-  const previousConfirmLabel = confirm.textContent;
-  confirm.textContent = confirmText;
-
-  return new Promise((resolve) => {
-    const previouslyFocused = document.activeElement;
-    const onClose = () => {
-      confirm.textContent = previousConfirmLabel;
-      if (previouslyFocused && previouslyFocused.isConnected && previouslyFocused.focus) {
-        previouslyFocused.focus();
-      }
-      resolve(dialog.returnValue === 'confirm');
-    };
-    dialog.addEventListener('close', onClose, { once: true });
-    confirm.onclick = () => { dialog.returnValue = 'confirm'; dialog.close(); };
-    cancel.onclick = () => { dialog.returnValue = 'cancel'; dialog.close(); };
-    dialog.returnValue = '';
-    dialog.showModal();
-    cancel.focus();
-  });
+  return window.PdfWebDialogs.confirmAction(titleText, copyText, confirmText);
 }
 
 async function deleteAllJobs(button) {
@@ -1460,14 +1329,14 @@ async function deleteAllJobs(button) {
   button.setAttribute('aria-busy', 'true');
   try {
     const jobs = state.jobs.slice();
-    const response = await fetch('/api/jobs', { method: 'DELETE' });
+    const response = await apiRequest('/api/jobs', { method: 'DELETE' });
     let payload = await response.json().catch(() => ({}));
     if (response.status === 405) {
       // Older server processes may still have the per-job route but not the
       // bulk route. Keep the action usable while that process is being
       // restarted or reloaded.
       const results = await Promise.all(jobs.map(async (job) => {
-        const itemResponse = await fetch('/api/jobs/' + encodeURIComponent(job.job_id), {
+        const itemResponse = await apiRequest('/api/jobs/' + encodeURIComponent(job.job_id), {
           method: 'DELETE',
         });
         return { job, response: itemResponse };
@@ -1507,23 +1376,6 @@ async function deleteAllJobs(button) {
     button.disabled = false;
     button.removeAttribute('aria-busy');
   }
-}
-
-function validationValue(entry) {
-  if (!entry) return { text: 'Pending', tone: 'pending' };
-  if (entry.status === 'pass') return { text: 'Pass', tone: 'ok' };
-  if (entry.status === 'error') return { text: 'Error', tone: 'warn' };
-  const count = Number(entry.failed_rules_count || 0);
-  return { text: count + ' fail' + (count === 1 ? '' : 's'), tone: 'bad' };
-}
-
-function validationRequirementLabel(requirement) {
-  const labels = {
-    'wcag only': 'WCAG',
-    'pdfua1 only': 'PDF/UA-1',
-    'wcag and pdfua1': 'WCAG • PDF/UA-1',
-  };
-  return labels[requirement] || 'WCAG';
 }
 
 function validationComparison(before, after) {
@@ -1768,7 +1620,7 @@ async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
   setDetailExpanded(detailRow, true);
 
   try {
-    const response = await fetch('/api/jobs/' + job.job_id + '/details');
+    const response = await apiRequest('/api/jobs/' + job.job_id + '/details');
     if (!response.ok) throw new Error('Details request failed.');
     const detailJob = await response.json();
     renderDetail(cell, detailJob);
@@ -1877,7 +1729,7 @@ function violationList(jobId, stage) {
   loadingCell.textContent = 'Loading…';
   loading.appendChild(loadingCell);
   body.appendChild(loading);
-  fetch('/api/jobs/' + jobId + '/' + stage)
+  apiRequest('/api/jobs/' + jobId + '/' + stage)
     .then((response) => (response.ok ? response.json() : null))
     .then((report) => {
       body.innerHTML = '';
@@ -1942,8 +1794,8 @@ function violationDiff(jobId, expandResolved) {
   container.innerHTML = '<p class="muted">Loading…</p>';
 
   Promise.all([
-    fetch('/api/jobs/' + jobId + '/before').then((r) => (r.ok ? r.json() : null)),
-    fetch('/api/jobs/' + jobId + '/after').then((r) => (r.ok ? r.json() : null)),
+    apiRequest('/api/jobs/' + jobId + '/before').then((r) => (r.ok ? r.json() : null)),
+    apiRequest('/api/jobs/' + jobId + '/after').then((r) => (r.ok ? r.json() : null)),
   ]).then(([beforeReport, afterReport]) => {
     container.innerHTML = '';
 
@@ -1995,26 +1847,6 @@ function violationDiff(jobId, expandResolved) {
   });
 
   return container;
-}
-
-function mergeViolations(report) {
-  if (!report) return [];
-  const merged = new Map();
-  ['ua1', 'wcag'].forEach((profile) => {
-    (((report.profiles || {})[profile] || {}).violations || []).forEach((violation) => {
-      const key = violation.clause_test || 'unknown';
-      if (!merged.has(key)) {
-        merged.set(key, { clause_test: key, description: violation.description || '',
-                          profiles: [] });
-      }
-      const entry = merged.get(key);
-      const label = profile.toUpperCase();
-      if (!entry.profiles.includes(label)) entry.profiles.push(label);
-      if (!entry.description) entry.description = violation.description || '';
-    });
-  });
-  return Array.from(merged.values())
-    .sort((a, b) => a.clause_test.localeCompare(b.clause_test));
 }
 
 /* ---------- wiring ---------- */

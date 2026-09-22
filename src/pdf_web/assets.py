@@ -48,6 +48,24 @@ def serve_index() -> Response:
     content = content.replace(
         "/static/style.css", asset_url("style.css")
     ).replace(
+        "/static/api.js", asset_url("api.js")
+    ).replace(
+        "/static/live-updates.js", asset_url("live-updates.js")
+    ).replace(
+        "/static/state.js", asset_url("state.js")
+    ).replace(
+        "/static/dom.js", asset_url("dom.js")
+    ).replace(
+        "/static/upload-staging.js", asset_url("upload-staging.js")
+    ).replace(
+        "/static/queue-view.js", asset_url("queue-view.js")
+    ).replace(
+        "/static/dialogs.js", asset_url("dialogs.js")
+    ).replace(
+        "/static/job-detail.js", asset_url("job-detail.js")
+    ).replace(
+        "/static/sse.js", asset_url("sse.js")
+    ).replace(
         "/static/app.js", asset_url("app.js")
     )
     return Response(

@@ -345,7 +345,7 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         page_count = get_pdf_page_count(job.input_path)
         if page_count is not None:
             with job.state_lock:
-                job.file.page_count = page_count
+                job.page_count = page_count
             try:
                 save_meta(job)
             except OSError as error:
