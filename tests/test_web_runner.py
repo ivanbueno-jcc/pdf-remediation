@@ -66,6 +66,27 @@ class QueuePositionTests(SchedulerTestCase):
         '''A job that is not waiting reports nothing rather than zero.'''
         self.assertIsNone(self.runner.jobs_ahead("20260827-120000-aaaaaa"))
 
+    def test_selected_pending_positions_stop_after_page_jobs(self) -> None:
+        '''The queue endpoint need not materialize positions for every job.'''
+        self.runner.submit("20260827-120000-aaaaaa", ALICE)
+        self.runner.submit("20260827-120001-bbbbbb", BOB)
+        self.runner.submit("20260827-120002-cccccc", ALICE)
+
+        self.assertEqual(
+            self.runner.pending_positions_for({"20260827-120001-bbbbbb"}),
+            {"20260827-120001-bbbbbb": 1},
+        )
+
+    def test_user_activity_tracks_pending_and_running_jobs(self) -> None:
+        '''Active polling state is scoped to the requesting owner.'''
+        self.add("20260827-120000-aaaaaa", ALICE)
+        self.assertEqual(self.runner.user_activity(ALICE), (0, True))
+        self.assertEqual(self.runner.user_activity(BOB), (0, False))
+
+        claimed = self.runner._claim_next()  # pylint: disable=protected-access
+        self.assertEqual(claimed, "20260827-120000-aaaaaa")
+        self.assertEqual(self.runner.user_activity(ALICE), (1, True))
+
 
 class PerUserCapTests(SchedulerTestCase):
     '''One user must not be able to hold the whole pool.'''

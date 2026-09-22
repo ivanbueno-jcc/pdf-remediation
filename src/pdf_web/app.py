@@ -355,32 +355,20 @@ async def queue_view(
     cursor is the last job id returned, so new jobs added at the front do not
     shift later pages while a client is reading them.
     '''
-    all_jobs = []
-    for job in STORE.list_jobs():
-        with job.state_lock:
-            if job.submitted_by == user:
-                all_jobs.append(job)
-    start = 0
-    if cursor is not None:
-        try:
-            start = next(index + 1 for index, job in enumerate(all_jobs)
-                         if job.job_id == cursor)
-        except StopIteration as error:
-            raise HTTPException(status_code=400, detail="Invalid queue cursor.") from error
-
-    jobs = all_jobs[start:start + limit]
-    next_cursor = jobs[-1].job_id if start + limit < len(all_jobs) else None
-    pending_positions = {
-        job_id: index for index, job_id in enumerate(RUNNER.pending_job_ids())
-    }
+    try:
+        jobs, total_jobs, next_cursor = STORE.list_jobs_for_user(user, cursor, limit)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    pending_positions = RUNNER.pending_positions_for(
+        {job.job_id for job in jobs}
+    )
+    your_running, has_active = RUNNER.user_activity(user)
     return {
         "concurrency": max_concurrent_jobs(),
         "your_limit": max_running_jobs_per_user(),
-        "your_running": sum(
-            1 for job in all_jobs if job.status == JobStatus.RUNNING
-        ),
-        "all_terminal": all(job.is_terminal() for job in all_jobs),
-        "total_jobs": len(all_jobs),
+        "your_running": your_running,
+        "all_terminal": not has_active,
+        "total_jobs": total_jobs,
         "next_cursor": next_cursor,
         "jobs": [queue_payload(job, pending_positions) for job in jobs],
     }

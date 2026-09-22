@@ -63,6 +63,8 @@ class AccessControlTests(unittest.TestCase):
         self.runner = mock.Mock(queue_depth=mock.Mock(return_value=0),
                                 running_count=mock.Mock(return_value=0),
                                 pending_job_ids=mock.Mock(return_value=()),
+                                pending_positions_for=mock.Mock(return_value={}),
+                                user_activity=mock.Mock(return_value=(0, False)),
                                 jobs_ahead=mock.Mock(return_value=None),
                                 submit=mock.Mock(return_value=0),
                                 submit_batch=mock.Mock(return_value=[0]))
@@ -300,6 +302,8 @@ class OwnershipRecordingTests(unittest.TestCase):
             submit=mock.Mock(return_value=0),
             submit_batch=mock.Mock(return_value=[0]),
             pending_job_ids=mock.Mock(return_value=()),
+            pending_positions_for=mock.Mock(return_value={}),
+            user_activity=mock.Mock(return_value=(0, False)),
             jobs_ahead=mock.Mock(return_value=None),
         )
         self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
@@ -425,6 +429,9 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.store.add(first)
         self.store.add(second)
         self.runner.pending_job_ids.return_value = (second.job_id, first.job_id)
+        self.runner.pending_positions_for.return_value = {
+            second.job_id: 0, first.job_id: 1,
+        }
 
         response = self.client.get(
             "/api/queue?limit=1", headers=headers(ALICE)

@@ -44,6 +44,46 @@ class JobStoreTests(unittest.TestCase):
             [second.job_id, self.job.job_id]
         )
 
+    def test_lists_one_owner_page_without_other_owners(self) -> None:
+        '''The indexed queue view returns only the requested owner's jobs.'''
+        other = make_job("20260827-160000-abc123", submitted_by="other@example.com")
+        own = make_job("20260827-170000-def456", submitted_by=self.job.submitted_by)
+        self.store.add(other)
+        self.store.add(own)
+
+        jobs, total, next_cursor = self.store.list_jobs_for_user(
+            self.job.submitted_by, limit=1
+        )
+
+        self.assertEqual([job.job_id for job in jobs], [own.job_id])
+        self.assertEqual(total, 2)
+        self.assertEqual(next_cursor, own.job_id)
+
+    def test_owner_cursor_continues_from_last_job(self) -> None:
+        '''A cursor returns the next older page for the same owner.'''
+        older = make_job("20260827-110000-abc123", submitted_by=self.job.submitted_by)
+        newer = make_job("20260827-130000-def456", submitted_by=self.job.submitted_by)
+        self.store.add(older)
+        self.store.add(newer)
+
+        first, _, cursor = self.store.list_jobs_for_user(
+            self.job.submitted_by, limit=2
+        )
+        second, _, next_cursor = self.store.list_jobs_for_user(
+            self.job.submitted_by, cursor, limit=2
+        )
+
+        self.assertEqual([job.job_id for job in first], [newer.job_id, older.job_id])
+        self.assertEqual([job.job_id for job in second], [self.job.job_id])
+        self.assertIsNone(next_cursor)
+
+    def test_owner_cursor_rejects_unknown_job(self) -> None:
+        '''A cursor from another owner's history cannot cross the boundary.'''
+        with self.assertRaisesRegex(ValueError, "Invalid queue cursor"):
+            self.store.list_jobs_for_user(
+                self.job.submitted_by, "20260827-160000-abc123", limit=1
+            )
+
     def test_remove_drops_job_and_events(self) -> None:
         '''Removing a job clears its event stream too.'''
         self.store.append_log(self.job.job_id, "line")

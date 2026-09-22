@@ -35,6 +35,7 @@ class JobStore:
         self._jobs: dict[str, Job] = {}
         self._events: dict[str, list[dict[str, Any]]] = {}
         self._order: list[str] = []
+        self._owner_order: dict[str, list[str]] = {}
 
     def add(self, job: Job) -> None:
         '''
@@ -44,6 +45,7 @@ class JobStore:
             self._jobs[job.job_id] = job
             self._events[job.job_id] = []
             self._order.append(job.job_id)
+            self._owner_order.setdefault(job.submitted_by, []).append(job.job_id)
 
     def get(self, job_id: str) -> Job | None:
         '''
@@ -68,7 +70,38 @@ class JobStore:
             self._events.pop(job_id, None)
             if job_id in self._order:
                 self._order.remove(job_id)
+            if job is not None:
+                owner_jobs = self._owner_order.get(job.submitted_by, [])
+                if job_id in owner_jobs:
+                    owner_jobs.remove(job_id)
+                if not owner_jobs:
+                    self._owner_order.pop(job.submitted_by, None)
             return job
+
+    def list_jobs_for_user(
+            self,
+            user: str,
+            cursor: str | None = None,
+            limit: int | None = None) -> tuple[list[Job], int, str | None]:
+        '''Return one newest-first page without scanning other users' jobs.'''
+        with self._lock:
+            owner_ids = self._owner_order.get(user, [])
+            total = len(owner_ids)
+            if cursor is None:
+                position = total - 1
+            else:
+                try:
+                    position = owner_ids.index(cursor) - 1
+                except ValueError as error:
+                    raise ValueError("Invalid queue cursor.") from error
+
+            page_ids: list[str] = []
+            while position >= 0 and (limit is None or len(page_ids) < limit):
+                page_ids.append(owner_ids[position])
+                position -= 1
+            jobs = [self._jobs[job_id] for job_id in page_ids]
+            next_cursor = page_ids[-1] if position >= 0 else None
+            return jobs, total, next_cursor
 
     def emit(self, job_id: str, event_type: str, payload: dict[str, Any]) -> None:
         '''

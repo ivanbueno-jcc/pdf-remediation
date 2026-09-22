@@ -14,6 +14,7 @@ that head job losing its place. Hence a list plus a condition variable.
 from __future__ import annotations
 
 import threading
+from collections.abc import Collection
 from collections import Counter
 from datetime import datetime
 from typing import Any
@@ -131,12 +132,35 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         with self._condition:
             return len(self._running)
 
+    def user_activity(self, owner: str) -> tuple[int, bool]:
+        '''Return running count and whether the user still has active work.'''
+        with self._condition:
+            running = sum(1 for value in self._running.values() if value == owner)
+            pending = any(
+                self._owners.get(job_id) == owner for job_id in self._pending
+            )
+            return running, bool(running or pending)
+
     def pending_job_ids(self) -> tuple[str, ...]:
         '''
         Return the queued jobs newest-first, in the order they will be considered.
         '''
         with self._condition:
             return tuple(self._pending)
+
+    def pending_positions_for(self, job_ids: Collection[str]) -> dict[str, int]:
+        '''Return positions for selected queued jobs, stopping when all are found.'''
+        wanted = set(job_ids)
+        if not wanted:
+            return {}
+        with self._condition:
+            positions: dict[str, int] = {}
+            for position, job_id in enumerate(self._pending):
+                if job_id in wanted:
+                    positions[job_id] = position
+                    if len(positions) == len(wanted):
+                        break
+            return positions
 
     def jobs_ahead(self, job_id: str) -> int | None:
         '''
