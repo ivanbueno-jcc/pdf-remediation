@@ -26,6 +26,7 @@ from . import APP_NAME
 from .config import max_concurrent_jobs, max_running_jobs_per_user
 from .models import Job, JobStatus, status_for
 from .store import JobStore, save_meta
+from .uploads import get_pdf_page_count
 
 
 class PipelineRunner:  # pylint: disable=too-many-instance-attributes
@@ -337,6 +338,19 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             )
         self._store.emit(job.job_id, "status", {"status": str(JobStatus.RUNNING)})
         self._log(job, f"Processing {filename}")
+
+        # Page count is display metadata. Calculate it after the upload has
+        # already been accepted and queued so PDFix initialization cannot hold
+        # the browser request open or reject an otherwise valid submission.
+        page_count = get_pdf_page_count(job.input_path)
+        if page_count is not None:
+            with job.state_lock:
+                job.file.page_count = page_count
+            try:
+                save_meta(job)
+            except OSError as error:
+                self._log(job, f"[WARN] Could not persist page count: {error}")
+            self._store.emit(job.job_id, "metadata", {"page_count": page_count})
 
         result = process_pdf(
             job.input_path,

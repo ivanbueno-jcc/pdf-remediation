@@ -18,7 +18,6 @@ from .config import (
 from .models import Job, JobProcessingOptions, UploadedFile
 from .uploads import (
     UploadError,
-    get_pdf_page_count,
     looks_like_pdf,
     sanitize_upload_name,
     write_upload_stream,
@@ -122,13 +121,11 @@ async def prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-p
         if not looks_like_pdf(job.input_path):
             raise UploadError(f"File is not a PDF: {original_name}")
 
-        page_count = await asyncio.to_thread(get_pdf_page_count, job.input_path)
         if previous_bytes + size > MAX_SUBMISSION_BYTES:
             raise UploadError(
                 f"Submission exceeds the {MAX_SUBMISSION_BYTES} byte limit."
             )
         with job.state_lock:
-            job.file.page_count = page_count
             job.file.size_bytes = size
         return job, None, size
     except UploadError as error:

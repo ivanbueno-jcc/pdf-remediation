@@ -7,8 +7,10 @@ from __future__ import annotations
 import copy
 import asyncio
 import json
+import os
 import re
 import shutil
+import tempfile
 import threading
 from contextlib import contextmanager
 from datetime import datetime, timedelta
@@ -466,9 +468,29 @@ def save_meta(job: Job) -> None:
             and result.output_pdf_path.is_relative_to(job.base_path)
             else None
         )
-        job.meta_path.write_text(
-            json.dumps(payload, indent=2, default=str), encoding="utf-8"
-        )
+        metadata_path = job.meta_path
+        serialized = json.dumps(payload, indent=2, default=str)
+        temporary_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                dir=job.web_path,
+                prefix=f"{metadata_path.name}.",
+                suffix=".partial",
+                delete=False,
+            ) as handle:
+                temporary_path = Path(handle.name)
+                handle.write(serialized)
+                handle.flush()
+                os.fsync(handle.fileno())
+            temporary_path.replace(metadata_path)
+        finally:
+            if temporary_path is not None:
+                try:
+                    temporary_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
 
 
 def load_meta(meta_path: Path) -> Job | None:
@@ -619,11 +641,24 @@ def sweep_expired_jobs(store: JobStore) -> int:
         job = store.get(job_path.name)
         if job is not None and not job.is_terminal():
             continue
-        if datetime.fromtimestamp(job_path.stat().st_mtime) > cutoff:
+        try:
+            if datetime.fromtimestamp(job_path.stat().st_mtime) > cutoff:
+                continue
+        except OSError:
             continue
-        shutil.rmtree(job_path, ignore_errors=True)
-        store.remove(job_path.name)
-        removed += 1
+
+        # Coordinate with downloads and bundle creation so retention cannot
+        # remove files while a request is reading or assembling artifacts.
+        with store.job_artifact_lock(job_path.name) as job_exists:
+            live_job = store.get_mutable(job_path.name) if job_exists else None
+            if live_job is not None and not live_job.is_terminal():
+                continue
+            try:
+                shutil.rmtree(job_path)
+            except OSError:
+                continue
+            store.remove(job_path.name)
+            removed += 1
     return removed
 
 

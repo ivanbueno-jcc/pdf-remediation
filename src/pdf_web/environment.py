@@ -12,6 +12,9 @@ import os
 import shutil
 import subprocess
 import tempfile
+import threading
+import time
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +27,9 @@ from .config import ALLOWED_CONFIG_FILES, CONFIG_DIR, JOBS_ROOT, SCRATCH_ROOT
 # validation reports every file as unvalidatable while still succeeding, so a
 # missing one has to stop submission rather than warn about it.
 REQUIRED_CHECKS = ("Java", "veraPDF", "Configs")
+READINESS_CACHE_SECONDS = 30.0
+_READINESS_CACHE: dict[str, Any] = {"expires_at": 0.0, "value": None}
+_READINESS_CACHE_LOCK = threading.Lock()
 
 
 def _check(name: str, ok: bool, required: bool, detail: str) -> dict[str, Any]:
@@ -98,7 +104,7 @@ def _docker_image_available(image: str) -> tuple[bool, str]:
     return result.returncode == 0, image
 
 
-def collect_readiness() -> dict[str, Any]:
+def _probe_readiness() -> dict[str, Any]:
     '''Check every dependency required by the production Azure deployment.'''
     capabilities = cached_probe()
     jobs_ok, jobs_detail = _writable(JOBS_ROOT)
@@ -133,6 +139,24 @@ def collect_readiness() -> dict[str, Any]:
     ]
     blocking = [check["name"] for check in checks if not check["ok"]]
     return {"ready": not blocking, "blocking": blocking, "checks": checks}
+
+
+def collect_readiness(force: bool = False) -> dict[str, Any]:
+    '''Return readiness, independently cached from the faster tool probe.'''
+    now = time.monotonic()
+    with _READINESS_CACHE_LOCK:
+        cached = _READINESS_CACHE["value"]
+        if (
+            not force
+            and cached is not None
+            and now < _READINESS_CACHE["expires_at"]
+        ):
+            return deepcopy(cached)
+
+        result = _probe_readiness()
+        _READINESS_CACHE["value"] = result
+        _READINESS_CACHE["expires_at"] = time.monotonic() + READINESS_CACHE_SECONDS
+        return deepcopy(result)
 
 
 def cached_health(force: bool = False) -> dict[str, Any]:

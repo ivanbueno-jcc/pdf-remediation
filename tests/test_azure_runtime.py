@@ -137,8 +137,15 @@ class ManagedSecretTests(unittest.TestCase):
         self.assertNotIn("sensitive-pdfix-key", str(raised.exception))
 
 
-class ReadinessTests(unittest.TestCase):
+class ReadinessTests(unittest.TestCase):  # pylint: disable=protected-access
     '''Readiness is strict internally and deliberately terse publicly.'''
+
+    def setUp(self) -> None:
+        '''Keep the short-lived readiness cache isolated between tests.'''
+        with web_environment._READINESS_CACHE_LOCK:  # pylint: disable=protected-access
+            web_environment._READINESS_CACHE.update(  # pylint: disable=protected-access
+                expires_at=0.0, value=None
+            )
 
     def test_all_production_dependencies_can_be_ready(self) -> None:
         '''The aggregate passes only when tooling, secrets, images, and disks pass.'''
@@ -166,9 +173,35 @@ class ReadinessTests(unittest.TestCase):
                 _docker_image_available=mock.Mock(return_value=(True, "present")),
         ), mock.patch("pdf_web.environment.shutil.disk_usage") as disk_usage:
             disk_usage.return_value.free = 10 * 1024 ** 3
-            result = web_environment.collect_readiness()
+            result = web_environment.collect_readiness(force=True)
         self.assertTrue(result["ready"])
         self.assertEqual(result["blocking"], [])
+
+    def test_readiness_cache_avoids_repeating_expensive_probes(self) -> None:
+        '''Docker image and volume checks run once during the cache window.'''
+        expected = {"ready": True, "blocking": [], "checks": []}
+        with mock.patch.object(
+                web_environment, "_probe_readiness", return_value=expected
+        ) as probe:
+            first = web_environment.collect_readiness()
+            first["checks"].append({"mutated": True})
+            second = web_environment.collect_readiness()
+
+        self.assertEqual(probe.call_count, 1)
+        self.assertEqual(second, expected)
+
+    def test_readiness_can_be_forced_to_refresh(self) -> None:
+        '''Operators and diagnostics can bypass the short cache explicitly.'''
+        first = {"ready": True, "blocking": [], "checks": []}
+        second = {"ready": False, "blocking": ["Docker"], "checks": []}
+        with mock.patch.object(
+                web_environment, "_probe_readiness", side_effect=[first, second]
+        ) as probe:
+            self.assertTrue(web_environment.collect_readiness()["ready"])
+            refreshed = web_environment.collect_readiness(force=True)
+
+        self.assertEqual(probe.call_count, 2)
+        self.assertFalse(refreshed["ready"])
 
     def test_public_endpoint_hides_blocking_dependency_names(self) -> None:
         '''Unauthenticated callers learn only ready/not-ready and the version.'''

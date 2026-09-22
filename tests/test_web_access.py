@@ -326,6 +326,20 @@ class OwnershipRecordingTests(unittest.TestCase):
         job = self.store.get(created[0]["job_id"])
         self.assertEqual(job.submitted_by, ALICE)
 
+    def test_submission_queues_without_waiting_for_page_count(self) -> None:
+        '''The HTTP request does not open every PDF through the SDK.'''
+        with mock.patch("pdf_web.runner.get_pdf_page_count") as page_count:
+            response = self.client.post(
+                "/api/jobs",
+                headers=headers(ALICE),
+                files={"files": ("Report.pdf", b"%PDF-1.7\ncontent", "application/pdf")},
+                data={"config_file": "default.json"},
+            )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIsNone(response.json()["jobs"][0]["file"]["page_count"])
+        page_count.assert_not_called()
+
     def test_submission_records_selected_pipeline_stages(self) -> None:
         '''Every Run options checkbox reaches the queued job.'''
         response = self.client.post(

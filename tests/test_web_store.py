@@ -6,13 +6,16 @@ import asyncio
 import json
 import os
 import tempfile
+import threading
 import unittest
 from datetime import timedelta
 from pathlib import Path
 from unittest import mock
 
 from pdf_web.models import JobStatus
-from pdf_web.store import JobStore, load_meta, load_persisted_jobs, save_meta
+from pdf_web.store import (
+    JobStore, load_meta, load_persisted_jobs, save_meta, sweep_expired_jobs,
+)
 from tests.web_factories import (
     add_completed_result, make_job, write_job_artifacts,
 )
@@ -209,6 +212,20 @@ class MetadataPersistenceTests(unittest.TestCase):
         '''An absent metadata file is not an error.'''
         self.assertIsNone(load_meta(self.jobs_root / "absent.json"))
 
+    def test_failed_atomic_replace_preserves_previous_metadata(self) -> None:
+        '''A failed update must not truncate metadata already on disk.'''
+        job = make_job()
+        save_meta(job)
+        original = job.meta_path.read_bytes()
+        job.status = JobStatus.FAILED
+
+        with mock.patch.object(Path, "replace", side_effect=OSError("disk error")):
+            with self.assertRaisesRegex(OSError, "disk error"):
+                save_meta(job)
+
+        self.assertEqual(job.meta_path.read_bytes(), original)
+        self.assertEqual(list(job.web_path.glob("meta.json.*.partial")), [])
+
     def test_legacy_strict_metadata_restores_both_profiles(self) -> None:
         '''Jobs saved by the old strict checkbox retain their original gate.'''
         job = make_job()
@@ -224,6 +241,59 @@ class MetadataPersistenceTests(unittest.TestCase):
         self.assertEqual(restored.required_profiles(), ("wcag", "ua1"))
         self.assertEqual(restored.validation_requirement, "wcag and pdfua1")
 
+
+class RetentionSweepTests(unittest.TestCase):
+    '''Retention coordinates directory removal with live artifact requests.'''
+
+    def setUp(self) -> None:
+        self.jobs_root = Path(self.enterContext(
+            tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
+        ))
+        self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
+        self.enterContext(mock.patch("pdf_web.store.JOBS_ROOT", self.jobs_root))
+        self.enterContext(mock.patch("pdf_web.store.job_ttl_hours", return_value=1))
+        self.store = JobStore()
+        self.job = make_job(status=JobStatus.COMPLETED)
+        self.job.base_path.mkdir(parents=True)
+        old_time = (self.job.created_at - timedelta(hours=2)).timestamp()
+        os.utime(self.job.base_path, (old_time, old_time))
+        self.store.add(self.job)
+
+    def test_waits_for_artifact_access_before_removing_directory(self) -> None:
+        '''An active download or bundle build finishes before cleanup proceeds.'''
+        started = threading.Event()
+        finished = threading.Event()
+
+        def sweep() -> None:
+            started.set()
+            sweep_expired_jobs(self.store)
+            finished.set()
+
+        with self.store.job_artifact_lock(self.job.job_id) as exists:
+            self.assertTrue(exists)
+            worker = threading.Thread(target=sweep)
+            worker.start()
+            self.assertTrue(started.wait(timeout=1))
+            self.assertFalse(finished.wait(timeout=0.05))
+            self.assertTrue(self.job.base_path.exists())
+
+        worker.join(timeout=2)
+        self.assertFalse(worker.is_alive())
+        self.assertTrue(finished.is_set())
+        self.assertFalse(self.job.base_path.exists())
+        self.assertIsNone(self.store.get(self.job.job_id))
+
+    def test_does_not_remove_a_job_that_became_active(self) -> None:
+        '''A job that becomes active before the lock is acquired is retained.'''
+        with self.store.job_artifact_lock(self.job.job_id):
+            worker = threading.Thread(target=sweep_expired_jobs, args=(self.store,))
+            worker.start()
+            self.job.status = JobStatus.RUNNING
+
+        worker.join(timeout=2)
+        self.assertFalse(worker.is_alive())
+        self.assertTrue(self.job.base_path.exists())
+        self.assertIsNotNone(self.store.get(self.job.job_id))
 
 if __name__ == "__main__":
     unittest.main()

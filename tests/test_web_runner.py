@@ -8,6 +8,7 @@ import time
 import unittest
 from unittest import mock
 
+from pdf_api.models import PipelineResult, PipelineStatus
 from pdf_web.models import JobStatus
 from pdf_web.runner import PipelineRunner
 from pdf_web.store import JobStore
@@ -275,6 +276,47 @@ class QueueStatusTests(SchedulerTestCase):
 
         status = self.runner.queue_status("20260827-120002-cccccc", BOB)
         self.assertFalse(status["waiting_on_your_limit"])
+
+
+class PageCountExecutionTests(SchedulerTestCase):
+    '''Optional page metadata is calculated after work has left the request.'''
+
+    def test_page_count_is_calculated_by_the_worker(self) -> None:
+        '''A valid page count is persisted and does not block pipeline execution.'''
+        job = make_job(job_id="20260827-120010-aaaaaa", submitted_by=ALICE)
+        self.store.add(job)
+        result = PipelineResult(
+            status=PipelineStatus.FAILED,
+            input_pdf_path=job.input_path,
+            error="Test pipeline result.",
+        )
+
+        with mock.patch("pdf_web.runner.get_pdf_page_count", return_value=7), \
+                mock.patch("pdf_web.runner.process_pdf", return_value=result) as process, \
+                mock.patch("pdf_web.runner.save_meta") as persist:
+            self.runner._run_job(job)  # pylint: disable=protected-access
+
+        self.assertEqual(job.file.page_count, 7)
+        process.assert_called_once()
+        self.assertEqual(persist.call_count, 2)
+
+    def test_page_count_failure_does_not_prevent_processing(self) -> None:
+        '''Page count is display metadata and cannot reject or fail a job.'''
+        job = make_job(job_id="20260827-120011-bbbbbb", submitted_by=ALICE)
+        self.store.add(job)
+        result = PipelineResult(
+            status=PipelineStatus.FAILED,
+            input_pdf_path=job.input_path,
+            error="Test pipeline result.",
+        )
+
+        with mock.patch("pdf_web.runner.get_pdf_page_count", return_value=None), \
+                mock.patch("pdf_web.runner.process_pdf", return_value=result) as process, \
+                mock.patch("pdf_web.runner.save_meta"):
+            self.runner._run_job(job)  # pylint: disable=protected-access
+
+        self.assertIsNone(job.file.page_count)
+        process.assert_called_once()
 
 
 if __name__ == "__main__":
