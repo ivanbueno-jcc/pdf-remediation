@@ -1,6 +1,6 @@
 'use strict';
 
-const POLL_MS = 2000;
+const SSE_RECONNECT_MS = 2000;
 
 const state = {
   staged: [],
@@ -14,7 +14,7 @@ const state = {
   authError: null,
   openJobId: null,
   openDownloadJobId: null,
-  pollTimer: null,
+  queueStream: null,
   jobs: [],
   jobRows: new Map(),
   cancellingJobs: new Set(),
@@ -450,41 +450,20 @@ async function submitJobs() {
     ' run at a time, ' + payload.your_limit + ' of yours at once.';
   updateSubmitState('');
   showToast(queuedMessage, 'ok');
-  startPolling();
 }
 
 /* ---------- the job list ---------- */
 
-function startPolling() {
-  if (state.pollTimer) return;
-  refreshQueue();
-  state.pollTimer = setInterval(refreshQueue, POLL_MS);
-}
-
-function stopPolling() {
-  if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
-}
-
-async function refreshQueue() {
-  let payload;
+async function loadQueueSnapshot() {
   try {
-    const jobs = [];
-    let cursor = null;
-    let firstPage = null;
-    do {
-      const params = new URLSearchParams({ limit: '100' });
-      if (cursor) params.set('cursor', cursor);
-      const response = await fetch('/api/queue?' + params.toString());
-      if (!response.ok) { stopPolling(); return; }
-      const page = await response.json();
-      if (!firstPage) firstPage = page;
-      jobs.push(...(page.jobs || []));
-      const nextCursor = page.next_cursor || null;
-      if (nextCursor === cursor) break;
-      cursor = nextCursor;
-    } while (cursor);
-    payload = { ...firstPage, jobs };
-  } catch (error) { return; }
+    const response = await fetch('/api/queue?limit=100');
+    if (!response.ok) return false;
+    applyQueuePayload(await response.json());
+    return true;
+  } catch (error) { return false; }
+}
+
+function applyQueuePayload(payload) {
 
   const jobs = payload.jobs || [];
   const activeJobIds = new Set(jobs.filter(canCancelJob).map((job) => job.job_id));
@@ -521,7 +500,22 @@ async function refreshQueue() {
   renderJobs();
 
   // Nothing is moving, so stop asking.
-  if (payload.all_terminal) stopPolling();
+}
+
+function startLiveUpdates() {
+  loadQueueSnapshot();
+  if (state.queueStream) return;
+  const stream = new EventSource('/api/queue/events');
+  state.queueStream = stream;
+  stream.addEventListener('queue', (event) => {
+    try { applyQueuePayload(JSON.parse(event.data)); } catch (error) { /* retry */ }
+  });
+  stream.onerror = () => {
+    if (state.queueStream !== stream) return;
+    stream.close();
+    state.queueStream = null;
+    setTimeout(startLiveUpdates, SSE_RECONNECT_MS);
+  };
 }
 
 function announceStatus(message) {
@@ -1253,7 +1247,7 @@ async function cancelJob(job, button) {
       const payload = await response.json().catch(() => ({}));
       throw new Error(describeError(payload) || 'The file could not be cancelled.');
     }
-    await refreshQueue();
+    await loadQueueSnapshot();
     announceStatus('Cancellation requested for ' + job.name + '.');
   } catch (error) {
     state.cancellingJobs.delete(job.job_id);
@@ -1280,7 +1274,7 @@ async function deleteJob(job, button) {
       throw new Error(describeError(payload) || 'The file could not be deleted.');
     }
     await animateJobRemoval([job.job_id]);
-    await refreshQueue();
+    await loadQueueSnapshot();
     const message = job.name + ' and its artifacts were deleted.';
     showToast(message);
     announceStatus(message);
@@ -1378,7 +1372,7 @@ async function deleteAllJobs(button) {
     const deleted = Array.isArray(payload.deleted) ? payload.deleted : [];
     const skipped = Array.isArray(payload.skipped) ? payload.skipped : [];
     await animateJobRemoval(deleted);
-    await refreshQueue();
+    await loadQueueSnapshot();
     if (skipped.length) {
       const message = deleted.length
         ? deleted.length + ' file' + (deleted.length === 1 ? '' : 's') +
@@ -1995,5 +1989,4 @@ document.addEventListener('keydown', (event) => {
 
 loadConfigs();
 loadHealth();
-refreshQueue();
-startPolling();
+startLiveUpdates();

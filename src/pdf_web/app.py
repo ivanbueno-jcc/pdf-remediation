@@ -355,6 +355,14 @@ async def queue_view(
     cursor is the last job id returned, so new jobs added at the front do not
     shift later pages while a client is reading them.
     '''
+    return _queue_snapshot(user, cursor, limit)
+
+
+def _queue_snapshot(
+        user: str,
+        cursor: str | None = None,
+        limit: int | None = 100) -> dict[str, Any]:
+    '''Build the owner-scoped queue projection used by HTTP and SSE.'''
     try:
         jobs, total_jobs, next_cursor = STORE.list_jobs_for_user(user, cursor, limit)
     except ValueError as error:
@@ -372,6 +380,40 @@ async def queue_view(
         "next_cursor": next_cursor,
         "jobs": [queue_payload(job, pending_positions) for job in jobs],
     }
+
+
+@app.get("/api/queue/events")
+async def queue_events(
+        request: Request,
+        user: str = CURRENT_USER):
+    '''Stream owner-scoped queue snapshots whenever job state changes.'''
+
+    async def event_stream() -> AsyncIterator[str]:
+        '''Wait on store changes instead of polling the queue endpoint.'''
+        version = STORE.owner_version(user)
+        while True:
+            if await request.is_disconnected():
+                return
+            yield "event: queue\ndata: " + json.dumps(
+                _queue_snapshot(user, limit=None), separators=(",", ":")
+            ) + "\n\n"
+            next_version = await asyncio.to_thread(
+                STORE.wait_for_owner_change, user, version, SSE_KEEPALIVE_SECONDS
+            )
+            if next_version == version:
+                yield ": keepalive\n\n"
+            else:
+                version = next_version
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @app.get("/api/jobs/{job_id}/details")

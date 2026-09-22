@@ -22,7 +22,7 @@ JOB_ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 PROGRESS_LINE_PATTERN = re.compile(r"^\s*\d+%\|")
 
 
-class JobStore:
+class JobStore:  # pylint: disable=too-many-instance-attributes
     '''
     Hold jobs in memory, record their events, and persist completed metadata.
     '''
@@ -37,6 +37,13 @@ class JobStore:
         self._order: list[str] = []
         self._owner_order: dict[str, list[str]] = {}
         self._owner_positions: dict[str, dict[str, int]] = {}
+        self._owner_versions: dict[str, int] = {}
+        self._condition = threading.Condition(self._lock)
+
+    def _touch_owner_locked(self, owner: str) -> None:
+        '''Advance an owner's live-update version and wake its stream.'''
+        self._owner_versions[owner] = self._owner_versions.get(owner, 0) + 1
+        self._condition.notify_all()
 
     def add(self, job: Job) -> None:
         '''
@@ -50,6 +57,7 @@ class JobStore:
             owner_positions = self._owner_positions.setdefault(job.submitted_by, {})
             owner_positions[job.job_id] = len(owner_ids)
             owner_ids.append(job.job_id)
+            self._touch_owner_locked(job.submitted_by)
 
     def get(self, job_id: str) -> Job | None:
         '''
@@ -85,7 +93,22 @@ class JobStore:
                 if not owner_jobs:
                     self._owner_order.pop(job.submitted_by, None)
                     self._owner_positions.pop(job.submitted_by, None)
+                self._touch_owner_locked(job.submitted_by)
             return job
+
+    def owner_version(self, owner: str) -> int:
+        '''Return the owner's current live-update version.'''
+        with self._lock:
+            return self._owner_versions.get(owner, 0)
+
+    def wait_for_owner_change(self, owner: str, version: int, timeout: float) -> int:
+        '''Wait until an owner changes, returning its latest version.'''
+        with self._condition:
+            self._condition.wait_for(
+                lambda: self._owner_versions.get(owner, 0) != version,
+                timeout=timeout,
+            )
+            return self._owner_versions.get(owner, 0)
 
     def list_jobs_for_user(
             self,
@@ -120,11 +143,15 @@ class JobStore:
             events = self._events.get(job_id)
             if events is None:
                 return
+            job = self._jobs.get(job_id)
+            if job is None:
+                return
             events.append({
                 "cursor": len(events) + 1,
                 "type": event_type,
                 "payload": payload,
             })
+            self._touch_owner_locked(job.submitted_by)
 
     def append_log(self, job_id: str, line: str) -> None:
         '''
