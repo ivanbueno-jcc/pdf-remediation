@@ -136,6 +136,7 @@ test('validation requirement is merged with the outcome pill', () => {
   assert.equal(stateStack.children[0], entry.outcomeWrap);
   assert.equal(stateStack.children[1], entry.processingState);
   assert.equal(entry.processingState.textContent, 'Complete');
+  assert.equal(entry.processingState.classList.contains('hidden'), true);
   assert.equal(entry.processingState.children.length, 0);
   assert.match(entry.processingState.className, /muted/);
   assert.doesNotMatch(entry.validation.innerHTML, /validation-requirement/);

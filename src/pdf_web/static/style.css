@@ -420,10 +420,49 @@ button.disclosure[aria-expanded="true"] .caret { transform: rotate(90deg); }
   gap: var(--space-1);
 }
 .processing-state {
-  display: block; max-width: 100%; padding: 0 2px;
-  color: var(--muted); font-size: 11px; font-weight: 550; line-height: 1.35;
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+  margin-top: var(--space-2); padding: 0;
+  color: var(--ink);
+  font-size: 13px; font-weight: 650; line-height: 1.35;
   white-space: normal;
   transition: color .25s ease;
+}
+.processing-state.queued,
+.processing-state.running {
+  background: linear-gradient(
+    100deg,
+    var(--muted) 0%,
+    var(--muted) 38%,
+    var(--accent) 47%,
+    var(--ink) 50%,
+    var(--accent) 53%,
+    var(--muted) 62%,
+    var(--muted) 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: processing-state-shimmer 1.4s linear infinite;
+}
+.processing-state.queued::before,
+.processing-state.running::before {
+  content: '';
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--accent);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: processing-state-spin .8s linear infinite;
+}
+@keyframes processing-state-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+@keyframes processing-state-spin {
+  to { transform: rotate(360deg); }
 }
 .outcome {
   display: inline-flex; align-items: center; gap: var(--space-1); min-height: 26px;
@@ -1283,7 +1322,7 @@ button.small:hover:not(:disabled) { color: var(--accent); background: var(--acce
 button.disclosure { border-radius: 9px; }
 button.disclosure:hover:not(:disabled) { border-color: transparent; }
 .outcome { min-height: 27px; padding: 3px 9px; font-size: 11px; }
-.processing-state { padding: 0 2px; font-size: 10px; }
+.processing-state { margin-top: var(--space-1); padding: 0; font-size: 12px; }
 .validation-line { font-size: 13px; }
 .validation-profile { font-size: 10px; }
 .file-actions button, .retry-action { font-size: 12px; }

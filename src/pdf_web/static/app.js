@@ -909,6 +909,7 @@ function updateJobRow(entry, job) {
   const progressMessage = isActiveJob(job)
     ? job.name + ': ' + label + (detailNote ? ', ' + detailNote : '') : '';
   entry.processingState.className = 'processing-state muted ' + job.status;
+  entry.processingState.classList.toggle('hidden', job.status === 'completed');
   entry.processingState.textContent = detailNote || label;
   if (detailNote) entry.processingState.setAttribute('aria-label', label + ': ' + detailNote);
   else entry.processingState.removeAttribute('aria-label');
@@ -1098,15 +1099,15 @@ function processingLabel(status) {
 
 function pipelineStageLabel(stage) {
   const labels = {
-    validate_before: 'Initial validation',
-    compliance_gate: 'Compliance check',
-    unlock: 'Remove security',
-    fix: 'Apply remediation',
-    font_fix: 'Font repair',
-    font_fix_callas: 'Callas font repair',
-    font_fix_pdfix: 'PDFix font repair',
-    fix_target: 'Targeted repairs',
-    validate_after: 'Final validation',
+    validate_before: 'Running initial validation',
+    compliance_gate: 'Checking compliance',
+    unlock: 'Removing security',
+    fix: 'Applying remediation',
+    font_fix: 'Repairing fonts',
+    font_fix_callas: 'Repairing fonts with Callas',
+    font_fix_pdfix: 'Repairing fonts with PDFix',
+    fix_target: 'Applying targeted repairs',
+    validate_after: 'Running final validation',
   };
   if (labels[stage]) return labels[stage];
   const words = String(stage || '').replaceAll('_', ' ');
