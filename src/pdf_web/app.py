@@ -5,13 +5,10 @@ FastAPI application exposing the PDF remediation pipeline to a browser.
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import json
 import shutil
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
 from datetime import datetime
-from functools import lru_cache
 from pathlib import Path
 from typing import Any, AsyncIterator
 from uuid import uuid4
@@ -37,30 +34,25 @@ from .config import (
     max_running_jobs_per_user,
     SSE_KEEPALIVE_SECONDS,
     SSE_POLL_SECONDS,
-    STATIC_DIR,
 )
 from .environment import cached_health, collect_readiness
+from .assets import serve_asset, serve_index, serve_versioned_asset
 from .identity import (
     describe_mode,
     diagnose_request,
     header_diagnostic_enabled,
     resolve_user,
 )
-from .models import Job, JobStatus, UploadedFile, outcome_label, summarize_report
+from .models import Job, JobStatus, UploadedFile, outcome_label
+from .job_views import queue_payload
 from .runner import PipelineRunner
+from .submission import prepare_uploaded_job, validate_options
 from .store import (
     JobStore,
     is_valid_job_id,
     load_persisted_jobs,
     save_meta,
     sweep_expired_jobs,
-)
-from .uploads import (
-    UploadError,
-    get_pdf_page_count,
-    looks_like_pdf,
-    sanitize_upload_name,
-    write_upload_stream,
 )
 
 async def current_user(request: Request) -> str:
@@ -77,20 +69,6 @@ ASSET_VERSION_PATH = PathParam(..., pattern=r"^[0-9a-f]{12}$")
 
 STORE = JobStore()
 RUNNER = PipelineRunner(STORE)
-
-
-@dataclass(frozen=True)
-class SubmissionOptions:  # pylint: disable=too-many-instance-attributes
-    '''Validated options shared by every file in one submission.'''
-
-    config_file: str
-    attempt_unlock: bool
-    attempt_fix: bool
-    skip_font_fix: bool
-    attempt_targeted_fixes: bool
-    require_wcag: bool
-    require_pdfua1: bool
-    verbose: bool
 
 
 @asynccontextmanager
@@ -130,57 +108,12 @@ async def _retention_loop() -> None:
 app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan)
 
 
-@lru_cache(maxsize=None)
-def _frontend_asset(filename: str) -> tuple[str, str]:
-    '''Return cached asset text and its content hash.'''
-    path = STATIC_DIR / filename
-    if not path.is_file():
-        raise HTTPException(status_code=500, detail=f"Frontend asset is missing: {filename}")
-    raw = path.read_bytes()
-    return raw.decode("utf-8"), hashlib.sha256(raw).hexdigest()[:12]
-
-
-def _frontend_asset_url(filename: str) -> str:
-    '''Return the immutable, content-versioned URL for a frontend asset.'''
-    _content, version = _frontend_asset(filename)
-    path = Path(filename)
-    return f"/static/{path.stem}.{version}{path.suffix}"
-
-
-def _serve_frontend_asset(
-        filename: str,
-        media_type: str,
-        cache_control: str = "no-cache") -> Response:
-    '''
-    Serve a frontend asset using the process-level content cache.
-    '''
-    content, version = _frontend_asset(filename)
-    return Response(
-        content,
-        media_type=media_type,
-        headers={
-            "Cache-Control": cache_control,
-            "ETag": f'"{version}"',
-        },
-    )
-
-
 @app.get("/", response_class=HTMLResponse)
 async def index() -> Response:
     '''
     Serve the single-page frontend shell.
     '''
-    content, version = _frontend_asset("index.html")
-    content = content.replace(
-        "/static/style.css", _frontend_asset_url("style.css")
-    ).replace(
-        "/static/app.js", _frontend_asset_url("app.js")
-    )
-    return Response(
-        content,
-        media_type="text/html",
-        headers={"Cache-Control": "no-cache", "ETag": f'"{version}"'},
-    )
+    return serve_index()
 
 
 @app.get("/static/style.css")
@@ -188,7 +121,7 @@ async def stylesheet() -> Response:
     '''
     Serve the legacy unversioned stylesheet URL.
     '''
-    return _serve_frontend_asset("style.css", "text/css")
+    return serve_asset("style.css", "text/css")
 
 
 @app.get("/static/app.js")
@@ -196,39 +129,19 @@ async def script() -> Response:
     '''
     Serve the legacy unversioned script URL.
     '''
-    return _serve_frontend_asset("app.js", "text/javascript")
+    return serve_asset("app.js", "text/javascript")
 
 
 @app.get("/static/style.{version}.css")
 async def versioned_stylesheet(version: str = ASSET_VERSION_PATH) -> Response:
     '''Serve a content-versioned stylesheet with immutable caching.'''
-    content, actual_version = _frontend_asset("style.css")
-    if version != actual_version:
-        raise HTTPException(status_code=404, detail="Asset version not found.")
-    return Response(
-        content,
-        media_type="text/css",
-        headers={
-            "Cache-Control": "public, max-age=31536000, immutable",
-            "ETag": f'"{actual_version}"',
-        },
-    )
+    return serve_versioned_asset("style.css", version, "text/css")
 
 
 @app.get("/static/app.{version}.js")
 async def versioned_script(version: str = ASSET_VERSION_PATH) -> Response:
     '''Serve a content-versioned script with immutable caching.'''
-    content, actual_version = _frontend_asset("app.js")
-    if version != actual_version:
-        raise HTTPException(status_code=404, detail="Asset version not found.")
-    return Response(
-        content,
-        media_type="text/javascript",
-        headers={
-            "Cache-Control": "public, max-age=31536000, immutable",
-            "ETag": f'"{actual_version}"',
-        },
-    )
+    return serve_versioned_asset("app.js", version, "text/javascript")
 
 
 @app.get("/healthz")
@@ -343,135 +256,6 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
     return {"jobs": jobs}
 
 
-def _validate_submission_options(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        config_file: str,
-        attempt_unlock: bool,
-        attempt_fix: bool,
-        attempt_font_fix: bool | None,
-        skip_font_fix: bool,
-        attempt_targeted_fixes: bool,
-        require_wcag: bool,
-        require_pdfua1: bool,
-        wcag_and_ua1_must_pass: bool | None,
-        verbose: bool) -> SubmissionOptions:
-    '''Validate form options once before processing any uploaded file.'''
-    if config_file not in ALLOWED_CONFIG_FILES:
-        raise HTTPException(
-            status_code=400, detail=f"Unknown configuration file: {config_file}"
-        )
-    if not (CONFIG_DIR / config_file).is_file():
-        raise HTTPException(
-            status_code=400, detail=f"Configuration file is missing: {config_file}"
-        )
-
-    should_attempt_font_fix = (
-        attempt_font_fix if attempt_font_fix is not None else not skip_font_fix
-    )
-    if wcag_and_ua1_must_pass:
-        require_wcag = True
-        require_pdfua1 = True
-    if not require_wcag and not require_pdfua1:
-        raise HTTPException(
-            status_code=400, detail="Select WCAG, PDF/UA-1, or both."
-        )
-
-    return SubmissionOptions(
-        config_file=config_file,
-        attempt_unlock=attempt_unlock,
-        attempt_fix=attempt_fix,
-        skip_font_fix=not should_attempt_font_fix,
-        attempt_targeted_fixes=attempt_targeted_fixes,
-        require_wcag=require_wcag,
-        require_pdfua1=require_pdfua1,
-        verbose=verbose,
-    )
-
-
-async def _prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        upload: UploadFile,
-        options: SubmissionOptions,
-        user: str,
-        created_at: datetime,
-        taken_ids: set[str],
-        taken_names: set[str],
-        previous_bytes: int) -> tuple[Job | None, str | None, int]:
-    '''Write and validate one upload, returning a rejected-file reason if needed.'''
-    original_name = upload.filename or "upload.pdf"
-    job: Job | None = None
-    try:
-        stored_name = sanitize_upload_name(original_name, taken_names)
-        job = Job(
-            job_id=_new_job_id(taken_ids),
-            created_at=created_at,
-            config_file=options.config_file,
-            file=UploadedFile(original_name, stored_name, 0),
-            submitted_by=user,
-            attempt_unlock=options.attempt_unlock,
-            attempt_fix=options.attempt_fix,
-            skip_font_fix=options.skip_font_fix,
-            attempt_targeted_fixes=options.attempt_targeted_fixes,
-            require_wcag=options.require_wcag,
-            require_pdfua1=options.require_pdfua1,
-            verbose=options.verbose,
-        )
-        job.input_path.parent.mkdir(parents=True, exist_ok=True)
-        job.web_path.mkdir(parents=True, exist_ok=True)
-
-        size = await asyncio.to_thread(
-            write_upload_stream, _iterate_upload(upload),
-            job.input_path, original_name
-        )
-        if not looks_like_pdf(job.input_path):
-            raise UploadError(f"File is not a PDF: {original_name}")
-
-        page_count = await asyncio.to_thread(get_pdf_page_count, job.input_path)
-        if previous_bytes + size > MAX_SUBMISSION_BYTES:
-            raise UploadError(
-                f"Submission exceeds the {MAX_SUBMISSION_BYTES} byte limit."
-            )
-        with job.state_lock:
-            job.file.page_count = page_count
-            job.file.size_bytes = size
-        return job, None, size
-    except UploadError as error:
-        if job is not None:
-            shutil.rmtree(job.base_path, ignore_errors=True)
-        return None, str(error), 0
-
-
-def _queue_job_payload(job: Job, pending_positions: dict[str, int]) -> dict[str, Any]:
-    '''Build one queue row from one consistent locked job state.'''
-    with job.state_lock:
-        return {
-            "job_id": job.job_id,
-            "name": job.file.original_name,
-            "created_at": job.created_at.isoformat(timespec="seconds"),
-            "started_at": job.started_at.isoformat(timespec="seconds")
-            if job.started_at else None,
-            "finished_at": job.finished_at.isoformat(timespec="seconds")
-            if job.finished_at else None,
-            "page_count": job.file.page_count,
-            "config_file": job.config_file,
-            "config_label": CONFIG_FILE_DETAILS.get(job.config_file, {}).get(
-                "label", job.config_file
-            ),
-            "status": str(job.status),
-            "outcome": job.outcome,
-            "outcome_label": outcome_label(job.outcome),
-            "stages_done": len(job.stages),
-            "current_stage": job.stages[-1]["name"] if job.stages else None,
-            "jobs_ahead": pending_positions.get(
-                job.job_id, 0 if job.status == JobStatus.RUNNING else None
-            ),
-            "before": summarize_report(job.result.before if job.result else None),
-            "after": summarize_report(job.result.after if job.result else None),
-            "initially_secured": job.initially_secured,
-            "validation_requirement": job.validation_requirement,
-            "has_pdf": job.artifact("pdf") is not None,
-            "error": job.error,
-        }
-
-
 @app.post("/api/jobs", status_code=201)
 async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches,too-many-statements
         files: list[UploadFile] = File(...),
@@ -493,7 +277,7 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
     submission, so nineteen good PDFs still run when the twentieth is a
     spreadsheet.
     '''
-    options = _validate_submission_options(
+    options = validate_options(
         config_file, attempt_unlock, attempt_fix, attempt_font_fix, skip_font_fix,
         attempt_targeted_fixes, require_wcag, require_pdfua1,
         wcag_and_ua1_must_pass, verbose,
@@ -519,8 +303,9 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
 
     for upload in incoming:
         original_name = upload.filename or "upload.pdf"
-        job, error, size = await _prepare_uploaded_job(
-            upload, options, user, created_at, taken_ids, taken_names, total_bytes
+        job, error, size = await prepare_uploaded_job(
+            upload, options, user, created_at, taken_ids, taken_names, total_bytes,
+            _new_job_id,
         )
         if error is not None or job is None:
             rejected.append({"original_name": original_name, "reason": error or "Upload rejected."})
@@ -597,7 +382,7 @@ async def queue_view(
         "all_terminal": all(job.is_terminal() for job in all_jobs),
         "total_jobs": len(all_jobs),
         "next_cursor": next_cursor,
-        "jobs": [_queue_job_payload(job, pending_positions) for job in jobs],
+        "jobs": [queue_payload(job, pending_positions) for job in jobs],
     }
 
 
@@ -868,18 +653,6 @@ async def delete_job(
     STORE.remove(job_id)
     await asyncio.to_thread(shutil.rmtree, job.base_path, True)
     return {"job_id": job_id, "deleted": True}
-
-
-def _iterate_upload(upload: UploadFile):
-    '''
-    Yield an upload's contents in chunks from its synchronous file object.
-    '''
-    upload.file.seek(0)
-    while True:
-        chunk = upload.file.read(1024 * 1024)
-        if not chunk:
-            return
-        yield chunk
 
 
 def _new_job_id(taken: set[str]) -> str:
