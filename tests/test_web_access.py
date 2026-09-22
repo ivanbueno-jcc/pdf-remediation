@@ -60,7 +60,8 @@ class AccessControlTests(unittest.TestCase):
         self.runner = mock.Mock(queue_depth=mock.Mock(return_value=0),
                                 running_count=mock.Mock(return_value=0),
                                 jobs_ahead=mock.Mock(return_value=None),
-                                submit=mock.Mock(return_value=0))
+                                submit=mock.Mock(return_value=0),
+                                submit_batch=mock.Mock(return_value=[0]))
         self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
 
         self.client = TestClient(web_app.app)
@@ -260,6 +261,7 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.enterContext(mock.patch.object(
             web_app, "RUNNER",
             mock.Mock(submit=mock.Mock(return_value=0),
+                      submit_batch=mock.Mock(return_value=[0]),
                       jobs_ahead=mock.Mock(return_value=None))
         ))
         self.client = TestClient(web_app.app)
@@ -450,7 +452,7 @@ class CancellationTests(unittest.TestCase):
         '''A cancelled job must not still be occupying the line.'''
         first = self._queued_job("20260827-120000-aaaaaa", ALICE)
         second = self._queued_job("20260827-120001-bbbbbb", BOB)
-        self.assertEqual(self.runner.jobs_ahead(second.job_id), 1)
+        self.assertEqual(self.runner.jobs_ahead(second.job_id), 0)
 
         self.client.post(f"/api/jobs/{first.job_id}/cancel", headers=headers(ALICE))
 

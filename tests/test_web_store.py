@@ -36,7 +36,7 @@ class JobStoreTests(unittest.TestCase):
                          [self.job.job_id])
 
     def test_lists_newest_first(self) -> None:
-        '''The job list is ordered for display without re-sorting.'''
+        '''The job list is ordered newest first without re-sorting.'''
         second = make_job("20260827-160000-abc123")
         self.store.add(second)
         self.assertEqual(

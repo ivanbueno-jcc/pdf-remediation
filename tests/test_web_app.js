@@ -176,7 +176,7 @@ test('non-PDF selections are ignored instead of remaining staged', () => {
   );
 });
 
-test('job filters return active jobs before matching recent jobs', () => {
+test('job filters preserve newest-first order across status changes', () => {
   const { filteredRecentJobs, state } = loadStagingCode();
   state.jobs = [
     { job_id: 'running', name: 'quarterly-report.pdf', status: 'running', outcome: null },

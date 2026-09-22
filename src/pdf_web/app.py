@@ -325,6 +325,7 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
     accepted: list[dict[str, Any]] = []
     rejected: list[dict[str, str]] = []
     total_bytes = 0
+    accepted_jobs: list[Job] = []
 
     for upload in incoming:
         original_name = upload.filename or "upload.pdf"
@@ -372,9 +373,9 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
 
         STORE.add(job)
         save_meta(job)
+        accepted_jobs.append(job)
         accepted.append({
             **job.to_dict(),
-            "jobs_ahead": RUNNER.submit(job.job_id, user),
         })
 
     if not accepted:
@@ -384,6 +385,12 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
             ),
             "rejected": rejected,
         })
+
+    jobs_ahead = RUNNER.submit_batch(
+        tuple(job.job_id for job in accepted_jobs), user
+    )
+    for payload, ahead in zip(accepted, jobs_ahead):
+        payload["jobs_ahead"] = ahead
 
     return JSONResponse(status_code=201, content={
         "jobs": accepted,

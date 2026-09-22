@@ -586,38 +586,18 @@ function isActiveJob(job) {
   return job.status === 'queued' || job.status === 'running';
 }
 
-function activeJobOrder(a, b) {
-  // Jobs already being processed occupy the next available slots, so keep
-  // them above queued work. Among queued jobs, the runner's position is the
-  // source of truth for processing order.
-  const statusOrder = { running: 0, queued: 1 };
-  const statusDifference = statusOrder[a.status] - statusOrder[b.status];
-  if (statusDifference) return statusDifference;
-
-  if (a.status === 'queued') {
-    const aAhead = a.jobs_ahead !== null && a.jobs_ahead !== undefined &&
-      Number.isFinite(Number(a.jobs_ahead)) ? Number(a.jobs_ahead) : Number.MAX_SAFE_INTEGER;
-    const bAhead = b.jobs_ahead !== null && b.jobs_ahead !== undefined &&
-      Number.isFinite(Number(b.jobs_ahead)) ? Number(b.jobs_ahead) : Number.MAX_SAFE_INTEGER;
-    if (aAhead !== bAhead) return aAhead - bAhead;
-  }
-
-  const aCreated = Date.parse(a.created_at || '') || 0;
-  const bCreated = Date.parse(b.created_at || '') || 0;
-  return aCreated - bCreated;
-}
-
 function filteredRecentJobs() {
   const query = state.jobSearch.trim().toLowerCase();
   const filter = state.jobOutcomeFilter;
-  const recent = state.jobs.filter((job) => {
-    if (isActiveJob(job)) return false;
+  // Keep the API's submission order for every state. Active jobs are not
+  // pulled to the top when their status changes, so rows stay in place.
+  return state.jobs.filter((job) => {
+    if (isActiveJob(job)) return true;
     if (query && !String(job.name || '').toLowerCase().includes(query)) return false;
     if (filter === 'pending' && job.outcome) return false;
     if (filter !== 'all' && filter !== 'pending' && job.outcome !== filter) return false;
     return true;
   });
-  return state.jobs.filter(isActiveJob).sort(activeJobOrder).concat(recent);
 }
 
 function formatJobTimestamp(value) {
@@ -680,6 +660,32 @@ function renderJobGroup(groupId, bodyId, jobs) {
   renderJobRows(el(bodyId), jobs);
 }
 
+function captureJobViewportAnchor() {
+  if (typeof window === 'undefined' || typeof window.scrollY !== 'number') return null;
+  const viewportHeight = Number(window.innerHeight) || 0;
+  let anchor = null;
+  state.jobRows.forEach((entry, jobId) => {
+    if (!entry.row || typeof entry.row.getBoundingClientRect !== 'function') return;
+    const rect = entry.row.getBoundingClientRect();
+    if (rect.bottom <= 0 || (viewportHeight && rect.top >= viewportHeight)) return;
+    if (!anchor || rect.top < anchor.top) {
+      anchor = { jobId, top: rect.top, scrollY: window.scrollY };
+    }
+  });
+  return anchor || { scrollY: window.scrollY };
+}
+
+function restoreJobViewportAnchor(anchor) {
+  if (!anchor || typeof window === 'undefined' || typeof window.scrollTo !== 'function') return;
+  const entry = anchor.jobId ? state.jobRows.get(anchor.jobId) : null;
+  const currentTop = entry && entry.row && typeof entry.row.getBoundingClientRect === 'function'
+    ? entry.row.getBoundingClientRect().top : null;
+  const target = currentTop === null
+    ? anchor.scrollY
+    : window.scrollY + currentTop - anchor.top;
+  window.scrollTo(0, Math.max(0, target));
+}
+
 function hasPassedProfile(job, profile) {
   return Boolean(job.after && job.after.profiles && job.after.profiles[profile] &&
     job.after.profiles[profile].passed);
@@ -724,6 +730,7 @@ function renderJobStats() {
 }
 
 function renderJobs() {
+  const viewportAnchor = captureJobViewportAnchor();
   const recent = filteredRecentJobs();
   const visible = recent;
   const empty = el('job-empty');
@@ -744,6 +751,9 @@ function renderJobs() {
     entry.detail.remove();
     state.jobRows.delete(jobId);
   });
+  if (viewportAnchor) {
+    requestAnimationFrame(() => restoreJobViewportAnchor(viewportAnchor));
+  }
 }
 
 function animateJobRemoval(jobIds) {
@@ -1029,6 +1039,7 @@ function updateJobRow(entry, job) {
 
 function renderJobRows(body, jobs) {
   const initialTops = new Map();
+  const expectedNodes = [];
   jobs.forEach((job) => {
     const existing = state.jobRows.get(job.job_id);
     if (existing && existing.row.parentElement === body &&
@@ -1044,14 +1055,22 @@ function renderJobRows(body, jobs) {
     }
     entry.row.classList.toggle('job-row-stripe', index % 2 === 1);
     updateJobRow(entry, job);
-    // Reusing the row preserves its expanded state and lets CSS transitions
-    // animate updates without recreating the DOM.
-    body.appendChild(entry.row);
-    body.appendChild(entry.detail);
-    if (state.openJobId === job.job_id) {
+    expectedNodes.push(entry.row, entry.detail);
+    // Do not reload an already-open detail panel on every queue poll. That
+    // replaces its contents with a loading state and causes visible flicker.
+    if (state.openJobId === job.job_id && entry.row.dataset.open !== 'true') {
       toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure, true);
     }
   });
+
+  // Reusing the row preserves its expanded state. Only touch the DOM order
+  // when it actually changed; appending every row on every poll causes table
+  // repainting and makes completed rows visibly flicker.
+  const orderChanged = body.children.length !== expectedNodes.length ||
+    expectedNodes.some((node, index) => body.children[index] !== node);
+  if (orderChanged) {
+    expectedNodes.forEach((node) => body.appendChild(node));
+  }
 
   const reducedMotion = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;

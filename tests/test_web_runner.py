@@ -41,11 +41,15 @@ class QueuePositionTests(SchedulerTestCase):
         '''An empty queue means the job is next.'''
         self.assertEqual(self.runner.submit("20260827-120000-aaaaaa", ALICE), 0)
 
-    def test_positions_follow_submission_order(self) -> None:
-        '''Queue order is drop order.'''
+    def test_positions_follow_newest_first_order(self) -> None:
+        '''The newest queued job is next.'''
         self.assertEqual(self.runner.submit("20260827-120000-aaaaaa", ALICE), 0)
-        self.assertEqual(self.runner.submit("20260827-120001-bbbbbb", ALICE), 1)
-        self.assertEqual(self.runner.submit("20260827-120002-cccccc", BOB), 2)
+        self.assertEqual(self.runner.submit("20260827-120001-bbbbbb", ALICE), 0)
+        self.assertEqual(self.runner.submit("20260827-120002-cccccc", BOB), 0)
+        self.assertEqual(
+            self.runner.pending_job_ids(),
+            ("20260827-120002-cccccc", "20260827-120001-bbbbbb", "20260827-120000-aaaaaa"),
+        )
 
     def test_running_jobs_are_not_counted_as_ahead(self) -> None:
         '''With a pool, a running job no longer blocks one waiting job for one.'''
@@ -73,30 +77,30 @@ class PerUserCapTests(SchedulerTestCase):
         cost the capped user their place.
         '''
         os.environ["PDF_WEB_MAX_RUNNING_JOBS_PER_USER"] = "1"
+        self.add("20260827-120002-cccccc", BOB)
         self.add("20260827-120000-aaaaaa", ALICE)
         self.add("20260827-120001-bbbbbb", ALICE)
-        self.add("20260827-120002-cccccc", BOB)
 
         # pylint: disable=protected-access
         first = self.runner._claim_next()
         second = self.runner._claim_next()
 
-        self.assertEqual(first, "20260827-120000-aaaaaa")
+        self.assertEqual(first, "20260827-120001-bbbbbb")
         self.assertEqual(second, "20260827-120002-cccccc", "Bob should not wait for Alice")
 
     def test_capped_owner_keeps_its_place(self) -> None:
         '''Skipping must not demote the skipped job.'''
         os.environ["PDF_WEB_MAX_RUNNING_JOBS_PER_USER"] = "1"
+        self.add("20260827-120002-cccccc", BOB)
         self.add("20260827-120000-aaaaaa", ALICE)
         self.add("20260827-120001-bbbbbb", ALICE)
-        self.add("20260827-120002-cccccc", BOB)
 
         # pylint: disable=protected-access
         first = self.runner._claim_next()
         self.runner._claim_next()
         self.runner._release(first)
 
-        self.assertEqual(self.runner._claim_next(), "20260827-120001-bbbbbb")
+        self.assertEqual(self.runner._claim_next(), "20260827-120000-aaaaaa")
 
     def test_higher_cap_lets_one_owner_take_more(self) -> None:
         '''The cap is configurable.'''
@@ -105,8 +109,8 @@ class PerUserCapTests(SchedulerTestCase):
         self.add("20260827-120001-bbbbbb", ALICE)
 
         # pylint: disable=protected-access
-        self.assertEqual(self.runner._claim_next(), "20260827-120000-aaaaaa")
         self.assertEqual(self.runner._claim_next(), "20260827-120001-bbbbbb")
+        self.assertEqual(self.runner._claim_next(), "20260827-120000-aaaaaa")
 
     def test_a_zero_cap_cannot_deadlock_the_pool(self) -> None:
         '''A cap of zero would make no job eligible and stall every worker.'''
@@ -133,7 +137,7 @@ class PerUserCapTests(SchedulerTestCase):
 
         self.runner._release(first)
         waiter.join(timeout=2.0)
-        self.assertEqual(claimed, ["20260827-120001-bbbbbb"])
+        self.assertEqual(claimed, ["20260827-120000-aaaaaa"])
 
     def test_stopping_releases_every_waiter(self) -> None:
         '''Shutdown must not leave a worker parked forever.'''
@@ -201,7 +205,7 @@ class QueueStatusTests(SchedulerTestCase):
         self.add("20260827-120001-bbbbbb", ALICE)
         self.runner._claim_next()  # pylint: disable=protected-access
 
-        status = self.runner.queue_status("20260827-120001-bbbbbb", ALICE)
+        status = self.runner.queue_status("20260827-120000-aaaaaa", ALICE)
         self.assertTrue(status["waiting_on_your_limit"])
         self.assertEqual(status["your_running"], 1)
         self.assertEqual(status["your_limit"], 1)
