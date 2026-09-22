@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -254,6 +255,30 @@ class AuthenticationTests(unittest.TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("courts.ca.gov", response.text)
+
+    def test_index_references_immutable_versioned_assets(self) -> None:
+        '''The shell points browsers at content-hashed frontend assets.'''
+        response = self.client.get("/")
+
+        self.assertRegex(response.text, r'/static/style\.[0-9a-f]{12}\.css')
+        self.assertRegex(response.text, r'/static/app\.[0-9a-f]{12}\.js')
+        self.assertEqual(response.headers["cache-control"], "no-cache")
+
+    def test_versioned_assets_are_immutable_and_reject_stale_hashes(self) -> None:
+        '''Hashed assets can be cached for a year without pinning old builds.'''
+        index = self.client.get("/").text
+        stylesheet_url = re.search(r'/static/style\.[0-9a-f]{12}\.css', index).group(0)
+        script_url = re.search(r'/static/app\.[0-9a-f]{12}\.js', index).group(0)
+
+        stylesheet = self.client.get(stylesheet_url)
+        script = self.client.get(script_url)
+        stale = self.client.get("/static/style.000000000000.css")
+
+        self.assertEqual(stylesheet.status_code, 200)
+        self.assertEqual(script.status_code, 200)
+        self.assertIn("max-age=31536000", stylesheet.headers["cache-control"])
+        self.assertIn("immutable", script.headers["cache-control"])
+        self.assertEqual(stale.status_code, 404)
 
 
 class OwnershipRecordingTests(unittest.TestCase):

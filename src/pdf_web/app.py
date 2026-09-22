@@ -5,10 +5,12 @@ FastAPI application exposing the PDF remediation pipeline to a browser.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import shutil
 from contextlib import asynccontextmanager
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, AsyncIterator
 from uuid import uuid4
@@ -70,6 +72,7 @@ async def current_user(request: Request) -> str:
 CURRENT_USER = Depends(current_user)
 JOB_ID_PATH = PathParam(..., pattern=r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 ARTIFACT_PATH = PathParam(..., pattern=r"^(pdf|before|after)$")
+ASSET_VERSION_PATH = PathParam(..., pattern=r"^[0-9a-f]{12}$")
 
 STORE = JobStore()
 RUNNER = PipelineRunner(STORE)
@@ -112,21 +115,38 @@ async def _retention_loop() -> None:
 app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan)
 
 
-def _serve_frontend_asset(filename: str, media_type: str) -> Response:
-    '''
-    Read a frontend asset from disk and serve it uncached.
-
-    The HTML, CSS, and JS files version together; letting a browser cache
-    any one of them separately can pin the UI to a mismatched build after
-    an upgrade.
-    '''
+@lru_cache(maxsize=None)
+def _frontend_asset(filename: str) -> tuple[str, str]:
+    '''Return cached asset text and its content hash.'''
     path = STATIC_DIR / filename
     if not path.is_file():
         raise HTTPException(status_code=500, detail=f"Frontend asset is missing: {filename}")
+    raw = path.read_bytes()
+    return raw.decode("utf-8"), hashlib.sha256(raw).hexdigest()[:12]
+
+
+def _frontend_asset_url(filename: str) -> str:
+    '''Return the immutable, content-versioned URL for a frontend asset.'''
+    _content, version = _frontend_asset(filename)
+    path = Path(filename)
+    return f"/static/{path.stem}.{version}{path.suffix}"
+
+
+def _serve_frontend_asset(
+        filename: str,
+        media_type: str,
+        cache_control: str = "no-cache") -> Response:
+    '''
+    Serve a frontend asset using the process-level content cache.
+    '''
+    content, version = _frontend_asset(filename)
     return Response(
-        path.read_text(encoding="utf-8"),
+        content,
         media_type=media_type,
-        headers={"Cache-Control": "no-store"},
+        headers={
+            "Cache-Control": cache_control,
+            "ETag": f'"{version}"',
+        },
     )
 
 
@@ -135,13 +155,23 @@ async def index() -> Response:
     '''
     Serve the single-page frontend shell.
     '''
-    return _serve_frontend_asset("index.html", "text/html")
+    content, version = _frontend_asset("index.html")
+    content = content.replace(
+        "/static/style.css", _frontend_asset_url("style.css")
+    ).replace(
+        "/static/app.js", _frontend_asset_url("app.js")
+    )
+    return Response(
+        content,
+        media_type="text/html",
+        headers={"Cache-Control": "no-cache", "ETag": f'"{version}"'},
+    )
 
 
 @app.get("/static/style.css")
 async def stylesheet() -> Response:
     '''
-    Serve the frontend stylesheet.
+    Serve the legacy unversioned stylesheet URL.
     '''
     return _serve_frontend_asset("style.css", "text/css")
 
@@ -149,9 +179,41 @@ async def stylesheet() -> Response:
 @app.get("/static/app.js")
 async def script() -> Response:
     '''
-    Serve the frontend script.
+    Serve the legacy unversioned script URL.
     '''
     return _serve_frontend_asset("app.js", "text/javascript")
+
+
+@app.get("/static/style.{version}.css")
+async def versioned_stylesheet(version: str = ASSET_VERSION_PATH) -> Response:
+    '''Serve a content-versioned stylesheet with immutable caching.'''
+    content, actual_version = _frontend_asset("style.css")
+    if version != actual_version:
+        raise HTTPException(status_code=404, detail="Asset version not found.")
+    return Response(
+        content,
+        media_type="text/css",
+        headers={
+            "Cache-Control": "public, max-age=31536000, immutable",
+            "ETag": f'"{actual_version}"',
+        },
+    )
+
+
+@app.get("/static/app.{version}.js")
+async def versioned_script(version: str = ASSET_VERSION_PATH) -> Response:
+    '''Serve a content-versioned script with immutable caching.'''
+    content, actual_version = _frontend_asset("app.js")
+    if version != actual_version:
+        raise HTTPException(status_code=404, detail="Asset version not found.")
+    return Response(
+        content,
+        media_type="text/javascript",
+        headers={
+            "Cache-Control": "public, max-age=31536000, immutable",
+            "ETag": f'"{actual_version}"',
+        },
+    )
 
 
 @app.get("/healthz")
