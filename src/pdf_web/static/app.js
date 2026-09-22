@@ -1,6 +1,7 @@
 'use strict';
 
 const SSE_RECONNECT_MS = 2000;
+const SSE_MAX_RECONNECT_MS = 60000;
 const MAX_TERMINAL_QUEUE_JOBS = 100;
 
 const state = {
@@ -16,6 +17,7 @@ const state = {
   openJobId: null,
   openDownloadJobId: null,
   queueStream: null,
+  queueReconnectDelay: SSE_RECONNECT_MS,
   jobs: [],
   jobIndex: new Map(),
   jobPositions: new Map(),
@@ -89,6 +91,7 @@ async function loadHealth() {
   renderIdentity();
   renderHealth();
   updateSubmitState();
+  return !state.authError;
 }
 
 function renderIdentity() {
@@ -562,9 +565,12 @@ function removeQueueJob(jobId) {
 }
 
 function startLiveUpdates() {
-  if (state.queueStream) return;
+  if (state.queueStream || state.authError) return;
   const stream = new EventSource('/api/queue/events');
   state.queueStream = stream;
+  stream.onopen = () => {
+    state.queueReconnectDelay = SSE_RECONNECT_MS;
+  };
   stream.addEventListener('queue', (event) => {
     try { applyQueuePayload(JSON.parse(event.data)); } catch (error) { /* retry */ }
   });
@@ -593,7 +599,9 @@ function startLiveUpdates() {
     if (state.queueStream !== stream) return;
     stream.close();
     state.queueStream = null;
-    setTimeout(startLiveUpdates, SSE_RECONNECT_MS);
+    const delay = state.queueReconnectDelay;
+    state.queueReconnectDelay = Math.min(delay * 2, SSE_MAX_RECONNECT_MS);
+    setTimeout(startLiveUpdates, delay);
   };
 }
 
@@ -2095,5 +2103,6 @@ document.addEventListener('keydown', (event) => {
 });
 
 loadConfigs();
-loadHealth();
-startLiveUpdates();
+loadHealth().then((authenticated) => {
+  if (authenticated) startLiveUpdates();
+});
