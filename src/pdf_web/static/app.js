@@ -826,8 +826,12 @@ function buildJobRow(job) {
   disclosure.appendChild(caret);
   const fileInfo = document.createElement('div');
   fileInfo.className = 'file-info';
-  const fileName = document.createElement('span');
+  const fileName = document.createElement('a');
   fileName.className = 'file-name';
+  fileName.href = '/api/jobs/' + encodeURIComponent(job.job_id) + '/original';
+  fileName.target = '_blank';
+  fileName.rel = 'noopener noreferrer';
+  fileName.title = 'Open original PDF in a new tab';
   fileName.textContent = job.name;
   fileInfo.appendChild(fileName);
   const meta = document.createElement('div');

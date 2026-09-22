@@ -564,6 +564,20 @@ async def download_bundle(
     )
 
 
+@app.get("/api/jobs/{job_id}/original")
+async def open_original(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER) -> FileResponse:
+    '''Open the original uploaded PDF in the browser.'''
+    job = _require_job(job_id, user)
+    path = _require_file(job.input_path)
+    return FileResponse(
+        path,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "inline"},
+    )
+
+
 @app.get("/api/jobs/{job_id}/{artifact}")
 async def download_artifact(
         job_id: str = JOB_ID_PATH,

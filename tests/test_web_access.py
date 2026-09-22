@@ -27,6 +27,7 @@ JOB_ENDPOINTS = (
     "",
     "/log",
     "/download",
+    "/original",
     "/pdf",
     "/before",
     "/after",
