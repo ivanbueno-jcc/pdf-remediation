@@ -11,7 +11,7 @@ from ..models import Job
 from ..runner import PipelineRunner
 from ..store import JobStore
 from .job_service import JobWorkflow
-from ..submission import SubmissionOptions, prepare_uploaded_job, validate_options
+from ..submission import SubmissionOptions, prepare_uploaded_job
 
 
 class SubmissionService:
@@ -20,13 +20,14 @@ class SubmissionService:
     def __init__(self, store: JobStore, runner: PipelineRunner) -> None:
         self._workflow = JobWorkflow(store, runner)
 
-    async def prepare_batch(
+    async def prepare_batch(  # pylint: disable=too-many-locals
             self,
             uploads: list[UploadFile],
             options: SubmissionOptions,
             owner: str,
             new_job_id: Callable[[set[str]], str],
     ) -> tuple[list[Job], list[dict[str, str]]]:
+        """Validate uploads and stage accepted jobs, cleaning up on failure."""
         created_at = datetime.now()
         ids: set[str] = set()
         names: set[str] = set()

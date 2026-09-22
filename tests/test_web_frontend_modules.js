@@ -51,3 +51,19 @@ test('job detail projections merge violations across validation profiles', () =>
     { clause_test: '2.4', description: '', profiles: ['WCAG'] },
   ]);
 });
+
+test('job action policy delegates confirmation copy without loading the application', () => {
+  const calls = [];
+  const window = { PdfWebDialogs: {
+    confirmAction(...args) { calls.push(args); return Promise.resolve(true); },
+  } };
+  const context = { window };
+  vm.createContext(context);
+  const filename = path.join(__dirname, '..', 'src', 'pdf_web', 'static', 'actions.js');
+  vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
+  const actions = window.PdfWebActions.create({});
+  return actions.confirmCancel({ name: 'sample.pdf', status: 'running' }).then((result) => {
+    assert.equal(result, true);
+    assert.match(calls[0][1], /next safe point/);
+  });
+});

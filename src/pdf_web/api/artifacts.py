@@ -51,7 +51,6 @@ async def download_bundle(
         job_id: str = JOB_ID_PATH,
         user: str = CURRENT_USER) -> FileResponse:
     '''Download every artifact for a terminal job as a ZIP archive.'''
-    runtime = get_runtime()
     access, artifacts = _services()
     job = access.require_access(job_id, user)
     if not job.is_terminal():

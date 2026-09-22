@@ -5,6 +5,11 @@ const MAX_TERMINAL_QUEUE_JOBS = 100;
 const state = window.PdfWebState;
 const { el, formatBytes, describeError } = window.PdfWebDom;
 const { validationValue, validationRequirementLabel, mergeViolations } = window.PdfWebJobDetail;
+const actions = window.PdfWebActions.create({
+  state, apiRequest, acceptedItems, addFiles, showToast, announceStatus,
+  el, downloadIcon, canCancelJob, loadQueueSnapshot, animateJobRemoval,
+  describeError,
+});
 
 function apiRequest(path, options) {
   const client = typeof window !== 'undefined' ? window.PdfWebApi : null;
@@ -820,100 +825,7 @@ function renderJobMeta(meta, job) {
 }
 
 function buildJobRow(job) {
-  const row = document.createElement('tr');
-  row.className = 'job-row job-row-enter';
-  row.dataset.jobId = job.job_id;
-  row.addEventListener('animationend', () => row.classList.remove('job-row-enter'), { once: true });
-
-  const name = document.createElement('td');
-  name.className = 'name';
-  const fileLabel = document.createElement('div');
-  fileLabel.className = 'file-label';
-  const disclosure = document.createElement('button');
-  disclosure.type = 'button';
-  disclosure.className = 'disclosure';
-  disclosure.setAttribute('aria-expanded', 'false');
-  disclosure.setAttribute('aria-label', 'Show details for ' + job.name);
-  disclosure.title = 'Show details for ' + job.name;
-  const caret = document.createElement('span');
-  caret.className = 'caret';
-  caret.setAttribute('aria-hidden', 'true');
-  caret.textContent = '›';
-  disclosure.appendChild(caret);
-  const fileInfo = document.createElement('div');
-  fileInfo.className = 'file-info';
-  const fileName = document.createElement('a');
-  fileName.className = 'file-name';
-  fileName.href = '/api/jobs/' + encodeURIComponent(job.job_id) + '/original';
-  fileName.target = '_blank';
-  fileName.rel = 'noopener noreferrer';
-  fileName.title = 'Open original PDF in a new tab';
-  fileName.textContent = job.name;
-  fileInfo.appendChild(fileName);
-  const meta = document.createElement('div');
-  meta.className = 'job-meta';
-  renderJobMeta(meta, job);
-  fileInfo.appendChild(meta);
-  const fileActions = document.createElement('div');
-  fileActions.className = 'file-actions';
-  fileInfo.appendChild(fileActions);
-  fileLabel.append(disclosure, fileInfo);
-  name.appendChild(fileLabel);
-
-  const processingState = document.createElement('span');
-  const status = document.createElement('td');
-  status.className = 'job-status';
-  const stateStack = document.createElement('div');
-  stateStack.className = 'job-state-stack';
-  const outcomeWrap = document.createElement('span');
-  outcomeWrap.className = 'outcome-composite pending';
-  const outcome = document.createElement('span');
-  const validationRequirement = document.createElement('span');
-  validationRequirement.className = 'validation-requirement';
-  const progressLive = document.createElement('span');
-  progressLive.className = 'sr-only job-progress-live';
-  progressLive.setAttribute('role', 'status');
-  progressLive.setAttribute('aria-live', 'polite');
-  progressLive.setAttribute('aria-atomic', 'true');
-  outcomeWrap.append(outcome, validationRequirement);
-  stateStack.append(outcomeWrap, processingState);
-  stateStack.appendChild(progressLive);
-  status.appendChild(stateStack);
-
-  const validation = document.createElement('td');
-  validation.className = 'validation-change';
-
-  const downloads = document.createElement('td');
-  downloads.className = 'actions';
-
-  row.append(name, status, validation, downloads);
-
-  const detail = document.createElement('tr');
-  detail.className = 'detail-row hidden';
-  detail.id = 'job-details-' + job.job_id;
-  detail.setAttribute('aria-hidden', 'true');
-  disclosure.setAttribute('aria-controls', detail.id);
-  const cell = document.createElement('td');
-  cell.colSpan = 4;
-  detail.appendChild(cell);
-
-  const entry = {
-    job, row, detail, cell, disclosure,
-    processingState, outcome, outcomeWrap, validationRequirement,
-    progressLive, status, validation, downloads, fileActions, meta,
-  };
-
-  // `entry.job` is refreshed on every live SSE update, so this closure
-  // always acts on the latest data even though it's bound once at creation.
-  disclosure.addEventListener('click', () => {
-    toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure);
-  });
-  row.addEventListener('click', (event) => {
-    if (!shouldToggleJobRow(event.target)) return;
-    toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure);
-  });
-
-  return entry;
+  return window.PdfWebQueueView.buildJobRow(job, { renderJobMeta, toggleJob, shouldToggleJobRow });
 }
 
 function jobRowFingerprint(job) {
@@ -1084,56 +996,8 @@ function updateJobRow(entry, job) {
 }
 
 function renderJobRows(body, jobs) {
-  const initialTops = new Map();
-  const expectedNodes = [];
-  jobs.forEach((job) => {
-    const existing = state.jobRows.get(job.job_id);
-    if (existing && existing.row.parentElement === body &&
-        !existing.row.classList.contains('job-row-enter')) {
-      initialTops.set(job.job_id, existing.row.getBoundingClientRect().top);
-    }
-  });
-  jobs.forEach((job, index) => {
-    let entry = state.jobRows.get(job.job_id);
-    if (!entry) {
-      entry = buildJobRow(job);
-      state.jobRows.set(job.job_id, entry);
-    }
-    entry.row.classList.toggle('job-row-stripe', index % 2 === 1);
-    updateJobRow(entry, job);
-    expectedNodes.push(entry.row, entry.detail);
-    // Do not reload an already-open detail panel on every queue update. That
-    // replaces its contents with a loading state and causes visible flicker.
-    if (state.openJobId === job.job_id && entry.row.dataset.open !== 'true') {
-      toggleJob(entry.job, entry.row, entry.detail, entry.cell, entry.disclosure, true);
-    }
-  });
-
-  // Reusing the row preserves its expanded state. Only touch the DOM order
-  // when it actually changed; appending every row on every poll causes table
-  // repainting and makes completed rows visibly flicker.
-  const orderChanged = body.children.length !== expectedNodes.length ||
-    expectedNodes.some((node, index) => body.children[index] !== node);
-  if (orderChanged) {
-    expectedNodes.forEach((node) => body.appendChild(node));
-  }
-
-  const reducedMotion = window.matchMedia &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reducedMotion || !initialTops.size) return;
-  requestAnimationFrame(() => {
-    jobs.forEach((job) => {
-      const entry = state.jobRows.get(job.job_id);
-      const initialTop = initialTops.get(job.job_id);
-      if (!entry || initialTop === undefined) return;
-      const delta = initialTop - entry.row.getBoundingClientRect().top;
-      if (Math.abs(delta) < 1) return;
-      entry.row.style.transition = 'none';
-      entry.row.style.transform = 'translateY(' + delta + 'px)';
-      void entry.row.offsetWidth;
-      entry.row.style.transition = '';
-      entry.row.style.transform = '';
-    });
+  return window.PdfWebQueueView.renderRows(body, jobs, {
+    state, buildJobRow, updateJobRow, toggleJob,
   });
 }
 
@@ -1207,175 +1071,23 @@ function pdfDownloadLabel(job) {
 }
 
 async function retryProcessedPdf(job, button) {
-  if (button.disabled || state.submitting) return;
-  button.disabled = true;
-  button.setAttribute('aria-busy', 'true');
-  try {
-    const response = await apiRequest('/api/jobs/' + encodeURIComponent(job.job_id) + '/pdf');
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      throw new Error(describeError(payload) || 'The processed PDF is unavailable.');
-    }
-    const blob = await response.blob();
-    const file = new File([blob], job.name, {
-      type: blob.type || 'application/pdf', lastModified: Date.now(),
-    });
-    const beforeCount = acceptedItems().length;
-    addFiles([file]);
-    if (acceptedItems().length > beforeCount) {
-      const message = job.name + ' processed PDF added to staging.';
-      showToast(message);
-      announceStatus(message);
-      const reducedMotion = window.matchMedia &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      el('submit-section').scrollIntoView({
-        behavior: reducedMotion ? 'auto' : 'smooth', block: 'start',
-      });
-    }
-  } catch (error) {
-    showToast('Could not stage the processed PDF: ' + String(error.message || error), 'bad');
-  } finally {
-    button.disabled = false;
-    button.removeAttribute('aria-busy');
-  }
+  return actions.retryProcessedPdf(job, button);
 }
 
 async function cancelJob(job, button) {
-  if (button.disabled || !canCancelJob(job)) return;
-  state.cancellingJobs.add(job.job_id);
-  button.classList.add('is-cancelling');
-  button.disabled = true;
-  button.setAttribute('aria-busy', 'true');
-  button.setAttribute('aria-label', 'Cancelling ' + job.name);
-  button.replaceChildren(downloadIcon('spinner'), 'Cancelling');
-  try {
-    const response = await apiRequest('/api/jobs/' + encodeURIComponent(job.job_id) + '/cancel', {
-      method: 'POST',
-    });
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      throw new Error(describeError(payload) || 'The file could not be cancelled.');
-    }
-    await loadQueueSnapshot();
-    announceStatus('Cancellation requested for ' + job.name + '.');
-  } catch (error) {
-    state.cancellingJobs.delete(job.job_id);
-    button.classList.remove('is-cancelling');
-    button.disabled = false;
-    button.removeAttribute('aria-busy');
-    button.setAttribute('aria-label', 'Cancel ' + job.name);
-    button.replaceChildren(downloadIcon('cancel'), 'Cancel');
-    showToast('Could not cancel the file: ' + String(error.message || error), 'bad');
-  }
+  return actions.cancelJob(job, button);
 }
 
 async function deleteJob(job, button) {
-  if (button.disabled || state.submitting) return;
-  if (!await confirmDelete(job)) return;
-  button.disabled = true;
-  button.setAttribute('aria-busy', 'true');
-  try {
-    const response = await apiRequest('/api/jobs/' + encodeURIComponent(job.job_id), {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      throw new Error(describeError(payload) || 'The file could not be deleted.');
-    }
-    await animateJobRemoval([job.job_id]);
-    await loadQueueSnapshot();
-    const message = job.name + ' and its artifacts were deleted.';
-    showToast(message);
-    announceStatus(message);
-  } catch (error) {
-    button.disabled = false;
-    button.removeAttribute('aria-busy');
-    showToast('Could not delete the file: ' + String(error.message || error), 'bad');
-  }
-}
-
-function confirmDelete(job) {
-  return confirmAction(
-    'Delete ' + job.name + '?',
-    'This permanently removes the file and all of its artifacts. This action cannot be undone.',
-    'Delete file'
-  );
-}
-
-function confirmDeleteAll(count) {
-  const noun = count === 1 ? 'file' : 'files';
-  return confirmAction(
-    'Delete all files?',
-    'This permanently removes all ' + count + ' ' + noun + ' and their artifacts. Files still processing will be skipped until they finish. This action cannot be undone.',
-    'Delete all'
-  );
+  return actions.deleteJob(job, button);
 }
 
 function confirmCancel(job) {
-  const copy = job.status === 'running'
-    ? 'Processing will stop at the next safe point. Incomplete results will not be available.'
-    : 'This removes the file from the queue before processing begins.';
-  return confirmAction('Cancel ' + job.name + '?', copy, 'Cancel file');
-}
-
-function confirmAction(titleText, copyText, confirmText) {
-  return window.PdfWebDialogs.confirmAction(titleText, copyText, confirmText);
+  return actions.confirmCancel(job);
 }
 
 async function deleteAllJobs(button) {
-  if (button.disabled || state.submitting || !state.jobs.length) return;
-  if (!await confirmDeleteAll(state.jobs.length)) return;
-  button.disabled = true;
-  button.setAttribute('aria-busy', 'true');
-  try {
-    const jobs = state.jobs.slice();
-    const response = await apiRequest('/api/jobs', { method: 'DELETE' });
-    let payload = await response.json().catch(() => ({}));
-    if (response.status === 405) {
-      // Older server processes may still have the per-job route but not the
-      // bulk route. Keep the action usable while that process is being
-      // restarted or reloaded.
-      const results = await Promise.all(jobs.map(async (job) => {
-        const itemResponse = await apiRequest('/api/jobs/' + encodeURIComponent(job.job_id), {
-          method: 'DELETE',
-        });
-        return { job, response: itemResponse };
-      }));
-      const unexpected = results.find((item) => !item.response.ok && item.response.status !== 409);
-      if (unexpected) {
-        const itemPayload = await unexpected.response.json().catch(() => ({}));
-        throw new Error(describeError(itemPayload) || 'The files could not be deleted.');
-      }
-      payload = {
-        deleted: results.filter((item) => item.response.ok).map((item) => item.job.job_id),
-        skipped: results.filter((item) => item.response.status === 409).map((item) => item.job.job_id),
-      };
-    } else if (!response.ok) {
-      throw new Error(describeError(payload) || 'The files could not be deleted.');
-    }
-    const deleted = Array.isArray(payload.deleted) ? payload.deleted : [];
-    const skipped = Array.isArray(payload.skipped) ? payload.skipped : [];
-    await animateJobRemoval(deleted);
-    await loadQueueSnapshot();
-    if (skipped.length) {
-      const message = deleted.length
-        ? deleted.length + ' file' + (deleted.length === 1 ? '' : 's') +
-          ' deleted. ' + skipped.length + ' active file' + (skipped.length === 1 ? '' : 's') + ' remain.'
-        : 'Active files are still processing and could not be deleted.';
-      showToast(message, 'warn');
-      announceStatus(message);
-    } else {
-      const message = deleted.length + ' file' + (deleted.length === 1 ? '' : 's') +
-        ' and their artifacts were deleted.';
-      showToast(message);
-      announceStatus(message);
-    }
-  } catch (error) {
-    showToast('Could not delete all files: ' + String(error.message || error), 'bad');
-  } finally {
-    button.disabled = false;
-    button.removeAttribute('aria-busy');
-  }
+  return actions.deleteAllJobs(button);
 }
 
 function validationComparison(before, after) {
@@ -1632,58 +1344,9 @@ async function toggleJob(job, row, detailRow, cell, disclosure, forceOpen) {
 }
 
 function renderDetail(cell, job) {
-  cell.innerHTML = '';
-  const wrap = document.createElement('div');
-  wrap.className = 'job-detail';
-
-  const layout = document.createElement('div');
-  layout.className = 'job-detail-layout';
-
-  const sidebar = document.createElement('aside');
-  sidebar.className = 'job-detail-sidebar';
-
-  const stagesHeading = document.createElement('h4');
-  stagesHeading.id = 'pipeline-stages-' + job.job_id;
-  stagesHeading.textContent = 'Pipeline stages';
-  sidebar.setAttribute('aria-labelledby', stagesHeading.id);
-  sidebar.appendChild(stagesHeading);
-
-  const list = document.createElement('ol');
-  list.className = 'stages';
-  (job.stages || []).forEach((stage) => {
-    const item = document.createElement('li');
-    item.dataset.status = stage.status;
-    const marker = document.createElement('span');
-    marker.className = 'marker';
-    marker.textContent = stage.status === 'ok' ? '✓'
-      : (stage.status === 'failed' ? '✕' : '–');
-    const label = document.createElement('span');
-    label.textContent = pipelineStageLabel(stage.name);
-    const detail = document.createElement('span');
-    detail.className = 'detail';
-    detail.textContent = stage.detail || '';
-    item.append(marker, label, detail);
-    list.appendChild(item);
+  return window.PdfWebJobDetail.render(cell, job, {
+    pipelineStageLabel, appendViolationSection, updateDetailHeight,
   });
-  sidebar.appendChild(list);
-
-  (job.warnings || []).forEach((warning) => {
-    const note = document.createElement('p');
-    note.className = 'muted';
-    note.textContent = warning;
-    sidebar.appendChild(note);
-  });
-
-  const violations = document.createElement('div');
-  violations.className = 'job-detail-violations';
-  violations.setAttribute('role', 'region');
-  violations.setAttribute('aria-label', 'Accessibility violations');
-  appendViolationSection(violations, job);
-
-  layout.append(sidebar, violations);
-  wrap.appendChild(layout);
-  cell.appendChild(wrap);
-  updateDetailHeight(cell.parentElement);
 }
 
 function violationItem(violation) {

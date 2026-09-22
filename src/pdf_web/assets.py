@@ -11,11 +11,17 @@ from fastapi.responses import Response
 
 from .config import STATIC_DIR
 
+ASSET_ALIASES = {
+    "browser-api.js": "api.js",
+    "live-updates.js": "sse.js",
+}
+
 
 @lru_cache(maxsize=None)
 def read_asset(filename: str) -> tuple[str, str]:
     '''Return cached asset text and its short content hash.'''
-    path = STATIC_DIR / filename
+    canonical_name = ASSET_ALIASES.get(filename, filename)
+    path = STATIC_DIR / canonical_name
     if not path.is_file():
         raise HTTPException(status_code=500, detail=f"Frontend asset is missing: {filename}")
     raw = path.read_bytes()
@@ -50,8 +56,6 @@ def serve_index() -> Response:
     ).replace(
         "/static/api.js", asset_url("api.js")
     ).replace(
-        "/static/live-updates.js", asset_url("live-updates.js")
-    ).replace(
         "/static/state.js", asset_url("state.js")
     ).replace(
         "/static/dom.js", asset_url("dom.js")
@@ -63,6 +67,8 @@ def serve_index() -> Response:
         "/static/dialogs.js", asset_url("dialogs.js")
     ).replace(
         "/static/job-detail.js", asset_url("job-detail.js")
+    ).replace(
+        "/static/actions.js", asset_url("actions.js")
     ).replace(
         "/static/sse.js", asset_url("sse.js")
     ).replace(

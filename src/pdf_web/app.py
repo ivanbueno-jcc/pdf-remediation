@@ -6,7 +6,6 @@ import asyncio
 import shutil
 from contextlib import asynccontextmanager
 from datetime import datetime
-from pathlib import Path
 from typing import AsyncIterator
 from uuid import uuid4
 
@@ -22,9 +21,10 @@ from .api.runtime import ApiRuntime, configure_runtime
 from .assets import serve_asset, serve_index, serve_versioned_asset
 from .config import CONFIG_DIR, JOBS_ROOT, MIN_FREE_DISK_BYTES, RETENTION_SWEEP_SECONDS
 from .identity import describe_mode
-from .infrastructure.persistence import JobStore, load_persisted_jobs, sweep_expired_jobs
+from .infrastructure.persistence import load_persisted_jobs, sweep_expired_jobs
 from .infrastructure.readiness import cached_health, collect_readiness
 from .runner import PipelineRunner
+from .store import JobStore
 
 STORE = JobStore()
 RUNNER = PipelineRunner(STORE)
@@ -118,54 +118,70 @@ async def index() -> Response:
 
 @app.get("/static/style.css")
 async def stylesheet() -> Response:
+    """Serve the canonical stylesheet."""
     return serve_asset("style.css", "text/css")
 
 
 @app.get("/static/app.js")
 async def script() -> Response:
+    """Serve the application entry point."""
     return serve_asset("app.js", "text/javascript")
 
 
 @app.get("/static/browser-api.js")
 async def browser_api_script() -> Response:
+    """Serve the compatibility API-client URL."""
     return serve_asset("browser-api.js", "text/javascript")
 
 
 @app.get("/static/live-updates.js")
 async def live_updates_script() -> Response:
+    """Serve the compatibility live-updates URL."""
     return serve_asset("live-updates.js", "text/javascript")
 
 
 @app.get("/static/style.{version}.css")
 async def versioned_stylesheet(version: str = ASSET_VERSION_PATH) -> Response:
+    """Serve an immutable stylesheet version."""
     return serve_versioned_asset("style.css", version, "text/css")
 
 
 @app.get("/static/app.{version}.js")
 async def versioned_script(version: str = ASSET_VERSION_PATH) -> Response:
+    """Serve an immutable application entry point."""
     return serve_versioned_asset("app.js", version, "text/javascript")
 
 
 @app.get("/static/browser-api.{version}.js")
 async def versioned_browser_api_script(version: str = ASSET_VERSION_PATH) -> Response:
+    """Serve the immutable compatibility API-client URL."""
     return serve_versioned_asset("browser-api.js", version, "text/javascript")
 
 
 @app.get("/static/live-updates.{version}.js")
 async def versioned_live_updates_script(version: str = ASSET_VERSION_PATH) -> Response:
+    """Serve the immutable compatibility live-updates URL."""
     return serve_versioned_asset("live-updates.js", version, "text/javascript")
 
 
 @app.get("/static/{module_name}.{version}.js")
 async def versioned_frontend_module(
         module_name: str, version: str = ASSET_VERSION_PATH) -> Response:
-    if module_name not in {"api", "state", "dom", "upload-staging", "queue-view", "dialogs", "job-detail", "sse"}:
+    """Serve an immutable frontend module by its allowlisted name."""
+    if module_name not in {
+        "api", "state", "dom", "upload-staging", "queue-view", "dialogs",
+        "job-detail", "actions", "sse",
+    }:
         raise HTTPException(status_code=404, detail="Not found.")
     return serve_versioned_asset(module_name + ".js", version, "text/javascript")
 
 
 @app.get("/static/{module_name}.js")
 async def frontend_module(module_name: str) -> Response:
-    if module_name not in {"api", "state", "dom", "upload-staging", "queue-view", "dialogs", "job-detail", "sse"}:
+    """Serve a frontend module by its allowlisted name."""
+    if module_name not in {
+        "api", "state", "dom", "upload-staging", "queue-view", "dialogs",
+        "job-detail", "actions", "sse",
+    }:
         raise HTTPException(status_code=404, detail="Not found.")
     return serve_asset(module_name + ".js", "text/javascript")

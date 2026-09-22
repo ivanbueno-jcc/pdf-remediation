@@ -21,7 +21,8 @@ from ..identity import resolve_user
 from ..job_views import queue_payload
 from ..models import JobSerializer
 from ..services.job_service import JobAccessService, JobWorkflow
-from ..services.submission_service import SubmissionService, validate_options
+from ..services.submission_service import SubmissionService
+from ..submission import validate_options
 from .runtime import get_runtime
 from .schemas import JobResponse, QueuePageResponse, SubmissionResponse
 
@@ -154,7 +155,7 @@ async def queue_view(
 async def queue_events(request: Request, user: str = CURRENT_USER):
     '''Stream queue changes scoped to the authenticated owner.'''
 
-    async def event_stream() -> AsyncIterator[str]:
+    async def event_stream() -> AsyncIterator[str]:  # pylint: disable=too-many-branches
         runtime = get_runtime()
         subscriber_id, updates_queue = runtime.store.subscribe_owner(user)
         first = True

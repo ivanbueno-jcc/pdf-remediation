@@ -8,7 +8,8 @@ happened to it: which stages ran, which were skipped, and why.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+import copy
+from dataclasses import dataclass, field, fields, replace
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
@@ -77,7 +78,7 @@ def status_for(outcome: PipelineStatus) -> JobStatus:
     return JobStatus.COMPLETED
 
 
-@dataclass(frozen=True)
+@dataclass
 class UploadedFile:
     '''
     The PDF a job was created for.
@@ -217,7 +218,7 @@ def summarize_report(report: dict[str, Any] | None) -> dict[str, Any] | None:
 
 
 @dataclass(frozen=True)
-class JobSpec:
+class JobSpec:  # pylint: disable=too-many-instance-attributes
     '''Immutable identity, upload, and processing choices fixed at submission.'''
 
     job_id: str
@@ -236,7 +237,7 @@ class JobSpec:
 
 
 @dataclass
-class JobState:
+class JobState:  # pylint: disable=too-many-instance-attributes
     '''Mutable lifecycle and pipeline output, protected by its state lock.'''
 
     status: JobStatus = JobStatus.QUEUED
@@ -261,38 +262,46 @@ class JobPaths:
 
     @property
     def base_path(self) -> Path:
+        """Return this job's storage directory."""
         return self.root / self.job_id
 
     @property
     def input_path(self) -> Path:
+        """Return the uploaded source PDF path."""
         return self.base_path / "input" / self.stored_name
 
     @property
     def output_dir(self) -> Path:
+        """Return the pipeline output directory."""
         return self.base_path / "output"
 
     @property
     def web_path(self) -> Path:
+        """Return the web-specific job data directory."""
         return self.base_path / WEB_FOLDER_NAME
 
     @property
     def log_path(self) -> Path:
+        """Return the captured pipeline log path."""
         return self.web_path / "pipeline.log"
 
     @property
     def meta_path(self) -> Path:
+        """Return the persisted metadata path."""
         return self.web_path / "meta.json"
 
     @property
     def bundle_path(self) -> Path:
+        """Return the generated artifact archive path."""
         return self.web_path / "bundle.zip"
 
 
-class JobSerializer:
+class JobSerializer:  # pylint: disable=too-few-public-methods
     '''Explicit browser response projection, independent of persisted state.'''
 
     @staticmethod
     def from_record(job: "JobRecord") -> dict[str, Any]:
+        """Project a job record into its public JSON representation."""
         with job.state_lock:
             result = job.result
             profiles = job.required_profiles()
@@ -300,8 +309,12 @@ class JobSerializer:
                 "job_id": job.job_id,
                 "submitted_by": job.submitted_by,
                 "created_at": job.created_at.isoformat(timespec="seconds"),
-                "started_at": job.started_at.isoformat(timespec="seconds") if job.started_at else None,
-                "finished_at": job.finished_at.isoformat(timespec="seconds") if job.finished_at else None,
+                "started_at": (
+                    job.started_at.isoformat(timespec="seconds") if job.started_at else None
+                ),
+                "finished_at": (
+                    job.finished_at.isoformat(timespec="seconds") if job.finished_at else None
+                ),
                 "status": str(job.status),
                 "config_file": job.config_file,
                 "attempt_unlock": job.attempt_unlock,
@@ -331,13 +344,19 @@ class JobSerializer:
 class JobRecord:
     '''Composition root for a job's immutable spec, mutable state, and paths.'''
 
-    _SPEC_FIELDS = frozenset(JobSpec.__dataclass_fields__)
-    _STATE_FIELDS = frozenset(JobState.__dataclass_fields__)
+    _SPEC_FIELDS = frozenset(item.name for item in fields(JobSpec))
+    _STATE_FIELDS = frozenset(item.name for item in fields(JobState))
 
     def __init__(self, job_id: str, created_at: datetime, config_file: str,
                  file: UploadedFile, **values: Any) -> None:
-        spec_values = {name: values.pop(name) for name in tuple(values) if name in self._SPEC_FIELDS}
-        state_values = {name: values.pop(name) for name in tuple(values) if name in self._STATE_FIELDS}
+        spec_values = {
+            name: values.pop(name) for name in tuple(values)
+            if name in self._SPEC_FIELDS
+        }
+        state_values = {
+            name: values.pop(name) for name in tuple(values)
+            if name in self._STATE_FIELDS
+        }
         # Locks are always fresh; snapshots must never share synchronization primitives.
         values.pop("state_lock", None)
         values.pop("bundle_lock", None)
@@ -347,7 +366,9 @@ class JobRecord:
         ))
         state_values.setdefault("page_count", page_count)
         object.__setattr__(self, "state", JobState(**state_values))
-        object.__setattr__(self, "paths", JobPaths(job_id, file.stored_name))
+        object.__setattr__(
+            self, "paths", JobPaths(job_id, file.stored_name, root=JOBS_ROOT)
+        )
         if values:
             raise TypeError(f"Unexpected job fields: {', '.join(values)}")
 
@@ -360,7 +381,10 @@ class JobRecord:
             return getattr(self.state, name)
         if name == "state_lock":
             return self.state.lock
-        if name in {"base_path", "input_path", "output_dir", "web_path", "log_path", "meta_path", "bundle_path"}:
+        if name in {
+            "base_path", "input_path", "output_dir", "web_path", "log_path",
+            "meta_path", "bundle_path",
+        }:
             return getattr(self.paths, name)
         raise AttributeError(name)
 
@@ -368,7 +392,9 @@ class JobRecord:
         if name in {"spec", "state", "paths"}:
             object.__setattr__(self, name, value)
         elif name == "file":
-            object.__setattr__(self, "spec", replace(self.spec, file=replace(value, page_count=None)))
+            object.__setattr__(
+                self, "spec", replace(self.spec, file=replace(value, page_count=None))
+            )
             object.__setattr__(self.state, "page_count", value.page_count)
         elif name == "page_count":
             object.__setattr__(self.state, "page_count", value)
@@ -385,7 +411,6 @@ class JobRecord:
 
     def __copy__(self) -> "JobRecord":
         '''Create a detached state snapshot with independent synchronization.'''
-        import copy
         state_values = {
             name: copy.deepcopy(getattr(self.state, name))
             for name in self._STATE_FIELDS
@@ -402,14 +427,17 @@ class JobRecord:
 
     @property
     def state_lock(self) -> threading.RLock:
+        """Return the lock protecting mutable job state."""
         return self.state.lock
 
     @property
     def bundle_lock(self) -> threading.Lock:
+        """Return the lock serializing archive generation."""
         return self.state.bundle_lock
 
     @property
     def initially_secured(self) -> bool:
+        """Report whether the source PDF required and completed unlocking."""
         with self.state_lock:
             if self.result is not None and self.result.initially_secured is not None:
                 return self.result.initially_secured
@@ -420,6 +448,7 @@ class JobRecord:
 
     @property
     def validation_requirement(self) -> str:
+        """Describe which validation profiles were selected."""
         profiles = self.required_profiles()
         if profiles == ("wcag",):
             return "wcag only"
@@ -430,6 +459,7 @@ class JobRecord:
         return "no validation profile"
 
     def artifact(self, name: str) -> Path | None:
+        """Resolve an available artifact path by its public artifact name."""
         with self.state_lock:
             return artifact_path(
                 self.output_dir, name,
@@ -437,10 +467,12 @@ class JobRecord:
             )
 
     def is_terminal(self) -> bool:
+        """Return whether processing has reached a terminal state."""
         with self.state_lock:
             return self.status in TERMINAL_STATUSES
 
     def required_profiles(self) -> tuple[str, ...]:
+        """Return validation profiles required by this job's specification."""
         return selected_validation_profiles(
             self.require_wcag, self.require_pdfua1, self.wcag_and_ua1_must_pass
         )

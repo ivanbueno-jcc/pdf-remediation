@@ -13,7 +13,7 @@ from python_on_whales.exceptions import DockerException
 
 import pdf_web.app as web_app
 import pdf_web.config as web_config
-import pdf_web.environment as web_environment
+import pdf_web.infrastructure.readiness as web_environment
 from pdf_api.capabilities import Capabilities, _callas_license_status
 from pdf_api.scratch import scratch_workspace
 from pdf_remediation.utilities.callas import Callas
@@ -171,7 +171,7 @@ class ReadinessTests(unittest.TestCase):  # pylint: disable=protected-access
                 JOBS_ROOT=Path(directory) / "jobs",
                 SCRATCH_ROOT=Path(directory) / "scratch",
                 _docker_image_available=mock.Mock(return_value=(True, "present")),
-        ), mock.patch("pdf_web.environment.shutil.disk_usage") as disk_usage:
+        ), mock.patch("pdf_web.infrastructure.readiness.shutil.disk_usage") as disk_usage:
             disk_usage.return_value.free = 10 * 1024 ** 3
             result = web_environment.collect_readiness(force=True)
         self.assertTrue(result["ready"])

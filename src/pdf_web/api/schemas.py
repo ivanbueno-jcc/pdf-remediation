@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 
 class JobFileResponse(BaseModel):
+    """Public metadata for an uploaded source file."""
     original_name: str
     stored_name: str
     size_bytes: int
@@ -16,6 +17,7 @@ class JobFileResponse(BaseModel):
 
 
 class JobResponse(BaseModel):
+    """Complete public representation of one job."""
     job_id: str
     submitted_by: str
     created_at: datetime
@@ -48,6 +50,7 @@ class JobResponse(BaseModel):
 
 
 class QueueJobResponse(BaseModel):
+    """Compact job projection used by paginated queue views."""
     job_id: str
     name: str
     created_at: datetime
@@ -71,6 +74,7 @@ class QueueJobResponse(BaseModel):
 
 
 class QueuePageResponse(BaseModel):
+    """Queue page and owner-specific scheduling metadata."""
     concurrency: int
     your_limit: int
     your_running: int
@@ -82,11 +86,13 @@ class QueuePageResponse(BaseModel):
 
 
 class RejectedUploadResponse(BaseModel):
+    """Reason an individual submitted file was rejected."""
     original_name: str
     reason: str
 
 
 class SubmissionResponse(BaseModel):
+    """Outcome of a batch submission request."""
     jobs: list[JobResponse]
     rejected: list[RejectedUploadResponse]
     concurrency: int

@@ -37,7 +37,7 @@ function loadLiveUpdates() {
   const context = { window };
   vm.createContext(context);
   const modulePath = path.join(
-    __dirname, '..', 'src', 'pdf_web', 'static', 'live-updates.js'
+    __dirname, '..', 'src', 'pdf_web', 'static', 'sse.js'
   );
   vm.runInContext(fs.readFileSync(modulePath, 'utf8'), context, {
     filename: modulePath,

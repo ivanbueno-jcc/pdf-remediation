@@ -8,7 +8,7 @@ from typing import Any, Callable
 
 
 @dataclass(frozen=True)
-class ApiRuntime:
+class ApiRuntime:  # pylint: disable=too-many-instance-attributes
     '''Current process services exposed to route handlers.'''
 
     store: Any
@@ -22,17 +22,17 @@ class ApiRuntime:
     describe_mode: Callable[[], dict[str, Any]]
 
 
-_provider: Callable[[], ApiRuntime] | None = None
+_PROVIDER: dict[str, Callable[[], ApiRuntime] | None] = {"value": None}
 
 
 def configure_runtime(provider: Callable[[], ApiRuntime]) -> None:
     '''Install a provider that resolves current app dependencies per request.'''
-    global _provider
-    _provider = provider
+    _PROVIDER["value"] = provider
 
 
 def get_runtime() -> ApiRuntime:
     '''Return the active process dependencies for an API operation.'''
-    if _provider is None:
+    provider = _PROVIDER["value"]
+    if provider is None:
         raise RuntimeError("API runtime has not been configured.")
-    return _provider()
+    return provider()  # pylint: disable=not-callable
