@@ -100,6 +100,29 @@ class UploadedFile:
         }
 
 
+@dataclass(frozen=True)
+class QueueJobSnapshot:  # pylint: disable=too-many-instance-attributes
+    '''Compact immutable projection used by queue and list responses.'''
+
+    job_id: str
+    name: str
+    page_count: int | None
+    created_at: datetime
+    started_at: datetime | None
+    finished_at: datetime | None
+    config_file: str
+    status: JobStatus
+    outcome: str | None
+    stages_done: int
+    current_stage: str | None
+    before: dict[str, Any] | None
+    after: dict[str, Any] | None
+    initially_secured: bool
+    validation_requirement: str
+    has_pdf: bool
+    error: str | None
+
+
 def summarize_report(report: dict[str, Any] | None) -> dict[str, Any] | None:
     '''
     Reduce a validation report to what the job list renders.

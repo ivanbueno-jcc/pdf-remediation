@@ -237,14 +237,14 @@ async def list_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
     List known jobs, newest first.
     '''
     jobs = []
-    for job in STORE.list_snapshots(user):
+    for job in STORE.list_queue_snapshots(user):
         jobs.append({
             "job_id": job.job_id,
             "status": str(job.status),
             "queued": job.status == JobStatus.QUEUED,
             "created_at": job.created_at.isoformat(timespec="seconds"),
-            "page_count": job.file.page_count,
-            "name": job.file.original_name,
+            "page_count": job.page_count,
+            "name": job.name,
             "outcome": job.outcome,
             "outcome_label": outcome_label(job.outcome),
             "config_file": job.config_file,
@@ -410,26 +410,21 @@ async def queue_events(
                     ) + "\n\n"
                     first = False
                 try:
-                    updates = [await asyncio.wait_for(
-                        updates_queue.get(), timeout=SSE_KEEPALIVE_SECONDS
-                    )]
+                    updates = await asyncio.wait_for(
+                        updates_queue.get_batch(), timeout=SSE_KEEPALIVE_SECONDS
+                    )
                 except asyncio.TimeoutError:
                     yield ": keepalive\n\n"
                     continue
-                while True:
-                    try:
-                        updates.append(updates_queue.get_nowait())
-                    except asyncio.QueueEmpty:
-                        break
                 changed_ids = {
-                    job_id for _, update_type, job_id in updates
+                    job_id for update_type, job_id in updates
                     if update_type != "job-removed"
                 }
-                if any(update_type == "queue-changed" for _, update_type, _ in updates):
+                if any(update_type == "queue-changed" for update_type, _ in updates):
                     changed_ids.update(STORE.active_job_ids(user))
                 positions = RUNNER.pending_positions_for(changed_ids)
                 latest: dict[str, str] = {}
-                for _, update_type, job_id in updates:
+                for update_type, job_id in updates:
                     if update_type != "queue-changed":
                         latest[job_id] = update_type
                 for job_id in changed_ids:
@@ -438,7 +433,7 @@ async def queue_events(
                     if update_type == "job-removed":
                         payload = {"job_id": job_id}
                     else:
-                        job = STORE.snapshot(job_id)
+                        job = STORE.queue_snapshot(job_id)
                         if job is None:
                             continue
                         payload = queue_payload(job, positions)
@@ -493,60 +488,6 @@ async def get_job(
         "events": events,
         "jobs_ahead": RUNNER.jobs_ahead(job_id),
     }
-
-
-@app.get("/api/jobs/{job_id}/events")
-async def job_events(
-        request: Request,
-        job_id: str = JOB_ID_PATH,
-        since: int = 0,
-        user: str = CURRENT_USER):
-    '''
-    Stream job events as Server-Sent Events.
-    '''
-    _require_job(job_id, user)
-
-    async def event_stream() -> AsyncIterator[str]:
-        '''Wait for store notifications and forward new events to the browser.'''
-        cursor = since
-        while True:
-            if await request.is_disconnected():
-                return
-
-            cursor, events, exists, terminal = await asyncio.to_thread(
-                STORE.wait_for_job_events,
-                job_id,
-                cursor,
-                SSE_KEEPALIVE_SECONDS,
-            )
-            if not exists:
-                return
-            for event in events:
-                yield _format_sse(event)
-                if event["type"] == "done":
-                    return
-            if terminal:
-                job = STORE.snapshot(job_id)
-                if job is None:
-                    return
-                yield _format_sse({
-                    "cursor": cursor,
-                    "type": "done",
-                    "payload": {"status": str(job.status)},
-                })
-                return
-            if not events:
-                yield ": keepalive\n\n"
-
-    return StreamingResponse(
-        event_stream(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
-    )
 
 
 @app.get("/api/jobs/{job_id}/log")
@@ -784,11 +725,3 @@ def _assert_disk_space() -> None:
             status_code=507,
             detail="Not enough free disk space to accept a new job."
         )
-
-
-def _format_sse(event: dict[str, Any]) -> str:
-    '''
-    Render one event in the Server-Sent Events wire format.
-    '''
-    data = json.dumps(event, default=str)
-    return f"event: {event['type']}\ndata: {data}\n\n"

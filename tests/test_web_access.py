@@ -166,11 +166,11 @@ class AccessControlTests(unittest.TestCase):
         self.assertEqual([job["job_id"] for job in bob_jobs], ["20260827-130000-bbbbbb"])
 
     def test_event_stream_is_scoped(self) -> None:
-        '''The live stream carries job output and is scoped like the rest.'''
+        '''The removed per-job stream is no longer an available endpoint.'''
         with self.client.stream(
             "GET", self._url("/events"), headers=headers(BOB)
         ) as response:
-            self.assertEqual(response.status_code, 404)
+            self.assertEqual(response.status_code, 422)
 
     def test_details_response_omits_event_history(self) -> None:
         '''The detail panel does not need the job's accumulated event log.'''

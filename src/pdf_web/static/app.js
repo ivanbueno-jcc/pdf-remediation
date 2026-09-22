@@ -16,8 +16,15 @@ const state = {
   openDownloadJobId: null,
   queueStream: null,
   jobs: [],
+  jobIndex: new Map(),
+  jobPositions: new Map(),
   queueMeta: {},
   jobRows: new Map(),
+  activeJobCount: 0,
+  failedJobCount: 0,
+  queueEta: null,
+  queueGeneration: null,
+  jobStats: { processed: 0, wcag: 0, ua1: 0, totalPages: 0, processedPages: 0 },
   cancellingJobs: new Set(),
   jobStatusSnapshot: null,
   jobSearch: '',
@@ -474,6 +481,21 @@ function applyQueuePayload(payload) {
   });
   announceJobChanges(jobs);
   state.jobs = jobs;
+  state.jobIndex = new Map(jobs.map((job) => [job.job_id, job]));
+  state.jobPositions = new Map(jobs.map((job, index) => [job.job_id, index]));
+  state.activeJobCount = jobs.filter(isActiveJob).length;
+  state.failedJobCount = jobs.filter((job) => job.status === 'failed').length;
+  state.jobStats = jobs.reduce((stats, job) => addJobStats(stats, job, 1),
+    { processed: 0, wcag: 0, ua1: 0, totalPages: 0, processedPages: 0 });
+  state.queueEta = queueEtaSeconds(payload);
+  state.queueGeneration = payload.queue_generation;
+  updateQueuePresentation(payload);
+  renderJobs();
+
+  // Nothing is moving, so stop asking.
+}
+
+function updateQueuePresentation(payload) {
   const jobsSection = el('jobs-section');
   const shouldShowJobs = state.jobs.length > 0;
   const isEntering = shouldShowJobs && jobsSection.classList.contains('hidden');
@@ -490,32 +512,53 @@ function applyQueuePayload(payload) {
   const queueSummary = state.jobs.length
     ? payload.your_running + '/' + payload.your_limit + ' running'
     : '';
-  const eta = formatQueueEta(queueEtaSeconds(payload));
+  const eta = formatQueueEta(state.queueEta);
   const queueSummaryEl = el('queue-summary');
-  const hasActiveFiles = state.jobs.some(isActiveJob);
+  const hasActiveFiles = state.activeJobCount > 0;
   jobsSection.classList.toggle('is-processing', hasActiveFiles);
-  jobsSection.classList.toggle('has-failures', state.jobs.some((job) => job.status === 'failed'));
+  jobsSection.classList.toggle('has-failures', state.failedJobCount > 0);
   jobsSection.classList.toggle('is-complete', !hasActiveFiles && state.jobs.length > 0);
   queueSummaryEl.textContent = eta ? queueSummary + ' · ' + eta : queueSummary;
   queueSummaryEl.classList.toggle('is-processing', hasActiveFiles);
   queueSummaryEl.setAttribute('aria-busy', hasActiveFiles ? 'true' : 'false');
-  renderJobs();
-
-  // Nothing is moving, so stop asking.
 }
 
 function applyQueueJob(job) {
-  const jobs = state.jobs.filter((item) => item.job_id !== job.job_id);
-  jobs.push(job);
-  jobs.sort((left, right) => right.created_at.localeCompare(left.created_at));
-  applyQueuePayload({ ...state.queueMeta, jobs });
+  const previous = state.jobIndex.get(job.job_id);
+  const index = previous ? state.jobPositions.get(job.job_id) : -1;
+  if (!previous || index < 0) {
+    const jobs = state.jobs.slice();
+    jobs.push(job);
+    jobs.sort((left, right) => right.created_at.localeCompare(left.created_at));
+    applyQueuePayload({ ...state.queueMeta, jobs });
+    return;
+  }
+
+  const wasVisible = isVisibleJob(previous);
+  state.jobs[index] = job;
+  state.jobIndex.set(job.job_id, job);
+  state.activeJobCount += Number(isActiveJob(job)) - Number(isActiveJob(previous));
+  state.failedJobCount += Number(job.status === 'failed') - Number(previous.status === 'failed');
+  state.jobStats = addJobStats(addJobStats(state.jobStats, previous, -1), job, 1);
+  announceJobChange(job);
+
+  // Status/outcome changes can move a terminal row across the active search
+  // and outcome filters. In that case the visible groups need reconciliation.
+  if (wasVisible !== isVisibleJob(job)) {
+    updateQueuePresentation({ ...state.queueMeta, jobs: state.jobs });
+    renderJobs();
+    return;
+  }
+
+  const entry = state.jobRows.get(job.job_id);
+  if (entry) updateJobRow(entry, job);
+  updateQueuePresentation({ ...state.queueMeta, jobs: state.jobs });
+  renderJobStats();
 }
 
 function removeQueueJob(jobId) {
-  applyQueuePayload({
-    ...state.queueMeta,
-    jobs: state.jobs.filter((job) => job.job_id !== jobId),
-  });
+  const jobs = state.jobs.filter((job) => job.job_id !== jobId);
+  applyQueuePayload({ ...state.queueMeta, jobs });
 }
 
 function startLiveUpdates() {
@@ -535,7 +578,15 @@ function startLiveUpdates() {
     try { removeQueueJob(JSON.parse(event.data).job_id); } catch (error) { /* retry */ }
   });
   stream.addEventListener('queue-meta', (event) => {
-    try { applyQueuePayload({ ...JSON.parse(event.data), jobs: state.jobs }); }
+    try {
+      const payload = JSON.parse(event.data);
+      const generationChanged = payload.queue_generation !== undefined &&
+        payload.queue_generation !== state.queueGeneration;
+      state.queueMeta = { ...state.queueMeta, ...payload };
+      state.queueGeneration = payload.queue_generation;
+      updateQueuePresentation(state.queueMeta);
+      if (generationChanged) renderJobs();
+    }
     catch (error) { /* retry */ }
   });
   stream.onerror = () => {
@@ -617,22 +668,35 @@ function announceJobChanges(jobs) {
   if (messages.length) announceStatus(messages.join(' '));
 }
 
+function announceJobChange(job) {
+  const previous = state.jobStatusSnapshot && state.jobStatusSnapshot[job.job_id];
+  state.jobStatusSnapshot = state.jobStatusSnapshot || {};
+  state.jobStatusSnapshot[job.job_id] = { status: job.status, outcome: job.outcome };
+  if (!previous) return;
+  if (previous.status !== job.status) announceStatus(jobStatusAnnouncement(job));
+  else if (previous.outcome !== job.outcome && job.outcome_label) {
+    announceStatus('Accessibility outcome for ' + job.name + ': ' + job.outcome_label + '.');
+  }
+}
+
 function isActiveJob(job) {
   return job.status === 'queued' || job.status === 'running';
 }
 
-function filteredRecentJobs() {
+function isVisibleJob(job) {
+  if (isActiveJob(job)) return true;
   const query = state.jobSearch.trim().toLowerCase();
   const filter = state.jobOutcomeFilter;
+  if (query && !String(job.name || '').toLowerCase().includes(query)) return false;
+  if (filter === 'pending' && job.outcome) return false;
+  if (filter !== 'all' && filter !== 'pending' && job.outcome !== filter) return false;
+  return true;
+}
+
+function filteredRecentJobs() {
   // Keep the API's submission order for every state. Active jobs are not
   // pulled to the top when their status changes, so rows stay in place.
-  return state.jobs.filter((job) => {
-    if (isActiveJob(job)) return true;
-    if (query && !String(job.name || '').toLowerCase().includes(query)) return false;
-    if (filter === 'pending' && job.outcome) return false;
-    if (filter !== 'all' && filter !== 'pending' && job.outcome !== filter) return false;
-    return true;
-  });
+  return state.jobs.filter(isVisibleJob);
 }
 
 function formatJobTimestamp(value) {
@@ -726,22 +790,28 @@ function hasPassedProfile(job, profile) {
     job.after.profiles[profile].passed);
 }
 
+function addJobStats(stats, job, direction) {
+  const pageValue = Number(job.page_count);
+  const pages = Number.isInteger(pageValue) && pageValue >= 0 ? pageValue : 0;
+  if (job.status !== 'completed') {
+    stats.totalPages += direction * pages;
+    return stats;
+  }
+  stats.processed += direction;
+  stats.wcag += direction * Number(hasPassedProfile(job, 'wcag'));
+  stats.ua1 += direction * Number(hasPassedProfile(job, 'ua1'));
+  stats.totalPages += direction * pages;
+  stats.processedPages += direction * pages;
+  return stats;
+}
+
 function renderJobStats() {
-  const jobs = state.jobs;
-  const processed = jobs.filter((job) => job.status === 'completed');
-  const pageCount = (job) => {
-    const count = Number(job.page_count);
-    return Number.isInteger(count) && count >= 0 ? count : null;
-  };
-  const totalPages = jobs.reduce((total, job) => total + (pageCount(job) || 0), 0);
-  const processedPages = processed.reduce(
-    (total, job) => total + (pageCount(job) || 0), 0
-  );
+  const statsState = state.jobStats;
   const stats = [
-    ['files', 'Files processed', processed.length],
-    ['check', 'WCAG compliant', processed.filter((job) => hasPassedProfile(job, 'wcag')).length],
-    ['check', 'UA1 compliant', processed.filter((job) => hasPassedProfile(job, 'ua1')).length],
-    ['pages', 'Pages remediated', processedPages + ' / ' + totalPages],
+    ['files', 'Files processed', statsState.processed],
+    ['check', 'WCAG compliant', statsState.wcag],
+    ['check', 'UA1 compliant', statsState.ua1],
+    ['pages', 'Pages remediated', statsState.processedPages + ' / ' + statsState.totalPages],
   ];
   const container = el('jobs-stats');
   container.replaceChildren(...stats.map(([iconName, label, value]) => {

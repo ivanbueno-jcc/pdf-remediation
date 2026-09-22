@@ -18,13 +18,47 @@ from pdf_api.models import PipelineResult, PipelineStatus
 
 from .config import JOBS_ROOT, LOG_RING_BUFFER_LINES, job_ttl_hours
 from .identity import legacy_job_owner, normalize_user
-from .models import Job, JobStatus, TERMINAL_STATUSES, UploadedFile
+from .models import (
+    Job,
+    JobStatus,
+    QueueJobSnapshot,
+    UploadedFile,
+    summarize_report,
+)
 
 JOB_ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 PROGRESS_LINE_PATTERN = re.compile(r"^\s*\d+%\|")
 
 
-class JobStore:  # pylint: disable=too-many-instance-attributes
+class OwnerUpdateQueue:
+    '''Bounded, event-loop-owned coalescing queue for one owner stream.'''
+
+    def __init__(self) -> None:
+        self._wake = asyncio.Queue(maxsize=1)
+        self._pending: dict[str, tuple[str, str]] = {}
+
+    def publish(self, update: tuple[str, str]) -> None:
+        '''Merge one update and wake the consumer once.'''
+        update_type, job_id = update
+        previous = self._pending.get(job_id)
+        if previous is None or update_type == "job-removed":
+            self._pending[job_id] = update
+        elif previous[1] != "job-removed":
+            priority = {"job-updated": 1, "job-added": 2, "queue-changed": 3}
+            if priority.get(update_type, 0) >= priority.get(previous[1], 0):
+                self._pending[job_id] = update
+        if self._wake.empty():
+            self._wake.put_nowait(None)
+
+    async def get_batch(self) -> list[tuple[str, str]]:
+        '''Wait for updates and return the coalesced batch.'''
+        await self._wake.get()
+        updates = list(self._pending.values())
+        self._pending.clear()
+        return updates
+
+
+class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
     '''
     Hold jobs in memory, record their events, and persist completed metadata.
     '''
@@ -39,26 +73,45 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
         self._order: list[str] = []
         self._owner_order: dict[str, list[str]] = {}
         self._owner_positions: dict[str, dict[str, int]] = {}
-        self._owner_versions: dict[str, int] = {}
-        self._owner_updates: dict[str, list[tuple[int, str, str]]] = {}
         self._owner_subscribers: dict[
-            str, dict[int, tuple[asyncio.AbstractEventLoop, asyncio.Queue]]
+            str, dict[int, tuple[asyncio.AbstractEventLoop, OwnerUpdateQueue]]
         ] = {}
         self._next_subscriber_id = 0
-        self._condition = threading.Condition(self._lock)
 
     def _touch_owner_locked(
-            self, owner: str, update_type: str, job_id: str) -> None:
-        '''Record an owner's live update and wake its stream.'''
-        version = self._owner_versions.get(owner, 0) + 1
-        self._owner_versions[owner] = version
-        updates = self._owner_updates.setdefault(owner, [])
-        updates.append((version, update_type, job_id))
-        if len(updates) > 1000:
-            del updates[:-1000]
-        self._condition.notify_all()
-        for loop, queue in self._owner_subscribers.get(owner, {}).values():
-            loop.call_soon_threadsafe(queue.put_nowait, (version, update_type, job_id))
+            self, owner: str, update_type: str, job_id: str
+    ) -> tuple[tuple[str, str], list[tuple[int, asyncio.AbstractEventLoop, OwnerUpdateQueue]]]:
+        '''Record an update and copy subscriber targets while locked.'''
+        subscribers = [
+            (subscriber_id, loop, queue)
+            for subscriber_id, (loop, queue)
+            in self._owner_subscribers.get(owner, {}).items()
+        ]
+        return (update_type, job_id), subscribers
+
+    def _publish_owner_update(
+            self,
+            owner: str,
+            update: tuple[str, str],
+            subscribers: list[tuple[int, asyncio.AbstractEventLoop, OwnerUpdateQueue]],
+    ) -> None:
+        '''Publish outside the store lock and discard closed subscribers.'''
+        stale: list[int] = []
+        for subscriber_id, loop, queue in subscribers:
+            if loop.is_closed():
+                stale.append(subscriber_id)
+                continue
+            try:
+                loop.call_soon_threadsafe(queue.publish, update)
+            except RuntimeError:
+                stale.append(subscriber_id)
+        if stale:
+            with self._lock:
+                subscribers_for_owner = self._owner_subscribers.get(owner, {})
+                for subscriber_id in stale:
+                    subscribers_for_owner.pop(subscriber_id, None)
+                if not subscribers_for_owner:
+                    self._owner_subscribers.pop(owner, None)
 
     def add(self, job: Job) -> None:
         '''
@@ -72,7 +125,10 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             owner_positions = self._owner_positions.setdefault(job.submitted_by, {})
             owner_positions[job.job_id] = len(owner_ids)
             owner_ids.append(job.job_id)
-            self._touch_owner_locked(job.submitted_by, "job-added", job.job_id)
+            update, subscribers = self._touch_owner_locked(
+                job.submitted_by, "job-added", job.job_id
+            )
+        self._publish_owner_update(job.submitted_by, update, subscribers)
 
     def get(self, job_id: str) -> Job | None:
         '''
@@ -97,6 +153,46 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             snapshot.result = copy.deepcopy(job.result)
             snapshot.state_lock = threading.RLock()
             return snapshot
+
+    @staticmethod
+    def _queue_snapshot(job: Job) -> QueueJobSnapshot:
+        '''Copy only fields needed for one queue row.'''
+        with job.state_lock:
+            result = job.result
+            return QueueJobSnapshot(
+                job_id=job.job_id,
+                name=job.file.original_name,
+                page_count=job.file.page_count,
+                created_at=job.created_at,
+                started_at=job.started_at,
+                finished_at=job.finished_at,
+                config_file=job.config_file,
+                status=job.status,
+                outcome=job.outcome,
+                stages_done=len(job.stages),
+                current_stage=job.stages[-1]["name"] if job.stages else None,
+                before=summarize_report(result.before if result else None),
+                after=summarize_report(result.after if result else None),
+                initially_secured=job.initially_secured,
+                validation_requirement=job.validation_requirement,
+                has_pdf=job.artifact("pdf") is not None,
+                error=job.error,
+            )
+
+    def queue_snapshot(self, job_id: str) -> QueueJobSnapshot | None:
+        '''Return one compact queue projection.'''
+        with self._lock:
+            job = self._jobs.get(job_id)
+        return self._queue_snapshot(job) if job is not None else None
+
+    def list_queue_snapshots(self, owner: str) -> list[QueueJobSnapshot]:
+        '''Return compact queue projections for one owner.'''
+        with self._lock:
+            jobs = [
+                self._jobs[job_id]
+                for job_id in reversed(self._owner_order.get(owner, []))
+            ]
+        return [self._queue_snapshot(job) for job in jobs]
 
     def snapshot(self, job_id: str) -> Job | None:
         '''Return one lock-consistent, detached job snapshot.'''
@@ -142,25 +238,15 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
                 if not owner_jobs:
                     self._owner_order.pop(job.submitted_by, None)
                     self._owner_positions.pop(job.submitted_by, None)
-                self._touch_owner_locked(job.submitted_by, "job-removed", job.job_id)
-            return job
-
-    def owner_version(self, owner: str) -> int:
-        '''Return the owner's current live-update version.'''
-        with self._lock:
-            return self._owner_versions.get(owner, 0)
-
-    def wait_for_owner_change(
-            self, owner: str, version: int, timeout: float
-    ) -> tuple[int, list[tuple[int, str, str]]]:
-        '''Wait until an owner changes, returning its latest version and updates.'''
-        with self._condition:
-            self._condition.wait_for(
-                lambda: self._owner_versions.get(owner, 0) != version,
-                timeout=timeout,
-            )
-            latest = self._owner_versions.get(owner, 0)
-            return latest, self._owner_updates_since_locked(owner, version)
+                update, subscribers = self._touch_owner_locked(
+                    job.submitted_by, "job-removed", job.job_id
+                )
+            else:
+                update = None
+                subscribers = []
+        if update is not None:
+            self._publish_owner_update(job.submitted_by, update, subscribers)
+        return job
 
     def active_job_ids(self, owner: str) -> tuple[str, ...]:
         '''Return queued or running IDs for an owner without copying results.'''
@@ -173,20 +259,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
                         active.append(job_id)
             return tuple(active)
 
-    def _owner_updates_since_locked(
-            self, owner: str, version: int) -> list[tuple[int, str, str]]:
-        '''Return retained owner updates after a version.'''
-        return [
-            update for update in self._owner_updates.get(owner, [])
-            if update[0] > version
-        ]
-
-    def owner_updates_since(
-            self, owner: str, version: int) -> list[tuple[int, str, str]]:
-        '''Return retained live updates after a version.'''
-        with self._lock:
-            return self._owner_updates_since_locked(owner, version)
-
     def owner_job_count(self, owner: str) -> int:
         '''Return the number of jobs owned by a user.'''
         with self._lock:
@@ -194,9 +266,9 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
 
     def subscribe_owner(
             self, owner: str
-    ) -> tuple[int, asyncio.Queue[tuple[int, str, str]]]:
+    ) -> tuple[int, OwnerUpdateQueue]:
         '''Register an async subscriber for owner-scoped live updates.'''
-        queue: asyncio.Queue[tuple[int, str, str]] = asyncio.Queue()
+        queue = OwnerUpdateQueue()
         loop = asyncio.get_running_loop()
         with self._lock:
             subscriber_id = self._next_subscriber_id
@@ -239,7 +311,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
                 position -= 1
             jobs = [self._jobs[job_id] for job_id in page_ids]
             next_cursor = page_ids[-1] if position >= 0 else None
-        return [self._snapshot(job) for job in jobs], total, next_cursor
+        return [self._queue_snapshot(job) for job in jobs], total, next_cursor
 
     def emit(self, job_id: str, event_type: str, payload: dict[str, Any]) -> None:
         '''
@@ -260,7 +332,10 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             update_type = (
                 "queue-changed" if event_type == "status" else "job-updated"
             )
-            self._touch_owner_locked(job.submitted_by, update_type, job_id)
+            update, subscribers = self._touch_owner_locked(
+                job.submitted_by, update_type, job_id
+            )
+        self._publish_owner_update(job.submitted_by, update, subscribers)
 
     def append_log(self, job_id: str, line: str) -> None:
         '''
@@ -277,7 +352,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
                 and PROGRESS_LINE_PATTERN.match(events[-1]["payload"].get("line", ""))
             ):
                 events[-1]["payload"]["line"] = line
-                self._condition.notify_all()
                 return
             events.append({
                 "cursor": len(events) + 1,
@@ -286,7 +360,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             })
             if len(events) > LOG_RING_BUFFER_LINES * 2:
                 del events[:LOG_RING_BUFFER_LINES]
-            self._condition.notify_all()
 
     def events_since(self, job_id: str, cursor: int) -> tuple[int, list[dict[str, Any]]]:
         '''
@@ -298,30 +371,6 @@ class JobStore:  # pylint: disable=too-many-instance-attributes
             latest = events[-1]["cursor"] if events else cursor
             return latest, pending
 
-    def wait_for_job_events(
-            self, job_id: str, cursor: int, timeout: float
-    ) -> tuple[int, list[dict[str, Any]], bool, bool]:
-        '''Wait for job events, removal, terminal state, or a keepalive timeout.'''
-        with self._condition:
-            def changed() -> bool:
-                events = self._events.get(job_id)
-                return (
-                    events is None
-                    or (events and events[-1]["cursor"] > cursor)
-                )
-
-            self._condition.wait_for(changed, timeout=timeout)
-            events = self._events.get(job_id)
-            if events is None:
-                return cursor, [], False, False
-            pending = [event for event in events if event["cursor"] > cursor]
-            latest = events[-1]["cursor"] if events else cursor
-            job = self._jobs.get(job_id)
-            terminal = False
-            if job is not None:
-                with job.state_lock:
-                    terminal = job.status in TERMINAL_STATUSES
-            return latest, pending, True, terminal
 
 
 def is_valid_job_id(job_id: str) -> bool:

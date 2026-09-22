@@ -48,30 +48,6 @@ class JobStoreTests(unittest.TestCase):
         self.assertEqual(live.stages, [])
         self.assertEqual(live.file.original_name, self.job.file.original_name)
 
-    def test_owner_updates_are_incremental_and_typed(self) -> None:
-        '''Live clients receive job changes instead of another full snapshot.'''
-        version = self.store.owner_version(self.job.submitted_by)
-        self.store.emit(self.job.job_id, "stage", {"name": "validate"})
-        latest, updates = self.store.wait_for_owner_change(
-            self.job.submitted_by, version, 0
-        )
-
-        self.assertGreater(latest, version)
-        self.assertEqual(updates[-1][1:], ("job-updated", self.job.job_id))
-
-    def test_job_event_wait_returns_events_without_polling(self) -> None:
-        '''A job stream can block until its cursor advances.'''
-        self.store.emit(self.job.job_id, "stage", {"name": "validate"})
-
-        cursor, events, exists, terminal = self.store.wait_for_job_events(
-            self.job.job_id, 0, 0
-        )
-
-        self.assertEqual(cursor, 1)
-        self.assertEqual(events[0]["type"], "stage")
-        self.assertTrue(exists)
-        self.assertFalse(terminal)
-
     def test_owner_subscriber_receives_updates_without_blocking_threads(self) -> None:
         '''Owner updates are delivered through an async queue.'''
         async def exercise() -> tuple[str, str]:
@@ -79,13 +55,29 @@ class JobStoreTests(unittest.TestCase):
             try:
                 self.store.emit(self.job.job_id, "stage", {"name": "validate"})
                 await asyncio.sleep(0)
-                return updates.get_nowait()[1:]
+                return (await updates.get_batch())[0]
             finally:
                 self.store.unsubscribe_owner(self.job.submitted_by, subscriber_id)
 
         self.assertEqual(
             asyncio.run(exercise()), ("job-updated", self.job.job_id)
         )
+
+    def test_owner_subscriber_coalesces_repeated_job_updates(self) -> None:
+        '''A slow stream retains only the latest update for each job.'''
+        async def exercise() -> list[tuple[str, str]]:
+            subscriber_id, updates = self.store.subscribe_owner(self.job.submitted_by)
+            try:
+                for index in range(100):
+                    self.store.emit(self.job.job_id, "stage", {"step": index})
+                await asyncio.sleep(0)
+                return await updates.get_batch()
+            finally:
+                self.store.unsubscribe_owner(self.job.submitted_by, subscriber_id)
+
+        batch = asyncio.run(exercise())
+        self.assertEqual(len(batch), 1)
+        self.assertEqual(batch[0], ("job-updated", self.job.job_id))
 
     def test_lists_newest_first(self) -> None:
         '''The job list is ordered newest first without re-sorting.'''
