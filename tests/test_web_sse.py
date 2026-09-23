@@ -14,24 +14,36 @@ class QueueEventsDisconnectTests(unittest.IsolatedAsyncioTestCase):
     '''Verify an idle queue stream releases its subscription on disconnect.'''
 
     async def test_disconnect_interrupts_idle_update_wait(self) -> None:
-        class Store:
+        '''Stop an idle stream and release its owner subscription promptly.'''
+        class Store:  # pylint: disable=too-few-public-methods
+            '''Minimal subscription store used by the route generator.'''
+
             def __init__(self) -> None:
+                '''Track whether the stream releases its subscription.'''
                 self.unsubscribed = False
 
             def subscribe_owner(self, _owner: str):
-                class IdleUpdates:
+                '''Return an update source that remains idle until cancelled.'''
+                class IdleUpdates:  # pylint: disable=too-few-public-methods
+                    '''An update queue with no pending notifications.'''
+
                     async def get_batch(self):
+                        '''Wait indefinitely, like an empty owner update queue.'''
                         await asyncio.Future()
 
                 return 1, IdleUpdates()
 
             def unsubscribe_owner(self, _owner: str, _subscriber_id: int) -> None:
+                '''Record cleanup of the active subscription.'''
                 self.unsubscribed = True
 
-        class Request:
+        class Request:  # pylint: disable=too-few-public-methods
+            '''Report a connection that disconnects at the first poll.'''
+
             calls = 0
 
             async def is_disconnected(self) -> bool:
+                '''Return connected once, then disconnected.'''
                 self.calls += 1
                 return self.calls > 1
 
