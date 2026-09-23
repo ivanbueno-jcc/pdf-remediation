@@ -23,7 +23,7 @@ from ..models import JobSerializer
 from ..services.job_service import JobAccessService, JobWorkflow
 from ..services.submission_service import SubmissionService
 from ..submission import validate_options
-from .runtime import get_runtime
+from .runtime import ApiRuntime, get_runtime
 from .schemas import JobResponse, QueuePageResponse, SubmissionResponse
 
 router = APIRouter()
@@ -35,6 +35,7 @@ async def current_user(request: Request) -> str:
 
 
 CURRENT_USER = Depends(current_user)
+CURRENT_RUNTIME = Depends(get_runtime)
 JOB_ID_PATH = PathParam(..., pattern=r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 QUEUE_PAGE_SIZE = 100
 
@@ -43,9 +44,10 @@ QUEUE_PAGE_SIZE = 100
 async def list_jobs(
         cursor: str | None = Query(None),
         limit: int = Query(100, ge=1, le=200),
-        user: str = CURRENT_USER) -> dict[str, Any]:
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> dict[str, Any]:
     '''Deprecated paginated alias; use /api/queue for queue snapshots.'''
-    return _queue_snapshot(user, cursor, limit)
+    return _queue_snapshot(runtime, user, cursor, limit)
 
 
 @router.post("/api/jobs", status_code=201, response_model=SubmissionResponse)
@@ -61,13 +63,13 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
         require_pdfua1: bool = Form(False),
         wcag_and_ua1_must_pass: bool | None = Form(None),
         verbose: bool = Form(False),
-        user: str = CURRENT_USER) -> JSONResponse:
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> JSONResponse:
     '''Prepare, persist, and queue one independent job per accepted PDF.'''
-    runtime = get_runtime()
     options = validate_options(
         config_file, attempt_unlock, attempt_fix, attempt_font_fix, skip_font_fix,
         attempt_targeted_fixes, require_wcag, require_pdfua1,
-        wcag_and_ua1_must_pass, verbose,
+        wcag_and_ua1_must_pass, verbose, runtime.config_dir,
     )
     incoming = [upload for upload in files if upload.filename]
     if not incoming:
@@ -80,7 +82,7 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
     runtime.assert_disk_space()
     submission = SubmissionService(runtime.store, runtime.runner)
     accepted_jobs, rejected = await submission.prepare_batch(
-        incoming, options, user, runtime.new_job_id
+        incoming, options, user, runtime.new_job_id, runtime.jobs_root
     )
     jobs_ahead = await submission.commit(accepted_jobs, user)
     accepted = [JobSerializer.from_record(job) for job in accepted_jobs]
@@ -103,11 +105,11 @@ async def create_job(  # pylint: disable=too-many-arguments,too-many-positional-
 
 
 def _queue_snapshot(
+        runtime: ApiRuntime,
         owner: str,
         cursor: str | None = None,
         limit: int | None = 100) -> dict[str, Any]:
     '''Build an owner-scoped queue page for HTTP and SSE consumers.'''
-    runtime = get_runtime()
     try:
         jobs, total_jobs, next_cursor = runtime.store.list_jobs_for_user(
             owner, cursor, limit
@@ -129,9 +131,8 @@ def _queue_snapshot(
     }
 
 
-def _queue_meta(owner: str) -> dict[str, Any]:
+def _queue_meta(runtime: ApiRuntime, owner: str) -> dict[str, Any]:
     '''Build queue metadata without copying job result details.'''
-    runtime = get_runtime()
     your_running, has_active = runtime.runner.user_activity(owner)
     return {
         "concurrency": max_concurrent_jobs(),
@@ -148,17 +149,20 @@ def _queue_meta(owner: str) -> dict[str, Any]:
 async def queue_view(
         cursor: str | None = Query(None),
         limit: int = Query(100, ge=1, le=200),
-        user: str = CURRENT_USER) -> dict[str, Any]:
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> dict[str, Any]:
     '''Return a paginated snapshot of the caller's queue.'''
-    return _queue_snapshot(user, cursor, limit)
+    return _queue_snapshot(runtime, user, cursor, limit)
 
 
 @router.get("/api/queue/events")
-async def queue_events(request: Request, user: str = CURRENT_USER):
+async def queue_events(
+        request: Request,
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME):
     '''Stream queue changes scoped to the authenticated owner.'''
 
     async def event_stream() -> AsyncIterator[str]:  # pylint: disable=too-many-branches
-        runtime = get_runtime()
         subscriber_id, updates_queue = runtime.store.subscribe_owner(user)
         first = True
         try:
@@ -167,7 +171,8 @@ async def queue_events(request: Request, user: str = CURRENT_USER):
                     return
                 if first:
                     yield "event: queue\ndata: " + json.dumps(
-                        _queue_snapshot(user, limit=QUEUE_PAGE_SIZE), separators=(",", ":")
+                        _queue_snapshot(runtime, user, limit=QUEUE_PAGE_SIZE),
+                        separators=(",", ":")
                     ) + "\n\n"
                     first = False
                 try:
@@ -203,7 +208,7 @@ async def queue_events(request: Request, user: str = CURRENT_USER):
                         payload, separators=(",", ":")
                     ) + "\n\n"
                 yield "event: queue-meta\ndata: " + json.dumps(
-                    _queue_meta(user), separators=(",", ":")
+                    _queue_meta(runtime, user), separators=(",", ":")
                 ) + "\n\n"
         finally:
             runtime.store.unsubscribe_owner(user, subscriber_id)
@@ -220,18 +225,22 @@ async def queue_events(request: Request, user: str = CURRENT_USER):
 
 
 @router.get("/api/jobs/{job_id}/details", response_model=JobResponse)
-async def job_details(job_id: str = JOB_ID_PATH, user: str = CURRENT_USER) -> dict[str, Any]:
+async def job_details(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> dict[str, Any]:
     '''Return the detailed job state without its large validation reports.'''
-    runtime = get_runtime()
-    job = JobAccessService(runtime.store, runtime.jobs_root).require_snapshot(job_id, user)
+    job = JobAccessService(runtime.store).require_snapshot(job_id, user)
     return JobSerializer.from_record(job)
 
 
 @router.post("/api/jobs/{job_id}/cancel")
-async def cancel_job(job_id: str = JOB_ID_PATH, user: str = CURRENT_USER) -> dict[str, Any]:
+async def cancel_job(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> dict[str, Any]:
     '''Request cancellation at the next safe pipeline boundary.'''
-    runtime = get_runtime()
-    job = JobAccessService(runtime.store, runtime.jobs_root).require_access(job_id, user)
+    job = JobAccessService(runtime.store).require_access(job_id, user)
     if job.is_terminal():
         raise HTTPException(
             status_code=409, detail=f"This job has already finished ({job.status})."
@@ -247,10 +256,10 @@ async def cancel_job(job_id: str = JOB_ID_PATH, user: str = CURRENT_USER) -> dic
 async def retry_job(
         job_id: str = JOB_ID_PATH,
         skip_font_fix: bool = Form(True),
-        user: str = CURRENT_USER) -> JSONResponse:
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> JSONResponse:
     '''Queue a retry using the saved original PDF.'''
-    runtime = get_runtime()
-    original = JobAccessService(runtime.store, runtime.jobs_root).require_access(
+    original = JobAccessService(runtime.store).require_access(
         job_id, user
     )
     if not original.is_terminal():
@@ -270,9 +279,10 @@ async def retry_job(
 
 
 @router.delete("/api/jobs")
-async def delete_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
+async def delete_jobs(
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> dict[str, Any]:
     '''Delete the caller's terminal jobs and retain active jobs.'''
-    runtime = get_runtime()
     workflow = JobWorkflow(runtime.store, runtime.runner)
     jobs = runtime.store.list_access_snapshots(user)
     deleted: list[str] = []
@@ -287,10 +297,12 @@ async def delete_jobs(user: str = CURRENT_USER) -> dict[str, Any]:
 
 
 @router.delete("/api/jobs/{job_id}")
-async def delete_job(job_id: str = JOB_ID_PATH, user: str = CURRENT_USER) -> dict[str, Any]:
+async def delete_job(
+        job_id: str = JOB_ID_PATH,
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> dict[str, Any]:
     '''Delete one of the caller's terminal jobs.'''
-    runtime = get_runtime()
-    job = JobAccessService(runtime.store, runtime.jobs_root).require_access(job_id, user)
+    job = JobAccessService(runtime.store).require_access(job_id, user)
     if not job.is_terminal():
         raise HTTPException(status_code=409, detail="The job is still running.")
     await JobWorkflow(runtime.store, runtime.runner).delete_terminal(job)

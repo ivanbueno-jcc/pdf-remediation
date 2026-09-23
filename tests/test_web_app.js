@@ -49,13 +49,29 @@ function loadStagingCode(fetchImpl) {
     requestAnimationFrame(callback) { callback(); },
     window: {
       clearTimeout() {},
+      document,
+      fetch: fetchImpl,
       matchMedia() { return { matches: true }; },
       setTimeout() { return 1; },
     },
   };
   vm.createContext(context);
 
-  const appPath = path.join(__dirname, '..', 'src', 'pdf_web', 'static', 'app.js');
+  const staticDir = path.join(__dirname, '..', 'src', 'pdf_web', 'static');
+  const dependencies = [
+    'api.js', 'state.js', 'dom.js', 'upload-staging.js', 'queue-view.js',
+    'dialogs.js', 'job-detail.js', 'actions.js', 'sse.js',
+  ];
+  dependencies.forEach((filename) => {
+    const dependencyPath = path.join(staticDir, filename);
+    vm.runInContext(
+      fs.readFileSync(dependencyPath, 'utf8'),
+      context,
+      { filename: dependencyPath },
+    );
+  });
+
+  const appPath = path.join(staticDir, 'app.js');
   const source = fs.readFileSync(appPath, 'utf8');
   const functionsOnly = source.split('/* ---------- wiring ---------- */')[0];
   vm.runInContext(

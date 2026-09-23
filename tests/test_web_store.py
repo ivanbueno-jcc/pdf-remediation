@@ -8,6 +8,7 @@ import os
 import tempfile
 import threading
 import unittest
+from dataclasses import replace
 from datetime import timedelta
 from pathlib import Path
 from unittest import mock
@@ -35,9 +36,9 @@ class JobStoreTests(unittest.TestCase):
 
     def test_round_trips_a_job(self) -> None:
         '''A registered job is retrievable and listed.'''
-        snapshot = self.store.get(self.job.job_id)
+        snapshot = self.store.get(self.job.spec.job_id)
         self.assertIsNot(snapshot, self.job)
-        self.assertEqual(snapshot.job_id, self.job.job_id)
+        self.assertEqual(snapshot.spec.job_id, self.job.spec.job_id)
 
     def test_serialized_stages_are_detached_from_live_job_state(self) -> None:
         """Response data must not change after the state lock is released."""
@@ -56,115 +57,115 @@ class JobStoreTests(unittest.TestCase):
         self.job.state.has_pdf = True
 
         with mock.patch.object(Path, "is_file", side_effect=AssertionError("filesystem probe")):
-            snapshot = self.store.queue_snapshot(self.job.job_id)
+            snapshot = self.store.queue_snapshot(self.job.spec.job_id)
 
         self.assertTrue(snapshot.has_pdf)
-        self.assertEqual([job.job_id for job in self.store.list_jobs()],
-                         [self.job.job_id])
+        self.assertEqual([job.spec.job_id for job in self.store.list_jobs()],
+                         [self.job.spec.job_id])
 
     def test_snapshot_mutation_does_not_change_the_live_job(self) -> None:
         '''Nested request data is detached from the runner-owned object.'''
-        snapshot = self.store.snapshot(self.job.job_id)
+        snapshot = self.store.snapshot(self.job.spec.job_id)
         snapshot.stages.append({"name": "request-only"})
-        snapshot.file.original_name = "changed.pdf"
+        snapshot.spec.file.original_name = "changed.pdf"
 
-        live = self.store.get_mutable(self.job.job_id)
+        live = self.store.get_mutable(self.job.spec.job_id)
         self.assertEqual(live.stages, [])
-        self.assertEqual(live.file.original_name, self.job.file.original_name)
+        self.assertEqual(live.spec.file.original_name, self.job.spec.file.original_name)
 
     def test_owner_subscriber_receives_updates_without_blocking_threads(self) -> None:
         '''Owner updates are delivered through an async queue.'''
         async def exercise() -> tuple[str, str]:
-            subscriber_id, updates = self.store.subscribe_owner(self.job.submitted_by)
+            subscriber_id, updates = self.store.subscribe_owner(self.job.spec.submitted_by)
             try:
-                self.store.emit(self.job.job_id, "stage", {"name": "validate"})
+                self.store.emit(self.job.spec.job_id, "stage", {"name": "validate"})
                 await asyncio.sleep(0)
                 return (await updates.get_batch())[0]
             finally:
-                self.store.unsubscribe_owner(self.job.submitted_by, subscriber_id)
+                self.store.unsubscribe_owner(self.job.spec.submitted_by, subscriber_id)
 
         self.assertEqual(
-            asyncio.run(exercise()), ("job-updated", self.job.job_id)
+            asyncio.run(exercise()), ("job-updated", self.job.spec.job_id)
         )
 
     def test_owner_subscriber_coalesces_repeated_job_updates(self) -> None:
         '''A slow stream retains only the latest update for each job.'''
         async def exercise() -> list[tuple[str, str]]:
-            subscriber_id, updates = self.store.subscribe_owner(self.job.submitted_by)
+            subscriber_id, updates = self.store.subscribe_owner(self.job.spec.submitted_by)
             try:
                 for index in range(100):
-                    self.store.emit(self.job.job_id, "stage", {"step": index})
+                    self.store.emit(self.job.spec.job_id, "stage", {"step": index})
                 await asyncio.sleep(0)
                 return await updates.get_batch()
             finally:
-                self.store.unsubscribe_owner(self.job.submitted_by, subscriber_id)
+                self.store.unsubscribe_owner(self.job.spec.submitted_by, subscriber_id)
 
         batch = asyncio.run(exercise())
         self.assertEqual(len(batch), 1)
-        self.assertEqual(batch[0], ("job-updated", self.job.job_id))
+        self.assertEqual(batch[0], ("job-updated", self.job.spec.job_id))
 
     def test_lists_newest_first(self) -> None:
         '''The job list is ordered newest first without re-sorting.'''
         second = make_job("20260827-160000-abc123")
         self.store.add(second)
         self.assertEqual(
-            [job.job_id for job in self.store.list_jobs()],
-            [second.job_id, self.job.job_id]
+            [job.spec.job_id for job in self.store.list_jobs()],
+            [second.spec.job_id, self.job.spec.job_id]
         )
 
     def test_lists_one_owner_page_without_other_owners(self) -> None:
         '''The indexed queue view returns only the requested owner's jobs.'''
         other = make_job("20260827-160000-abc123", submitted_by="other@example.com")
-        own = make_job("20260827-170000-def456", submitted_by=self.job.submitted_by)
+        own = make_job("20260827-170000-def456", submitted_by=self.job.spec.submitted_by)
         self.store.add(other)
         self.store.add(own)
 
         jobs, total, next_cursor = self.store.list_jobs_for_user(
-            self.job.submitted_by, limit=1
+            self.job.spec.submitted_by, limit=1
         )
 
-        self.assertEqual([job.job_id for job in jobs], [own.job_id])
+        self.assertEqual([job.job_id for job in jobs], [own.spec.job_id])
         self.assertEqual(total, 2)
-        self.assertEqual(next_cursor, own.job_id)
+        self.assertEqual(next_cursor, own.spec.job_id)
 
     def test_owner_cursor_continues_from_last_job(self) -> None:
         '''A cursor returns the next older page for the same owner.'''
-        older = make_job("20260827-110000-abc123", submitted_by=self.job.submitted_by)
-        newer = make_job("20260827-130000-def456", submitted_by=self.job.submitted_by)
+        older = make_job("20260827-110000-abc123", submitted_by=self.job.spec.submitted_by)
+        newer = make_job("20260827-130000-def456", submitted_by=self.job.spec.submitted_by)
         self.store.add(older)
         self.store.add(newer)
 
         first, _, cursor = self.store.list_jobs_for_user(
-            self.job.submitted_by, limit=2
+            self.job.spec.submitted_by, limit=2
         )
         second, _, next_cursor = self.store.list_jobs_for_user(
-            self.job.submitted_by, cursor, limit=2
+            self.job.spec.submitted_by, cursor, limit=2
         )
 
-        self.assertEqual([job.job_id for job in first], [newer.job_id, older.job_id])
-        self.assertEqual([job.job_id for job in second], [self.job.job_id])
+        self.assertEqual([job.job_id for job in first], [newer.spec.job_id, older.spec.job_id])
+        self.assertEqual([job.job_id for job in second], [self.job.spec.job_id])
         self.assertIsNone(next_cursor)
 
     def test_owner_cursor_rejects_unknown_job(self) -> None:
         '''A cursor from another owner's history cannot cross the boundary.'''
         with self.assertRaisesRegex(ValueError, "Invalid queue cursor"):
             self.store.list_jobs_for_user(
-                self.job.submitted_by, "20260827-160000-abc123", limit=1
+                self.job.spec.submitted_by, "20260827-160000-abc123", limit=1
             )
 
     def test_removing_a_job_updates_later_owner_cursors(self) -> None:
         '''Deleting a job keeps the indexed cursor positions consistent.'''
-        middle = make_job("20260827-130000-abc123", submitted_by=self.job.submitted_by)
-        newest = make_job("20260827-140000-def456", submitted_by=self.job.submitted_by)
+        middle = make_job("20260827-130000-abc123", submitted_by=self.job.spec.submitted_by)
+        newest = make_job("20260827-140000-def456", submitted_by=self.job.spec.submitted_by)
         self.store.add(middle)
         self.store.add(newest)
-        self.store.remove(middle.job_id)
+        self.store.remove(middle.spec.job_id)
 
         jobs, total, _ = self.store.list_jobs_for_user(
-            self.job.submitted_by, cursor=newest.job_id, limit=10
+            self.job.spec.submitted_by, cursor=newest.spec.job_id, limit=10
         )
 
-        self.assertEqual([job.job_id for job in jobs], [self.job.job_id])
+        self.assertEqual([job.job_id for job in jobs], [self.job.spec.job_id])
         self.assertEqual(total, 2)
 
 class MetadataPersistenceTests(unittest.TestCase):
@@ -182,30 +183,29 @@ class MetadataPersistenceTests(unittest.TestCase):
         '''Saving and reloading preserves what the browser needs.'''
         job = make_job()
         job.status = JobStatus.COMPLETED
-        job.finished_at = job.created_at + timedelta(minutes=4)
+        job.state.finished_at = job.spec.created_at + timedelta(minutes=4)
         job.stages = [{"name": "fix", "status": "ok", "detail": "Applied."}]
-        job.require_wcag = True
-        job.require_pdfua1 = True
+        job.spec = replace(job.spec, require_wcag=True, require_pdfua1=True)
         add_completed_result(job, write_job_artifacts(job))
-        job.result.initially_secured = True
+        job.state.result.initially_secured = True
 
         save_meta(job)
-        restored = load_meta(job.meta_path)
+        restored = load_meta(job.paths.meta_path)
 
         self.assertIsNotNone(restored)
-        self.assertEqual(restored.job_id, job.job_id)
+        self.assertEqual(restored.spec.job_id, job.spec.job_id)
         self.assertEqual(restored.status, JobStatus.COMPLETED)
-        self.assertEqual(restored.config_file, "default-slim.json")
-        self.assertTrue(restored.attempt_unlock)
-        self.assertTrue(restored.attempt_fix)
-        self.assertTrue(restored.skip_font_fix)
-        self.assertTrue(restored.attempt_targeted_fixes)
-        self.assertTrue(restored.require_wcag)
-        self.assertTrue(restored.require_pdfua1)
+        self.assertEqual(restored.spec.config_file, "default-slim.json")
+        self.assertTrue(restored.spec.attempt_unlock)
+        self.assertTrue(restored.spec.attempt_fix)
+        self.assertTrue(restored.spec.skip_font_fix)
+        self.assertTrue(restored.spec.attempt_targeted_fixes)
+        self.assertTrue(restored.spec.require_wcag)
+        self.assertTrue(restored.spec.require_pdfua1)
         self.assertEqual(restored.validation_requirement, "wcag and pdfua1")
         self.assertTrue(restored.initially_secured)
         self.assertEqual(restored.stages, job.stages)
-        self.assertEqual(restored.file.original_name, "Report v2.pdf")
+        self.assertEqual(restored.spec.file.original_name, "Report v2.pdf")
 
     def test_restores_output_pdf_location(self) -> None:
         '''The stored path is relative, so downloads work after a restart.'''
@@ -215,7 +215,7 @@ class MetadataPersistenceTests(unittest.TestCase):
         add_completed_result(job, pdf_path)
 
         save_meta(job)
-        restored = load_meta(job.meta_path)
+        restored = load_meta(job.paths.meta_path)
 
         self.assertEqual(restored.result.output_pdf_path, pdf_path)
         self.assertTrue(restored.result.output_pdf_path.is_file())
@@ -237,15 +237,15 @@ class MetadataPersistenceTests(unittest.TestCase):
         '''A failed update must not truncate metadata already on disk.'''
         job = make_job()
         save_meta(job)
-        original = job.meta_path.read_bytes()
+        original = job.paths.meta_path.read_bytes()
         job.status = JobStatus.FAILED
 
         with mock.patch.object(Path, "replace", side_effect=OSError("disk error")):
             with self.assertRaisesRegex(OSError, "disk error"):
                 save_meta(job)
 
-        self.assertEqual(job.meta_path.read_bytes(), original)
-        self.assertEqual(list(job.web_path.glob("meta.json.*.partial")), [])
+        self.assertEqual(job.paths.meta_path.read_bytes(), original)
+        self.assertEqual(list(job.paths.web_path.glob("meta.json.*.partial")), [])
 
     def test_legacy_strict_metadata_restores_both_profiles(self) -> None:
         '''Jobs saved by the old strict checkbox retain their original gate.'''
@@ -254,10 +254,10 @@ class MetadataPersistenceTests(unittest.TestCase):
         payload.pop("require_wcag")
         payload.pop("require_pdfua1")
         payload["wcag_and_ua1_must_pass"] = True
-        job.meta_path.parent.mkdir(parents=True, exist_ok=True)
-        job.meta_path.write_text(json.dumps(payload), encoding="utf-8")
+        job.paths.meta_path.parent.mkdir(parents=True, exist_ok=True)
+        job.paths.meta_path.write_text(json.dumps(payload), encoding="utf-8")
 
-        restored = load_meta(job.meta_path)
+        restored = load_meta(job.paths.meta_path)
 
         self.assertEqual(restored.required_profiles(), ("wcag", "ua1"))
         self.assertEqual(restored.validation_requirement, "wcag and pdfua1")
@@ -279,9 +279,9 @@ class RetentionSweepTests(unittest.TestCase):
         ))
         self.store = JobStore()
         self.job = make_job(status=JobStatus.COMPLETED)
-        self.job.base_path.mkdir(parents=True)
-        old_time = (self.job.created_at - timedelta(hours=2)).timestamp()
-        os.utime(self.job.base_path, (old_time, old_time))
+        self.job.paths.base_path.mkdir(parents=True)
+        old_time = (self.job.spec.created_at - timedelta(hours=2)).timestamp()
+        os.utime(self.job.paths.base_path, (old_time, old_time))
         self.store.add(self.job)
 
     def test_waits_for_artifact_access_before_removing_directory(self) -> None:
@@ -294,31 +294,31 @@ class RetentionSweepTests(unittest.TestCase):
             sweep_expired_jobs(self.store)
             finished.set()
 
-        with self.store.job_artifact_lock(self.job.job_id) as exists:
+        with self.store.job_artifact_lock(self.job.spec.job_id) as exists:
             self.assertTrue(exists)
             worker = threading.Thread(target=sweep)
             worker.start()
             self.assertTrue(started.wait(timeout=1))
             self.assertFalse(finished.wait(timeout=0.05))
-            self.assertTrue(self.job.base_path.exists())
+            self.assertTrue(self.job.paths.base_path.exists())
 
         worker.join(timeout=2)
         self.assertFalse(worker.is_alive())
         self.assertTrue(finished.is_set())
-        self.assertFalse(self.job.base_path.exists())
-        self.assertIsNone(self.store.get(self.job.job_id))
+        self.assertFalse(self.job.paths.base_path.exists())
+        self.assertIsNone(self.store.get(self.job.spec.job_id))
 
     def test_does_not_remove_a_job_that_became_active(self) -> None:
         '''A job that becomes active before the lock is acquired is retained.'''
-        with self.store.job_artifact_lock(self.job.job_id):
+        with self.store.job_artifact_lock(self.job.spec.job_id):
             worker = threading.Thread(target=sweep_expired_jobs, args=(self.store,))
             worker.start()
             self.job.status = JobStatus.RUNNING
 
         worker.join(timeout=2)
         self.assertFalse(worker.is_alive())
-        self.assertTrue(self.job.base_path.exists())
-        self.assertIsNotNone(self.store.get(self.job.job_id))
+        self.assertTrue(self.job.paths.base_path.exists())
+        self.assertIsNotNone(self.store.get(self.job.spec.job_id))
 
 if __name__ == "__main__":
     unittest.main()
@@ -344,7 +344,7 @@ class LegacyJobLoadingTests(unittest.TestCase):
     def _write_job(self, job_id: str, owner: str) -> None:
         '''Persist one job, optionally without an owner.'''
         job = make_job(job_id=job_id)
-        job.submitted_by = owner
+        job.spec = replace(job.spec, submitted_by=owner)
         job.status = JobStatus.COMPLETED
         save_meta(job)
 
@@ -365,7 +365,7 @@ class LegacyJobLoadingTests(unittest.TestCase):
         self._write_job("20260827-120001-bbbbbb", "")
         store = JobStore()
         load_persisted_jobs(store)
-        self.assertEqual(store.get("20260827-120001-bbbbbb").submitted_by, "")
+        self.assertEqual(store.get("20260827-120001-bbbbbb").spec.submitted_by, "")
 
     def test_configured_owner_adopts_them(self) -> None:
         '''An operator can take ownership deliberately.'''
@@ -377,5 +377,5 @@ class LegacyJobLoadingTests(unittest.TestCase):
 
         self.assertEqual(unowned, 0)
         self.assertEqual(
-            store.get("20260827-120001-bbbbbb").submitted_by, "admin@example.com"
+            store.get("20260827-120001-bbbbbb").spec.submitted_by, "admin@example.com"
         )

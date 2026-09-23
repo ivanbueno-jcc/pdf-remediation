@@ -23,7 +23,7 @@ from ..identity import (
     header_diagnostic_enabled,
     resolve_user,
 )
-from .runtime import get_runtime
+from .runtime import ApiRuntime, get_runtime
 
 router = APIRouter()
 
@@ -34,12 +34,13 @@ async def current_user(request: Request) -> str:
 
 
 CURRENT_USER = Depends(current_user)
+CURRENT_RUNTIME = Depends(get_runtime)
 
 
 @router.get("/healthz")
-async def liveness() -> JSONResponse:
+async def liveness(runtime: ApiRuntime = CURRENT_RUNTIME) -> JSONResponse:
     '''Report whether the process and worker pool are alive.'''
-    runner = get_runtime().runner
+    runner = runtime.runner
     worker_alive = runner.is_running()
     return JSONResponse(
         status_code=200 if worker_alive else 503,
@@ -52,9 +53,9 @@ async def liveness() -> JSONResponse:
 
 
 @router.get("/readyz")
-async def readiness() -> JSONResponse:
+async def readiness(runtime: ApiRuntime = CURRENT_RUNTIME) -> JSONResponse:
     '''Report deployment readiness without exposing dependency details.'''
-    result = await asyncio.to_thread(get_runtime().collect_readiness)
+    result = await asyncio.to_thread(runtime.collect_readiness)
     ready = bool(result["ready"])
     return JSONResponse(
         status_code=200 if ready else 503,
@@ -71,9 +72,10 @@ async def proxy_headers(request: Request) -> dict[str, Any]:
 
 
 @router.get("/api/health")
-async def health(user: str = CURRENT_USER) -> dict[str, Any]:
+async def health(
+        user: str = CURRENT_USER,
+        runtime: ApiRuntime = CURRENT_RUNTIME) -> dict[str, Any]:
     '''Report the tools and deployment readiness needed by the pipeline.'''
-    runtime = get_runtime()
     payload, readiness_payload = await asyncio.gather(
         asyncio.to_thread(runtime.cached_health),
         asyncio.to_thread(runtime.collect_readiness),
@@ -88,9 +90,9 @@ async def health(user: str = CURRENT_USER) -> dict[str, Any]:
 
 
 @router.get("/api/config-files", dependencies=[Depends(current_user)])
-async def config_files() -> dict[str, Any]:
+async def config_files(runtime: ApiRuntime = CURRENT_RUNTIME) -> dict[str, Any]:
     '''List remediation presets and upload limits offered by the portal.'''
-    config_dir = get_runtime().config_dir
+    config_dir = runtime.config_dir
     return {
         "default": DEFAULT_CONFIG_FILE,
         "upload_limits": {

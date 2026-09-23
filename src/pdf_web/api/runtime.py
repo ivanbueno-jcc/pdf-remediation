@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from fastapi import Request
+
 
 @dataclass(frozen=True)
 class ApiRuntime:  # pylint: disable=too-many-instance-attributes
@@ -22,17 +24,9 @@ class ApiRuntime:  # pylint: disable=too-many-instance-attributes
     describe_mode: Callable[[], dict[str, Any]]
 
 
-_PROVIDER: dict[str, Callable[[], ApiRuntime] | None] = {"value": None}
-
-
-def configure_runtime(provider: Callable[[], ApiRuntime]) -> None:
-    '''Install a provider that resolves current app dependencies per request.'''
-    _PROVIDER["value"] = provider
-
-
-def get_runtime() -> ApiRuntime:
-    '''Return the active process dependencies for an API operation.'''
-    provider = _PROVIDER["value"]
-    if provider is None:
-        raise RuntimeError("API runtime has not been configured.")
-    return provider()  # pylint: disable=not-callable
+def get_runtime(request: Request) -> ApiRuntime:
+    '''Resolve dependencies from the FastAPI application handling the request.'''
+    runtime = getattr(request.app.state, "runtime", None)
+    if runtime is None:
+        raise RuntimeError("API runtime has not been configured for this app.")
+    return runtime

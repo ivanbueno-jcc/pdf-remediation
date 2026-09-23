@@ -55,10 +55,8 @@ class AccessControlTests(unittest.TestCase):
             tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         ))
         self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
-        self.enterContext(mock.patch.object(web_app, "JOBS_ROOT", self.jobs_root))
 
         self.store = JobStore()
-        self.enterContext(mock.patch.object(web_app, "STORE", self.store))
         self.runner = mock.Mock(queue_depth=mock.Mock(return_value=0),
                                 running_count=mock.Mock(return_value=0),
                                 pending_job_ids=mock.Mock(return_value=()),
@@ -68,9 +66,11 @@ class AccessControlTests(unittest.TestCase):
                                 jobs_ahead=mock.Mock(return_value=None),
                                 submit=mock.Mock(return_value=0),
                                 submit_batch=mock.Mock(return_value=[0]))
-        self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
+        self.app = web_app.create_app(
+            store=self.store, runner=self.runner, jobs_root=self.jobs_root
+        )
 
-        self.client = TestClient(web_app.app)
+        self.client = TestClient(self.app)
         self.job = self._make_job("20260827-120000-aaaaaa", ALICE)
 
     def _make_job(self, job_id: str, owner: str) -> JobRecord:
@@ -87,7 +87,7 @@ class AccessControlTests(unittest.TestCase):
 
     def _url(self, endpoint: str) -> str:
         '''Build a job URL for one endpoint.'''
-        return f"/api/jobs/{self.job.job_id}{endpoint}"
+        return f"/api/jobs/{self.job.spec.job_id}{endpoint}"
 
     def test_owner_reaches_every_endpoint(self) -> None:
         '''The scoping must not lock the owner out of their own job.'''
@@ -119,7 +119,7 @@ class AccessControlTests(unittest.TestCase):
         self.assertEqual(
             self.client.get(self._url("/details"), headers=headers(ALICE)).status_code, 200
         )
-        self.assertTrue(self.job.log_path.is_file())
+        self.assertTrue(self.job.paths.log_path.is_file())
 
     def test_owner_can_delete_all_terminal_jobs_without_touching_active_or_other_users(
             self) -> None:
@@ -136,15 +136,19 @@ class AccessControlTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         payload = response.json()
-        self.assertEqual(set(payload["deleted"]), {self.job.job_id, second.job_id})
-        self.assertEqual(payload["skipped"], [active.job_id])
-        self.assertIsNone(self.store.get(self.job.job_id))
-        self.assertIsNone(self.store.get(second.job_id))
-        self.assertEqual(self.store.get(active.job_id).job_id, active.job_id)
-        self.assertEqual(self.store.get(foreign.job_id).job_id, foreign.job_id)
-        self.assertFalse(self.job.base_path.exists())
-        self.assertFalse(second.base_path.exists())
-        self.assertTrue(foreign.base_path.exists())
+        self.assertEqual(set(payload["deleted"]), {self.job.spec.job_id, second.spec.job_id})
+        self.assertEqual(payload["skipped"], [active.spec.job_id])
+        self.assertIsNone(self.store.get(self.job.spec.job_id))
+        self.assertIsNone(self.store.get(second.spec.job_id))
+        self.assertEqual(
+            self.store.get(active.spec.job_id).spec.job_id, active.spec.job_id
+        )
+        self.assertEqual(
+            self.store.get(foreign.spec.job_id).spec.job_id, foreign.spec.job_id
+        )
+        self.assertFalse(self.job.paths.base_path.exists())
+        self.assertFalse(second.paths.base_path.exists())
+        self.assertTrue(foreign.paths.base_path.exists())
 
     def test_other_user_cannot_retry(self) -> None:
         '''Retry re-runs someone's documents, so it is owner-scoped too.'''
@@ -161,7 +165,7 @@ class AccessControlTests(unittest.TestCase):
         alice_jobs = self.client.get("/api/jobs", headers=headers(ALICE)).json()["jobs"]
         bob_jobs = self.client.get("/api/jobs", headers=headers(BOB)).json()["jobs"]
 
-        self.assertEqual([job["job_id"] for job in alice_jobs], [self.job.job_id])
+        self.assertEqual([job["job_id"] for job in alice_jobs], [self.job.spec.job_id])
         self.assertEqual([job["job_id"] for job in bob_jobs], ["20260827-130000-bbbbbb"])
 
     def test_event_stream_is_scoped(self) -> None:
@@ -173,7 +177,7 @@ class AccessControlTests(unittest.TestCase):
 
     def test_details_response_omits_event_history(self) -> None:
         '''The detail panel does not need the job's accumulated event log.'''
-        self.store.emit(self.job.job_id, "log", {"line": "private pipeline output"})
+        self.store.emit(self.job.spec.job_id, "log", {"line": "private pipeline output"})
 
         response = self.client.get(self._url("/details"), headers=headers(ALICE))
 
@@ -190,8 +194,8 @@ class AuthenticationTests(unittest.TestCase):
         self.enterContext(mock.patch.dict(os.environ, {
             "PDF_WEB_PROXY_SECRET": SECRET,
         }))
-        self.enterContext(mock.patch.object(web_app, "STORE", JobStore()))
-        self.client = TestClient(web_app.app)
+        self.app = web_app.create_app(store=JobStore())
+        self.client = TestClient(self.app)
 
     def test_data_endpoints_require_the_proxy_secret(self) -> None:
         '''A client that sets only the identity header is not authenticated.'''
@@ -295,9 +299,7 @@ class OwnershipRecordingTests(unittest.TestCase):
             tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         ))
         self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
-        self.enterContext(mock.patch.object(web_app, "JOBS_ROOT", self.jobs_root))
         self.store = JobStore()
-        self.enterContext(mock.patch.object(web_app, "STORE", self.store))
         self.runner = mock.Mock(
             submit=mock.Mock(return_value=0),
             submit_batch=mock.Mock(return_value=[0]),
@@ -307,8 +309,10 @@ class OwnershipRecordingTests(unittest.TestCase):
             user_activity=mock.Mock(return_value=(0, False)),
             jobs_ahead=mock.Mock(return_value=None),
         )
-        self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
-        self.client = TestClient(web_app.app)
+        self.app = web_app.create_app(
+            store=self.store, runner=self.runner, jobs_root=self.jobs_root
+        )
+        self.client = TestClient(self.app)
 
     def test_submission_records_the_caller(self) -> None:
         '''Ownership comes from the proxied identity, not from the request body.'''
@@ -324,7 +328,7 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.assertEqual(created[0]["submitted_by"], ALICE)
 
         job = self.store.get(created[0]["job_id"])
-        self.assertEqual(job.submitted_by, ALICE)
+        self.assertEqual(job.spec.submitted_by, ALICE)
 
     def test_submission_queues_without_waiting_for_page_count(self) -> None:
         '''The HTTP request does not open every PDF through the SDK.'''
@@ -357,10 +361,10 @@ class OwnershipRecordingTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 201)
         job = self.store.get(response.json()["jobs"][0]["job_id"])
-        self.assertFalse(job.attempt_unlock)
-        self.assertFalse(job.attempt_fix)
-        self.assertTrue(job.skip_font_fix)
-        self.assertFalse(job.attempt_targeted_fixes)
+        self.assertFalse(job.spec.attempt_unlock)
+        self.assertFalse(job.spec.attempt_fix)
+        self.assertTrue(job.spec.skip_font_fix)
+        self.assertFalse(job.spec.attempt_targeted_fixes)
 
     def test_submission_records_pdfua1_only_validation(self) -> None:
         '''The selected profile and exact Validation change label are persisted.'''
@@ -378,8 +382,8 @@ class OwnershipRecordingTests(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         created = response.json()["jobs"][0]
         job = self.store.get(created["job_id"])
-        self.assertFalse(job.require_wcag)
-        self.assertTrue(job.require_pdfua1)
+        self.assertFalse(job.spec.require_wcag)
+        self.assertTrue(job.spec.require_pdfua1)
         self.assertEqual(created["validation_requirement"], "pdfua1 only")
 
     def test_submission_rejects_an_empty_validation_requirement(self) -> None:
@@ -443,9 +447,9 @@ class OwnershipRecordingTests(unittest.TestCase):
         second = make_job("20260827-130001-bbbbbb", submitted_by=ALICE)
         self.store.add(first)
         self.store.add(second)
-        self.runner.pending_job_ids.return_value = (second.job_id, first.job_id)
+        self.runner.pending_job_ids.return_value = (second.spec.job_id, first.spec.job_id)
         self.runner.pending_positions_for.return_value = {
-            second.job_id: 0, first.job_id: 1,
+            second.spec.job_id: 0, first.spec.job_id: 1,
         }
 
         response = self.client.get(
@@ -499,17 +503,17 @@ class CancellationTests(unittest.TestCase):
             tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         ))
         self.enterContext(mock.patch("pdf_web.models.JOBS_ROOT", self.jobs_root))
-        self.enterContext(mock.patch.object(web_app, "JOBS_ROOT", self.jobs_root))
         self.store = JobStore()
-        self.enterContext(mock.patch.object(web_app, "STORE", self.store))
         self.runner = PipelineRunner(self.store)
-        self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
-        self.client = TestClient(web_app.app)
+        self.app = web_app.create_app(
+            store=self.store, runner=self.runner, jobs_root=self.jobs_root
+        )
+        self.client = TestClient(self.app)
 
     def _queued_job(self, job_id: str, owner: str) -> JobRecord:
         '''Register a queued job and put it in the runner's queue.'''
         job = make_job(job_id=job_id, submitted_by=owner, status=JobStatus.QUEUED)
-        job.web_path.mkdir(parents=True, exist_ok=True)
+        job.paths.web_path.mkdir(parents=True, exist_ok=True)
         self.store.add(job)
         self.runner.submit(job_id, owner)
         return job
@@ -519,7 +523,7 @@ class CancellationTests(unittest.TestCase):
         job = self._queued_job("20260827-120000-aaaaaa", ALICE)
 
         response = self.client.post(
-            f"/api/jobs/{job.job_id}/cancel", headers=headers(ALICE)
+            f"/api/jobs/{job.spec.job_id}/cancel", headers=headers(ALICE)
         )
 
         self.assertEqual(response.status_code, 200)
@@ -531,28 +535,28 @@ class CancellationTests(unittest.TestCase):
         first = self._queued_job("20260827-120000-aaaaaa", ALICE)
         second = self._queued_job("20260827-120001-bbbbbb", ALICE)
 
-        self.client.post(f"/api/jobs/{first.job_id}/cancel", headers=headers(ALICE))
+        self.client.post(f"/api/jobs/{first.spec.job_id}/cancel", headers=headers(ALICE))
 
         # pylint: disable=protected-access
-        self.assertEqual(self.runner._claim_next(), second.job_id)
+        self.assertEqual(self.runner._claim_next(), second.spec.job_id)
 
     def test_cancelling_removes_it_from_the_queue(self) -> None:
         '''A cancelled job must not still be occupying the line.'''
         first = self._queued_job("20260827-120000-aaaaaa", ALICE)
         second = self._queued_job("20260827-120001-bbbbbb", BOB)
-        self.assertEqual(self.runner.jobs_ahead(second.job_id), 1)
+        self.assertEqual(self.runner.jobs_ahead(second.spec.job_id), 1)
 
-        self.client.post(f"/api/jobs/{first.job_id}/cancel", headers=headers(ALICE))
+        self.client.post(f"/api/jobs/{first.spec.job_id}/cancel", headers=headers(ALICE))
 
-        self.assertEqual(self.runner.jobs_ahead(second.job_id), 0)
-        self.assertNotIn(first.job_id, self.runner.pending_job_ids())
+        self.assertEqual(self.runner.jobs_ahead(second.spec.job_id), 0)
+        self.assertNotIn(first.spec.job_id, self.runner.pending_job_ids())
 
     def test_other_users_cannot_cancel(self) -> None:
         '''Cancelling destroys work, so it is owner-scoped like everything else.'''
         job = self._queued_job("20260827-120000-aaaaaa", ALICE)
 
         response = self.client.post(
-            f"/api/jobs/{job.job_id}/cancel", headers=headers(BOB)
+            f"/api/jobs/{job.spec.job_id}/cancel", headers=headers(BOB)
         )
 
         self.assertEqual(response.status_code, 404)
@@ -567,7 +571,7 @@ class CancellationTests(unittest.TestCase):
         self.store.add(job)
 
         response = self.client.post(
-            f"/api/jobs/{job.job_id}/cancel", headers=headers(ALICE)
+            f"/api/jobs/{job.spec.job_id}/cancel", headers=headers(ALICE)
         )
 
         self.assertEqual(response.status_code, 409)
@@ -576,10 +580,10 @@ class CancellationTests(unittest.TestCase):
     def test_cancelled_job_can_then_be_deleted(self) -> None:
         '''Cancellation is terminal, so the normal cleanup path applies.'''
         job = self._queued_job("20260827-120000-aaaaaa", ALICE)
-        self.client.post(f"/api/jobs/{job.job_id}/cancel", headers=headers(ALICE))
+        self.client.post(f"/api/jobs/{job.spec.job_id}/cancel", headers=headers(ALICE))
 
         response = self.client.delete(
-            f"/api/jobs/{job.job_id}", headers=headers(ALICE)
+            f"/api/jobs/{job.spec.job_id}", headers=headers(ALICE)
         )
         self.assertEqual(response.status_code, 200)
 
@@ -592,10 +596,10 @@ class LivenessTests(unittest.TestCase):
         self.enterContext(mock.patch.dict(os.environ, {
             "PDF_WEB_PROXY_SECRET": SECRET,
         }))
-        self.enterContext(mock.patch.object(web_app, "STORE", JobStore()))
+        self.store = JobStore()
         self.runner = mock.Mock(is_running=mock.Mock(return_value=True))
-        self.enterContext(mock.patch.object(web_app, "RUNNER", self.runner))
-        self.client = TestClient(web_app.app)
+        self.app = web_app.create_app(store=self.store, runner=self.runner)
+        self.client = TestClient(self.app)
 
     def test_probe_needs_no_credentials(self) -> None:
         '''An unauthenticated probe is the entire purpose of this endpoint.'''

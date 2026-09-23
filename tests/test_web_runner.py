@@ -287,7 +287,7 @@ class PageCountExecutionTests(SchedulerTestCase):
         self.store.add(job)
         result = PipelineResult(
             status=PipelineStatus.FAILED,
-            input_pdf_path=job.input_path,
+            input_pdf_path=job.paths.input_path,
             error="Test pipeline result.",
         )
 
@@ -296,7 +296,7 @@ class PageCountExecutionTests(SchedulerTestCase):
                 mock.patch("pdf_web.runner.save_meta") as persist:
             self.runner._run_job(job)  # pylint: disable=protected-access
 
-        self.assertEqual(job.file.page_count, 7)
+        self.assertEqual(job.state.page_count, 7)
         process.assert_called_once()
         self.assertEqual(persist.call_count, 2)
 
@@ -321,7 +321,7 @@ class PageCountExecutionTests(SchedulerTestCase):
         self.store.add(job)
         result = PipelineResult(
             status=PipelineStatus.REMEDIATED,
-            input_pdf_path=job.input_path,
+            input_pdf_path=job.paths.input_path,
         )
 
         with mock.patch("pdf_web.runner.get_pdf_page_count", return_value=None), \
@@ -340,7 +340,7 @@ class PageCountExecutionTests(SchedulerTestCase):
         self.store.add(job)
         result = PipelineResult(
             status=PipelineStatus.FAILED,
-            input_pdf_path=job.input_path,
+            input_pdf_path=job.paths.input_path,
             error="Test pipeline result.",
         )
 
@@ -349,7 +349,7 @@ class PageCountExecutionTests(SchedulerTestCase):
                 mock.patch("pdf_web.runner.save_meta"):
             self.runner._run_job(job)  # pylint: disable=protected-access
 
-        self.assertIsNone(job.file.page_count)
+        self.assertIsNone(job.state.page_count)
         process.assert_called_once()
 
 

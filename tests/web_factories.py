@@ -40,17 +40,17 @@ def write_job_artifacts(job: JobRecord) -> Path:
     '''
     Create the log, remediated PDF, and reports a finished job leaves behind.
     '''
-    job.web_path.mkdir(parents=True, exist_ok=True)
-    job.log_path.write_text("pipeline output\n", encoding="utf-8")
+    job.paths.web_path.mkdir(parents=True, exist_ok=True)
+    job.paths.log_path.write_text("pipeline output\n", encoding="utf-8")
 
-    job.input_path.parent.mkdir(parents=True, exist_ok=True)
-    job.input_path.write_bytes(b"%PDF-1.7\n")
+    job.paths.input_path.parent.mkdir(parents=True, exist_ok=True)
+    job.paths.input_path.write_bytes(b"%PDF-1.7\n")
 
-    job.output_dir.mkdir(parents=True, exist_ok=True)
-    pdf_path = job.output_dir / job.file.stored_name
+    job.paths.output_dir.mkdir(parents=True, exist_ok=True)
+    pdf_path = job.paths.output_dir / job.spec.file.stored_name
     pdf_path.write_bytes(b"%PDF-1.7\n")
-    (job.output_dir / "before.json").write_text('{"status": "fail"}', encoding="utf-8")
-    (job.output_dir / "after.json").write_text('{"status": "pass"}', encoding="utf-8")
+    (job.paths.output_dir / "before.json").write_text('{"status": "fail"}', encoding="utf-8")
+    (job.paths.output_dir / "after.json").write_text('{"status": "pass"}', encoding="utf-8")
     return pdf_path
 
 
@@ -58,10 +58,10 @@ def add_completed_result(job: JobRecord, pdf_path: Path) -> None:
     '''
     Attach a pipeline result describing a successfully remediated file.
     '''
-    job.outcome = str(PipelineStatus.REMEDIATED)
-    job.result = PipelineResult(
+    job.state.outcome = str(PipelineStatus.REMEDIATED)
+    job.state.result = PipelineResult(
         status=PipelineStatus.REMEDIATED,
-        input_pdf_path=job.input_path,
+        input_pdf_path=job.paths.input_path,
         output_pdf_path=pdf_path,
         before={"status": "fail", "passed": False, "failed_rules_count": 1, "profiles": {}},
         after={"status": "pass", "passed": True, "failed_rules_count": 0, "profiles": {}},

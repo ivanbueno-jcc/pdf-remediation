@@ -205,11 +205,12 @@ class ReadinessTests(unittest.TestCase):  # pylint: disable=protected-access
 
     def test_public_endpoint_hides_blocking_dependency_names(self) -> None:
         '''Unauthenticated callers learn only ready/not-ready and the version.'''
-        with mock.patch.object(
-                web_app, "collect_readiness",
-                return_value={"ready": False, "blocking": ["PDFix license"]},
-        ):
-            response = TestClient(web_app.app).get("/readyz")
+        application = web_app.create_app(
+            readiness_provider=lambda: {
+                "ready": False, "blocking": ["PDFix license"]
+            }
+        )
+        response = TestClient(application).get("/readyz")
         self.assertEqual(response.status_code, 503)
         self.assertEqual(set(response.json()), {"status", "version"})
         self.assertNotIn("pdfix", response.text.lower())

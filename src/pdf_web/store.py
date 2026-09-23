@@ -289,6 +289,7 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 require_pdfua1=spec.require_pdfua1,
                 verbose=spec.verbose,
                 output_pdf_path=result.output_pdf_path if result else None,
+                storage_root=job.paths.root,
             )
 
     def list_access_snapshots(self, owner: str) -> list[JobAccessSnapshot]:

@@ -6,6 +6,7 @@ import asyncio
 import shutil
 from dataclasses import dataclass, replace
 from datetime import datetime
+from pathlib import Path
 from typing import Callable
 
 from fastapi import HTTPException, UploadFile
@@ -47,13 +48,14 @@ def validate_options(  # pylint: disable=too-many-arguments,too-many-positional-
         require_wcag: bool,
         require_pdfua1: bool,
         wcag_and_ua1_must_pass: bool | None,
-        verbose: bool) -> SubmissionOptions:
+        verbose: bool,
+        config_dir: Path = CONFIG_DIR) -> SubmissionOptions:
     '''Validate form options once before processing any uploaded file.'''
     if config_file not in ALLOWED_CONFIG_FILES:
         raise HTTPException(
             status_code=400, detail=f"Unknown configuration file: {config_file}"
         )
-    if not (CONFIG_DIR / config_file).is_file():
+    if not (config_dir / config_file).is_file():
         raise HTTPException(
             status_code=400, detail=f"Configuration file is missing: {config_file}"
         )
@@ -99,7 +101,8 @@ async def prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-p
         taken_ids: set[str],
         taken_names: set[str],
         previous_bytes: int,
-        new_job_id: Callable[[set[str]], str]) -> tuple[JobRecord | None, str | None, int]:
+        new_job_id: Callable[[set[str]], str],
+        jobs_root: Path = JOBS_ROOT) -> tuple[JobRecord | None, str | None, int]:
     '''Write and validate one upload, returning a rejection reason if needed.'''
     original_name = upload.filename or "upload.pdf"
     job: JobRecord | None = None
@@ -120,7 +123,7 @@ async def prepare_uploaded_job(  # pylint: disable=too-many-arguments,too-many-p
             verbose=options.verbose,
         )
         job = JobRecord(
-            spec, JobState(), JobPaths(spec.job_id, stored_name, JOBS_ROOT)
+            spec, JobState(), JobPaths(spec.job_id, stored_name, jobs_root)
         )
         job.paths.input_path.parent.mkdir(parents=True, exist_ok=True)
         job.paths.web_path.mkdir(parents=True, exist_ok=True)

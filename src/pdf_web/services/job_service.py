@@ -9,18 +9,17 @@ from typing import Callable
 
 from fastapi import HTTPException
 
-from ..models import JobAccessSnapshot, JobRecord, JobSpec, JobState, UploadedFile
+from ..models import JobAccessSnapshot, JobPaths, JobRecord, JobSpec, JobState, UploadedFile
 from ..runner import PipelineRunner
 from ..store import JobStore, save_meta
 from ..store import is_valid_job_id
 
 
 class JobAccessService:
-    '''Enforce owner scope and constrain job artifact paths to storage root.'''
+    '''Enforce owner scope for job lifecycle and artifact access.'''
 
-    def __init__(self, store: JobStore, jobs_root) -> None:
+    def __init__(self, store: JobStore) -> None:
         self._store = store
-        self._jobs_root = jobs_root
 
     def require_access(self, job_id: str, owner: str) -> JobAccessSnapshot:
         '''Return an owned job or the same 404 used for an unknown identifier.'''
@@ -39,14 +38,6 @@ class JobAccessService:
         if job is None or job.spec.submitted_by != owner:
             raise HTTPException(status_code=404, detail="Unknown job.")
         return job
-
-    def require_file(self, candidate):
-        '''Return an existing artifact path contained below the jobs root.'''
-        resolved = candidate.resolve()
-        if not resolved.is_relative_to(self._jobs_root.resolve()) or not resolved.is_file():
-            raise HTTPException(status_code=404, detail="Not found.")
-        return resolved
-
 
 class JobWorkflow:
     '''Own multi-step job workflows that span HTTP, storage, and execution.'''
@@ -89,12 +80,14 @@ class JobWorkflow:
             source_spec = original.spec
             source_file = source_spec.file
             source_path = original.paths.input_path
+            jobs_root = original.paths.root
         else:
             source_spec = None
             source_file = UploadedFile(
                 original.original_name, original.stored_name, original.size_bytes
             )
             source_path = original.input_path
+            jobs_root = original.storage_root
         spec = JobSpec(
             job_id=new_job_id(set()),
             created_at=datetime.now(),
@@ -114,7 +107,9 @@ class JobWorkflow:
             require_pdfua1="ua1" in profiles,
             verbose=source_spec.verbose if source_spec else original.verbose,
         )
-        job = JobRecord(spec, JobState())
+        job = JobRecord(
+            spec, JobState(), JobPaths(spec.job_id, source_file.stored_name, jobs_root)
+        )
         try:
             job.paths.input_path.parent.mkdir(parents=True, exist_ok=True)
             job.paths.web_path.mkdir(parents=True, exist_ok=True)

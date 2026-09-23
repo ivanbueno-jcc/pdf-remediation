@@ -18,9 +18,9 @@ class OwnerUpdateQueue:
         previous = self._pending.get(job_id)
         if previous is None or update_type == "job-removed":
             self._pending[job_id] = update
-        elif previous[1] != "job-removed":
+        elif previous[0] != "job-removed":
             priority = {"job-updated": 1, "job-added": 2, "queue-changed": 3}
-            if priority.get(update_type, 0) >= priority.get(previous[1], 0):
+            if priority.get(update_type, 0) >= priority.get(previous[0], 0):
                 self._pending[job_id] = update
         if self._wake.empty():
             self._wake.put_nowait(None)

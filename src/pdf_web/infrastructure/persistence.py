@@ -130,12 +130,13 @@ def load_meta(meta_path: Path) -> JobRecord | None:
     return job
 
 
-def load_persisted_jobs(store: "JobStore") -> tuple[int, int]:
+def load_persisted_jobs(
+        store: "JobStore", jobs_root: Path = JOBS_ROOT) -> tuple[int, int]:
     '''Recover jobs at startup and report those with no discoverable owner.'''
-    if not JOBS_ROOT.is_dir():
+    if not jobs_root.is_dir():
         return 0, 0
     loaded = unowned = 0
-    for job_path in sorted(JOBS_ROOT.iterdir()):
+    for job_path in sorted(jobs_root.iterdir()):
         if not job_path.is_dir() or not is_valid_job_id(job_path.name):
             continue
         meta_path = job_path / "_web" / "meta.json"
@@ -154,14 +155,15 @@ def load_persisted_jobs(store: "JobStore") -> tuple[int, int]:
     return loaded, unowned
 
 
-def sweep_expired_jobs(store: "JobStore") -> int:
+def sweep_expired_jobs(
+        store: "JobStore", jobs_root: Path = JOBS_ROOT) -> int:
     '''Remove expired terminal job directories under the artifact lock.'''
     ttl_hours = job_ttl_hours()
-    if ttl_hours <= 0 or not JOBS_ROOT.is_dir():
+    if ttl_hours <= 0 or not jobs_root.is_dir():
         return 0
     cutoff = datetime.now() - timedelta(hours=ttl_hours)
     removed = 0
-    for job_path in sorted(JOBS_ROOT.iterdir()):
+    for job_path in sorted(jobs_root.iterdir()):
         if not job_path.is_dir() or not is_valid_job_id(job_path.name):
             continue
         job = store.get(job_path.name)

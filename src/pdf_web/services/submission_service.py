@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from typing import Callable
 
 from fastapi import UploadFile
 
+from ..config import JOBS_ROOT
 from ..models import JobRecord
 from ..runner import PipelineRunner
 from ..store import JobStore
@@ -20,12 +22,13 @@ class SubmissionService:
     def __init__(self, store: JobStore, runner: PipelineRunner) -> None:
         self._workflow = JobWorkflow(store, runner)
 
-    async def prepare_batch(  # pylint: disable=too-many-locals
+    async def prepare_batch(  # pylint: disable=too-many-locals,too-many-arguments,too-many-positional-arguments
             self,
             uploads: list[UploadFile],
             options: SubmissionOptions,
             owner: str,
             new_job_id: Callable[[set[str]], str],
+            jobs_root: Path = JOBS_ROOT,
     ) -> tuple[list[JobRecord], list[dict[str, str]]]:
         """Validate uploads and stage accepted jobs, cleaning up on failure."""
         created_at = datetime.now()
@@ -38,7 +41,8 @@ class SubmissionService:
             for upload in uploads:
                 original_name = upload.filename or "upload.pdf"
                 job, error, size = await prepare_uploaded_job(
-                    upload, options, owner, created_at, ids, names, total_bytes, new_job_id
+                    upload, options, owner, created_at, ids, names, total_bytes,
+                    new_job_id, jobs_root,
                 )
                 if error is not None or job is None:
                     rejected.append({

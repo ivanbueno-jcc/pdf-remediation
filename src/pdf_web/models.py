@@ -149,11 +149,12 @@ class JobAccessSnapshot(JobProcessingOptions):  # pylint: disable=too-many-insta
     stored_name: str
     size_bytes: int
     output_pdf_path: Path | None
+    storage_root: Path = JOBS_ROOT
 
     @property
     def base_path(self) -> Path:
         '''Return the directory holding this job's files.'''
-        return JOBS_ROOT / self.job_id
+        return self.storage_root / self.job_id
 
     @property
     def input_path(self) -> Path:
@@ -371,41 +372,6 @@ class JobRecord:  # pylint: disable=too-many-public-methods
         )
         return JobRecord(snapshot_spec, snapshot_state, self.paths)
 
-    # Temporary, explicit migration accessors. Production code uses spec/state/paths.
-    @property
-    def job_id(self) -> str:
-        """Compatibility view of ``spec.job_id``."""
-        return self.spec.job_id
-
-    @property
-    def created_at(self) -> datetime:
-        """Compatibility view of ``spec.created_at``."""
-        return self.spec.created_at
-
-    @property
-    def config_file(self) -> str:
-        """Compatibility view of ``spec.config_file``."""
-        return self.spec.config_file
-
-    @property
-    def file(self) -> UploadedFile:
-        """Return file metadata with its mutable page-count projection."""
-        return replace(self.spec.file, page_count=self.state.page_count)
-
-    @file.setter
-    def file(self, value: UploadedFile) -> None:
-        self.spec = replace(self.spec, file=replace(value, page_count=None))
-        self.state.page_count = value.page_count
-
-    @property
-    def submitted_by(self) -> str:
-        """Compatibility view of ``spec.submitted_by``."""
-        return self.spec.submitted_by
-
-    @submitted_by.setter
-    def submitted_by(self, value: str) -> None:
-        self.spec = replace(self.spec, submitted_by=value)
-
     @property
     def status(self) -> JobStatus:
         """Compatibility view of ``state.status``."""
@@ -477,89 +443,6 @@ class JobRecord:  # pylint: disable=too-many-public-methods
     @page_count.setter
     def page_count(self, value: int | None) -> None:
         self.state.page_count = value
-
-    @property
-    def attempt_unlock(self) -> bool:
-        """Compatibility view of ``spec.attempt_unlock``."""
-        return self.spec.attempt_unlock
-
-    @property
-    def attempt_fix(self) -> bool:
-        """Compatibility view of ``spec.attempt_fix``."""
-        return self.spec.attempt_fix
-
-    @property
-    def skip_font_fix(self) -> bool:
-        """Compatibility view of ``spec.skip_font_fix``."""
-        return self.spec.skip_font_fix
-
-    @property
-    def attempt_targeted_fixes(self) -> bool:
-        """Compatibility view of ``spec.attempt_targeted_fixes``."""
-        return self.spec.attempt_targeted_fixes
-
-    @property
-    def wcag_and_ua1_must_pass(self) -> bool:
-        """Compatibility view of ``spec.wcag_and_ua1_must_pass``."""
-        return self.spec.wcag_and_ua1_must_pass
-
-    @property
-    def require_wcag(self) -> bool:
-        """Compatibility view of ``spec.require_wcag``."""
-        return self.spec.require_wcag
-
-    @require_wcag.setter
-    def require_wcag(self, value: bool) -> None:
-        self.spec = replace(self.spec, require_wcag=value)
-
-    @property
-    def require_pdfua1(self) -> bool:
-        """Compatibility view of ``spec.require_pdfua1``."""
-        return self.spec.require_pdfua1
-
-    @require_pdfua1.setter
-    def require_pdfua1(self, value: bool) -> None:
-        self.spec = replace(self.spec, require_pdfua1=value)
-
-    @property
-    def verbose(self) -> bool:
-        """Compatibility view of ``spec.verbose``."""
-        return self.spec.verbose
-
-    @property
-    def base_path(self) -> Path:
-        """Compatibility view of ``paths.base_path``."""
-        return self.paths.base_path
-
-    @property
-    def input_path(self) -> Path:
-        """Compatibility view of ``paths.input_path``."""
-        return self.paths.input_path
-
-    @property
-    def output_dir(self) -> Path:
-        """Compatibility view of ``paths.output_dir``."""
-        return self.paths.output_dir
-
-    @property
-    def web_path(self) -> Path:
-        """Compatibility view of ``paths.web_path``."""
-        return self.paths.web_path
-
-    @property
-    def log_path(self) -> Path:
-        """Compatibility view of ``paths.log_path``."""
-        return self.paths.log_path
-
-    @property
-    def meta_path(self) -> Path:
-        """Compatibility view of ``paths.meta_path``."""
-        return self.paths.meta_path
-
-    @property
-    def bundle_path(self) -> Path:
-        """Compatibility view of ``paths.bundle_path``."""
-        return self.paths.bundle_path
 
     @property
     def initially_secured(self) -> bool:
