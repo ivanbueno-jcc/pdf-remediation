@@ -143,6 +143,9 @@ def main(argv: list[str] | None = None) -> int:
         workers=1,
         reload=args.reload,
         log_level="info",
+        # Long-lived SSE responses otherwise keep Uvicorn waiting forever.
+        # After this grace period Uvicorn cancels remaining request tasks.
+        timeout_graceful_shutdown=5,
     )
     return 0
 

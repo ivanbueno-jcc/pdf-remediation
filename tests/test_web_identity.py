@@ -8,7 +8,7 @@ from unittest import mock
 
 from fastapi import HTTPException
 
-from pdf_web.__main__ import check_bind_safety
+from pdf_web.__main__ import check_bind_safety, main
 from pdf_web.identity import (
     DEFAULT_DEV_USER,
     assert_proxy_secret,
@@ -52,6 +52,14 @@ class IdentityTestCase(unittest.TestCase):
         self.enterContext(mock.patch.dict(os.environ, {}, clear=False))
         for name in AUTH_ENVIRONMENT:
             os.environ.pop(name, None)
+
+    def test_server_bounds_graceful_shutdown_for_sse_connections(self) -> None:
+        '''A long-lived SSE response must not block process shutdown forever.'''
+        with mock.patch("pdf_web.__main__.describe_startup"), \
+                mock.patch("pdf_web.__main__.uvicorn.run") as run:
+            self.assertEqual(main([]), 0)
+
+        self.assertEqual(run.call_args.kwargs["timeout_graceful_shutdown"], 5)
 
     @staticmethod
     def enable_proxy(secret: str = "s3cret") -> None:

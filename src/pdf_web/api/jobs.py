@@ -38,6 +38,7 @@ CURRENT_USER = Depends(current_user)
 CURRENT_RUNTIME = Depends(get_runtime)
 JOB_ID_PATH = PathParam(..., pattern=r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 QUEUE_PAGE_SIZE = 100
+SSE_DISCONNECT_POLL_SECONDS = 0.5
 
 
 @router.get("/api/jobs", response_model=QueuePageResponse, deprecated=True)
@@ -165,6 +166,8 @@ async def queue_events(
     async def event_stream() -> AsyncIterator[str]:  # pylint: disable=too-many-branches
         subscriber_id, updates_queue = runtime.store.subscribe_owner(user)
         first = True
+        loop = asyncio.get_running_loop()
+        keepalive_at = loop.time() + SSE_KEEPALIVE_SECONDS
         try:
             while True:
                 if await request.is_disconnected():
@@ -175,12 +178,20 @@ async def queue_events(
                         separators=(",", ":")
                     ) + "\n\n"
                     first = False
+                # Keep the queue wait short enough to notice a disconnected
+                # client promptly, while sending SSE keepalives less often.
                 try:
                     updates = await asyncio.wait_for(
-                        updates_queue.get_batch(), timeout=SSE_KEEPALIVE_SECONDS
+                        updates_queue.get_batch(),
+                        timeout=min(
+                            SSE_DISCONNECT_POLL_SECONDS,
+                            max(0.0, keepalive_at - loop.time()),
+                        ),
                     )
                 except asyncio.TimeoutError:
-                    yield ": keepalive\n\n"
+                    if loop.time() >= keepalive_at:
+                        yield ": keepalive\n\n"
+                        keepalive_at = loop.time() + SSE_KEEPALIVE_SECONDS
                     continue
 
                 changed_ids = {

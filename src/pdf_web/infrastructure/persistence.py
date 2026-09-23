@@ -131,8 +131,9 @@ def load_meta(meta_path: Path) -> JobRecord | None:
 
 
 def load_persisted_jobs(
-        store: "JobStore", jobs_root: Path = JOBS_ROOT) -> tuple[int, int]:
+        store: "JobStore", jobs_root: Path | None = None) -> tuple[int, int]:
     '''Recover jobs at startup and report those with no discoverable owner.'''
+    jobs_root = jobs_root or JOBS_ROOT
     if not jobs_root.is_dir():
         return 0, 0
     loaded = unowned = 0
@@ -156,8 +157,9 @@ def load_persisted_jobs(
 
 
 def sweep_expired_jobs(
-        store: "JobStore", jobs_root: Path = JOBS_ROOT) -> int:
+        store: "JobStore", jobs_root: Path | None = None) -> int:
     '''Remove expired terminal job directories under the artifact lock.'''
+    jobs_root = jobs_root or JOBS_ROOT
     ttl_hours = job_ttl_hours()
     if ttl_hours <= 0 or not jobs_root.is_dir():
         return 0
