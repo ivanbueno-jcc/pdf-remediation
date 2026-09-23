@@ -43,8 +43,24 @@ Invalid files are reported individually so one bad upload does not discard the
 other accepted PDFs.
 
 Each job receives a durable URL such as `/#job=<job-id>`. Refreshing or
-bookmarking the URL reopens that job while its retained directory exists. Jobs
-are stored under `resources/web-jobs` by default and expire after 72 hours.
+bookmarking the URL reopens that job while its retained directory exists. Job
+metadata is stored in `_pdf_web.sqlite3` at the root of the jobs volume; PDFs,
+reports, logs, and bundles remain in per-job directories. On startup, metadata
+from existing `_web/meta.json` files is imported into SQLite. Versioned schema
+migrations run once at startup; routine job and stage writes do not run DDL.
+Jobs expire after 72 hours by default.
+
+The database keeps searchable job columns and indexes, normalized pipeline
+stages, artifact path/size/SHA-256 records, retry parent and attempt numbers,
+and job status transition events. Queue history pages use an owner-scoped
+SQLite keyset query; the live process supplies the current progress details for
+those selected jobs. Normalized job columns and `job_stages` are authoritative;
+the JSON payload contains only fields without a dedicated column or table.
+Older payloads are read compatibly and rewritten in the normalized form on save.
+Artifact paths, sizes, and timestamps are cataloged during
+job updates; SHA-256 hashes are filled asynchronously by a small background
+pool. Older database records are backfilled with paths and sizes on startup,
+then receive hashes in the background.
 
 ## Outcomes and artifacts
 

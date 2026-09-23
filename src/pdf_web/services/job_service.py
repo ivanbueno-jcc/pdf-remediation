@@ -9,6 +9,7 @@ from typing import Callable
 
 from fastapi import HTTPException
 
+from ..infrastructure.persistence import delete_persisted_job
 from ..models import JobAccessSnapshot, JobPaths, JobRecord, JobSpec, JobState, UploadedFile
 from ..runner import PipelineRunner
 from ..store import JobStore, save_meta
@@ -65,6 +66,10 @@ class JobWorkflow:
             for job_id in registered_ids:
                 self._store.remove(job_id, notify=False)
             await self.discard_prepared(jobs)
+            await asyncio.gather(*(
+                asyncio.to_thread(delete_persisted_job, job.spec.job_id, job.paths.root)
+                for job in jobs
+            ))
             raise
 
     async def create_retry(
@@ -106,6 +111,9 @@ class JobWorkflow:
             require_wcag="wcag" in profiles,
             require_pdfua1="ua1" in profiles,
             verbose=source_spec.verbose if source_spec else original.verbose,
+            parent_job_id=(source_spec.job_id if source_spec else original.job_id),
+            attempt_number=(source_spec.attempt_number if source_spec
+                            else original.attempt_number) + 1,
         )
         job = JobRecord(
             spec, JobState(), JobPaths(spec.job_id, source_file.stored_name, jobs_root)
@@ -123,6 +131,7 @@ class JobWorkflow:
             self._runner.cancel(job.spec.job_id)
             self._store.remove(job.spec.job_id, notify=False)
             await self.discard_prepared([job])
+            await asyncio.to_thread(delete_persisted_job, job.spec.job_id, jobs_root)
             raise
 
     async def delete_terminal(self, job: JobRecord | JobAccessSnapshot) -> None:
@@ -132,6 +141,8 @@ class JobWorkflow:
         with self._store.job_artifact_lock(job_id):
             self._store.remove(job_id)
             await asyncio.to_thread(shutil.rmtree, base_path, True)
+            jobs_root = job.paths.root if isinstance(job, JobRecord) else job.storage_root
+            await asyncio.to_thread(delete_persisted_job, job_id, jobs_root)
 
     async def discard_prepared(self, jobs: list[JobRecord]) -> None:
         '''Remove uncommitted job directories after a workflow failure.'''

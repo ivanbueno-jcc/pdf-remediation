@@ -8,6 +8,7 @@ from pathlib import Path
 from fastapi import HTTPException
 
 from ..bundle import build_bundle
+from ..infrastructure.persistence import refresh_artifacts
 from ..models import JobAccessSnapshot, JobRecord
 from ..store import JobStore
 from .artifact_paths import ArtifactPathService
@@ -29,9 +30,10 @@ class JobArtifactService:  # pylint: disable=too-few-public-methods
             bundle_path = (
                 job.paths.bundle_path if isinstance(job, JobRecord) else job.bundle_path
             )
+            snapshot = self._store.snapshot(job_id)
+            if snapshot is None:
+                raise HTTPException(status_code=404, detail="Not found.")
             if not bundle_path.is_file():
-                snapshot = self._store.snapshot(job_id)
-                if snapshot is None:
-                    raise HTTPException(status_code=404, detail="Not found.")
                 await asyncio.to_thread(build_bundle, snapshot, bundle_path)
+            await asyncio.to_thread(refresh_artifacts, snapshot)
         return self._paths.require_file(bundle_path)

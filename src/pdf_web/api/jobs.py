@@ -18,6 +18,7 @@ from ..config import (
     max_running_jobs_per_user,
 )
 from ..identity import resolve_user
+from ..infrastructure.persistence import query_job_page
 from ..job_views import queue_payload
 from ..models import JobSerializer
 from ..services.job_service import JobAccessService, JobWorkflow
@@ -112,9 +113,15 @@ def _queue_snapshot(
         limit: int | None = 100) -> dict[str, Any]:
     '''Build an owner-scoped queue page for HTTP and SSE consumers.'''
     try:
-        jobs, total_jobs, next_cursor = runtime.store.list_jobs_for_user(
-            owner, cursor, limit
+        job_ids, total_jobs, next_cursor = query_job_page(
+            runtime.jobs_root, owner, cursor, limit
         )
+        if total_jobs == 0 and runtime.store.owner_job_count(owner):
+            jobs, total_jobs, next_cursor = runtime.store.list_jobs_for_user(
+                owner, cursor, limit
+            )
+        else:
+            jobs = runtime.store.queue_snapshots_for_ids(job_ids)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     pending = runtime.runner.pending_positions_for({job.job_id for job in jobs})

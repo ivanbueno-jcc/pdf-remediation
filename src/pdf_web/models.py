@@ -149,6 +149,8 @@ class JobAccessSnapshot(JobProcessingOptions):  # pylint: disable=too-many-insta
     stored_name: str
     size_bytes: int
     output_pdf_path: Path | None
+    parent_job_id: str | None = None
+    attempt_number: int = 1
     storage_root: Path = JOBS_ROOT
 
     @property
@@ -235,6 +237,8 @@ class JobSpec:  # pylint: disable=too-many-instance-attributes
     require_wcag: bool = True
     require_pdfua1: bool = False
     verbose: bool = False
+    parent_job_id: str | None = None
+    attempt_number: int = 1
 
 
 @dataclass
@@ -313,6 +317,8 @@ class JobSerializer:  # pylint: disable=too-few-public-methods
             return {
                 "job_id": spec.job_id,
                 "submitted_by": spec.submitted_by,
+                "parent_job_id": spec.parent_job_id,
+                "attempt_number": spec.attempt_number,
                 "created_at": spec.created_at.isoformat(timespec="seconds"),
                 "started_at": (
                     state.started_at.isoformat(timespec="seconds") if state.started_at else None

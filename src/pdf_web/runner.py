@@ -13,6 +13,7 @@ that head job losing its place. Hence a list plus a condition variable.
 
 from __future__ import annotations
 
+import logging
 import threading
 import time
 from collections.abc import Collection
@@ -31,7 +32,10 @@ from .config import (
 )
 from .models import JobRecord, JobStatus, status_for
 from .store import JobStore, save_meta
+from .infrastructure.persistence import persist_stage
 from .uploads import get_pdf_page_count
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class PipelineRunner:  # pylint: disable=too-many-instance-attributes
@@ -357,6 +361,11 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             )
         self._store.emit(job.spec.job_id, "status", {"status": str(JobStatus.RUNNING)})
         self._log(job, f"Processing {filename}")
+        try:
+            save_meta(job)
+        except OSError as error:
+            self._log(job, f"[WARN] Could not persist running status: {error}")
+            _LOGGER.exception("Could not persist running status for job %s", job.spec.job_id)
 
         timed_out = False
 
@@ -380,6 +389,9 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
                     save_meta(job)
                 except OSError as error:
                     self._log(job, f"[WARN] Could not persist page count: {error}")
+                    _LOGGER.exception(
+                        "Could not persist page count for job %s", job.spec.job_id
+                    )
                 self._store.emit(job.spec.job_id, "metadata", {"page_count": page_count})
 
             result = process_pdf(
@@ -421,6 +433,12 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
         payload = stage.to_dict()
         with job.state.lock:
             job.state.stages.append(payload)
+            sequence = len(job.state.stages) - 1
+        try:
+            persist_stage(job, sequence, payload)
+        except OSError as error:
+            self._log(job, f"[WARN] Could not persist pipeline stage: {error}")
+            _LOGGER.exception("Could not persist stage for job %s", job.spec.job_id)
         self._log(
             job,
             f"{payload['name']}: {payload['status']}"
@@ -457,6 +475,9 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             save_meta(job)
         except OSError as error:
             self._log(job, f"[ERROR] Could not persist job metadata: {error}")
+            _LOGGER.exception(
+                "Could not persist final metadata for job %s", job.spec.job_id
+            )
         self._store.emit(job.spec.job_id, "status", {"status": str(job.state.status)})
         self._store.emit(job.spec.job_id, "done", {"status": str(job.state.status)})
 

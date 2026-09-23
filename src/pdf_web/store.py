@@ -257,6 +257,13 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
             ]
         return [self._queue_snapshot(job) for job in jobs]
 
+    def queue_snapshots_for_ids(
+            self, job_ids: list[str]) -> list[QueueJobSnapshot]:
+        '''Build live queue projections in the order selected by SQLite.'''
+        with self._lock:
+            jobs = [self._jobs[job_id] for job_id in job_ids if job_id in self._jobs]
+        return [self._queue_snapshot(job) for job in jobs]
+
     def snapshot(self, job_id: str) -> JobRecord | None:
         '''Return one lock-consistent, detached job snapshot.'''
         return self.get(job_id)
@@ -289,6 +296,8 @@ class JobStore:  # pylint: disable=too-many-instance-attributes,too-many-public-
                 require_pdfua1=spec.require_pdfua1,
                 verbose=spec.verbose,
                 output_pdf_path=result.output_pdf_path if result else None,
+                parent_job_id=spec.parent_job_id,
+                attempt_number=spec.attempt_number,
                 storage_root=job.paths.root,
             )
 

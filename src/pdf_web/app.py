@@ -22,7 +22,11 @@ from .api.runtime import ApiRuntime
 from .assets import serve_asset, serve_index, serve_versioned_asset
 from .config import CONFIG_DIR, JOBS_ROOT, MIN_FREE_DISK_BYTES, RETENTION_SWEEP_SECONDS
 from .identity import describe_mode
-from .infrastructure.persistence import load_persisted_jobs, sweep_expired_jobs
+from .infrastructure.persistence import (
+    initialize_database,
+    load_persisted_jobs,
+    sweep_expired_jobs,
+)
 from .infrastructure.readiness import cached_health, collect_readiness
 from .runner import PipelineRunner
 from .store import JobStore
@@ -93,6 +97,7 @@ def create_app(
     async def lifespan(_application: FastAPI) -> AsyncIterator[None]:
         '''Recover persisted work, run workers, and sweep expired jobs.'''
         jobs_root.mkdir(parents=True, exist_ok=True)
+        initialize_database(jobs_root)
         _loaded, unowned = load_persisted_jobs(job_store, jobs_root)
         if unowned:
             print(
