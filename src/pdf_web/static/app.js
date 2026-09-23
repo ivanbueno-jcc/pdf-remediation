@@ -59,11 +59,8 @@ async function loadHealth() {
 
 function renderIdentity() {
   const line = el('identity');
-  const auth = (state.health && state.health.auth) || {};
-  if (state.authError || !state.health.user) { line.textContent = ''; return; }
-  line.textContent = auth.multi_user
-    ? 'Signed in as ' + state.health.user + ' · your files are private to you'
-    : 'Shared access · ' + state.health.user;
+  if (state.authError || !state.health.user) { line.replaceChildren(); return; }
+  line.replaceChildren(statusIcon('user'), document.createTextNode(state.health.user));
 }
 
 function renderHealth() {
@@ -1190,6 +1187,10 @@ function statusIcon(name) {
     lock: [
       ['rect', { x: '5', y: '10', width: '14', height: '10', rx: '2' }],
       ['path', { d: 'M8 10V7a4 4 0 0 1 8 0v3' }],
+    ],
+    user: [
+      ['circle', { cx: '12', cy: '8', r: '3.5' }],
+      ['path', { d: 'M5 20a7 7 0 0 1 14 0' }],
     ],
   };
 
