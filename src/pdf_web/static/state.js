@@ -12,7 +12,7 @@
     queueMeta: {}, jobRows: new Map(), activeJobCount: 0, failedJobCount: 0,
     queueEta: null, queueEtaTimer: null, queueGeneration: null,
     jobStats: { processed: 0, wcag: 0, ua1: 0, totalPages: 0, processedPages: 0 },
-    cancellingJobs: new Set(), jobStatusSnapshot: null, jobSearch: '',
+    cancellingJobs: new Set(), jobStatusSnapshot: null, jobSearch: '', jobPage: 1,
     jobOutcomeFilter: 'all', toastTimer: null, toastFadeTimer: null,
   };
 })(window);

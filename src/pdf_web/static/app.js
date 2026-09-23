@@ -1,6 +1,7 @@
 'use strict';
 
 const MAX_TERMINAL_QUEUE_JOBS = 100;
+const JOBS_PER_PAGE = 25;
 
 const state = window.PdfWebState;
 const { el, formatBytes, describeError } = window.PdfWebDom;
@@ -689,6 +690,37 @@ function renderJobGroup(groupId, bodyId, jobs) {
   renderJobRows(el(bodyId), jobs);
 }
 
+function renderJobPagination(totalJobs) {
+  const pagination = el('jobs-pagination');
+  const pageCount = Math.max(1, Math.ceil(totalJobs / JOBS_PER_PAGE));
+  state.jobPage = Math.min(Math.max(1, state.jobPage), pageCount);
+  const hasPagination = pageCount > 1;
+  pagination.classList.toggle('hidden', !hasPagination);
+  if (!hasPagination) return;
+  const previous = el('jobs-previous');
+  const next = el('jobs-next');
+  previous.disabled = state.jobPage === 1;
+  next.disabled = state.jobPage === pageCount;
+  const pageButtons = el('jobs-page-buttons');
+  pageButtons.replaceChildren(...Array.from({ length: pageCount }, (_, index) => {
+    const page = index + 1;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'jobs-pagination-button jobs-page-button';
+    button.textContent = String(page);
+    button.setAttribute('aria-label', 'Go to page ' + page);
+    if (page === state.jobPage) {
+      button.classList.add('is-current');
+      button.setAttribute('aria-current', 'page');
+    }
+    button.addEventListener('click', () => {
+      state.jobPage = page;
+      renderJobs();
+    });
+    return button;
+  }));
+}
+
 function captureJobViewportAnchor() {
   if (typeof window === 'undefined' || typeof window.scrollY !== 'number') return null;
   const viewportHeight = Number(window.innerHeight) || 0;
@@ -767,12 +799,16 @@ function renderJobStats() {
 function renderJobs() {
   const viewportAnchor = captureJobViewportAnchor();
   const recent = filteredRecentJobs();
-  const visible = recent;
+  const pageCount = Math.max(1, Math.ceil(recent.length / JOBS_PER_PAGE));
+  state.jobPage = Math.min(Math.max(1, state.jobPage), pageCount);
+  const pageStart = (state.jobPage - 1) * JOBS_PER_PAGE;
+  const visible = recent.slice(pageStart, pageStart + JOBS_PER_PAGE);
   const empty = el('job-empty');
   empty.classList.toggle('hidden', recent.length > 0);
   empty.textContent = 'No recent files match the current search and outcome filter.';
   renderJobStats();
-  renderJobGroup('recent-jobs-group', 'recent-jobs-body', recent);
+  renderJobPagination(recent.length);
+  renderJobGroup('recent-jobs-group', 'recent-jobs-body', visible);
   // Keep the section and its filters available when a filter has no matches.
   el('recent-jobs-group').classList.toggle('hidden', state.jobs.length === 0);
   el('recent-jobs-table').classList.toggle('hidden', recent.length === 0);
@@ -1588,10 +1624,20 @@ document.querySelectorAll('.pipeline-stage').forEach((stage) => {
 });
 el('job-search').addEventListener('input', (event) => {
   state.jobSearch = event.target.value;
+  state.jobPage = 1;
   renderJobs();
 });
 el('job-outcome-filter').addEventListener('change', (event) => {
   state.jobOutcomeFilter = event.target.value;
+  state.jobPage = 1;
+  renderJobs();
+});
+el('jobs-previous').addEventListener('click', () => {
+  state.jobPage -= 1;
+  renderJobs();
+});
+el('jobs-next').addEventListener('click', () => {
+  state.jobPage += 1;
   renderJobs();
 });
 const deleteAllButton = el('delete-all');

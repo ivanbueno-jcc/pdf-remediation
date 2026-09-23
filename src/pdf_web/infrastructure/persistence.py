@@ -182,11 +182,16 @@ def _initialize_database(path: Path) -> None:
                 )
             """)
             for statement in (
-                "CREATE INDEX IF NOT EXISTS jobs_owner_created ON jobs(owner, created_at DESC, job_id DESC)",
-                "CREATE INDEX IF NOT EXISTS jobs_status_created ON jobs(status, created_at DESC, job_id DESC)",
-                "CREATE INDEX IF NOT EXISTS jobs_owner_status_created ON jobs(owner, status, created_at DESC, job_id DESC)",
-                "CREATE INDEX IF NOT EXISTS jobs_original_name ON jobs(original_name COLLATE NOCASE)",
-                "CREATE INDEX IF NOT EXISTS job_events_job_time ON job_events(job_id, created_at, event_id)",
+                "CREATE INDEX IF NOT EXISTS jobs_owner_created "
+                "ON jobs(owner, created_at DESC, job_id DESC)",
+                "CREATE INDEX IF NOT EXISTS jobs_status_created "
+                "ON jobs(status, created_at DESC, job_id DESC)",
+                "CREATE INDEX IF NOT EXISTS jobs_owner_status_created "
+                "ON jobs(owner, status, created_at DESC, job_id DESC)",
+                "CREATE INDEX IF NOT EXISTS jobs_original_name "
+                "ON jobs(original_name COLLATE NOCASE)",
+                "CREATE INDEX IF NOT EXISTS job_events_job_time "
+                "ON job_events(job_id, created_at, event_id)",
                 "CREATE INDEX IF NOT EXISTS job_artifacts_kind ON job_artifacts(kind, job_id)",
             ):
                 connection.execute(statement)
