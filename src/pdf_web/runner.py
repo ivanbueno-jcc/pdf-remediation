@@ -385,13 +385,6 @@ class PipelineRunner:  # pylint: disable=too-many-instance-attributes
             if page_count is not None:
                 with job.state.lock:
                     job.state.page_count = page_count
-                try:
-                    save_meta(job)
-                except OSError as error:
-                    self._log(job, f"[WARN] Could not persist page count: {error}")
-                    _LOGGER.exception(
-                        "Could not persist page count for job %s", job.spec.job_id
-                    )
                 self._store.emit(job.spec.job_id, "metadata", {"page_count": page_count})
 
             result = process_pdf(

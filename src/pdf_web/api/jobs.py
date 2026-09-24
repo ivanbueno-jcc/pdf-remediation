@@ -123,7 +123,11 @@ def _queue_snapshot(
         else:
             jobs = runtime.store.queue_snapshots_for_ids(job_ids)
     except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
+        if not runtime.store.owner_job_count(owner):
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        jobs, total_jobs, next_cursor = runtime.store.list_jobs_for_user(
+            owner, cursor, limit
+        )
     pending = runtime.runner.pending_positions_for({job.job_id for job in jobs})
     your_running, has_active = runtime.runner.user_activity(owner)
     return {

@@ -9,6 +9,7 @@ import re
 import shutil
 import sqlite3
 import threading
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from datetime import datetime, timedelta
@@ -393,7 +394,10 @@ def _backfill_derived_tables(jobs: list[JobRecord], jobs_root: Path) -> None:
             _sync_stages(connection, job)
             _sync_artifacts(connection, job)
     for job in jobs:
-        _schedule_artifact_hashes(jobs_root, job.spec.job_id)
+        try:
+            _hash_artifacts(jobs_root, job.spec.job_id)
+        except (OSError, sqlite3.Error):
+            _LOGGER.exception("Could not hash artifacts for job %s", job.spec.job_id)
 
 
 def persist_stage(job: JobRecord, sequence: int, stage: dict[str, Any]) -> None:
@@ -475,11 +479,27 @@ def save_meta(job: JobRecord) -> None:
             _record_status_change(connection, job, payload, old_status)
             _sync_stages(connection, job)
             _sync_artifacts(connection, job)
+        meta_path = job.paths.meta_path
+        meta_path.parent.mkdir(parents=True, exist_ok=True)
+        partial_path = meta_path.with_name(
+            meta_path.name + "." + uuid.uuid4().hex + ".partial"
+        )
+        partial_path.write_text(
+            json.dumps(payload, separators=(",", ":"), default=str),
+            encoding="utf-8",
+        )
+        try:
+            partial_path.replace(meta_path)
+        finally:
+            partial_path.unlink(missing_ok=True)
     except sqlite3.Error as error:
         raise OSError(
             f"SQLite metadata persistence failed for job {job.spec.job_id}: {error}"
         ) from error
-    _schedule_artifact_hashes(job.paths.root, job.spec.job_id)
+    try:
+        _hash_artifacts(job.paths.root, job.spec.job_id)
+    except (OSError, sqlite3.Error):
+        _LOGGER.exception("Could not hash artifacts for job %s", job.spec.job_id)
 
 
 def delete_persisted_job(job_id: str, jobs_root: Path) -> None:
