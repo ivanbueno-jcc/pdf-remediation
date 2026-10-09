@@ -224,13 +224,15 @@ def _plot_page_count_distribution(chunks: dict[str, list]) -> None:
     if len(y_ticks) == 0:
         y_ticks = [min_y]
 
-    plot.yticks(y_ticks)
-    plot.bar(page_count_bucket, page_count_file_num)
-    plot.title("File Distribution by Page Count")
-    plot.xlabel("Range")
-    plot.ylabel("# of Files")
-    plot.plotsize(50, 15)
-    plot.show()
+    figure = plot.figure
+    figure.clear()
+    figure.ruler("y").ticks(y_ticks)
+    figure.draw(figure.bar(page_count_bucket, page_count_file_num))
+    figure.title("File Distribution by Page Count")
+    figure.label("Range", axis="x")
+    figure.label("# of Files", axis="y")
+    figure.plot_size(50, 15)
+    figure.show()
 
 def split_large_page_count_chunks(chunks: dict[str, list], chunk_size: int) -> dict[str, list]:
     '''
