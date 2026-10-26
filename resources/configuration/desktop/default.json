@@ -17,7 +17,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Completely remove an annotation from the PDF. Use this action when certain annotation types (e.g., TrapNet) are not permitted in a PDF/UA-compliant document",
+            "desc": "Remove non-permitted annotation types that commonly cause PDF/UA compliance failures. TrapNet and PrinterMark annotations are production artifacts and must not be present in accessible documents.",
             "name": "delete_annot",
             "params": [
                 {
@@ -28,7 +28,7 @@
                     "value": "^(TrapNet|PrinterMark)$"
                 }
             ],
-            "title": "Delete Annotations"
+            "title": "Delete Annotations (TrapNet, PrinterMark)"
         },
         {
             "args": [
@@ -47,9 +47,9 @@
                     "value": ""
                 }
             ],
-            "desc": "Fix the parent tree",
+            "desc": "Rebuild and normalize the ParentTree to ensure that all marked content references (MCIDs) correctly point to the structure tree. This establishes a stable structural foundation before tagging and cleanup.",
             "name": "fix_parent_tree",
-            "title": "Fix Parent Tree"
+            "title": "Fix Parent Tree (Initial repair)"
         },
         {
             "args": [
@@ -68,7 +68,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Automatically add accessibility tags to an untagged document",
+            "desc": "Automatically add missing structure tags using preflight-assisted layout analysis while preserving any existing tag structure. The action does not overwrite tags and does not inject standard layout attributes, keeping remediation conservative and predictable.",
             "name": "add_tags",
             "params": [
                 {
@@ -80,7 +80,7 @@
                 },
                 {
                     "ext": "",
-                    "flags": 8,
+                    "flags": 0,
                     "name": "preflight",
                     "type": "bool",
                     "value": "true"
@@ -107,7 +107,7 @@
                     "value": "false"
                 }
             ],
-            "title": "AutoTag"
+            "title": "AutoTag (Preflight, Preserve Existing Tags)"
         },
         {
             "args": [
@@ -126,7 +126,125 @@
                     "value": ""
                 }
             ],
-            "desc": "Delete defined tags",
+            "desc": "Repair standard Table tag structure without flattening. Normalize cell span attributes (RowSpan/ColSpan) for consistent column counts across rows, generate missing header cells when needed, and move invalid nested elements outside the Table to keep the structure PDF/UA-friendly.",
+            "name": "fix_table_tag",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_names",
+                    "type": "tag",
+                    "value": "^Table$",
+                    "value_name": "^Table$"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "flatten_table",
+                    "type": "bool",
+                    "value": "false"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "fix_table_spans",
+                    "type": "bool",
+                    "value": "true"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "fix_table_headers",
+                    "type": "bool",
+                    "value": "true"
+                },
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "fix_nested",
+                    "type": "string",
+                    "value": "move"
+                }
+            ],
+            "title": "Fix Table Tag"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Flatten incorrectly structured tables to a simpler, more robust hierarchy. Use this mode when table sections or internal nesting are malformed; it converts the table structure to reduce complexity and moves invalid nested elements outside the Table to prevent PDF/UA table validation failures.",
+            "name": "fix_table_tag",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_names",
+                    "type": "tag",
+                    "value": "^Table$",
+                    "value_name": "^Table$"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "flatten_table",
+                    "type": "bool",
+                    "value": "true"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "fix_table_spans",
+                    "type": "bool",
+                    "value": "false"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "fix_table_headers",
+                    "type": "bool",
+                    "value": "false"
+                },
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "fix_nested",
+                    "type": "string",
+                    "value": "move"
+                }
+            ],
+            "title": "Fix Table Tag"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Remove empty structure elements that do not carry semantic meaning and only pollute the tag tree. Headings, table cells, table rows, and list bodies are explicitly preserved to avoid breaking document semantics.",
             "name": "delete_tags",
             "params": [
                 {
@@ -167,7 +285,7 @@
                     "value": "none"
                 }
             ],
-            "title": "Delete Tags"
+            "title": "Delete Tags (Empty non-semantic tags)"
         },
         {
             "args": [
@@ -186,7 +304,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Delete defined tags",
+            "desc": "Remove structure elements whose content consists only of whitespace. The associated content is converted to artifacts to prevent screen readers from announcing meaningless text.",
             "name": "delete_tags",
             "params": [
                 {
@@ -229,7 +347,7 @@
                     "value": "artifact"
                 }
             ],
-            "title": "Delete Tags"
+            "title": "Delete Tags (Whitespace-only content)"
         },
         {
             "args": [
@@ -248,7 +366,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Remove artifacts, MCIDs, or any custom tags from page content objects. Remove All Containers by checking all flags.",
+            "desc": "Remove marked-content sequences that reference invalid or broken MCIDs. This prevents structure corruption and resolves common ParentTree and content reference errors.",
             "name": "remove_content_marks",
             "params": [
                 {
@@ -256,17 +374,19 @@
                     "flags": 0,
                     "name": "object_types",
                     "type": "object",
-                    "value": ".*"
+                    "value": ".*",
+                    "value_name": "All marked content containers"
                 },
                 {
                     "ext": "",
                     "flags": 1,
                     "name": "flags",
                     "type": "flag",
-                    "value": "8"
+                    "value": "8",
+                    "value_name": "8"
                 }
             ],
-            "title": "Remove Content Marks"
+            "title": "Remove Content Marks (Invalid MCIDs)"
         },
         {
             "args": [
@@ -285,7 +405,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Mark defined content as an artifact",
+            "desc": "Mark untagged page content without MCIDs as artifacts. This ensures that decorative or non-semantic content is ignored by assistive technologies.",
             "name": "artifact_content",
             "params": [
                 {
@@ -314,7 +434,8 @@
                                 }
                             ]
                         }
-                    }
+                    },
+                    "value_name": "Untagged content"
                 },
                 {
                     "ext": "",
@@ -324,7 +445,7 @@
                     "value": "0"
                 }
             ],
-            "title": "Artifact Content"
+            "title": "Artifact Untagged Content"
         },
         {
             "args": [
@@ -343,7 +464,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Fix the ViewerPreferences dictionary",
+            "desc": "Synchronize the ViewerPreferences DisplayDocTitle setting with the actual document title so that assistive technologies announce the correct title.",
             "name": "set_display_doc_title",
             "title": "Fix Display Document Title"
         },
@@ -364,7 +485,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Embed and fix all fonts used in the document to ensure consistent rendering and reliable text extraction across platforms and assistive technologies.",
+            "desc": "Embed all fonts used in the document to ensure consistent rendering and reliable text extraction across platforms and assistive technologies.",
             "name": "embed_font",
             "params": [
                 {
@@ -429,16 +550,9 @@
                     "value": ""
                 }
             ],
-            "desc": "Repair logical heading structure for accessibility (PDF/UA): optional H1–H6 from style, then fix invalid level sequence (no skipped levels).",
+            "desc": "Normalize heading hierarchy by resolving skipped levels and converting headings to a consistent generic H* structure. This improves outline quality and screen reader navigation.",
             "name": "fix_headings",
             "params": [
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "fix_heading_levels",
-                    "type": "bool",
-                    "value": "true"
-                },
                 {
                     "ext": "",
                     "flags": 1,
@@ -447,7 +561,7 @@
                     "value": "2"
                 }
             ],
-            "title": "Fix Headings"
+            "title": "Fix Headings (Add missing headings)"
         },
         {
             "args": [
@@ -466,9 +580,9 @@
                     "value": ""
                 }
             ],
-            "desc": "Fix the parent tree",
+            "desc": "Re-run ParentTree repair after tagging and cleanup to ensure all newly created or modified content references are correctly linked.",
             "name": "fix_parent_tree",
-            "title": "Fix Parent Tree"
+            "title": "Fix Parent Tree (Final normalization)"
         },
         {
             "args": [
@@ -487,9 +601,9 @@
                     "value": ""
                 }
             ],
-            "desc": "Fix the optional content configuration dictionary",
+            "desc": "Repair Optional Content (OCG) configuration dictionaries to ensure layer definitions are valid and accessible.",
             "name": "fix_oc_name",
-            "title": "Fix Optional Content"
+            "title": "Fix Optional Content Configuration"
         },
         {
             "args": [
@@ -508,9 +622,9 @@
                     "value": ""
                 }
             ],
-            "desc": "Fix the document MarkInfo dictionary and Suspects entry",
+            "desc": "Fix the MarkInfo dictionary by clearing the Suspects entry, indicating that the document structure is no longer considered unreliable.",
             "name": "set_suspect_value",
-            "title": "Set Suspect Value"
+            "title": "Clear Suspect Flag"
         },
         {
             "args": [
@@ -529,7 +643,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Add missing or resolve duplicate white spaces within a structure element",
+            "desc": "Insert missing spaces between words and mark unnecessary spaces as artifacts to improve text readability for screen readers.",
             "name": "fix_structure_spaces",
             "params": [
                 {
@@ -554,7 +668,7 @@
                     "value": "true"
                 }
             ],
-            "title": "Fix Spaces"
+            "title": "Fix Spaces (Add missing, Artifact unnecessary)"
         },
         {
             "args": [
@@ -573,7 +687,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Tag untagged annotations by placing them in the closest matching tag",
+            "desc": "Attach untagged annotations to the nearest appropriate structure elements so that interactive content is included in the document structure.",
             "name": "tag_annot",
             "params": [
                 {
@@ -602,7 +716,7 @@
                     }
                 }
             ],
-            "title": "Tag Annotations"
+            "title": "Tag Untagged Annotations"
         },
         {
             "args": [
@@ -621,7 +735,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set an alternative description for an annotation using the Contents key or TU key for widget annotations",
+            "desc": "Populate annotation Contents using text extracted from the annotation bounding box. Provides meaningful accessible names when available.",
             "name": "set_annot_contents",
             "params": [
                 {
@@ -629,7 +743,8 @@
                     "flags": 0,
                     "name": "annot_types",
                     "type": "annot",
-                    "value": ".*"
+                    "value": ".*",
+                    "value_name": "All annotations"
                 },
                 {
                     "ext": "",
@@ -648,13 +763,6 @@
                 {
                     "ext": "",
                     "flags": 0,
-                    "name": "description_tag",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
                     "name": "bbox_padding_x",
                     "type": "float",
                     "value": "4"
@@ -688,7 +796,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Annotation Contents"
+            "title": "Set Annotation Contents (BBox text)"
         },
         {
             "args": [
@@ -707,7 +815,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set an alternative description for an annotation using the Contents key or TU key for widget annotations",
+            "desc": "Populate annotation Contents using the annotation action destination (e.g., link target) when available.",
             "name": "set_annot_contents",
             "params": [
                 {
@@ -715,7 +823,8 @@
                     "flags": 0,
                     "name": "annot_types",
                     "type": "annot",
-                    "value": ".*"
+                    "value": ".*",
+                    "value_name": "All annotations"
                 },
                 {
                     "ext": "",
@@ -734,13 +843,6 @@
                 {
                     "ext": "",
                     "flags": 0,
-                    "name": "description_tag",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
                     "name": "bbox_padding_x",
                     "type": "float",
                     "value": "4"
@@ -774,7 +876,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Annotation Contents"
+            "title": "Set Annotation Contents (Action destination)"
         },
         {
             "args": [
@@ -793,7 +895,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set an alternative description for an annotation using the Contents key or TU key for widget annotations",
+            "desc": "Populate annotation Contents using auto-generated text as a fallback when no meaningful source text is available.",
             "name": "set_annot_contents",
             "params": [
                 {
@@ -801,7 +903,8 @@
                     "flags": 0,
                     "name": "annot_types",
                     "type": "annot",
-                    "value": ".*"
+                    "value": ".*",
+                    "value_name": "All annotations"
                 },
                 {
                     "ext": "",
@@ -820,13 +923,6 @@
                 {
                     "ext": "",
                     "flags": 0,
-                    "name": "description_tag",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
                     "name": "bbox_padding_x",
                     "type": "float",
                     "value": "4"
@@ -860,7 +956,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Annotation Contents"
+            "title": "Set Annotation Contents (Auto-generated)"
         },
         {
             "args": [
@@ -879,7 +975,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set an alternative description for the tag. These text alternatives are crucial for accessibility, helping users with vision impairments understand the content",
+            "desc": "Set alternate descriptions for Figure and Formula tags using associated tag content. If an Annotation is present among children, its Contents is used.",
             "name": "set_alt",
             "params": [
                 {
@@ -887,7 +983,8 @@
                     "flags": 0,
                     "name": "tag_names",
                     "type": "tag",
-                    "value": "^Figure$|^Formula$"
+                    "value": "^Figure$|^Formula$",
+                    "value_name": "Figure and Formula tags"
                 },
                 {
                     "ext": "",
@@ -918,7 +1015,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Alternate Description"
+            "title": "Set Alt (Figure/Formula: From associated content)"
         },
         {
             "args": [
@@ -937,7 +1034,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set an alternative description for the tag. These text alternatives are crucial for accessibility, helping users with vision impairments understand the content",
+            "desc": "Set alternate descriptions for Figure and Formula tags using the first suitable description tag found above the element.",
             "name": "set_alt",
             "params": [
                 {
@@ -945,7 +1042,8 @@
                     "flags": 0,
                     "name": "tag_names",
                     "type": "tag",
-                    "value": "^Figure$|^Formula$"
+                    "value": "^Figure$|^Formula$",
+                    "value_name": "Figure and Formula tags"
                 },
                 {
                     "ext": "",
@@ -976,7 +1074,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Alternate Description"
+            "title": "Set Alt (Figure/Formula: First description tag above)"
         },
         {
             "args": [
@@ -995,7 +1093,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set an alternative description for the tag. These text alternatives are crucial for accessibility, helping users with vision impairments understand the content",
+            "desc": "Set alternate descriptions for Figure and Formula tags using the first suitable description tag found below the element.",
             "name": "set_alt",
             "params": [
                 {
@@ -1003,7 +1101,8 @@
                     "flags": 0,
                     "name": "tag_names",
                     "type": "tag",
-                    "value": "^Figure$|^Formula$"
+                    "value": "^Figure$|^Formula$",
+                    "value_name": "Figure and Formula tags"
                 },
                 {
                     "ext": "",
@@ -1034,7 +1133,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Alternate Description"
+            "title": "Set Alt (Figure/Formula: First description tag below)"
         },
         {
             "args": [
@@ -1053,7 +1152,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set an alternative description for the tag. These text alternatives are crucial for accessibility, helping users with vision impairments understand the content",
+            "desc": "Set alternate descriptions for Figure and Formula tags using a custom fallback value when no meaningful description is available.",
             "name": "set_alt",
             "params": [
                 {
@@ -1061,7 +1160,8 @@
                     "flags": 0,
                     "name": "tag_names",
                     "type": "tag",
-                    "value": "^Figure$|^Formula$"
+                    "value": "^Figure$|^Formula$",
+                    "value_name": "Figure and Formula tags"
                 },
                 {
                     "ext": "",
@@ -1092,7 +1192,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Alternate Description"
+            "title": "Set Alt (Figure/Formula: Custom text fallback)"
         },
         {
             "args": [
@@ -1111,7 +1211,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set an alternative description for the tag. These text alternatives are crucial for accessibility, helping users with vision impairments understand the content",
+            "desc": "Set alternate descriptions for Form tags using associated tag content. If an Annotation is present among children, its Contents is used.",
             "name": "set_alt",
             "params": [
                 {
@@ -1150,7 +1250,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Alternate Description"
+            "title": "Set Alt (Form: From associated content)"
         },
         {
             "args": [
@@ -1169,7 +1269,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Define a MIME type for the media clip annotation file",
+            "desc": "Fix media clip content type keys to a safe default (text/plain) to prevent validation failures on embedded media metadata.",
             "name": "fix_media_clip_keys",
             "params": [
                 {
@@ -1180,7 +1280,7 @@
                     "value": "text/plain"
                 }
             ],
-            "title": "Fix Media Clip"
+            "title": "Fix Media Clip (Content-Type to text/plain)"
         },
         {
             "args": [
@@ -1199,25 +1299,75 @@
                     "value": ""
                 }
             ],
-            "desc": "Rename tags",
-            "name": "rename_tags",
+            "desc": "Merge neighbouring structure tags in reading order ($0 above $1) by moving children from one tag into another",
+            "expanded": true,
+            "name": "merge_tags",
             "params": [
                 {
                     "ext": "",
                     "flags": 0,
                     "name": "tag_names",
                     "type": "tag",
-                    "value": "^Footnote$|^FootNote$|^footnote$"
+                    "value": {
+                        "template": {
+                            "tag_neighbours": [
+                                {
+                                    "query": {
+                                        "$and": [
+                                            {
+                                                "$0_role_mapped_tag_type": "Note"
+                                            },
+                                            {
+                                                "$1_role_mapped_tag_type": "Note"
+                                            },
+                                            {
+                                                "$1_text": {
+                                                    "$regex": "^(?!\\s*\\d).+"
+                                                }
+                                            }
+                                        ],
+                                        "param": [
+                                            "pds_struct_elem",
+                                            "pds_struct_elem"
+                                        ]
+                                    },
+                                    "statement": "$if"
+                                }
+                            ]
+                        }
+                    },
+                    "value_name": "Note chains"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "adjacent_type",
+                    "type": "string",
+                    "value": "Note"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "skip_tags",
+                    "type": "string",
+                    "value": "^(Document|Part|Art|Sect|Div|BlockQuote|Caption|TOC|TOCI|Index|NonStruct|Private)$"
+                },
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "merge_target",
+                    "type": "string",
+                    "value": "first"
                 },
                 {
                     "ext": "",
                     "flags": 0,
                     "name": "tag_name",
                     "type": "string",
-                    "value": "Note"
+                    "value": ""
                 }
             ],
-            "title": "Rename Tags"
+            "title": "Merge Tags"
         },
         {
             "args": [
@@ -1236,7 +1386,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Generate a unique ID key for specific tags, such as Note tags required in PDF/UA-1",
+            "desc": "Generate unique ID keys for Note and table header (TH) structure elements as required by PDF/UA.",
             "name": "set_tag_id",
             "params": [
                 {
@@ -1244,7 +1394,8 @@
                     "flags": 0,
                     "name": "tag_names",
                     "type": "tag",
-                    "value": "^Note$|^TH$"
+                    "value": "^Note$|^TH$",
+                    "value_name": "Note and TH tags"
                 },
                 {
                     "ext": "",
@@ -1254,7 +1405,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Tag ID"
+            "title": "Set Tag IDs (Note, TH)"
         },
         {
             "args": [
@@ -1273,7 +1424,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set the tab order key for every page. Every page containing an annotation must have the Tabs key set to S",
+            "desc": "Set the page Tabs key to Structure so keyboard navigation follows the logical reading order.",
             "name": "set_tabs_key",
             "params": [
                 {
@@ -1291,7 +1442,7 @@
                     "value": "true"
                 }
             ],
-            "title": "Set Tab Order"
+            "title": "Set Tab Order (Structure)"
         },
         {
             "args": [
@@ -1310,7 +1461,28 @@
                     "value": ""
                 }
             ],
-            "desc": "Set the document title",
+            "desc": "Repair and normalize document XMP metadata to improve standards compliance and consistency",
+            "name": "fix_metadata",
+            "title": "Fix XMP Metadata"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Set the document Title metadata by picking text from the first matching structure tag (H1). This aligns metadata with the visible main heading for assistive technologies and preserves any existing Title unless overwrite is enabled.",
             "name": "set_title",
             "params": [
                 {
@@ -1342,7 +1514,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Title"
+            "title": "Set Title (From H1 Heading)"
         },
         {
             "args": [
@@ -1361,7 +1533,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set the document title",
+            "desc": "Set the document Title metadata from the PDF Info dictionary. Use this as a reliable fallback when the tag structure does not contain a suitable heading. Existing Title is preserved unless overwrite is enabled.",
             "name": "set_title",
             "params": [
                 {
@@ -1393,7 +1565,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Title"
+            "title": "Set Title (From Info Dictionary)"
         },
         {
             "args": [
@@ -1412,7 +1584,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set the document title",
+            "desc": "Set the document Title metadata from the input file name. This provides a deterministic fallback title when neither tag-based detection nor existing Info metadata is suitable. Existing Title is preserved unless overwrite is enabled.",
             "name": "set_title",
             "params": [
                 {
@@ -1444,7 +1616,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Title"
+            "title": "Set Title (From File Name)"
         },
         {
             "args": [
@@ -1463,7 +1635,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set the PDF/UA identifier",
+            "desc": "Declare PDF/UA-1 conformance by setting the appropriate PDF/UA identifier in the document metadata.",
             "name": "set_pdf_ua_standard",
             "params": [
                 {
@@ -1481,7 +1653,7 @@
                     "value": "2023"
                 }
             ],
-            "title": "Set PDF/UA Standard"
+            "title": "Set PDF/UA-1 Identifier"
         },
         {
             "args": [
@@ -1500,7 +1672,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Set the document language",
+            "desc": "Define the primary document language to ensure correct pronunciation and processing by assistive technologies.",
             "name": "set_language",
             "params": [
                 {
@@ -1518,7 +1690,7 @@
                     "value": "false"
                 }
             ],
-            "title": "Set Document Language"
+            "title": "Set Document Language (en-US)"
         },
         {
             "args": [
@@ -1537,7 +1709,7 @@
                     "value": ""
                 }
             ],
-            "desc": "Create bookmarks from the tag tree hierarchy",
+            "desc": "Create bookmarks for the document to improve navigation and accessibility.",
             "name": "create_bookmarks",
             "params": [
                 {
@@ -1545,42 +1717,24 @@
                     "flags": 0,
                     "name": "tag_1",
                     "type": "tag",
-                    "value": "^H1$"
+                    "value": "^H1$",
+                    "value_name": "^H1$"
                 },
                 {
                     "ext": "",
                     "flags": 0,
                     "name": "tag_2",
                     "type": "tag",
-                    "value": "^H2$"
+                    "value": "^H2$",
+                    "value_name": "^H2$"
                 },
                 {
                     "ext": "",
                     "flags": 0,
                     "name": "tag_3",
                     "type": "tag",
-                    "value": "^H3$"
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "tag_4",
-                    "type": "tag",
-                    "value": "^H4$"
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "tag_5",
-                    "type": "tag",
-                    "value": "^H5$"
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "tag_6",
-                    "type": "tag",
-                    "value": "^H6$"
+                    "value": "^H3$",
+                    "value_name": "^H3$"
                 },
                 {
                     "ext": "",
@@ -1594,14 +1748,14 @@
         }
     ],
     "category": "Accessibility",
-    "desc": "Official default remediation preset for automated PDF/UA-1 compliance. Performs conservative, non-destructive cleanup, structure repair, tagging completion, and accessibility fixes.",
+    "desc": "Official default remediation preset for automated PDF/UA-1 compliance using PDFix SDK. The preset performs conservative, non-destructive cleanup, structure repair, tagging completion, and accessibility fixes.",
     "icon": "accessibility_new",
     "keywords": "",
     "max_sdk_version": "",
-    "min_sdk_version": "",
-    "name": "jcc_default_imported",
+    "min_sdk_version": "8.8.0",
+    "name": "make_accessible",
     "progress_regex": "",
-    "release_date": "",
-    "title": "JCC Default (General Documents, Opinions, Communications)",
-    "version": ".."
+    "release_date": "2026/04/17",
+    "title": "Make Accessible",
+    "version": "0.6.0"
 }
