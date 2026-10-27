@@ -149,46 +149,6 @@
       ]
     },
     {
-      "name": "delete_tags",
-      "title": "Delete Tags (Whitespace-only content)",
-      "desc": "Remove structure elements whose content consists only of whitespace. The associated content is converted to artifacts to prevent screen readers from announcing meaningless text.",
-      "params": [
-        {
-          "name": "tag_names",
-          "value": {
-            "template": {
-              "tag_update": [
-                {
-                  "query": {
-                    "$and": [
-                      {
-                        "$0_tag_type": {
-                          "$regex": "^(?!H$|H\\d$|TH$|TD$|TR$|LBody$).*"
-                        }
-                      },
-                      {
-                        "$0_text": {
-                          "$regex": "^\\s*$"
-                        }
-                      }
-                    ],
-                    "param": [
-                      "pds_struct_elem"
-                    ]
-                  },
-                  "statement": "$if"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "tag_content",
-          "value": "artifact"
-        }
-      ]
-    },
-    {
       "name": "remove_content_marks",
       "title": "Remove Content Marks (Invalid MCIDs)",
       "desc": "Remove marked-content sequences that reference invalid or broken MCIDs. This prevents structure corruption and resolves common ParentTree and content reference errors.",

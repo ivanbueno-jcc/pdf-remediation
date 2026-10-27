@@ -304,68 +304,6 @@
                     "value": ""
                 }
             ],
-            "desc": "Remove structure elements whose content consists only of whitespace. The associated content is converted to artifacts to prevent screen readers from announcing meaningless text.",
-            "name": "delete_tags",
-            "params": [
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "tag_names",
-                    "type": "tag",
-                    "value": {
-                        "template": {
-                            "tag_update": [
-                                {
-                                    "query": {
-                                        "$and": [
-                                            {
-                                                "$0_tag_type": {
-                                                    "$regex": "^(?!H$|H\\d$|TH$|TD$|TR$|LBody$).*"
-                                                }
-                                            },
-                                            {
-                                                "$0_text": {
-                                                    "$regex": "^\\s*$"
-                                                }
-                                            }
-                                        ],
-                                        "param": [
-                                            "pds_struct_elem"
-                                        ]
-                                    },
-                                    "statement": "$if"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "ext": "",
-                    "flags": 1,
-                    "name": "tag_content",
-                    "type": "string",
-                    "value": "artifact"
-                }
-            ],
-            "title": "Delete Tags (Whitespace-only content)"
-        },
-        {
-            "args": [
-                {
-                    "ext": "pdf",
-                    "flags": 2,
-                    "name": "input_pdf",
-                    "type": "file_path",
-                    "value": ""
-                },
-                {
-                    "ext": "pdf",
-                    "flags": 4,
-                    "name": "output_pdf",
-                    "type": "file_path",
-                    "value": ""
-                }
-            ],
             "desc": "Remove marked-content sequences that reference invalid or broken MCIDs. This prevents structure corruption and resolves common ParentTree and content reference errors.",
             "name": "remove_content_marks",
             "params": [
