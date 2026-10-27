@@ -200,6 +200,14 @@
         {
           "name": "flags",
           "value": 8
+        },
+        {
+          "name": "content_mode",
+          "value": "none"
+        },
+        {
+          "name": "sync_tag_names",
+          "value": false
         }
       ]
     },
@@ -346,6 +354,10 @@
           "value": "Decorative"
         },
         {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
           "name": "bbox_padding_x",
           "value": 4
         },
@@ -385,6 +397,10 @@
           "value": "Decorative"
         },
         {
+          "name": "description_tag",
+          "value": ""
+        },
+        {
           "name": "bbox_padding_x",
           "value": 4
         },
@@ -422,6 +438,10 @@
         {
           "name": "custom_text",
           "value": "Decorative"
+        },
+        {
+          "name": "description_tag",
+          "value": ""
         },
         {
           "name": "bbox_padding_x",
@@ -662,6 +682,27 @@
       ]
     },
     {
+      "name": "set_tag_bbox",
+      "title": "Set Tag BBox (Figure/Formula/Form)",
+      "desc": "Calculate bounding boxes from associated tag content and store them in Layout attributes for Figure, Formula, and Form structure elements. Existing BBox values are preserved unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "tag_names",
+          "value": "^Figure$|^Formula$|^Form$$"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "fix_id_tree",
+      "title": "Fix ID Tree",
+      "desc": "Repair the document ID tree to restore valid references for structure elements and tagged content.",
+      "params": []
+    },
+    {
       "name": "set_tabs_key",
       "title": "Set Tab Order (Structure)",
       "desc": "Set the page Tabs key to Structure so keyboard navigation follows the logical reading order.",
@@ -679,7 +720,36 @@
     {
       "name": "fix_metadata",
       "desc": "Repair and normalize document XMP metadata to improve standards compliance and consistency",
+      "params": [
+        {
+          "name": "reset_metadata",
+          "value": false
+        }
+      ],
       "title": "Fix XMP Metadata"
+    },
+    {
+      "name": "set_title",
+      "desc": "Set the document Title metadata by picking text from the first matching structure tag (Title). This aligns metadata with the visible main heading for assistive technologies and preserves any existing Title unless overwrite is enabled.",
+      "params": [
+        {
+          "name": "title_type",
+          "value": "1"
+        },
+        {
+          "name": "custom_text",
+          "value": ""
+        },
+        {
+          "name": "description_tag",
+          "value": "Title"
+        },
+        {
+          "name": "overwrite",
+          "value": false
+        }
+      ],
+      "title": "Set Title (From Title Tag)"
     },
     {
       "name": "set_title",
@@ -796,6 +866,18 @@
         {
           "name": "tag_3",
           "value": "^H3$"
+        },
+        {
+          "name": "tag_4",
+          "value": "^H4$"
+        },
+        {
+          "name": "tag_5",
+          "value": "^H5$"
+        },
+        {
+          "name": "tag_6",
+          "value": "^H6$"
         },
         {
           "name": "overwrite",

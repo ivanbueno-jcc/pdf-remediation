@@ -384,6 +384,20 @@
                     "type": "flag",
                     "value": "8",
                     "value_name": "8"
+                },
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "content_mode",
+                    "type": "string",
+                    "value": "none"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "sync_tag_names",
+                    "type": "bool",
+                    "value": "false"
                 }
             ],
             "title": "Remove Content Marks (Invalid MCIDs)"
@@ -763,6 +777,13 @@
                 {
                     "ext": "",
                     "flags": 0,
+                    "name": "description_tag",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
                     "name": "bbox_padding_x",
                     "type": "float",
                     "value": "4"
@@ -843,6 +864,13 @@
                 {
                     "ext": "",
                     "flags": 0,
+                    "name": "description_tag",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
                     "name": "bbox_padding_x",
                     "type": "float",
                     "value": "4"
@@ -919,6 +947,13 @@
                     "name": "custom_text",
                     "type": "string",
                     "value": "Decorative"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "description_tag",
+                    "type": "string",
+                    "value": ""
                 },
                 {
                     "ext": "",
@@ -1367,7 +1402,7 @@
                     "value": ""
                 }
             ],
-            "title": "Merge Tags"
+            "title": "Merge Tags (Combine split footnotes)"
         },
         {
             "args": [
@@ -1406,6 +1441,64 @@
                 }
             ],
             "title": "Set Tag IDs (Note, TH)"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Calculate bounding boxes from associated tag content and store them in Layout attributes for Figure, Formula, and Form structure elements. Existing BBox values are preserved unless overwrite is enabled.",
+            "name": "set_tag_bbox",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_names",
+                    "type": "tag",
+                    "value": "^Figure$|^Formula$|^Form$$"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "overwrite",
+                    "type": "bool",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Tag BBox (Figure/Formula/Form)"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Repair the document ID tree to restore valid references for structure elements and tagged content.",
+            "name": "fix_id_tree",
+            "title": "Fix ID Tree"
         },
         {
             "args": [
@@ -1463,7 +1556,67 @@
             ],
             "desc": "Repair and normalize document XMP metadata to improve standards compliance and consistency",
             "name": "fix_metadata",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "reset_metadata",
+                    "type": "bool",
+                    "value": "false"
+                }
+            ],
             "title": "Fix XMP Metadata"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
+            "desc": "Set the document Title metadata by picking text from the first matching structure tag (Title). This aligns metadata with the visible main heading for assistive technologies and preserves any existing Title unless overwrite is enabled.",
+            "name": "set_title",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "title_type",
+                    "type": "int",
+                    "value": "1"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "custom_text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "description_tag",
+                    "type": "string",
+                    "value": "Title"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "overwrite",
+                    "type": "bool",
+                    "value": "false"
+                }
+            ],
+            "title": "Set Title (From Title Tag)"
         },
         {
             "args": [
@@ -1739,6 +1892,30 @@
                 {
                     "ext": "",
                     "flags": 0,
+                    "name": "tag_4",
+                    "type": "tag",
+                    "value": "^H4$",
+                    "value_name": "^H4$"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_5",
+                    "type": "tag",
+                    "value": "^H5$",
+                    "value_name": "^H5$"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_6",
+                    "type": "tag",
+                    "value": "^H6$",
+                    "value_name": "^H6$"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
                     "name": "overwrite",
                     "type": "bool",
                     "value": "false"
@@ -1753,9 +1930,9 @@
     "keywords": "",
     "max_sdk_version": "",
     "min_sdk_version": "8.8.0",
-    "name": "make_accessible",
+    "name": "jcc_general_documents",
     "progress_regex": "",
     "release_date": "2026/04/17",
-    "title": "Make Accessible",
+    "title": "JCC - General Documents",
     "version": "0.6.0"
 }
