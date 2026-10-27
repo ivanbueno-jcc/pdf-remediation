@@ -244,6 +244,93 @@
                     "value": ""
                 }
             ],
+            "desc": "Merge neighbouring structure tags in reading order ($0 above $1) by moving children from one tag into another",
+            "expanded": true,
+            "name": "merge_tags",
+            "params": [
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_names",
+                    "type": "tag",
+                    "value": {
+                        "template": {
+                            "tag_neighbours": [
+                                {
+                                    "query": {
+                                        "$and": [
+                                            {
+                                                "$0_role_mapped_tag_type": "Note"
+                                            },
+                                            {
+                                                "$1_role_mapped_tag_type": "Note"
+                                            },
+                                            {
+                                                "$1_text": {
+                                                    "$regex": "^(?!\\s*\\d).+"
+                                                }
+                                            }
+                                        ],
+                                        "param": [
+                                            "pds_struct_elem",
+                                            "pds_struct_elem"
+                                        ]
+                                    },
+                                    "statement": "$if"
+                                }
+                            ]
+                        }
+                    },
+                    "value_name": "Note chains"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "adjacent_type",
+                    "type": "string",
+                    "value": "Note"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "skip_tags",
+                    "type": "string",
+                    "value": "^(Document|Part|Art|Sect|Div|BlockQuote|Caption|TOC|TOCI|Index|NonStruct|Private)$"
+                },
+                {
+                    "ext": "",
+                    "flags": 1,
+                    "name": "merge_target",
+                    "type": "string",
+                    "value": "first"
+                },
+                {
+                    "ext": "",
+                    "flags": 0,
+                    "name": "tag_name",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "title": "Merge Tags (Combine split footnotes)"
+        },
+        {
+            "args": [
+                {
+                    "ext": "pdf",
+                    "flags": 2,
+                    "name": "input_pdf",
+                    "type": "file_path",
+                    "value": ""
+                },
+                {
+                    "ext": "pdf",
+                    "flags": 4,
+                    "name": "output_pdf",
+                    "type": "file_path",
+                    "value": ""
+                }
+            ],
             "desc": "Remove empty structure elements that do not carry semantic meaning and only pollute the tag tree. Headings, table cells, table rows, and list bodies are explicitly preserved to avoid breaking document semantics.",
             "name": "delete_tags",
             "params": [
@@ -617,7 +704,7 @@
                     "flags": 0,
                     "name": "artifact_unnecessary_spaces",
                     "type": "bool",
-                    "value": "true"
+                    "value": "false"
                 }
             ],
             "title": "Fix Spaces (Add missing, Artifact unnecessary)"
@@ -1254,93 +1341,6 @@
                 }
             ],
             "title": "Fix Media Clip (Content-Type to text/plain)"
-        },
-        {
-            "args": [
-                {
-                    "ext": "pdf",
-                    "flags": 2,
-                    "name": "input_pdf",
-                    "type": "file_path",
-                    "value": ""
-                },
-                {
-                    "ext": "pdf",
-                    "flags": 4,
-                    "name": "output_pdf",
-                    "type": "file_path",
-                    "value": ""
-                }
-            ],
-            "desc": "Merge neighbouring structure tags in reading order ($0 above $1) by moving children from one tag into another",
-            "expanded": true,
-            "name": "merge_tags",
-            "params": [
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "tag_names",
-                    "type": "tag",
-                    "value": {
-                        "template": {
-                            "tag_neighbours": [
-                                {
-                                    "query": {
-                                        "$and": [
-                                            {
-                                                "$0_role_mapped_tag_type": "Note"
-                                            },
-                                            {
-                                                "$1_role_mapped_tag_type": "Note"
-                                            },
-                                            {
-                                                "$1_text": {
-                                                    "$regex": "^(?!\\s*\\d).+"
-                                                }
-                                            }
-                                        ],
-                                        "param": [
-                                            "pds_struct_elem",
-                                            "pds_struct_elem"
-                                        ]
-                                    },
-                                    "statement": "$if"
-                                }
-                            ]
-                        }
-                    },
-                    "value_name": "Note chains"
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "adjacent_type",
-                    "type": "string",
-                    "value": "Note"
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "skip_tags",
-                    "type": "string",
-                    "value": "^(Document|Part|Art|Sect|Div|BlockQuote|Caption|TOC|TOCI|Index|NonStruct|Private)$"
-                },
-                {
-                    "ext": "",
-                    "flags": 1,
-                    "name": "merge_target",
-                    "type": "string",
-                    "value": "first"
-                },
-                {
-                    "ext": "",
-                    "flags": 0,
-                    "name": "tag_name",
-                    "type": "string",
-                    "value": ""
-                }
-            ],
-            "title": "Merge Tags (Combine split footnotes)"
         },
         {
             "args": [

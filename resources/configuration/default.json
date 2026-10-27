@@ -111,6 +111,61 @@
       ]
     },
     {
+      "name": "merge_tags",
+      "title": "Merge Tags",
+      "desc": "Merge neighbouring structure tags in reading order ($0 above $1) by moving children from one tag into another",
+      "expanded": true,
+      "params": [
+        {
+          "name": "tag_names",
+          "value": {
+            "template": {
+              "tag_neighbours": [
+                {
+                  "query": {
+                    "$and": [
+                      {
+                        "$0_role_mapped_tag_type": "Note"
+                      },
+                      {
+                        "$1_role_mapped_tag_type": "Note"
+                      },
+                      {
+                        "$1_text": {
+                          "$regex": "^(?!\\s*\\d).+"
+                        }
+                      }
+                    ],
+                    "param": [
+                      "pds_struct_elem",
+                      "pds_struct_elem"
+                    ]
+                  },
+                  "statement": "$if"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "adjacent_type",
+          "value": "Note"
+        },
+        {
+          "name": "skip_tags",
+          "value": "^(Document|Part|Art|Sect|Div|BlockQuote|Caption|TOC|TOCI|Index|NonStruct|Private)$"
+        },
+        {
+          "name": "merge_target",
+          "value": "first"
+        },
+        {
+          "name": "tag_name",
+          "value": ""
+        }
+      ]
+    },
+    {
       "name": "delete_tags",
       "title": "Delete Tags (Empty non-semantic tags)",
       "desc": "Remove empty structure elements that do not carry semantic meaning and only pollute the tag tree. Headings, table cells, table rows, and list bodies are explicitly preserved to avoid breaking document semantics.",
@@ -263,7 +318,7 @@
         },
         {
           "name": "artifact_unnecessary_spaces",
-          "value": true
+          "value": false
         }
       ]
     },
@@ -568,61 +623,6 @@
         {
           "name": "ct_key",
           "value": "text/plain"
-        }
-      ]
-    },
-    {
-      "name": "merge_tags",
-      "title": "Merge Tags",
-      "desc": "Merge neighbouring structure tags in reading order ($0 above $1) by moving children from one tag into another",
-      "expanded": true,
-      "params": [
-        {
-          "name": "tag_names",
-          "value": {
-            "template": {
-              "tag_neighbours": [
-                {
-                  "query": {
-                    "$and": [
-                      {
-                        "$0_role_mapped_tag_type": "Note"
-                      },
-                      {
-                        "$1_role_mapped_tag_type": "Note"
-                      },
-                      {
-                        "$1_text": {
-                          "$regex": "^(?!\\s*\\d).+"
-                        }
-                      }
-                    ],
-                    "param": [
-                      "pds_struct_elem",
-                      "pds_struct_elem"
-                    ]
-                  },
-                  "statement": "$if"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "adjacent_type",
-          "value": "Note"
-        },
-        {
-          "name": "skip_tags",
-          "value": "^(Document|Part|Art|Sect|Div|BlockQuote|Caption|TOC|TOCI|Index|NonStruct|Private)$"
-        },
-        {
-          "name": "merge_target",
-          "value": "first"
-        },
-        {
-          "name": "tag_name",
-          "value": ""
         }
       ]
     },
